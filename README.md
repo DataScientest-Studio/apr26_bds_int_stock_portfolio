@@ -32,6 +32,59 @@ The whole thing is wrapped in a **Streamlit** web app so the questionnaire can b
 
 `pandas`, `numpy`, `scipy` for data wrangling and statistics · `matplotlib`, `seaborn` for visualisations · `scikit-learn` for clustering, regression and pipelines · `streamlit` for the demo.
 
+## Setup
+
+Requires Python 3.9+ (tested on 3.14). On macOS the system Python is "externally managed" (PEP 668), so install everything inside a virtual environment.
+
+### 1. Create and activate a virtual environment
+
+```bash
+cd apr26_bds_int_stock_portfolio
+python3 -m venv .venv
+source .venv/bin/activate          # macOS / Linux
+# .venv\Scripts\activate           # Windows PowerShell
+```
+
+You'll know the venv is active when your shell prompt shows `(.venv)`. To leave it later: `deactivate`.
+
+### 2. Install dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+This installs the data-acquisition dependencies (`yfinance`, `pandas`, `lxml`, `html5lib`, `requests`). The ML/visualisation libraries listed in **Tech stack** above will be added to `requirements.txt` as later pipeline steps are built.
+
+### 3. Download the price data
+
+```bash
+python fetch_data.py                  # 5 years of history (default)
+python fetch_data.py --years 10       # 10-year window
+python fetch_data.py --limit 20       # smoke test: first 20 tickers only
+python fetch_data.py --batch-size 25  # smaller batches if your network is flaky
+```
+
+Outputs land in `./data/`:
+
+| File                              | Format       | Purpose                                              |
+| --------------------------------- | ------------ | ---------------------------------------------------- |
+| `tickers.csv`                     | metadata     | ticker, name, sector, industry, index, country       |
+| `prices_long.csv`                 | long         | one row per (date, ticker) — best for feature eng.   |
+| `prices_close_wide.csv`           | wide         | adj. close matrix — best for returns / correlations  |
+| `by_ticker/SP500/{TKR}.csv`       | per-ticker   | one OHLCV file per S&P 500 stock                     |
+| `by_ticker/DAX40/{TKR}.csv`       | per-ticker   | one OHLCV file per DAX 40 stock                      |
+| `failed_tickers.csv`              | retry list   | only written if some downloads failed                |
+
+A full 10-year run covers ~543 tickers and takes roughly 10–15 minutes, producing ~150 MB of data. Yahoo Finance occasionally throttles or drops connections; the script automatically retries failed tickers individually before giving up.
+
+### Troubleshooting
+
+- **`HTTP 403` from Wikipedia** — already worked around with a browser User-Agent.
+- **`OperationalError: unable to open database file`** — yfinance's local SQLite cache can't be written. Usually means the root volume is full. Free disk space and clear the cache: `rm -rf ~/Library/Caches/py-yfinance`.
+- **`getaddrinfo() thread failed to start`** / **`cert verify locations`** — also disk-pressure symptoms; same fix as above.
+- **`zsh: permission denied: .venv/bin/activate`** — `activate` must be *sourced*, not executed: `source .venv/bin/activate`.
+
 ## Deliverables
 
 - Exploration, data visualization and pre-processing **report**.
