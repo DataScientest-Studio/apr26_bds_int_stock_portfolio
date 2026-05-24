@@ -55,16 +55,29 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-This installs the data-acquisition dependencies (`yfinance`, `pandas`, `lxml`, `html5lib`, `requests`). The ML/visualisation libraries listed in **Tech stack** above will be added to `requirements.txt` as later pipeline steps are built.
+This installs the data-acquisition dependencies (`alpaca-py`, `python-dotenv`, `pandas`, `lxml`, `html5lib`, `requests`). The ML/visualisation libraries listed in **Tech stack** above will be added to `requirements.txt` as later pipeline steps are built.
 
-### 3. Download the price data
+### 3. Configure Alpaca credentials
+
+Create a `.env.local` file in the project root (git-ignored) with your Alpaca API keys:
 
 ```bash
-python fetch_data.py                  # 5 years of history (default)
-python fetch_data.py --years 10       # 10-year window
-python fetch_data.py --limit 20       # smoke test: first 20 tickers only
-python fetch_data.py --batch-size 25  # smaller batches if your network is flaky
+ALPACA_API_KEY="your_key_here"
+ALPACA_API_SECRET="your_secret_here"
 ```
+
+Get free keys from [Alpaca Markets](https://alpaca.markets/) (Trading API account). The script reads only from `.env.local` — never commit this file.
+
+### 4. Download the price data
+
+```bash
+python fetch_data.py                  # 10 years of history (default)
+python fetch_data.py --years 5        # shorter window
+python fetch_data.py --limit 20       # smoke test: first 20 tickers only
+python fetch_data.py --batch-size 10  # faster full run (REST pagination)
+```
+
+`fetch_data.py` downloads **S&P 500 only** via Alpaca's free **IEX feed**. For each ticker it fetches raw OHLCV plus a split/dividend-adjusted close (`adj_close`). Wikipedia supplies the constituent list; Alpaca supplies the prices.
 
 Outputs land in `./data/`:
 
@@ -74,16 +87,20 @@ Outputs land in `./data/`:
 | `prices_long.csv`                 | long         | one row per (date, ticker) — best for feature eng.   |
 | `prices_close_wide.csv`           | wide         | adj. close matrix — best for returns / correlations  |
 | `by_ticker/SP500/{TKR}.csv`       | per-ticker   | one OHLCV file per S&P 500 stock                     |
-| `by_ticker/DAX40/{TKR}.csv`       | per-ticker   | one OHLCV file per DAX 40 stock                      |
 | `failed_tickers.csv`              | retry list   | only written if some downloads failed                |
 
-A full 10-year run covers ~543 tickers and takes roughly 10–15 minutes, producing ~150 MB of data. Yahoo Finance occasionally throttles or drops connections; the script automatically retries failed tickers individually before giving up.
+A full run covers **503 S&P 500 tickers** and takes roughly **8–10 minutes** with `--batch-size 10`, producing ~700k rows (~150 MB). Failed tickers are retried individually before being written to `failed_tickers.csv`.
+
+**History depth note:** the script requests a 10-year window, but Alpaca's free IEX feed currently returns daily bars back to **~July 2020** (~1,460 trading days per symbol), not the full 10 calendar years. This is a feed/tier limit, not a script bug. For deeper history, use the Kaggle offline backup listed under **Data sources** or upgrade to a paid SIP feed.
+
+**Verified (2026-05-24):** smoke test (`--limit 3`) and full run (503 tickers, 726,018 rows, 0 failures) both completed successfully on Python 3.14 with the IEX feed.
 
 ### Troubleshooting
 
+- **`Missing Alpaca credentials`** — create `.env.local` with `ALPACA_API_KEY` and `ALPACA_API_SECRET` (see step 3 above).
 - **`HTTP 403` from Wikipedia** — already worked around with a browser User-Agent.
-- **`OperationalError: unable to open database file`** — yfinance's local SQLite cache can't be written. Usually means the root volume is full. Free disk space and clear the cache: `rm -rf ~/Library/Caches/py-yfinance`.
-- **`getaddrinfo() thread failed to start`** / **`cert verify locations`** — also disk-pressure symptoms; same fix as above.
+- **`401` / `403` from Alpaca** — check that your API keys are valid and that your Alpaca account is active.
+- **`429` from Alpaca** — rate limit hit; re-run later or reduce `--batch-size`.
 - **`zsh: permission denied: .venv/bin/activate`** — `activate` must be *sourced*, not executed: `source .venv/bin/activate`.
 
 ## Deliverables
@@ -136,7 +153,7 @@ Mentor: **Paul Grolier**. Framing meeting tentatively scheduled for **Wednesday 
 ## Actions
 
 - [x] **Decide the project's data source** — _Decided 2026-05-22 (mentor-approved): **Alpaca free IEX feed** for S&P 500 daily OHLCV; yfinance kept as fallback. DAX 40 deferred (not covered by Alpaca's free tier)._
-- [ ] Migrate `fetch_data.py` from yfinance to the Alpaca API — by next meeting (**2026-05-28**).
+- [x] Migrate `fetch_data.py` from yfinance to the Alpaca API — _Done 2026-05-24._
 - [ ] Set up a **Streamlit** project skeleton for presentation plots.
 - [ ] Produce **5 initial visualizations** + fill the **Data Audit** Excel sheet — Deadline **2026-05-27**.
 - [ ] Full data-exploration / DataViz / pre-processing **report (Rendering 1)** — Deadline **2026-06-03**.

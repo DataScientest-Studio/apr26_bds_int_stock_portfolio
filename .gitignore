@@ -17,6 +17,10 @@ env/
 .DS_Store
 Thumbs.db
 
+# Secrets
+.env.local
+.env
+
 # IDE
 .vscode/
 .idea/
