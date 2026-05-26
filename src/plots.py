@@ -119,3 +119,60 @@ def plot_price_line(prices: pd.DataFrame, ticker: str):
     ax.tick_params(axis="x", rotation=0)
     fig.subplots_adjust(left=0.08, bottom=0.16, right=0.98, top=0.82)
     return fig
+
+
+def plot_correlation_heatmap(prices: pd.DataFrame):
+    """Multivariate — heatmap of daily returns correlation (methodology Step 2)."""
+    # Find top 10 stocks by mean volume to keep the heatmap readable
+    top_tickers = prices.groupby("ticker")["volume"].mean().nlargest(10).index
+    
+    # Filter and pivot to get a wide dataframe of daily returns
+    data = prices[prices["ticker"].isin(top_tickers)]
+    wide_returns = data.pivot(index="date", columns="ticker", values="daily_return").dropna()
+    
+    corr_matrix = wide_returns.corr()
+    
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.set()
+    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", vmin=-1, vmax=1, ax=ax, square=True)
+    ax.set_title("Correlation of Daily Returns — Top 10 Most Traded Stocks")
+    fig.tight_layout()
+    return fig
+
+
+def plot_risk_return_scatter(prices: pd.DataFrame):
+    """Bivariate — scatterplot of risk (volatility) vs return (methodology Step 2)."""
+    fig, ax = plt.subplots(figsize=(9, 6))
+    sns.set()
+    
+    # Calculate annualized return and volatility per stock (252 trading days)
+    stats = prices.groupby("ticker")["daily_return"].agg(["mean", "std"]).dropna()
+    stats["annual_return"] = stats["mean"] * 252 * 100
+    stats["annual_volatility"] = stats["std"] * (252 ** 0.5) * 100
+    
+    sns.scatterplot(
+        data=stats, 
+        x="annual_volatility", 
+        y="annual_return", 
+        alpha=0.6, 
+        edgecolor=None,
+        color="steelblue",
+        ax=ax
+    )
+    
+    ax.set_xlabel("Annualized Volatility (Risk) in %")
+    ax.set_ylabel("Annualized Expected Return in %")
+    ax.set_title("Risk vs. Return profile — all S&P 500 stocks")
+    
+    # Quadrant lines (medians)
+    median_vol = stats["annual_volatility"].median()
+    median_ret = stats["annual_return"].median()
+    ax.axvline(median_vol, color="gray", linestyle="--", linewidth=1, alpha=0.7)
+    ax.axhline(median_ret, color="gray", linestyle="--", linewidth=1, alpha=0.7)
+    
+    # Quadrant labels
+    ax.text(median_vol * 1.05, median_ret * 1.1, "High Return\nHigh Risk", color="darkred", alpha=0.7, fontsize=9)
+    ax.text(median_vol * 0.6, median_ret * 1.1, "High Return\nLow Risk", color="darkgreen", alpha=0.7, fontsize=9)
+    
+    fig.tight_layout()
+    return fig

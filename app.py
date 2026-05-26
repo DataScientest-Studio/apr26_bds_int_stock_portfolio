@@ -14,6 +14,8 @@ from src.plots import (
     plot_return_hist,
     plot_sector_count,
     plot_volume_box,
+    plot_risk_return_scatter,
+    plot_correlation_heatmap,
 )
 
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
@@ -43,7 +45,7 @@ if page == "Exploration":
         st.dataframe(prices.isna().sum())
 
 elif page == "DataViz":
-    st.subheader("2. DataViz — 4 plots for Step 1")
+    st.subheader("2. DataViz — 6 plots for Step 1")
 
     st.markdown("**Plot 1 — countplot** (sector, categorical variable)")
     st.caption("Shows how many stocks sit in each sector — the universe is imbalanced, so a naïve picker would overweight Industrials and Financials.")
@@ -95,3 +97,26 @@ elif page == "DataViz":
         """
     )
     st.pyplot(plot_price_line(prices, ticker), clear_figure=True)
+
+    st.markdown("**Plot 5 — heatmap** (Correlation Matrix)")
+    st.caption("Shows the Pearson correlation coefficient between daily returns of the 10 most traded stocks.")
+    st.markdown(
+        """
+- **Why Correlation Matters** — A core principle of portfolio management is diversification. If all stocks in a portfolio move in the exact same direction (correlation near 1.0), the risk is concentrated.
+- **Top 10 Stocks** — This heatmap isolates the 10 most liquid names in the dataset. Notice how certain stocks might be highly correlated with each other, but less correlated with others.
+- **Business Value** — The recommender uses sector constraints (max 30% per sector) specifically to avoid high correlations and build a diversified, safer portfolio for the user.
+        """
+    )
+    st.pyplot(plot_correlation_heatmap(prices), clear_figure=True)
+
+    st.markdown("**Plot 6 — scatterplot** (Risk vs. Return)")
+    st.caption("X-axis = Annualized Volatility (Risk). Y-axis = Annualized Return. Each point is one stock.")
+    st.markdown(
+        """
+- **What is 'Risk' here?** — Risk is mathematically calculated as **Annualized Volatility** (the standard deviation of a stock's daily returns, scaled to a 252-day trading year). In finance, volatility equates to uncertainty. A stock with 15% volatility is relatively stable and its price moves predictably, whereas a 50% volatility stock can swing wildly up and down, creating panic for inexperienced investors.
+- **The Core of the Recommender** — This chart proves why grouping stocks by risk profile is necessary. Some stocks offer higher returns for the same level of risk, while others are highly volatile without the reward.
+- **Four Quadrants** — The dashed lines represent the median risk and median return across the S&P 500. The top-left quadrant (High Return, Low Risk) is the theoretical "sweet spot".
+- **Business Value** — For a conservative user, the recommender will explicitly filter out high-volatility names (the right side of the plot). For an aggressive user, it can venture into the higher risk territory aiming for higher expected returns.
+        """
+    )
+    st.pyplot(plot_risk_return_scatter(prices), clear_figure=True)
