@@ -119,3 +119,22 @@ def plot_price_line(prices: pd.DataFrame, ticker: str):
     ax.tick_params(axis="x", rotation=0)
     fig.subplots_adjust(left=0.08, bottom=0.16, right=0.98, top=0.82)
     return fig
+
+
+def plot_correlation_heatmap(prices: pd.DataFrame):
+    """Multivariate — heatmap of daily returns correlation (methodology Step 2)."""
+    # Find top 10 stocks by mean volume to keep the heatmap readable
+    top_tickers = prices.groupby("ticker")["volume"].mean().nlargest(10).index
+    
+    # Filter and pivot to get a wide dataframe of daily returns
+    data = prices[prices["ticker"].isin(top_tickers)]
+    wide_returns = data.pivot(index="date", columns="ticker", values="daily_return").dropna()
+    
+    corr_matrix = wide_returns.corr()
+    
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.set()
+    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", vmin=-1, vmax=1, ax=ax, square=True)
+    ax.set_title("Correlation of Daily Returns — Top 10 Most Traded Stocks")
+    fig.tight_layout()
+    return fig
