@@ -164,8 +164,8 @@ Mentor: **Paul Grolier**. Framing meeting tentatively scheduled for **Wednesday 
 
 - [x] **Decide the project's data source** — _Decided 2026-05-22 (mentor-approved): **Alpaca free IEX feed** for S&P 500 daily OHLCV; yfinance kept as fallback. DAX 40 deferred (not covered by Alpaca's free tier)._
 - [x] Migrate `fetch_data.py` from yfinance to the Alpaca API — _Done 2026-05-24._
-- [ ] Set up a **Streamlit** project skeleton for presentation plots.
-- [ ] Produce **5 initial visualizations** + fill the **Data Audit** Excel sheet — Deadline **2026-05-27**.
+- [x] Set up a **Streamlit** project skeleton for presentation plots.
+- [x] Produce **5 initial visualizations** + fill the **Data Audit** Excel sheet — Deadline **2026-05-27**. ℹ️ **INFO:** We have 6 plots in place.
 - [ ] Full data-exploration / DataViz / pre-processing **report (Rendering 1)** — Deadline **2026-06-03**.
 
 > Mentor unavailable the first week of June 2026. Next meeting: **Thursday 2026-05-28, 09:00**.
