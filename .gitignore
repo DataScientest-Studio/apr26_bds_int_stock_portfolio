@@ -2,6 +2,9 @@
 data/*.csv
 data/by_ticker/
 
+# Report PDFs (regenerate locally via reports/build_pdf.sh)
+reports/*.pdf
+
 # Python
 __pycache__/
 *.py[cod]

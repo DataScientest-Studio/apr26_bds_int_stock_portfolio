@@ -22,12 +22,13 @@ The whole thing is wrapped in a **Streamlit** web app so the questionnaire can b
 
 ## Data sources
 
-- **[Alpaca Markets](https://alpaca.markets/)** (free IEX feed) — **primary** source for daily OHLCV. Selected on 2026-05-22 with mentor approval (see [`meeting_notes/2026-05-22.md`](meeting_notes/2026-05-22.md)). Rationale: broker-grade validated data pipeline, richer programmatic API, and compatibility with backtesting tools like QuantConnect. A side-by-side audit against yfinance (`data provider choose.html`) showed ~99.5% similarity on overlapping (ticker, date) pairs.
+- **[Alpaca Markets](https://alpaca.markets/)** (free IEX feed) — **sole** source for daily OHLCV. Selected on 2026-05-22 with mentor approval (see [`meeting_notes/2026-05-22.md`](meeting_notes/2026-05-22.md)). Rationale: broker-grade validated data pipeline, richer programmatic API, and compatibility with backtesting tools like QuantConnect. A side-by-side audit against yfinance (`data provider choose.html`) showed ~99.5% similarity on overlapping (ticker, date) pairs.
 - **[yfinance](https://pypi.org/project/yfinance/)** — kept as a fallback / cross-check source only. Observed limitations: unvalidated data quality and occasional incorrect average-close values on some days.
 - **S&P 500 constituents** — scraped from Wikipedia; ~503 tickers. _Note:_ Alpaca's free tier does **not** cover DAX 40, so the initial universe is S&P 500 only. The clustering / ranking methodology is market-agnostic, so DAX 40 can be re-added later via a different provider if needed.
-- **[Alpha Vantage](https://www.alphavantage.co/)** (free tier) — backup source for P/E, EPS, dividend yield.
-- **[Kaggle Huge Stock Market Dataset](https://www.kaggle.com/datasets/borismarjanovic/price-volume-data-for-all-us-stocks-etfs)** — ~7,000 US tickers with daily OHLCV; offline backup.
-- **[FRED](https://fred.stlouisfed.org/)** — risk-free rate (10-year US Treasury) for the Sharpe ratio.
+
+> **Scope note (2026-05-28):** the project is intentionally **price-only**. No fundamentals
+> (P/E, EPS, dividend yield), no external risk-free feed (Sharpe is computed with `rf = 0`),
+> no offline backup feed. Every engineered feature is derived from the Alpaca OHLCV.
 
 ## Tech stack
 
@@ -91,7 +92,7 @@ Outputs land in `./data/`:
 
 A full run covers **503 S&P 500 tickers** and takes roughly **8–10 minutes** with `--batch-size 10`, producing ~700k rows (~150 MB). Failed tickers are retried individually before being written to `failed_tickers.csv`.
 
-**History depth note:** the script requests a 10-year window, but Alpaca's free IEX feed currently returns daily bars back to **~July 2020** (~1,460 trading days per symbol), not the full 10 calendar years. This is a feed/tier limit, not a script bug. For deeper history, use the Kaggle offline backup listed under **Data sources** or upgrade to a paid SIP feed.
+**History depth note:** the script requests a 10-year window, but Alpaca's free IEX feed currently returns daily bars back to **~July 2020** (~1,460 trading days per symbol), not the full 10 calendar years. This is a feed/tier limit, not a script bug. For deeper history, upgrade to the paid SIP feed.
 
 **Verified (2026-05-24):** smoke test (`--limit 3`) and full run (503 tickers, 726,018 rows, 0 failures) both completed successfully on Python 3.14 with the IEX feed.
 
@@ -112,6 +113,70 @@ streamlit run app.py
 - **`401` / `403` from Alpaca** — check that your API keys are valid and that your Alpaca account is active.
 - **`429` from Alpaca** — rate limit hit; re-run later or reduce `--batch-size`.
 - **`zsh: permission denied: .venv/bin/activate`** — `activate` must be *sourced*, not executed: `source .venv/bin/activate`.
+
+## Building the report PDF
+
+The Liora deliverable lives at [`reports/REPORT.md`](reports/REPORT.md) and is compiled to PDF with Pandoc + XeLaTeX + the [Eisvogel](https://github.com/Wandmalfarbe/pandoc-latex-template) template:
+
+```bash
+cd reports
+./build_pdf.sh           # → reports/REPORT.pdf
+```
+
+The script checks every dependency and prints a useful error if anything is missing.
+
+### One-time setup
+
+Three things are needed: **(1) Pandoc**, **(2) `xelatex`**, **(3) the Eisvogel template** at `~/.pandoc/templates/eisvogel.latex`.
+
+**macOS:**
+
+```bash
+brew install pandoc
+brew install --cask mactex-no-gui    # ~6.9 GB; bundles xelatex
+mkdir -p ~/.pandoc/templates
+curl -L https://github.com/Wandmalfarbe/pandoc-latex-template/releases/download/v3.4.0/Eisvogel.tar.gz \
+  | tar -xz --strip-components=1 -C ~/.pandoc/templates Eisvogel-3.4.0/eisvogel.latex
+eval "$(/usr/libexec/path_helper)"   # picks up xelatex in the current shell
+```
+
+**Linux (Ubuntu / Debian):**
+
+```bash
+sudo apt update
+sudo apt install -y pandoc \
+  texlive-xetex texlive-fonts-recommended texlive-fonts-extra \
+  texlive-latex-extra texlive-luatex lmodern
+mkdir -p ~/.pandoc/templates
+curl -L https://github.com/Wandmalfarbe/pandoc-latex-template/releases/download/v3.4.0/Eisvogel.tar.gz \
+  | tar -xz --strip-components=1 -C ~/.pandoc/templates Eisvogel-3.4.0/eisvogel.latex
+```
+
+**Windows:** the build script is Bash. Either use **WSL2 Ubuntu** (recommended — follow the Linux steps above; `./build_pdf.sh` then works as-is inside WSL), or install native pandoc + MiKTeX + Eisvogel and run the build from **Git Bash**:
+
+```powershell
+winget install --id JohnMacFarlane.Pandoc -e
+winget install --id MiKTeX.MiKTeX -e
+# After install, open the MiKTeX Console once → set "Always install missing packages on the fly = Yes".
+
+New-Item -ItemType Directory -Force -Path "$env:APPDATA\pandoc\templates" | Out-Null
+$tmpTar = "$env:TEMP\Eisvogel.tar.gz"
+Invoke-WebRequest `
+  -Uri "https://github.com/Wandmalfarbe/pandoc-latex-template/releases/download/v3.4.0/Eisvogel.tar.gz" `
+  -OutFile $tmpTar
+tar -xzf $tmpTar -C $env:TEMP Eisvogel-3.4.0/eisvogel.latex
+Move-Item -Force "$env:TEMP\Eisvogel-3.4.0\eisvogel.latex" "$env:APPDATA\pandoc\templates\eisvogel.latex"
+```
+
+### Verify the install
+
+```bash
+pandoc --version            # should print pandoc 3.x
+xelatex --version           # should print XeTeX 3.14… (or MiKTeX equivalent)
+ls ~/.pandoc/templates/eisvogel.latex   # ~31 KB; on Windows: %APPDATA%\pandoc\templates\eisvogel.latex
+```
+
+A successful build prints `✅ Built reports/REPORT.pdf (Xs)`.
 
 ## Deliverables
 
@@ -166,7 +231,7 @@ Mentor: **Paul Grolier**. Framing meeting tentatively scheduled for **Wednesday 
 - [x] Migrate `fetch_data.py` from yfinance to the Alpaca API — _Done 2026-05-24._
 - [x] Set up a **Streamlit** project skeleton for presentation plots.
 - [x] Produce **5 initial visualizations** + fill the **Data Audit** Excel sheet — Deadline **2026-05-27**. ℹ️ **INFO:** 6 plots in place (sector counts, mean daily volume, daily returns, price line, **correlation heatmap**, **risk/return scatter**) — mentor-reviewed 2026-05-28.
-- [ ] Full data-exploration / DataViz / pre-processing **report (Rendering 1)** — Deadline **2026-06-03** · **PDF format**, template flexible (Markdown, Overleaf, …).
+- [ ] Full data-exploration / DataViz / pre-processing **report (Rendering 1)** — Deadline **2026-06-03** · **PDF format**, template flexible (Markdown, Overleaf, …). Draft in [`reports/REPORT.md`](reports/REPORT.md) — see [**Building the report PDF**](#building-the-report-pdf) for setup + build command.
 - [ ] Add **per-ticker history-length** column to EDA — flag new entrants like **SNDK** (1.2 yrs of history; 342% return / 98% risk outlier in the scatter plot).
 - [ ] Design **with-vs.-without outliers** modeling comparison (mentor 2026-05-28: train both, document impact, don't drop blindly).
 - [ ] Cover **failed approaches** in the report narrative (mentor 2026-05-28: yfinance → Alpaca migration, outlier debate, etc.).
