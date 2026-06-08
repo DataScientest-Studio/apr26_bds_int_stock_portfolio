@@ -1,0 +1,9 @@
+Current data:
+- 5 years of S&P 500 daily history downloaded from Alpaca IEX feed on 2026-06-08.
+- 503 tickers in tickers.csv.
+- 622,465 rows in prices_long.csv.
+- 1,254 dates x 503 tickers in prices_close_wide.csv.
+- Per-ticker CSV files in by_ticker/SP500/.
+
+Note:
+- Some tickers have shorter history because of listings, index changes, or feed availability.
