@@ -5,13 +5,12 @@ feature importance, walk-forward backtest, rankings and the precomputed
 portfolios. NOTHING is trained at runtime — every page reads precomputed
 CSV/JSON only.
 
-Two data snapshots (kept deliberately separate):
-  * Current app dataset  — root data/ (yfinance, 543 tickers incl. DAX 40)  → EDA / audit
-  * Precomputed model export — mac-2026-06-08/models (Alpaca, 503 S&P 500)  → models / portfolios
+Single data source: the active run (Alpaca S&P 500, 503 tickers) under
+Archive/runs/<active_run>, reached via Project/endproduct/ symlinks. Both the
+EDA/audit pages and the model/portfolio pages read the same run.
 
-Run:
-    source .venv/bin/activate
-    streamlit run app.py
+Run (from Project/Structure):
+    make app          # or: ../.venv/bin/streamlit run app.py
 """
 
 import streamlit as st
@@ -24,6 +23,7 @@ from src.data_loader import (
 )
 from src import model_loader as ml
 from src import model_plots as mp
+from src.paths import ACTIVE_RUN
 from src.plots import (
     get_price_line_summary,
     plot_correlation_heatmap,
@@ -36,10 +36,9 @@ from src.plots import (
 
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
 
-EXPORT_BANNER = (
-    "Model results come from the **mac-2026-06-08** export snapshot "
-    "(Alpaca, 503 S&P 500 tickers) and may not match the current root data date "
-    "range (yfinance, 543 tickers incl. DAX 40). **No model is trained in this app.**"
+RUN_NOTE = (
+    f"Active run: **{ACTIVE_RUN}** · Alpaca S&P 500 (503 tickers). "
+    "All artifacts are precomputed — **no model is trained in this app.**"
 )
 
 
@@ -129,7 +128,7 @@ def pct(value):
 
 
 def export_banner():
-    st.warning(EXPORT_BANNER)
+    st.caption(RUN_NOTE)
 
 
 def missing(name):
@@ -151,34 +150,26 @@ def page_overview():
 
     audit = root_audit()
     summary = portfolio_summary()
+    st.caption(RUN_NOTE)
 
-    st.subheader("Two data snapshots")
-    left, right = st.columns(2)
-    with left:
-        st.markdown("**Current app dataset** · yfinance (EDA / audit)")
-        st.metric("Tickers (incl. DAX 40)", f"{audit['tickers']:,}")
-        st.metric("Price rows", f"{audit['rows']:,}")
-        st.metric(
-            "Date range",
-            f"{audit['date_min'].date()} → {audit['date_max'].date()}",
+    st.subheader(f"Active dataset · Alpaca S&P 500 (run {ACTIVE_RUN})")
+    metrics = model_metrics()
+    best = (
+        metrics[metrics["model_key"] == "random_forest_no_history"]
+        if metrics is not None and not metrics.empty
+        else None
+    )
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Tickers", f"{audit['tickers']:,}")
+    c2.metric("Price rows", f"{audit['rows']:,}")
+    c3.metric("Date range", f"{audit['date_min'].date()} → {audit['date_max'].date()}")
+    if best is not None and not best.empty:
+        c4.metric(
+            "Best model top-5 return",
+            pct(best.iloc[0]["top5_avg_actual_return"]),
+            help="random_forest_no_history vs universe avg "
+            f"{pct(best.iloc[0]['test_universe_avg_actual_return'])}",
         )
-    with right:
-        st.markdown("**Precomputed model export** · Alpaca S&P 500 (models / portfolios)")
-        metrics = model_metrics()
-        best = (
-            metrics[metrics["model_key"] == "random_forest_no_history"]
-            if metrics is not None and not metrics.empty
-            else None
-        )
-        st.metric("Tickers (S&P 500)", "503")
-        st.metric("Training rows", "622,465")
-        if best is not None and not best.empty:
-            st.metric(
-                "Best model top-5 return",
-                pct(best.iloc[0]["top5_avg_actual_return"]),
-                help="random_forest_no_history vs universe avg "
-                f"{pct(best.iloc[0]['test_universe_avg_actual_return'])}",
-            )
 
     st.divider()
     st.subheader("Pipeline")
@@ -197,7 +188,7 @@ def page_overview():
 
 def page_data_audit():
     st.title("Data Audit")
-    st.caption("Quality metrics computed **live** from the current root dataset (not the static DATA_AUDIT.md).")
+    st.caption(f"Quality metrics computed **live** from the active run's dataset · Alpaca S&P 500 (run {ACTIVE_RUN}).")
     audit = root_audit()
     tickers = root_tickers()
 
@@ -513,16 +504,18 @@ def page_archive():
         "- Agreement on overlapping pairs ≈ **99.5%**"
     )
     st.markdown(
-        "Full interactive comparison lives in the repo HTML reports:\n"
-        "- `dashboard.html`\n"
-        "- `data provider choose.html`"
+        "Full interactive comparison lives in the archived HTML reports:\n"
+        "- `Archive/experiments/dashboard.html`\n"
+        "- `Archive/experiments/data provider choose.html`\n\n"
+        "The yfinance dataset (543 tickers incl. DAX 40) is archived under "
+        "`Archive/experiments/yfinance/` — the live app uses Alpaca S&P 500 only."
     )
 
-    st.subheader("Historical data audit (superseded)")
+    st.subheader("Reference documents")
     st.markdown(
-        "The committed `DATA_AUDIT.md` describes the **older Alpaca root snapshot** "
-        "(503 tickers / 726,018 rows, 2017-11-15 → 2026-05-22). The live root is now "
-        "yfinance (543 tickers incl. DAX 40). See the **Data Audit** page for current numbers."
+        "Course deliverables and the Step-1 data audit live under `Formalities/` "
+        "(`DATA_AUDIT.md`, `Timeline.md`, `Rendering1/`). The active model run and its "
+        "model reports are under `Archive/runs/" + ACTIVE_RUN + "/`."
     )
 
 

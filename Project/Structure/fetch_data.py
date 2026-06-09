@@ -38,7 +38,11 @@ from alpaca.data.timeframe import TimeFrame
 from dotenv import load_dotenv
 
 
-DATA_DIR = Path(__file__).parent / "data"
+# Writes into the active run's data dir via the endproduct/data symlink.
+# For a NEW dataset, create Archive/runs/<date>/data, re-point the symlink
+# (ln -sfn) and bump active_run in config/paths.yaml before fetching.
+from src.paths import DATA_DIR  # noqa: E402
+
 ENV_FILE = Path(__file__).parent / ".env.local"
 
 SP500_WIKI = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"

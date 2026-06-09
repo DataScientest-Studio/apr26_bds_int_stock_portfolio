@@ -23,9 +23,11 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 from src import plots as P  # noqa: E402
 from src.data_loader import load_prices, load_tickers  # noqa: E402
+from src.paths import FIG_DIR  # noqa: E402
 
-FIG = Path(__file__).resolve().parent / "figures"
-FIG.mkdir(exist_ok=True)
+# endproduct/reports/figures → Formalities/Rendering1/figures (via symlink).
+FIG = FIG_DIR
+FIG.mkdir(parents=True, exist_ok=True)
 DPI = 150
 OUT: dict = {}
 

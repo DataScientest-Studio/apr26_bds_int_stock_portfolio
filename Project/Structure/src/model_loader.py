@@ -1,13 +1,9 @@
 """Read precomputed model / portfolio / walk-forward artifacts for the Streamlit app.
 
 Pure pandas/json — imports NO ML libraries and never trains anything. Every
-artifact is read from the dated model export (see ``MODEL_DIR``). The Streamlit
-layer wraps these loaders in ``@st.cache_data``.
-
-Data-snapshot note: these artifacts were trained on the Alpaca S&P 500 export
-(503 tickers, 2021-06-09 → 2026-06-05). The live root ``data/`` is a *different*
-snapshot (yfinance, 543 tickers incl. DAX 40). The app shows a banner on every
-page that reads these files.
+artifact is read from the active run (Alpaca S&P 500, 503 tickers) exposed via
+the ``Project/endproduct/models`` symlink. The Streamlit layer wraps these
+loaders in ``@st.cache_data``.
 """
 
 from __future__ import annotations
@@ -17,9 +13,8 @@ from pathlib import Path
 
 import pandas as pd
 
-# Single source of truth for the (dated) model export location.
-# Change this one line if the export folder is regenerated under a new date.
-MODEL_DIR = Path(__file__).resolve().parent.parent / "mac-2026-06-08" / "models"
+# Model artifacts live in the active run, exposed via endproduct/ symlinks.
+from .paths import MODEL_DIR
 
 # Portfolio-construction constants — copied verbatim from
 # mac-2026-06-08/models/build_portfolios.py so the Recommender's questionnaire

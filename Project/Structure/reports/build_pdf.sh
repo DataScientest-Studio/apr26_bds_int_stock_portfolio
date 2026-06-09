@@ -17,8 +17,10 @@ set -euo pipefail
 # Configurable bits
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-INPUT="${SCRIPT_DIR}/REPORT.md"
-OUTPUT="${SCRIPT_DIR}/REPORT.pdf"
+# REPORT.md lives in Formalities/Rendering1 (reports/ holds only code).
+RENDERING_DIR="$(cd -- "${SCRIPT_DIR}/../../../Formalities/Rendering1" &>/dev/null && pwd)"
+INPUT="${RENDERING_DIR}/REPORT.md"
+OUTPUT="${RENDERING_DIR}/report_v1_June_03_2026.pdf"
 TEMPLATE_NAME="eisvogel"
 # Eisvogel ships as a .latex file. Pandoc looks for it under
 # ~/.pandoc/templates/eisvogel.latex (or ~/.local/share/pandoc/templates/...)
