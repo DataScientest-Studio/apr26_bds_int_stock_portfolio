@@ -4,6 +4,7 @@ pandas>=2.0
 numpy>=1.26
 matplotlib>=3.8
 seaborn>=0.13
+plotly>=5.20
 streamlit>=1.32
 lxml>=4.9
 html5lib>=1.1

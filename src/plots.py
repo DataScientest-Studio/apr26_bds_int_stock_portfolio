@@ -31,7 +31,7 @@ def plot_volume_box(prices: pd.DataFrame):
     # Vertical box: volume on Y (easier to read than horizontal).
     sns.boxplot(y=mean_volume, ax=ax, color="skyblue", width=0.4)
     ax.set_xticks([])
-    ax.set_xlabel("Each box = 503 stocks (one mean volume per stock)")
+    ax.set_xlabel(f"Each box = {mean_volume.shape[0]} stocks (one mean volume per stock)")
     ax.set_ylabel("Mean daily volume (thousands of shares / day, IEX)")
     ax.set_title("Mean daily volume per stock")
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _pos: f"{x / 1_000:.0f}k"))
@@ -54,7 +54,7 @@ def plot_return_hist(prices: pd.DataFrame):
 
     ax.set_xlabel("Daily price change (% per day, split/dividend-adjusted close)")
     ax.set_ylabel("Number of days (thousands)")
-    ax.set_title("Daily return distribution — all S&P 500 stocks, all trading days")
+    ax.set_title("Daily return distribution — all stocks in the dataset, all trading days")
 
     def _pct_label(x, _pos):
         pct = x * 100
@@ -162,7 +162,7 @@ def plot_risk_return_scatter(prices: pd.DataFrame):
     
     ax.set_xlabel("Annualized Volatility (Risk) in %")
     ax.set_ylabel("Annualized Expected Return in %")
-    ax.set_title("Risk vs. Return profile — all S&P 500 stocks")
+    ax.set_title("Risk vs. Return profile — all stocks in the dataset")
     
     # Quadrant lines (medians)
     median_vol = stats["annual_volatility"].median()

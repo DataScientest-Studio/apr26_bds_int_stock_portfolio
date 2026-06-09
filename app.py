@@ -1,4 +1,13 @@
-"""Stocks Recommender Based on User Profile — Streamlit app (course pattern from module 117).
+"""Stocks Recommender Based on User Profile — Streamlit defense demo.
+
+Multi-page app that surfaces the whole project: data, audit, EDA, models,
+feature importance, walk-forward backtest, rankings and the precomputed
+portfolios. NOTHING is trained at runtime — every page reads precomputed
+CSV/JSON only.
+
+Two data snapshots (kept deliberately separate):
+  * Current app dataset  — root data/ (yfinance, 543 tickers incl. DAX 40)  → EDA / audit
+  * Precomputed model export — mac-2026-06-08/models (Alpaca, 503 S&P 500)  → models / portfolios
 
 Run:
     source .venv/bin/activate
@@ -7,141 +16,530 @@ Run:
 
 import streamlit as st
 
-from src.data_loader import load_prices, load_tickers
+from src.data_loader import (
+    compute_root_audit,
+    load_prices,
+    load_prices_wide,
+    load_tickers,
+)
+from src import model_loader as ml
+from src import model_plots as mp
 from src.plots import (
     get_price_line_summary,
+    plot_correlation_heatmap,
     plot_price_line,
     plot_return_hist,
+    plot_risk_return_scatter,
     plot_sector_count,
     plot_volume_box,
-    plot_risk_return_scatter,
-    plot_correlation_heatmap,
 )
 
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
-st.title("Stocks Recommender Based on User Profile")
+
+EXPORT_BANNER = (
+    "Model results come from the **mac-2026-06-08** export snapshot "
+    "(Alpaca, 503 S&P 500 tickers) and may not match the current root data date "
+    "range (yfinance, 543 tickers incl. DAX 40). **No model is trained in this app.**"
+)
+
+
+# --------------------------------------------------------------------------- #
+# Cached loaders (read-only). Heavy prediction files load lazily per model.    #
+# --------------------------------------------------------------------------- #
+@st.cache_data
+def root_tickers():
+    return load_tickers()
 
 
 @st.cache_data
-def get_data():
-    tickers = load_tickers()
-    prices = load_prices()
-    return tickers, prices
+def root_prices():
+    return load_prices()
 
 
-tickers, prices = get_data()
+@st.cache_data
+def root_wide():
+    return load_prices_wide()
 
-page = st.sidebar.radio("Page", ["Exploration", "DataViz"])
 
-if page == "Exploration":
-    st.subheader("1. Exploration")
-    st.write("First rows of the metadata table:")
-    st.dataframe(tickers.head(10))
-    st.write(f"Prices table shape: {prices.shape[0]} rows, {prices.shape[1]} columns")
-    st.write("Summary statistics on price columns:")
-    st.dataframe(prices[["open", "high", "low", "close", "adj_close", "volume"]].describe())
+@st.cache_data
+def root_audit():
+    return compute_root_audit(root_prices(), root_tickers())
 
-    if st.checkbox("Show missing values"):
-        st.dataframe(prices.isna().sum())
 
-elif page == "DataViz":
-    st.subheader("2. DataViz — 6 plots for Step 1")
+@st.cache_data
+def model_metrics():
+    return ml.load_model_metrics()
 
-    st.markdown("**Plot 1 — countplot** (sector, categorical variable)")
-    st.caption("Shows how many stocks sit in each sector — the universe is imbalanced, so a naïve picker would overweight Industrials and Financials.")
+
+@st.cache_data
+def model_predictions(model_key):
+    return ml.load_predictions(model_key)
+
+
+@st.cache_data
+def model_rankings(model_key):
+    return ml.load_rankings(model_key)
+
+
+@st.cache_data
+def model_importance(model_key):
+    return ml.load_feature_importance(model_key)
+
+
+@st.cache_data
+def rocm_history():
+    return ml.load_rocm_history()
+
+
+@st.cache_data
+def wf_summary():
+    return ml.load_walkforward_summary()
+
+
+@st.cache_data
+def wf_folds():
+    return ml.load_walkforward_folds()
+
+
+@st.cache_data
+def wf_importance():
+    return ml.load_walkforward_feature_importance()
+
+
+@st.cache_data
+def portfolio_summary():
+    return ml.load_portfolio_summary()
+
+
+@st.cache_data
+def portfolio_recs():
+    return ml.load_portfolio_recommendations()
+
+
+@st.cache_data
+def portfolio_sectors():
+    return ml.load_portfolio_sector_weights()
+
+
+def pct(value):
+    try:
+        return f"{float(value) * 100:.2f}%"
+    except (TypeError, ValueError):
+        return "—"
+
+
+def export_banner():
+    st.warning(EXPORT_BANNER)
+
+
+def missing(name):
+    st.warning(f"Artifact not found: `{name}`. This section is unavailable.")
+
+
+MODEL_LABELS = {key: cfg["label"] for key, cfg in ml.MODELS.items()}
+
+
+# --------------------------------------------------------------------------- #
+# Pages                                                                        #
+# --------------------------------------------------------------------------- #
+def page_overview():
+    st.title("Stocks Recommender Based on User Profile")
+    st.caption(
+        "A beginner-friendly recommender that turns an investor profile into a "
+        "diversified 10-stock portfolio. Decision support — **not** financial advice."
+    )
+
+    audit = root_audit()
+    summary = portfolio_summary()
+
+    st.subheader("Two data snapshots")
+    left, right = st.columns(2)
+    with left:
+        st.markdown("**Current app dataset** · yfinance (EDA / audit)")
+        st.metric("Tickers (incl. DAX 40)", f"{audit['tickers']:,}")
+        st.metric("Price rows", f"{audit['rows']:,}")
+        st.metric(
+            "Date range",
+            f"{audit['date_min'].date()} → {audit['date_max'].date()}",
+        )
+    with right:
+        st.markdown("**Precomputed model export** · Alpaca S&P 500 (models / portfolios)")
+        metrics = model_metrics()
+        best = (
+            metrics[metrics["model_key"] == "random_forest_no_history"]
+            if metrics is not None and not metrics.empty
+            else None
+        )
+        st.metric("Tickers (S&P 500)", "503")
+        st.metric("Training rows", "622,465")
+        if best is not None and not best.empty:
+            st.metric(
+                "Best model top-5 return",
+                pct(best.iloc[0]["top5_avg_actual_return"]),
+                help="random_forest_no_history vs universe avg "
+                f"{pct(best.iloc[0]['test_universe_avg_actual_return'])}",
+            )
+
+    st.divider()
+    st.subheader("Pipeline")
+    st.markdown(
+        "`data → audit → EDA → features → 5 models → walk-forward → 3 portfolios`\n\n"
+        "**Best practical model:** Random Forest without `history_days` — best top-5 "
+        "return, explainable, stable in walk-forward."
+    )
+
+    if summary is not None and not summary.empty:
+        st.subheader("Portfolio profiles at a glance")
+        st.plotly_chart(mp.plot_portfolio_risk_return(summary), use_container_width=True)
+
+    st.info("No models are trained in this app — everything shown is precomputed.")
+
+
+def page_data_audit():
+    st.title("Data Audit")
+    st.caption("Quality metrics computed **live** from the current root dataset (not the static DATA_AUDIT.md).")
+    audit = root_audit()
+    tickers = root_tickers()
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Tickers", f"{audit['tickers']:,}")
+    c2.metric("Price rows", f"{audit['rows']:,}")
+    c3.metric("Trading dates", f"{audit['trading_dates']:,}")
+    c4.metric("Date range", f"{audit['date_min'].date()} → {audit['date_max'].date()}")
+
+    c5, c6, c7 = st.columns(3)
+    c5.metric("Duplicate (date,ticker)", f"{audit['duplicates']:,}")
+    c6.metric("OHLC violations", f"{audit['ohlc_violations']:,}")
+    c7.metric("Zero-volume rows", f"{audit['zero_volume_rows']:,}")
+
+    st.subheader("History length per ticker")
+    st.caption(
+        f"min {audit['hist_min']} · median {audit['hist_median']:.0f} · max {audit['hist_max']} "
+        "trading days. Recent listings (Q, PSKY, SNDK) have the shortest history."
+    )
+    st.bar_chart(audit["history_per_ticker"].sort_values().reset_index(drop=True))
+
+    st.subheader("Sector distribution")
+    st.caption("The recommender enforces a hard 30% max-per-sector cap to offset this imbalance.")
     st.pyplot(plot_sector_count(tickers), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
-        st.markdown("**Validation method:** Raw data aggregation (`value_counts()`).\n\n**Interpretation:** By aggregating the metadata, we mathematically prove the visual imbalance. If the recommender chose randomly, it would statistically favor Industrials and Financials purely due to their massive volume in the index. This data manipulation validates the necessity of our hard '30% max per sector' business rule.")
-        st.dataframe(tickers['sector'].value_counts())
+    if audit["index_counts"] is not None:
+        st.write("Index membership:")
+        st.dataframe(audit["index_counts"])
+
+    with st.expander("OHLCV summary statistics"):
+        st.dataframe(root_prices()[["open", "high", "low", "close", "adj_close", "volume"]].describe())
+
+
+def page_eda():
+    st.title("EDA — exploratory visualizations")
+    tickers = root_tickers()
+    prices = root_prices()
+    n_rows = len(prices)
+    n_tickers = prices["ticker"].nunique()
+    n_returns = int(prices["daily_return"].notna().sum())
+
+    st.markdown("**Plot 1 — countplot** (stocks per sector)")
+    st.caption("The universe is imbalanced, so a naïve picker would overweight Industrials and Financials.")
+    st.pyplot(plot_sector_count(tickers), clear_figure=True)
+    with st.expander("🔍 Statistical validation"):
+        st.dataframe(tickers["sector"].value_counts())
 
     st.markdown("**Plot 2 — boxplot** (mean daily volume per stock)")
-    st.caption(
-        "Y-axis = average shares traded per day on IEX (k = thousands). "
-        "Red dashed line = median (~104k shares/day)."
-    )
-    st.markdown(
-        """
-- **503 stocks, one average per name** — each point is the mean daily volume over all days in the dataset (not a single day).
-- **Typical stock ~104k shares/day** — half of S&P names trade less than the median; half trade more.
-- **Middle 50% sit between ~60k and ~200k/day** — the blue box; most names are in this band, not extremely quiet or hyper-liquid.
-- **A few names dominate liquidity** — e.g. NVDA ~1.6M vs NVR ~1.7k shares/day on average; the dots are those extreme mega-liquid names.
-        """
-    )
+    st.caption(f"Each point is one of {n_tickers} stocks (mean shares/day). Red dashed line = median.")
     st.pyplot(plot_volume_box(prices), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
-        st.markdown("**Validation method:** Descriptive statistics (`describe()`) on aggregated mean daily volume.\n\n**Interpretation:** The table below calculates the exact percentiles (25%, 50% median, 75%) of the mean volume distribution. You can see the `50%` (median) explicitly matches our ~104k observation. The massive difference between the `75%` percentile and the `max` value statistically validates the existence of extreme outliers (the long upper whisker and dots in the boxplot).")
+    with st.expander("🔍 Statistical validation"):
         st.dataframe(prices.groupby("ticker")["volume"].mean().describe())
 
     st.markdown("**Plot 3 — histplot** (daily returns)")
     st.caption(
-        "X-axis = % price change vs the previous day. Y-axis = how many days fall in each bin (k = thousands)."
-    )
-    st.markdown(
-        """
-- **What ~725k means** — We have **503 stocks**, each with **~1,460 trading days** in the CSV. That is **503 × ~1,460 ≈ 726k rows** (one row = one stock on one day). We drop **503 days** (the first day of each stock, no “yesterday” to compare) → **~725k daily returns**. Each bar asks: “On how many of those days did the price move by this %?”
-- **Typical day ≈ +0.07%** — red dashed line (median); prices usually move very little in one session.
-- **Most mass sits near 0%** — the histogram is highest around “no big move”; that is normal market behaviour.
-- **Long tails left and right** — rare but real crashes (e.g. −53% in one day) and spikes (e.g. +127%); risk is in those tails.
-- **Why it matters for the recommender** — average return is tiny (~0.07%/day), but a typical daily move is ~1% (up or down) and the spread across all days (std) is ~2%/day — so clustering must use **risk**, not return alone.
-        """
+        f"{n_tickers} stocks × their trading days ≈ {n_rows:,} rows → {n_returns:,} daily returns "
+        "(first day per stock dropped). Most mass near 0%, long fat tails."
     )
     st.pyplot(plot_return_hist(prices), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
-        st.markdown("**Validation method:** Global descriptive statistics (`describe()`) across ~725k daily return observations.\n\n**Interpretation:** The `50%` (median) confirms our observation that a typical day is almost completely flat (~0.07%). However, comparing the standard deviation (`std`) to the `min` and `max` statistically proves the 'fat tails' concept: crashes and spikes extend far beyond normal variance, meaning risk in the stock market is driven by rare, extreme events rather than daily noise.")
+    with st.expander("🔍 Statistical validation"):
         st.dataframe(prices["daily_return"].describe())
 
     st.markdown("**Plot 4 — lineplot** (price over time)")
-    st.caption(
-        "Y-axis = split/dividend-adjusted close (USD). Use the dropdown to compare how different names evolved over the same calendar."
-    )
+    st.caption("Adjusted close (USD). Corporate actions already baked in, so the path is comparable over time.")
     ticker = st.selectbox("Choose a ticker", sorted(tickers["ticker"]))
     summary = get_price_line_summary(prices, ticker)
-    st.markdown(
-        f"""
-- **What the line shows** — **{summary['n_days']:,} trading days** for **{ticker}**, from **{summary['start_date'].strftime('%Y-%m-%d')}** to **{summary['end_date'].strftime('%Y-%m-%d')}**. Each point is the **adjusted close** (USD): corporate actions are already baked in, so the path is comparable over time.
-- **This ticker in our window** — starts at **{summary['start_price']:.2f} USD**, ends at **{summary['end_price']:.2f} USD** → **total return {summary['total_return_pct']:+.0f}%** over the full series (not per day).
-- **Same market, different stories** — compare dropdown names: e.g. **NVDA ~+1973%**, **AAPL ~+236%**, **KO ~+100%**, **NVR ~+53%** in this CSV. Steep lines are past winners, not a promise of future performance.
-- **Price path ≠ daily risk** — a smooth upward line can still have **~2% daily volatility** (Plot 3). The Y-axis here is **level**, not day-to-day swings.
-- **Why it matters for the recommender** — Step 1 clusters by **risk profile**, not by “who drew the prettiest line”. This plot is a **sanity check** for demos: when we recommend a stock from a cluster, you can open it here and see **why that name’s history matches** (or differs from) the user’s horizon and loss tolerance.
-        """
-    )
+    if summary:
+        st.markdown(
+            f"**{ticker}** — {summary['n_days']:,} trading days "
+            f"({summary['start_date'].date()} → {summary['end_date'].date()}); "
+            f"total return **{summary['total_return_pct']:+.0f}%** "
+            f"({summary['start_price']:.2f} → {summary['end_price']:.2f} USD)."
+        )
     st.pyplot(plot_price_line(prices, ticker), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
-        if summary:
-            st.markdown("**Validation method:** Point-to-point percentage change calculation.\n\n**Interpretation:** The line chart visually represents the price journey, but 'Total Return' is strictly a function of the start and end points. The equation below explicitly calculates this using the first and last `adj_close` values in our dataset. This validates that despite the visual volatility along the path, the final realized return for a buy-and-hold strategy is exactly as stated in the chart title.")
-            st.code(f"({summary['end_price']:.2f} / {summary['start_price']:.2f} - 1) * 100 = {summary['total_return_pct']:.2f}%")
 
-    st.markdown("**Plot 5 — heatmap** (Correlation Matrix)")
-    st.caption("Shows the Pearson correlation coefficient between daily returns of the 10 most traded stocks.")
-    st.markdown(
-        """
-- **Why Correlation Matters** — A core principle of portfolio management is diversification. If all stocks in a portfolio move in the exact same direction (correlation near 1.0), the risk is concentrated.
-- **Top 10 Stocks** — This heatmap isolates the 10 most liquid names in the dataset. Notice how certain stocks might be highly correlated with each other, but less correlated with others.
-- **Business Value** — The recommender uses sector constraints (max 30% per sector) specifically to avoid high correlations and build a diversified, safer portfolio for the user.
-        """
-    )
+    st.markdown("**Plot 5 — heatmap** (correlation of the 10 most-traded stocks)")
+    st.caption("Low cross-correlations justify diversification; the recommender scatters picks across sectors.")
     st.pyplot(plot_correlation_heatmap(prices), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
-        st.markdown("**Validation method:** Pearson Correlation Coefficient matrix calculation.\n\n**Interpretation:** The heatmap is a visual representation of this exact matrix. Values closer to `1.0` indicate stocks moving in perfect lockstep, while values closer to `0.0` indicate independent movement. By calculating this mathematically on the wide-format returns dataframe, we prove that certain stock pairs offer poor diversification (high correlation). The recommender avoids this by scattering picks across multiple clusters and sectors.")
-        top_tickers = prices.groupby("ticker")["volume"].mean().nlargest(10).index
-        data = prices[prices["ticker"].isin(top_tickers)]
-        wide_returns = data.pivot(index="date", columns="ticker", values="daily_return").dropna()
-        st.dataframe(wide_returns.corr())
 
-    st.markdown("**Plot 6 — scatterplot** (Risk vs. Return)")
-    st.caption("X-axis = Annualized Volatility (Risk). Y-axis = Annualized Return. Each point is one stock.")
-    st.markdown(
-        """
-- **What is 'Risk' here?** — Risk is mathematically calculated as **Annualized Volatility** (the standard deviation of a stock's daily returns, scaled to a 252-day trading year). In finance, volatility equates to uncertainty. A stock with 15% volatility is relatively stable and its price moves predictably, whereas a 50% volatility stock can swing wildly up and down, creating panic for inexperienced investors.
-- **The Core of the Recommender** — This chart proves why grouping stocks by risk profile is necessary. Some stocks offer higher returns for the same level of risk, while others are highly volatile without the reward.
-- **Four Quadrants** — The dashed lines represent the median risk and median return across the S&P 500. The top-left quadrant (High Return, Low Risk) is the theoretical "sweet spot".
-- **Business Value** — For a conservative user, the recommender will explicitly filter out high-volatility names (the right side of the plot). For an aggressive user, it can venture into the higher risk territory aiming for higher expected returns.
-        """
-    )
+    st.markdown("**Plot 6 — scatterplot** (risk vs return)")
+    st.caption("X = annualized volatility (risk), Y = annualized return. Dashed lines = medians.")
     st.pyplot(plot_risk_return_scatter(prices), clear_figure=True)
-    with st.expander("🔍 View statistical validation"):
+    with st.expander("🔍 Statistical validation"):
         stats = prices.groupby("ticker")["daily_return"].agg(["mean", "std"]).dropna()
-        pearson_corr = stats["mean"].corr(stats["std"])
-        st.markdown("**Validation method:** Pearson Correlation between Annualized Volatility and Annualized Expected Return.\n\n**Interpretation:** We mathematically aggregated all 503 stocks into a single (Risk, Return) tuple and calculated their linear correlation. A strong positive correlation (e.g., > 0.7) would mean 'more risk always equals more reward'.")
-        st.write(f"**Calculated Pearson correlation:** `{pearson_corr:.4f}`")
-        st.markdown(f"Because the correlation is so close to 0 (`{pearson_corr:.4f}`), we statistically validate the core observation from the scatterplot: taking blind risk does **not** guarantee proportionally higher returns. This definitively proves the business need for a smart recommender that seeks the 'efficient frontier' (high return for a given risk) rather than just picking randomly.")
+        corr = stats["mean"].corr(stats["std"])
+        st.write(f"Pearson(risk, return) = `{corr:.4f}` — near 0: blind risk does not guarantee higher return.")
+
+
+def page_model_leaderboard():
+    st.title("Model Leaderboard")
+    export_banner()
+    metrics = model_metrics()
+    if metrics is None or metrics.empty:
+        missing("*_metrics.csv")
+        return
+
+    st.caption("All 5 models on the same Jan-2025 → Mar-2026 test split.")
+    show_cols = [c for c in ["label", "mae", "rmse", "spearman_rank_corr",
+                             "test_universe_avg_actual_return", "top5_avg_actual_return"]
+                 if c in metrics.columns]
+    st.dataframe(metrics[show_cols], use_container_width=True, hide_index=True)
+
+    metric = st.selectbox(
+        "Compare on metric",
+        ["top5_avg_actual_return", "spearman_rank_corr", "mae", "rmse"],
+        format_func=lambda m: mp.METRIC_LABELS.get(m, m),
+    )
+    st.plotly_chart(mp.plot_metrics_leaderboard(metrics, metric), use_container_width=True)
+
+    if {"top5_avg_actual_return", "test_universe_avg_actual_return"}.issubset(metrics.columns):
+        lift = metrics.copy()
+        lift["lift_over_universe"] = (
+            lift["top5_avg_actual_return"] - lift["test_universe_avg_actual_return"]
+        )
+        st.markdown("**Top-5 lift over the universe average**")
+        st.plotly_chart(mp.plot_metrics_leaderboard(lift, "lift_over_universe"), use_container_width=True)
+
+
+def page_model_explorer():
+    st.title("Model Explorer")
+    export_banner()
+    model_key = st.selectbox(
+        "Model", list(ml.MODELS.keys()), index=2, format_func=lambda k: MODEL_LABELS[k]
+    )
+
+    preds = model_predictions(model_key)
+    if preds is None or preds.empty:
+        missing(ml.MODELS[model_key]["predictions"])
+    else:
+        st.subheader("Prediction quality")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.plotly_chart(mp.plot_pred_vs_actual(preds), use_container_width=True)
+        with col2:
+            st.plotly_chart(mp.plot_residual_hist(preds), use_container_width=True)
+
+    st.subheader("Feature importance")
+    importance = model_importance(model_key)
+    if importance is None:
+        st.info("This model does not expose feature importance (linear / neural net).")
+    else:
+        st.plotly_chart(
+            mp.plot_feature_importance_bar(importance, title=f"{MODEL_LABELS[model_key]} — top features"),
+            use_container_width=True,
+        )
+        with st.expander("What do the top features mean?"):
+            for feat in importance.head(6)["feature"]:
+                st.markdown(f"- **{feat}** — {ml.FEATURE_GLOSSARY.get(feat, 'sector membership dummy.')}")
+
+    if model_key == "random_forest_no_history":
+        rf_imp = model_importance("random_forest")
+        if rf_imp is not None and importance is not None and st.checkbox("Compare with RF that keeps history_days"):
+            st.plotly_chart(
+                mp.plot_feature_importance_compare(rf_imp, importance), use_container_width=True
+            )
+            st.caption("`history_days` dominated the with-history model (~0.45) but was a leak-prone shortcut.")
+
+    if model_key == "pytorch_mlp_rocm":
+        history = rocm_history()
+        if history:
+            st.subheader("Training curve")
+            st.plotly_chart(mp.plot_rocm_training_curve(history), use_container_width=True)
+
+
+def page_walk_forward():
+    st.title("Walk-Forward Backtest")
+    export_banner()
+    summary = wf_summary()
+    folds = wf_folds()
+    if summary is None or folds is None:
+        missing("walk_forward_rf_no_history_*.csv")
+        return
+
+    row = summary.iloc[0]
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Folds", int(row["folds"]))
+    c2.metric("Mean top-5 return", pct(row["mean_top5_avg_actual_return"]))
+    c3.metric("Mean universe return", pct(row["mean_universe_avg_actual_return"]))
+    c4.metric("Positive top-5 folds", f"{int(row['positive_top5_folds'])} / {int(row['folds'])}")
+
+    st.plotly_chart(mp.plot_walkforward_folds(folds), use_container_width=True)
+    with st.expander("Fold-by-fold detail"):
+        st.dataframe(folds, use_container_width=True, hide_index=True)
+
+    importance = wf_importance()
+    if importance is not None:
+        st.subheader("Walk-forward mean feature importance")
+        st.plotly_chart(mp.plot_feature_importance_bar(importance), use_container_width=True)
+
+
+def page_rankings():
+    st.title("Rankings")
+    export_banner()
+    model_key = st.selectbox(
+        "Model", list(ml.MODELS.keys()), index=2, format_func=lambda k: MODEL_LABELS[k]
+    )
+    rankings = model_rankings(model_key)
+    if rankings is None or rankings.empty:
+        missing(ml.MODELS[model_key]["rankings"])
+        return
+
+    sectors = sorted(rankings["sector"].dropna().unique())
+    chosen = st.multiselect("Filter sectors", sectors, default=sectors)
+    vmax = float(rankings["volatility_60d"].max())
+    vol_cap = st.slider("Max 60-day volatility", 0.0, round(vmax, 2), round(vmax, 2), step=0.05)
+    view = rankings[rankings["sector"].isin(chosen) & (rankings["volatility_60d"] <= vol_cap)]
+
+    st.caption(f"{len(view)} of {len(rankings)} stocks shown (ranked by predicted 63-day return).")
+    st.dataframe(view, use_container_width=True, hide_index=True)
+    st.plotly_chart(mp.plot_rankings_scatter(view), use_container_width=True)
+    st.caption("Dotted lines mark the conservative / balanced / aggressive volatility caps (0.35 / 0.50 / 0.80).")
+
+
+def _profile_block(profile, recs, sectors_df):
+    holdings = recs[recs["profile"] == profile].sort_values("rank")
+    st.dataframe(
+        holdings[["rank", "ticker", "sector", "industry", "weight",
+                  "predicted_63d_return", "volatility_60d"]],
+        use_container_width=True,
+        hide_index=True,
+    )
+    if sectors_df is not None:
+        st.plotly_chart(mp.plot_sector_allocation(sectors_df, profile), use_container_width=True)
+    return holdings
+
+
+def page_recommender():
+    st.title("Portfolio Recommender")
+    export_banner()
+    recs = portfolio_recs()
+    summary = portfolio_summary()
+    sectors_df = portfolio_sectors()
+    if recs is None or summary is None:
+        missing("portfolio_recommendations.csv / portfolio_summary.csv")
+        return
+
+    st.subheader("Tell us about you")
+    col1, col2, col3 = st.columns(3)
+    horizon = col1.select_slider("Investment horizon", ["Short", "Medium", "Long"], value="Medium")
+    loss = col2.radio(
+        "If your portfolio dropped 20% in a month you would…",
+        ["Sell to stop losses", "Hold and wait", "Buy more"],
+        index=1,
+    )
+    comfort = col3.radio("Comfort with price swings", ["Low", "Medium", "High"], index=1)
+
+    score = (
+        {"Short": 0, "Medium": 1, "Long": 2}[horizon]
+        + {"Sell to stop losses": 0, "Hold and wait": 1, "Buy more": 2}[loss]
+        + {"Low": 0, "Medium": 1, "High": 2}[comfort]
+    )
+    suggested = "conservative" if score <= 1 else ("balanced" if score <= 4 else "aggressive")
+
+    profile = st.selectbox(
+        "Recommended profile (override if you like)",
+        list(ml.PROFILES.keys()),
+        index=list(ml.PROFILES.keys()).index(suggested),
+        format_func=str.title,
+    )
+    cap = ml.PROFILES[profile]["max_volatility_60d"]
+    st.success(f"**You are: {profile.title()}** — {ml.PROFILES[profile]['description']}")
+    st.caption(f"Volatility cap applied: ≤ {cap} (60-day). Portfolio is precomputed — not re-selected here.")
+
+    prow = summary[summary["profile"] == profile]
+    if not prow.empty:
+        prow = prow.iloc[0]
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Expected 63-day return", pct(prow["expected_63d_return_weighted"]))
+        m2.metric("Avg 60-day volatility", pct(prow["avg_volatility_60d_weighted"]))
+        m3.metric("Sectors / cap relaxed", f"{int(prow['sectors'])} / {bool(prow['volatility_cap_relaxed'])}")
+
+    holdings = _profile_block(profile, recs, sectors_df)
+    st.plotly_chart(mp.plot_portfolio_risk_return(summary), use_container_width=True)
+
+    with st.expander("Diversification check — holding correlation"):
+        wide = root_wide()
+        cols = [t for t in holdings["ticker"] if t in wide.columns]
+        if len(cols) >= 2:
+            returns = wide[cols].pct_change().dropna()
+            st.plotly_chart(mp.plot_portfolio_correlation(returns), use_container_width=True)
+        else:
+            st.info("Not enough holdings present in the current root price matrix to compute correlation.")
+
+
+def page_portfolios():
+    st.title("Portfolios")
+    export_banner()
+    summary = portfolio_summary()
+    recs = portfolio_recs()
+    sectors_df = portfolio_sectors()
+    if summary is None or recs is None:
+        missing("portfolio_*.csv")
+        return
+
+    st.dataframe(summary, use_container_width=True, hide_index=True)
+    st.plotly_chart(mp.plot_portfolio_risk_return(summary), use_container_width=True)
+
+    tabs = st.tabs([p.title() for p in ml.PROFILES])
+    for tab, profile in zip(tabs, ml.PROFILES):
+        with tab:
+            _profile_block(profile, recs, sectors_df)
+
+
+def page_archive():
+    st.title("Archive")
+    st.caption("Historical artifacts and the data-source comparison, kept out of the main demo flow.")
+
+    st.subheader("Data source comparison — yfinance vs Alpaca (IEX)")
+    st.markdown(
+        "Static audit (from the earlier Alpaca S&P 500 snapshot):\n"
+        "- Comparable (ticker, date) pairs: **1,220,352**\n"
+        "- Median absolute relative difference on raw close: **0.000%**\n"
+        "- p99: **95%** · max: **400.349%** (split / listing artifacts, not corruption)\n"
+        "- Agreement on overlapping pairs ≈ **99.5%**"
+    )
+    st.markdown(
+        "Full interactive comparison lives in the repo HTML reports:\n"
+        "- `dashboard.html`\n"
+        "- `data provider choose.html`"
+    )
+
+    st.subheader("Historical data audit (superseded)")
+    st.markdown(
+        "The committed `DATA_AUDIT.md` describes the **older Alpaca root snapshot** "
+        "(503 tickers / 726,018 rows, 2017-11-15 → 2026-05-22). The live root is now "
+        "yfinance (543 tickers incl. DAX 40). See the **Data Audit** page for current numbers."
+    )
+
+
+PAGES = {
+    "Overview": page_overview,
+    "Data Audit": page_data_audit,
+    "EDA": page_eda,
+    "Model Leaderboard": page_model_leaderboard,
+    "Model Explorer": page_model_explorer,
+    "Walk-Forward": page_walk_forward,
+    "Rankings": page_rankings,
+    "Recommender": page_recommender,
+    "Portfolios": page_portfolios,
+    "Archive": page_archive,
+}
+
+st.sidebar.title("Navigation")
+choice = st.sidebar.radio("Page", list(PAGES.keys()))
+st.sidebar.caption("Read-only demo · no training at runtime")
+PAGES[choice]()

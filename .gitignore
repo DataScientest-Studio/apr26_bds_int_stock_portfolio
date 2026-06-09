@@ -2,6 +2,12 @@
 data/*.csv
 data/by_ticker/
 
+# Large data artifacts — yfinance / run data live OUTSIDE git
+/data/
+*.duckdb
+Archive/experiments/yfinance/
+Project/endproduct/
+
 # Report PDFs (regenerate locally via reports/build_pdf.sh)
 reports/*.pdf
 # ...but keep the versioned milestone deliverables under version control
@@ -29,3 +35,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Background Streamlit (make on / make off)
+.streamlit.pid
+.streamlit.log
