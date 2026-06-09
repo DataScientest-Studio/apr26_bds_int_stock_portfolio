@@ -6,7 +6,6 @@ data/by_ticker/
 /data/
 *.duckdb
 Archive/experiments/yfinance/
-Project/endproduct/
 
 # Report PDFs (regenerate locally via reports/build_pdf.sh)
 reports/*.pdf
