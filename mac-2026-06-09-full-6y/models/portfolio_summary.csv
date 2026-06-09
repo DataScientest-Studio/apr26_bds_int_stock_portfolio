@@ -1,0 +1,4 @@
+profile,description,date,stocks,equal_weight,expected_63d_return_weighted,avg_volatility_60d_weighted,avg_ret_60d_weighted,max_sector_weight,sectors,volatility_cap_relaxed
+conservative,Lower-volatility picks first; accepts lower expected return for a smoother ride.,2026-06-08,10,0.1,0.06769891584557829,0.284227388579778,-0.10561204758735687,0.30000000000000004,6,False
+balanced,Middle risk profile; allows more volatile stocks but still filters extreme names.,2026-06-08,10,0.1,0.0838200120397707,0.4058600666654862,-0.028057405248558036,0.30000000000000004,5,False
+aggressive,Higher risk profile; allows high-volatility stocks if the model score is strong.,2026-06-08,10,0.1,0.1266498961342209,0.5352357954852587,0.2611013288660904,0.30000000000000004,5,False

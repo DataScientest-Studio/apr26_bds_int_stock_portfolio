@@ -1,0 +1,2 @@
+model,folds,mean_mae,mean_rmse,mean_spearman_rank_corr,mean_universe_avg_actual_return,mean_top5_avg_actual_return,mean_top10_avg_actual_return,positive_top5_folds
+walk_forward_random_forest_no_history,13,0.12158181734098912,0.1794596153123148,0.061784470024539115,0.04712563633263971,0.1819687010195956,0.14620347759128396,9
