@@ -155,7 +155,7 @@ def page_overview():
     st.subheader(f"Active dataset · Alpaca S&P 500 (run {ACTIVE_RUN})")
     metrics = model_metrics()
     best = (
-        metrics[metrics["model_key"] == "random_forest_no_history"]
+        metrics[metrics["model_key"] == ml.PRODUCTION_MODEL_KEY]
         if metrics is not None and not metrics.empty
         else None
     )
@@ -165,18 +165,18 @@ def page_overview():
     c3.metric("Date range", f"{audit['date_min'].date()} → {audit['date_max'].date()}")
     if best is not None and not best.empty:
         c4.metric(
-            "Best model top-5 return",
+            "Production model top-5 return",
             pct(best.iloc[0]["top5_avg_actual_return"]),
-            help="random_forest_no_history vs universe avg "
+            help=f"{ml.PRODUCTION_MODEL_KEY} vs universe avg "
             f"{pct(best.iloc[0]['test_universe_avg_actual_return'])}",
         )
 
     st.divider()
     st.subheader("Pipeline")
     st.markdown(
-        "`data → audit → EDA → features → 5 models → walk-forward → 3 portfolios`\n\n"
-        "**Best practical model:** Random Forest without `history_days` — best top-5 "
-        "return, explainable, stable in walk-forward."
+        "`data (DuckDB) → audit → EDA → SQL features → XGBoost+Optuna → walk-forward → 3 portfolios`\n\n"
+        "**Production model:** XGBoost tuned with Optuna — the single live training "
+        "pipeline. All 5 models stay on the leaderboard for comparison."
     )
 
     if summary is not None and not summary.empty:
@@ -310,7 +310,9 @@ def page_model_explorer():
     st.title("Model Explorer")
     export_banner()
     model_key = st.selectbox(
-        "Model", list(ml.MODELS.keys()), index=2, format_func=lambda k: MODEL_LABELS[k]
+        "Model", list(ml.MODELS.keys()),
+        index=list(ml.MODELS).index(ml.PRODUCTION_MODEL_KEY),
+        format_func=lambda k: MODEL_LABELS[k],
     )
 
     preds = model_predictions(model_key)
@@ -382,7 +384,9 @@ def page_rankings():
     st.title("Rankings")
     export_banner()
     model_key = st.selectbox(
-        "Model", list(ml.MODELS.keys()), index=2, format_func=lambda k: MODEL_LABELS[k]
+        "Model", list(ml.MODELS.keys()),
+        index=list(ml.MODELS).index(ml.PRODUCTION_MODEL_KEY),
+        format_func=lambda k: MODEL_LABELS[k],
     )
     rankings = model_rankings(model_key)
     if rankings is None or rankings.empty:
@@ -519,6 +523,95 @@ def page_archive():
     )
 
 
+def page_configurables():
+    import pandas as pd
+
+    st.title("Configurables")
+    st.caption(
+        "Every tunable knob in the data-processing & modeling pipeline, with its current "
+        "value and where it is defined. The app is read-only — change these in the source / "
+        "`config/paths.yaml`, then rebuild with `make build-db` / `make pipeline`."
+    )
+
+    caps = ml.PROFILES
+    rows = [
+        # Run & paths
+        ("Run & paths", "active_run", ACTIVE_RUN, "config/paths.yaml", "Which Archive/runs/<date> feeds the app (data + models)"),
+        ("Run & paths", "endproduct_root", "../endproduct", "config/paths.yaml", "Symlink root the code reads data/models/figures from"),
+        ("Run & paths", "DB_PATH", "<run>/data/liora.duckdb", "src/db.py", "The single analytical database (one per run)"),
+        # Data fetch
+        ("Data fetch", "--years", "10", "fetch_data.py", "History window pulled from Alpaca"),
+        ("Data fetch", "--batch-size", "1", "fetch_data.py", "Symbols per Alpaca bars request"),
+        ("Data fetch", "--limit", "None", "fetch_data.py", "Cap number of tickers (smoke test)"),
+        ("Data fetch", "--feed", "iex", "fetch_data.py", "Alpaca data feed (free IEX)"),
+        ("Data fetch", "timeframe", "1Day", "fetch_data.py", "Bar granularity (daily OHLCV)"),
+        ("Data fetch", "adjustment", "raw + all", "fetch_data.py", "Fetch raw and split/dividend-adjusted close"),
+        ("Data fetch", "REQUEST_PAUSE_SEC", "0.35", "fetch_data.py", "Pause between requests (rate-limit)"),
+        ("Data fetch", "universe", "S&P 500 (Wikipedia)", "fetch_data.py", "Constituent list source"),
+        ("Data fetch", "--export-csv", "False", "fetch_data.py", "Also write legacy CSV artifacts"),
+        # Feature engineering (SQL)
+        ("Features (SQL)", "ret_* windows", "5 / 20 / 60", "src/features.sql", "Momentum lookbacks (trading days)"),
+        ("Features (SQL)", "mean_return windows", "20 / 60", "src/features.sql", "Rolling mean-return lookbacks"),
+        ("Features (SQL)", "volatility windows", "20 / 60", "src/features.sql", "Rolling volatility lookbacks"),
+        ("Features (SQL)", "avg_volume window", "20", "src/features.sql", "Liquidity lookback (then ln(1+x))"),
+        ("Features (SQL)", "drawdown window", "252 (min 60)", "src/features.sql", "1-year peak lookback for drawdown"),
+        ("Features (SQL)", "annualization", "×252 / ×√252", "src/features.sql", "Daily→annual scaling (mean / vol)"),
+        ("Features (SQL)", "std", "sample (ddof=1)", "src/features.sql", "STDDEV_SAMP — matches legacy pandas"),
+        # Target / label
+        ("Target (label)", "TARGET_HORIZON_DAYS", "63", "features.sql / train_xgb_optuna.py", "Forward horizon for the label"),
+        ("Target (label)", "target_63d_return", "LEAD(adj_close,63)/adj_close − 1", "src/features.sql", "Y = forward 63-day return (regression, NOT triple-barrier)"),
+        # Model inputs
+        ("Model inputs", "NUMERIC_FEATURES", "9 columns", "train_xgb_optuna.py", "ret_5/20/60d · mean_return_20/60d · volatility_20/60d · log_avg_volume_20d · drawdown_252d"),
+        ("Model inputs", "CAT_FEATURE", "sector", "train_xgb_optuna.py", "Native XGBoost category (not one-hot)"),
+        ("Model inputs", "excluded", "history_days, industry", "train_xgb_optuna.py", "history_days = leak; industry = display only"),
+        # Train / test split
+        ("Train/test split", "TEST_START_DATE", "2025-01-01", "train_xgb_optuna.py", "Test = dates ≥ this; train = before"),
+        ("Train/test split", "VAL_START_DATE", "2024-07-01", "train_xgb_optuna.py", "Last ~6 mo of train = Optuna validation"),
+        ("Train/test split", "RANDOM_SEED", "42", "train_xgb_optuna.py", "Seed for XGBoost + Optuna sampler"),
+        # Model + Optuna
+        ("Model / Optuna", "production model", ml.PRODUCTION_MODEL_KEY, "train_xgb_optuna.py", "Single live training pipeline (XGBoost+Optuna)"),
+        ("Model / Optuna", "objective", "reg:squarederror", "train_xgb_optuna.py", "Regression on forward return"),
+        ("Model / Optuna", "tree_method", "hist", "train_xgb_optuna.py", "XGBoost histogram method"),
+        ("Model / Optuna", "--trials", "30", "Makefile / train_xgb_optuna.py", "Optuna trials"),
+        ("Model / Optuna", "tuning metric", "validation Spearman (maximize)", "train_xgb_optuna.py", "What Optuna optimizes"),
+        ("Model / Optuna", "n_estimators", "200–700 step 50", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "max_depth", "3–8", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "learning_rate", "0.01–0.3 (log)", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "min_child_weight", "5–50", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "subsample", "0.6–1.0", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "colsample_bytree", "0.6–1.0", "train_xgb_optuna.py", "Search range"),
+        ("Model / Optuna", "reg_lambda", "0.0–10.0", "train_xgb_optuna.py", "L2 regularization search range"),
+        ("Model / Optuna", "reg_alpha", "0.0–1.0", "train_xgb_optuna.py", "L1 regularization search range"),
+        # Evaluation
+        ("Evaluation", "top-k", "5 & 10", "train_xgb_optuna.py", "Top-k picks for realized-return metric"),
+        ("Evaluation", "metrics", "MAE · RMSE · Spearman · top5", "train_xgb_optuna.py", "Test-split metrics tracked"),
+        # Walk-forward
+        ("Walk-forward", "init train", "504 days", "walk_forward.sh", "Initial expanding-window train size"),
+        ("Walk-forward", "test window", "63 days", "walk_forward.sh", "Out-of-sample window per fold"),
+        ("Walk-forward", "step", "63 days", "walk_forward.sh", "Roll-forward step"),
+        ("Walk-forward", "params", "fixed best_params.json", "walk_forward.sh", "No per-fold retune (fast, leak-free)"),
+        # Portfolios
+        ("Portfolios", "PORTFOLIO_SIZE", str(ml.PORTFOLIO_SIZE), "model_loader.py / build_portfolios.sql", "Stocks per portfolio"),
+        ("Portfolios", "MAX_SECTOR_WEIGHT", f"{ml.MAX_SECTOR_WEIGHT:.0%}", "model_loader.py / build_portfolios.sql", "→ max floor(10×0.30)=3 per sector"),
+        ("Portfolios", "MAX_STOCK_WEIGHT", f"{ml.MAX_STOCK_WEIGHT:.0%}", "model_loader.py", "Per-stock cap (equal weight 1/N used)"),
+        ("Portfolios", "vol cap · conservative", str(caps["conservative"]["max_volatility_60d"]), "model_loader.py / build_portfolios.sql", "60-day volatility ceiling"),
+        ("Portfolios", "vol cap · balanced", str(caps["balanced"]["max_volatility_60d"]), "model_loader.py / build_portfolios.sql", "60-day volatility ceiling"),
+        ("Portfolios", "vol cap · aggressive", str(caps["aggressive"]["max_volatility_60d"]), "model_loader.py / build_portfolios.sql", "60-day volatility ceiling"),
+        ("Portfolios", "cap relax rule", "<10 eligible → relax", "build_portfolios.sql", "Relax vol cap if too few names clear it"),
+        # App / display
+        ("App / display", "APP_PORT", "8501", "Makefile", "Streamlit port"),
+        ("App / display", "feature-importance top_n", "12", "src/model_plots.py", "Bars shown in importance charts"),
+        ("App / display", "pred-vs-actual bins", "60", "src/model_plots.py", "Density-heatmap resolution"),
+    ]
+    df = pd.DataFrame(rows, columns=["Stage", "Parameter", "Value", "Defined in", "Controls"])
+
+    stages = list(dict.fromkeys(df["Stage"]))
+    chosen = st.multiselect("Filter by stage", stages, default=stages)
+    view = df[df["Stage"].isin(chosen)]
+    st.dataframe(view, use_container_width=True, hide_index=True)
+    st.caption(f"{len(view)} configurables across {view['Stage'].nunique()} stages.")
+
+
 PAGES = {
     "Overview": page_overview,
     "Data Audit": page_data_audit,
@@ -529,6 +622,7 @@ PAGES = {
     "Rankings": page_rankings,
     "Recommender": page_recommender,
     "Portfolios": page_portfolios,
+    "Configurables": page_configurables,
     "Archive": page_archive,
 }
 

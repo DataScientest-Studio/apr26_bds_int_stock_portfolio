@@ -303,6 +303,49 @@ def download_prices(
     return prices.drop_duplicates(subset=["date", "ticker"]).sort_values(["ticker", "date"]), failed
 
 
+SCHEMA_FILE = Path(__file__).parent / "schema.sql"
+
+
+def write_duckdb(prices: pd.DataFrame, tickers_df: pd.DataFrame, failed: list[str]) -> None:
+    """Upsert the fetched data into the active run's single liora.duckdb.
+
+    The DuckDB database is the production data layer; INSERT OR REPLACE on the
+    (ticker, date) / ticker primary keys makes re-fetches idempotent.
+    """
+    from src import db
+
+    con = db.connect(read_only=False)
+    con.execute(SCHEMA_FILE.read_text())  # CREATE TABLE IF NOT EXISTS ohlcv/tickers
+
+    con.register("_t", tickers_df[["ticker", "name", "sector", "industry", "index", "country"]])
+    con.execute(
+        'INSERT OR REPLACE INTO tickers '
+        'SELECT ticker, name, sector, industry, "index", country FROM _t'
+    )
+    con.register("_p", prices)
+    con.execute(
+        "INSERT OR REPLACE INTO ohlcv "
+        "SELECT CAST(date AS DATE), ticker, open, high, low, close, adj_close, "
+        "CAST(volume AS BIGINT) FROM _p"
+    )
+    n_ohlcv = con.execute("SELECT count(*) FROM ohlcv").fetchone()[0]
+    con.close()
+    print(f"  wrote DuckDB → {db.DB_PATH} (ohlcv {n_ohlcv:,} rows, tickers {len(tickers_df)})")
+    if failed:
+        print(f"  {len(failed)} tickers failed: {', '.join(failed[:10])}{'…' if len(failed) > 10 else ''}")
+
+
+def export_csv(prices: pd.DataFrame, tickers_df: pd.DataFrame, failed: list[str]) -> None:
+    """Optional legacy CSV export (--export-csv). Not used by the live pipeline."""
+    tickers_df.to_csv(DATA_DIR / "tickers.csv", index=False)
+    prices.to_csv(DATA_DIR / "prices_long.csv", index=False)
+    wide = prices.pivot(index="date", columns="ticker", values="adj_close").sort_index()
+    wide.to_csv(DATA_DIR / "prices_close_wide.csv")
+    if failed:
+        pd.DataFrame({"ticker": failed}).to_csv(DATA_DIR / "failed_tickers.csv", index=False)
+    print(f"  exported legacy CSVs → {DATA_DIR}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--years", type=int, default=10, help="history window in years (default: 10)")
@@ -314,6 +357,7 @@ def main() -> None:
         help="tickers per Alpaca batch request (default: 1; use REST pagination for larger batches)",
     )
     parser.add_argument("--feed", type=str, default=DEFAULT_FEED, help="Alpaca data feed (default: iex)")
+    parser.add_argument("--export-csv", action="store_true", help="also write the legacy CSV artifacts")
     args = parser.parse_args()
 
     api_key, api_secret = _load_credentials()
@@ -328,9 +372,6 @@ def main() -> None:
     if args.limit:
         tickers_df = tickers_df.head(args.limit)
         print(f"  --limit set: using first {len(tickers_df)} tickers")
-
-    tickers_df.to_csv(DATA_DIR / "tickers.csv", index=False)
-    print(f"  wrote {DATA_DIR / 'tickers.csv'}")
 
     print(f"\nDownloading {args.years}y of daily history from Alpaca ({args.feed} feed)…")
     prices, failed = download_prices(
@@ -347,27 +388,11 @@ def main() -> None:
         print("No prices downloaded — check credentials, network, or Alpaca status.")
         return
 
-    prices.to_csv(DATA_DIR / "prices_long.csv", index=False)
-    print(f"  wrote {DATA_DIR / 'prices_long.csv'} ({len(prices):,} rows)")
+    write_duckdb(prices, tickers_df, failed)
+    if args.export_csv:
+        export_csv(prices, tickers_df, failed)
 
-    by_ticker_dir = DATA_DIR / "by_ticker"
-    count = 0
-    for ticker, df in prices.groupby("ticker"):
-        sub = by_ticker_dir / "SP500"
-        sub.mkdir(parents=True, exist_ok=True)
-        df.drop(columns="ticker").to_csv(sub / f"{ticker}.csv", index=False)
-        count += 1
-    print(f"  wrote per-ticker files → {by_ticker_dir}/SP500/ ({count} tickers)")
-
-    wide = prices.pivot(index="date", columns="ticker", values="adj_close").sort_index()
-    wide.to_csv(DATA_DIR / "prices_close_wide.csv")
-    print(f"  wrote {DATA_DIR / 'prices_close_wide.csv'} ({wide.shape[0]} dates x {wide.shape[1]} tickers)")
-
-    if failed:
-        pd.DataFrame({"ticker": failed}).to_csv(DATA_DIR / "failed_tickers.csv", index=False)
-        print(f"  {len(failed)} tickers failed → {DATA_DIR / 'failed_tickers.csv'}")
-
-    print("\nDone.")
+    print("\nDone. (Run `make build-db` is not needed — fetch wrote DuckDB directly.)")
 
 
 if __name__ == "__main__":

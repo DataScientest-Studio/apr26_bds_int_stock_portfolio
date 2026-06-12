@@ -1,25 +1,21 @@
-"""Read precomputed model / portfolio / walk-forward artifacts for the Streamlit app.
+"""Read precomputed model / portfolio / walk-forward artifacts for the app.
 
-Pure pandas/json — imports NO ML libraries and never trains anything. Every
-artifact is read from the active run (Alpaca S&P 500, 503 tickers) exposed via
-the ``Project/endproduct/models`` symlink. The Streamlit layer wraps these
-loaders in ``@st.cache_data``.
+Reads exclusively from the single ``liora.duckdb`` (via src/db.py) — no CSV,
+no ML libraries, never trains anything. The 5-model leaderboard is preserved as
+static rows in ``model_metrics`` (4 frozen baselines + the live XGBoost+Optuna
+production model). Function signatures are unchanged from the CSV era so the
+Streamlit layer (wrapped in ``@st.cache_data``) is untouched.
 """
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 import pandas as pd
 
-# Model artifacts live in the active run, exposed via endproduct/ symlinks.
-from .paths import MODEL_DIR
+from . import db
 
-# Portfolio-construction constants — copied verbatim from
-# mac-2026-06-08/models/build_portfolios.py so the Recommender's questionnaire
-# mapping is provably identical to how the portfolios were built. We only READ
-# the precomputed portfolio CSVs here; we never re-run the selection.
+# Portfolio-construction constants — kept identical to build_portfolios so the
+# Recommender questionnaire mapping is provably the same as how portfolios are
+# built. We only READ precomputed portfolio tables here.
 PORTFOLIO_SIZE = 10
 MAX_SECTOR_WEIGHT = 0.30
 MAX_STOCK_WEIGHT = 0.20
@@ -39,8 +35,10 @@ PROFILES = {
     },
 }
 
-# Registry of the 5 trained models and their artifact file stems.
-# feature_importance / training_history are absent for some models (-> None).
+# Registry of the 5 models (model_key -> display label). The production model is
+# `xgboost_no_history` (XGBoost + Optuna); the other four are frozen baselines
+# kept for the comparison leaderboard. File stems are retained for reference /
+# ingest, but reads now go to DuckDB tables keyed by model_key.
 MODELS = {
     "baseline_ridge": {
         "label": "Ridge (baseline)",
@@ -59,7 +57,7 @@ MODELS = {
         "training_history": None,
     },
     "random_forest_no_history": {
-        "label": "Random Forest (no history_days) — production",
+        "label": "Random Forest (no history_days)",
         "metrics": "random_forest_no_history_metrics.csv",
         "predictions": "random_forest_no_history_predictions.csv",
         "rankings": "random_forest_no_history_latest_rankings.csv",
@@ -67,7 +65,7 @@ MODELS = {
         "training_history": None,
     },
     "xgboost_no_history": {
-        "label": "XGBoost (no history_days)",
+        "label": "XGBoost + Optuna — production",
         "metrics": "xgboost_no_history_metrics.csv",
         "predictions": "xgboost_no_history_predictions.csv",
         "rankings": "xgboost_no_history_latest_rankings.csv",
@@ -84,6 +82,9 @@ MODELS = {
     },
 }
 
+# The production model key — single source of truth for app / portfolios.
+PRODUCTION_MODEL_KEY = "xgboost_no_history"
+
 WALK_FORWARD = {
     "summary": "walk_forward_rf_no_history_summary.csv",
     "folds": "walk_forward_rf_no_history_fold_metrics.csv",
@@ -91,7 +92,6 @@ WALK_FORWARD = {
     "predictions": "walk_forward_rf_no_history_predictions.csv",
 }
 
-# Plain-language glossary for the Model Explorer feature-importance section.
 FEATURE_GLOSSARY = {
     "ret_5d": "5-day price return — short-term momentum.",
     "ret_20d": "20-day (≈1 month) price return.",
@@ -106,7 +106,7 @@ FEATURE_GLOSSARY = {
     "shortcut that was removed in the production model.",
 }
 
-# Normalized metric columns shared across all *_metrics.csv files.
+# Normalized metric columns shared across all models (matches model_metrics).
 _METRIC_COLS = [
     "model",
     "label",
@@ -125,116 +125,95 @@ _METRIC_COLS = [
 ]
 
 
-def _path(name) -> Path:
-    return name if isinstance(name, Path) else MODEL_DIR / name
-
-
-def safe_read_csv(name, **kwargs):
-    """Read a CSV from ``MODEL_DIR``; return ``None`` if the file is missing."""
-    path = _path(name)
-    if not path.exists():
-        return None
-    return pd.read_csv(path, **kwargs)
-
-
-def safe_read_json(name):
-    """Read a JSON file from ``MODEL_DIR``; return ``None`` if missing."""
-    path = _path(name)
-    if not path.exists():
-        return None
-    with open(path) as handle:
-        return json.load(handle)
+def _read(sql: str, params=None) -> pd.DataFrame | None:
+    """Read-only query → DataFrame, or None when the result is empty."""
+    df = db.query(sql, params)
+    return None if df is None or df.empty else df
 
 
 def load_model_metrics() -> pd.DataFrame:
-    """Concatenate every model's metrics into one tidy, normalized table.
-
-    Handles the heterogeneous schemas: ``model_metrics.csv`` (Ridge) has no
-    ``model`` column; ``rocm_model_metrics.csv`` adds ``device`` and
-    ``final_train_mse``.
-    """
-    rows = []
-    for key, cfg in MODELS.items():
-        df = safe_read_csv(cfg["metrics"])
-        if df is None or df.empty:
-            continue
-        row = df.iloc[0].to_dict()
-        if not str(row.get("model", "")).strip():
-            row["model"] = key
-        row["model_key"] = key
-        row["label"] = cfg["label"]
-        rows.append(row)
-    if not rows:
+    """The 5-model leaderboard, normalized to the shared metric columns."""
+    df = db.query("SELECT * FROM model_metrics")
+    if df is None or df.empty:
         return pd.DataFrame(columns=_METRIC_COLS)
-    out = pd.DataFrame(rows)
-    keep = [c for c in _METRIC_COLS if c in out.columns]
-    return out[keep]
+    keep = [c for c in _METRIC_COLS if c in df.columns]
+    return df[keep]
 
 
 def load_predictions(model_key: str):
-    return safe_read_csv(MODELS[model_key]["predictions"], parse_dates=["date"])
+    df = _read(
+        "SELECT date, ticker, sector, target_63d_return, predicted_63d_return "
+        "FROM model_predictions WHERE model_key = ?",
+        [model_key],
+    )
+    if df is not None:
+        df["date"] = pd.to_datetime(df["date"])
+    return df
 
 
 def load_rankings(model_key: str):
-    df = safe_read_csv(MODELS[model_key]["rankings"], parse_dates=["date"])
+    df = _read(
+        "SELECT date, ticker, sector, industry, predicted_63d_return, "
+        "volatility_60d, ret_60d FROM model_rankings WHERE model_key = ? "
+        "ORDER BY predicted_63d_return DESC",
+        [model_key],
+    )
     if df is not None:
-        df = df.sort_values("predicted_63d_return", ascending=False).reset_index(drop=True)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.reset_index(drop=True)
     return df
 
 
 def load_feature_importance(model_key: str):
-    name = MODELS[model_key]["feature_importance"]
-    if not name:
-        return None
-    df = safe_read_csv(name)
-    if df is not None:
-        df = df.sort_values("importance", ascending=False).reset_index(drop=True)
-    return df
+    if not MODELS[model_key]["feature_importance"]:
+        return None  # linear / neural models expose no tree importances
+    return _read(
+        "SELECT feature, importance FROM feature_importance "
+        "WHERE model_key = ? ORDER BY importance DESC",
+        [model_key],
+    )
 
 
 def load_rocm_history():
-    data = safe_read_json(MODELS["pytorch_mlp_rocm"]["training_history"])
-    if not data:
-        return None
-    return data.get("train_mse")
+    df = _read(
+        "SELECT train_mse FROM rocm_training_history "
+        "WHERE model_key = 'pytorch_mlp_rocm' ORDER BY epoch"
+    )
+    return None if df is None else df["train_mse"].tolist()
 
 
 def load_walkforward_summary():
-    return safe_read_csv(WALK_FORWARD["summary"])
+    return _read("SELECT * FROM walk_forward_summary")
 
 
 def load_walkforward_folds():
-    df = safe_read_csv(WALK_FORWARD["folds"])
-    if df is not None:
-        df = df.sort_values("fold").reset_index(drop=True)
-    return df
+    return _read("SELECT * FROM walk_forward_folds ORDER BY fold")
 
 
 def load_walkforward_feature_importance():
-    df = safe_read_csv(WALK_FORWARD["feature_importance"])
-    if df is not None:
-        df = df.sort_values("importance", ascending=False).reset_index(drop=True)
-    return df
+    return _read(
+        "SELECT feature, importance FROM walk_forward_feature_importance "
+        "ORDER BY importance DESC"
+    )
 
 
 def load_portfolio_summary():
-    return safe_read_csv("portfolio_summary.csv")
+    return _read("SELECT * FROM portfolio_summary")
 
 
 def load_portfolio_recommendations():
-    return safe_read_csv("portfolio_recommendations.csv", parse_dates=["date"])
+    df = _read("SELECT * FROM portfolio_recommendations")
+    if df is not None and "date" in df.columns:
+        df["date"] = pd.to_datetime(df["date"])
+    return df
 
 
 def load_portfolio_sector_weights():
-    return safe_read_csv("portfolio_sector_weights.csv")
+    return _read("SELECT * FROM portfolio_sector_weights")
 
 
 def map_questionnaire_to_profile(volatility_comfort: str) -> str:
-    """Map a risk answer to one of the 3 precomputed profiles (read-only).
-
-    Mirrors the volatility-cap ordering in ``build_portfolios.py``
-    (0.35 / 0.50 / 0.80) without re-running portfolio selection.
-    """
+    """Map a risk answer to one of the 3 precomputed profiles (read-only)."""
     return {
         "Low": "conservative",
         "Medium": "balanced",
