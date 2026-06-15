@@ -42,36 +42,5 @@
     "zero_range_warn_fraction": 0.005,
     "zero_range_fail_fraction": 0.02,
     "det09_rejected_warn_fraction": 0.2
-  },
-  "pipeline_b": {
-    "native_bar": "1h",
-    "resample_to": ["1d"],
-    "windows_1h": [5, 10, 20, 50],
-    "windows_1d": [20, 200],
-    "lag_k": 1,
-    "regime_quantiles": [0.33, 0.66],
-    "volume_z_thresholds": [-1.0, 1.0]
-  },
-  "pipeline_b_l4": {
-    "rsi_n": 14,
-    "macd_fast": 12,
-    "macd_slow": 26,
-    "macd_signal": 9,
-    "stoch_n": 14,
-    "stoch_d": 3,
-    "adx_n": 14,
-    "mfi_n": 14,
-    "vwap_policy": "session"
-  },
-  "pipeline_b_l5": {
-    "pca_n_components": 8,
-    "dwt_wavelet": "db4",
-    "dwt_level": 3,
-    "dwt_window": 64,
-    "ae_encoder_dims": [64, 32, 8],
-    "ae_epochs": 50,
-    "lstm_hidden": 32,
-    "lstm_layers": 1,
-    "lstm_window": 24
   }
 }

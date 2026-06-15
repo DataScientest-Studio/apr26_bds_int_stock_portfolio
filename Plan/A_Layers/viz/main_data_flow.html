@@ -460,7 +460,7 @@ var PIPELINE={
      status:'ok',dataKey:'SPLIT',hitType:'split'},
     {id:'L6',lev:5,family:'transform',role:'transform',col:GREEN,
      title:'TREND-LINE SETUP DETECTOR',subtitle:'detect L_trend, L_opp, entry_candle, R0',
-     summary:'detector contract (build_contract_eng.md §Detector output) — bridge between raw candles and feature rows',
+     summary:'detector contract (Layers_Short_SOT/L6_setup_detector_eng.md) — bridge between raw candles and feature rows',
      input_contract:'OHLCV in the Train window (candles ≤ t0)',transform_verb:'detect',
      output_contract:'per setup: direction, L_trend(t), L_opp(t), topo_candles, t0, R0, take_profit, time_barrier',
      metric:{label:'min touch',value:'2'},invariants:['causal fits (candles ≤ t0)','MIN_TOUCHES = 2','first break close-based'],
@@ -914,7 +914,7 @@ TransformLayer.prototype.draw=function(){
   HITS.addRect(pq.x-24,pq.y-30,58,54,{type:'parquet'});
   if(STATE.labels){
     var pt1=SS(3,0.5,0.16,8),pt2=SS(3,0.5,0.97,0);
-    qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, build_contract_eng.md §Features)',grp:'Snapshot / Parquet',
+    qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md)',grp:'Snapshot / Parquet',
       x:pt1.x,y:pt1.y,col:sec,al:'center',sz:8.5,pr:1});
     qLabel({key:'tf_caption',def:'503 files · zstd · <TICKER>/ohlcv.parquet',grp:'Snapshot / Parquet',
       x:pt2.x,y:pt2.y,col:tert,al:'center',sz:8.5,pr:1});
@@ -1592,7 +1592,7 @@ DataDAGView.prototype.draw=function(){
   s=pill(0,45,290,26,CAN,'atomic snapshot + manifest JSON (price_view)',0.08);HITS.addRect(s.x-145,s.y-13,290,26,{type:'snapshot'});
   s=pill(0,145,310,28,AMB,'parquet/<TICKER>/ohlcv.parquet · ×503',0.10);HITS.addRect(s.x-155,s.y-14,310,28,{type:'parquet'});
   txt('zero duplication: USD exists only in the VIEW · raw stays in BIGINT ×10000',{x:0,y:200},sec,'center',10);
-  txt('features computed only by the transformer (L7, build_contract_eng.md §Features) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
+  txt('features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
 };
 
 function SplitTimelineView(){}
@@ -1818,7 +1818,7 @@ ArtifactView.prototype.draw=function(){
 function abandTip(i){
   return [
     'file header\ngenerated, not hand-edited\nhash = artifact identifier',
-    'contract parameters (build_contract_eng.md §Parameters)\nfrozen at build time',
+    'contract parameters (Layers_Short_SOT/00_parameters_eng.md)\nfrozen at build time',
     'exactly these columns and in this order,\non which the model was trained\nwithout closed_through_line (audit)',
     'XGBoost model serialized\nand base64-encoded (~180 kB)\ndecoded on file import',
     'label contract identifier\nSL = moving L_opp(t) (decision v1.2)\nthe model answers the question of this contract',
@@ -1865,7 +1865,7 @@ QCView.prototype.draw=function(){
     txt(QC[k].desc,{x:colX-52,y:y+4},sec,'left',9.5);
     HITS.addRect(s.x-42,s.y-12,84,24,{type:'qc',g:k});
   }
-  txt('PASS = condition for publishing a load · in the 3D overview: a row of dots by the store (L3) · full description: ENG/L3_duckdb_raw_view_qc_eng.md',{x:0,y:285},tert,'center',9);
+  txt('PASS = condition for publishing a load · in the 3D overview: a row of dots by the store (L3) · full description: ENG/Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md',{x:0,y:285},tert,'center',9);
 };
 
 function DQView(){}
@@ -2068,7 +2068,7 @@ function clickFor(p){
     PANEL.show('Time split',html+'<b>Purge:</b> '+SPLIT.purge+'<br><b>Embargo:</b> '+SPLIT.embargo);}
   else if(p.type==='feature'){var f=FEATURES[p.f];
     PANEL.show('Feature: '+f.name,'<b>Formula:</b> '+f.formula+'<br><b>Unit:</b> '+f.unit+'<br><b>Family:</b> '+f.family+'<br><b>Source:</b> '+f.src+(f.special?'<br><b style="color:'+AMB+'">! '+f.special+'</b>':'')+'<br><br>computed causally at t0 (candles ≤ t0)');}
-  else if(p.type==='label'||p.type==='setupTP')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first t: sign·close[t] ≥ sign·(close[t0]+direction·R0)<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (build_contract_eng.md §Label, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (build_contract_eng.md §Outputs)');
+  else if(p.type==='label'||p.type==='setupTP')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first t: sign·close[t] ≥ sign·(close[t0]+direction·R0)<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (Layers_Short_SOT/L7_features_x_label_y_eng.md, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (Layers_Short_SOT/L7_features_x_label_y_eng.md)');
   else if(p.type==='xgb')PANEL.show('XGBoost estimator','<b>Objective:</b> binary:logistic — p(TP)<br><b>Role:</b> meta-labeling, trend-line setup signal filter<br><b>Training:</b> Train with uniqueness weights<br><b>Tuning:</b> Optuna 200 trials (purged WF CV)<br><b>Per:</b> asset × direction');
   else if(p.type==='optuna'||p.type==='trial'){var bt=TRIALS[BEST_TRIAL];
     var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';

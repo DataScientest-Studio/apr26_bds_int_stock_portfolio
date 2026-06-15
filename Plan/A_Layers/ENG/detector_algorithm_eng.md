@@ -1,16 +1,21 @@
 # Detector algorithm — reference implementation (Pipeline A · L6)
 
-> **Status: "reference design (one valid realization)".** The build contract (`build_contract_eng.md` §Detector output)
-> defines only the **output contract** of the trend-line setup detector and explicitly defers the
-> *geometric algorithm* to sub-task **F2** (ROADMAP). This document specifies **one concrete, causal
-> algorithm** that satisfies that contract end-to-end. Every parameter taken from the contract
-> (`MIN_TOUCHES=2`, `H=24`, `W_ATR=14`, `ATR_VARIANT=wilder`, `PRICE_VIEW=raw_usd_view`, `EPS=1e-9`)
-> is canonical; every parameter introduced here only to make the algorithm runnable
-> (`k=3`, `TOUCH_TOL=0.25`, `COOLDOWN=H`, the fit/window choices) is labelled **"reference design
-> (one valid realization)"** and is the kind of value F2 may replace without breaking the §3 contract.
+> **Subordinate to the SOT.** The detector **output contract** (objects, the 5 invariants, DET-09) is owned
+> by [`Layers_Short_SOT/L6_setup_detector_eng.md`](Layers_Short_SOT/L6_setup_detector_eng.md), and every
+> parameter value by [`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md). This
+> document is **one concrete, causal geometric algorithm** ("reference design — one valid realization") that
+> satisfies that contract end-to-end. It owns the *geometry* (pseudocode, fits, worked examples), not the
+> contract or the parameter values; on any divergence, the SOT wins.
 
-This is **Pipeline A** (the S&P 500 strategy, layers **L1–L10**); the detector is **L6**. It must not be
-conflated with **Pipeline B** (OHLCV → L5 feature DAG, layers **L0–L5**), which is a separate scheme.
+The canonical contract parameters (`MIN_TOUCHES`, `H`, `W_ATR`, `ATR_VARIANT`, `PRICE_VIEW`, `EPS`) and the
+detector reference-design values (`k`, `TOUCH_TOL`, `LOOKBACK`, `COOLDOWN`) are all defined in
+`00_parameters_eng.md`; this algorithm only *uses* them. The kind of value roadmap item **F2** may replace
+without breaking the L6 output contract is exactly the reference-design set.
+
+This is **Pipeline A** (the S&P 500 strategy, layers **L1–L10**); the detector is **L6**. `layer`/`L1–L10`
+belong to Pipeline A. The feature explanation ("Plan B" — an OHLCV → feature DAG, feature-stages **F0–F5**)
+is a separate, subordinate helper ([`feature_explanation_plan_b_eng.md`](../../B_Features/feature_explanation_plan_b_eng.md));
+the detector does not depend on it.
 
 **Notation (from the glossary).** `t` = candle index (integer position after ascending sort by time, on
 one continuous series per asset). `t0` = `entry_candle`. `sign = direction ∈ {+1, −1}`. For candle `t`:
@@ -28,9 +33,9 @@ locates the break. There is **zero look-ahead** (glossary "Causality / zero look
 
 - A pivot at index `i` is **confirmed at candle `i+3`** (strength `k=3`), so a pivot is only usable from
   `i+3` onward — never the instant it forms.
-- `L_trend`, `L_opp` are least-squares fits over swing indices **all `≤ t0`** (build_contract_eng.md §Detector output invariant 4).
+- `L_trend`, `L_opp` are least-squares fits over swing indices **all `≤ t0`** (Layers_Short_SOT/L6_setup_detector_eng.md invariant 4).
 - `ATR(t)` is Wilder, window `W_ATR=14`, computed on candles **ending at `t` inclusive**
-  (glossary L6; build_contract_eng.md §Features (decision v1.2) note — the break candle is deliberately included in the normalizer).
+  (glossary L6; Layers_Short_SOT/L7_features_x_label_y_eng.md (decision v1.2) note — the break candle is deliberately included in the normalizer).
 
 The only forward-looking object in the whole pipeline is the **label window** `[t0, t0+H]`, which belongs
 to L7 (triple barrier), **not** to the detector.
@@ -39,19 +44,13 @@ to L7 (triple barrier), **not** to the detector.
 
 ## 1. Fixed reference values
 
-All values below are mirrored in `config/params.json` (`detector` block, plus top-level `TOUCH_TOL`) — the single configuration site.
-
-| Symbol | Value | Units | Source |
-|---|---|---|---|
-| `k` (pivot strength) | `3` | candles each side | reference design (one valid realization) |
-| `MIN_TOUCHES` | `2` | swing touches | contract (`config/params.json`, build_contract_eng.md §Parameters) |
-| `TOUCH_TOL` | `0.25` | × `ATR(t)` | reference design (one valid realization); name reserved by build_contract_eng.md §Detector output; value set here and in `config/params.json` |
-| `COOLDOWN` | `H = 24` | candles | reference design (one valid realization) |
-| `H` | `24` | candles (horizon) | contract (build_contract_eng.md §Parameters) |
-| `W_ATR` | `14` | candles | contract (build_contract_eng.md §Parameters) |
-| `ATR_VARIANT` | `wilder` | — | contract (build_contract_eng.md §Parameters) |
-| `LOOKBACK` (fit window) | `120` | candles | reference design (one valid realization) |
-| `EPS` (ε) | `1e-9` | — | contract (build_contract_eng.md §Parameters) |
+All values used below — the canonical contract parameters (`k` is reference-design; `MIN_TOUCHES`, `H`,
+`W_ATR`, `ATR_VARIANT`, `EPS` are canonical) and the detector reference-design values (`TOUCH_TOL=0.25`,
+`LOOKBACK=120`, `COOLDOWN=H`) — are **defined and pinned in**
+[`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md) (mirrored in
+`config/params.json`, `detector` block + top-level `TOUCH_TOL`). This document uses those symbols and does
+not re-pin their values; the concrete numbers in the worked examples (§10) are illustrative computations,
+not parameter definitions.
 
 **Touch test (the load-bearing definition).** A swing point at index `s` with price `p_s`
 (`p_s = high[s]` for a resistance line, `p_s = low[s]` for a support line) **touches** a candidate line
@@ -61,7 +60,7 @@ All values below are mirrored in `config/params.json` (`detector` block, plus to
 | p_s − L(s) | ≤ TOUCH_TOL · ATR(s)          # TOUCH_TOL = 0.25
 ```
 
-Dedup rule (build_contract_eng.md §Detector output): **one swing-touch counts once**, not every adjacent candle that happens to lie
+Dedup rule (Layers_Short_SOT/L6_setup_detector_eng.md): **one swing-touch counts once**, not every adjacent candle that happens to lie
 within tolerance.
 
 ---
@@ -77,7 +76,7 @@ ATR[t]       = ( ATR[t−1] · (W_ATR − 1) + TR[t] ) / W_ATR          # Wilder
 ```
 
 `ATR(t)` appears in L6 **only** inside `TOUCH_TOL·ATR(s)` (the touch test) and in the DET-09 guard
-`ATR(t0) > 0`. It is **not** part of any barrier (barriers are geometric; build_contract_eng.md §Detector output / §Label — "no ATR↔label
+`ATR(t0) > 0`. It is **not** part of any barrier (barriers are geometric; Layers_Short_SOT/L6_setup_detector_eng.md / L7_features_x_label_y_eng.md — "no ATR↔label
 coupling"). During warm-up `ATR(t)` is `NULL`/undefined for `t < W_ATR-1`; such candles can be pivots
 but **cannot be `t0`** (the DET-09 guard `ATR(t0) ≤ 0` rejects them, see §8).
 
@@ -126,7 +125,7 @@ else:           a = (n·Sxy − Sx·Sy) / den
 The guard `den ≤ EPS` (ε = 1e-9) catches the degenerate case where every swing shares (numerically) the
 same index — impossible for distinct confirmed swings, but defended anyway.
 
-**Which swings define `L_trend` (per build_contract_eng.md §Detector output: "fit through the touchpoints").**
+**Which swings define `L_trend` (per Layers_Short_SOT/L6_setup_detector_eng.md: "fit through the touchpoints").**
 
 - **Long (`direction = +1`)**: `L_trend` is a **resistance** line. Take the swing highs `SH` inside the
   causal window `[t0 − LOOKBACK, t0−3]`, fit a line through the **`MIN_TOUCHES` most-recent qualifying
@@ -152,7 +151,7 @@ The stop loss lives on `L_opp` (glossary L6). It is the **opposite-side** least-
   `≥ 2` touches.
 
 If fewer than 2 opposite-side swings exist in the window (or none pass the touch test), `L_opp` is
-**missing** → the setup is **rejected and counted** as DET-09 `missing_L_opp` (§8). build_contract_eng.md §Detector output invariant 3
+**missing** → the setup is **rejected and counted** as DET-09 `missing_L_opp` (§8). Layers_Short_SOT/L6_setup_detector_eng.md invariant 3
 ("`L_opp` exists before `t0`") and invariant 4 ("fits use only candles ≤ `t0`") are thereby satisfied.
 
 ---
@@ -165,7 +164,7 @@ The detector evaluates **both** directions independently and symmetrically (§9)
 - `direction = −1` (short): break **downward through support** `L_trend`.
 
 For a validated `L_trend` (built from data `≤ t0−3`), the **entry candle** is the **first** close that
-breaks the line in the trade direction (build_contract_eng.md §Detector output invariant 2, close-based):
+breaks the line in the trade direction (Layers_Short_SOT/L6_setup_detector_eng.md invariant 2, close-based):
 
 ```
 entry_candle t0 = first t (t > last_touch_index) such that  sign · ( close[t] − L_trend(t) ) > 0
@@ -200,7 +199,7 @@ long and a short setup may legitimately coexist at overlapping indices.
 
 ---
 
-## 8. DET-09 — rejection + audit (build_contract_eng.md §Detector output invariant 5)
+## 8. DET-09 — rejection + audit (Layers_Short_SOT/L6_setup_detector_eng.md invariant 5)
 
 A setup that has located a `t0` is **rejected and counted** (never silently dropped) iff **any** of:
 
@@ -353,7 +352,7 @@ counted in `summary.json.counters.det09_rejected`, never silently dropped.
 
 ---
 
-## 11. Contract conformance — mapping to build_contract_eng.md §Detector output
+## 11. Contract conformance — mapping to Layers_Short_SOT/L6_setup_detector_eng.md
 
 | §3 output object | Definition (§3) | Produced by (this doc) | Guard |
 |---|---|---|---|
