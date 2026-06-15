@@ -1,0 +1,24 @@
+# L8 · Data quality validation (summary)
+
+- Before training we validate the whole data flow: zips → DuckDB → parquet → split → Output B.
+- We check parities between the stores.
+  - zip → DuckDB: 8 841 820 rows / 503 symbols
+  - DuckDB → parquet: 503 files, row parity per ticker
+  - parquet → Output B: setup count per `{asset × direction}`
+- We count gaps in the series.
+  - in-session gaps: must be 0 (hard fail)
+  - overnight/weekend gaps: counted (normal)
+  - filled gaps: must be 0 — we fill nothing
+- We count zero-values.
+  - `volume = 0` bars
+  - `high == low` candles (zero-range)
+  - prices ≤ 0: must be 0
+- We check Output B quality.
+  - NaN/Inf: 0
+  - DET-09 rejections: counted in the audit
+  - `touch_count` distribution: report for the MIN_TOUCHES audit (R3)
+- We check the split: no `[t0, t0+24]` window crosses a boundary.
+- We write the result to the file `reports/quality/summary.json` (counters + statuses + input hash).
+- From summary.json we generate the file `reports/quality/dashboard.html` (self-contained, zero dependencies).
+- Every dashboard item has an OK / WARN / FAIL level.
+  - any FAIL = gate closed: training (L9) does not start
