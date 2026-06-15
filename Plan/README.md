@@ -58,7 +58,7 @@ The two pipelines both use an `L#` prefix but mean **different things** — neve
 - [`viz/main_data_flow.html`](viz/main_data_flow.html) — Pipeline A: interactive 3D pipeline viz (~147 KB, self-contained).
 - [`viz/feature_dag.html`](viz/feature_dag.html) — Pipeline B: OHLCV → L5 feature-engineering wireframe (~2.3 MB, self-contained).
 - [`AUDIT_BRIEF.md`](AUDIT_BRIEF.md) — the external-audit commission (acceptance criteria + method);
-  [`audit/`](audit/) — the latest external audit report + evidence.
+  [`audit/FINAL_CERTIFICATION_AUDIT.md`](audit/FINAL_CERTIFICATION_AUDIT.md) — the final PASS certificate.
 
 ## Open the visualizations
 
