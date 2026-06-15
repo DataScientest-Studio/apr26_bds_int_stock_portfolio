@@ -1,0 +1,182 @@
+[
+  {
+    "path": "ENG/L10_oos_test_eng.md",
+    "line": 1,
+    "text": "# L10 \u00b7 OOS test (summary)"
+  },
+  {
+    "path": "ENG/L10_oos_test_eng.md",
+    "line": 3,
+    "text": "- Before the test, the hash of each strategy file goes into the hash register."
+  },
+  {
+    "path": "ENG/L4_snapshot_parquet_eng.md",
+    "line": 15,
+    "text": "- One parquet file serves both training and the OOS test \u2014 that is why it has no cuts and no features (register C-71)."
+  },
+  {
+    "path": "ENG/L5_time_split_eng.md",
+    "line": 10,
+    "text": "  - one test run"
+  },
+  {
+    "path": "ENG/build_contract_eng.md",
+    "line": 29,
+    "text": "artifact (L9) \u2192 one-shot OOS test (L10). **Pipeline B** is a separate OHLCV\u2192L5 feature DAG with its"
+  },
+  {
+    "path": "ENG/build_contract_eng.md",
+    "line": 202,
+    "text": "| **OOS** | `2024-01-02 \u2192 2026-05-29` | **frozen**: one test run of the strategy artifacts; zero tuning after looking at results |"
+  },
+  {
+    "path": "ENG/build_contract_eng.md",
+    "line": 368,
+    "text": "- [ ] **Causality verified:** a test detecting use of any candle `> t` when computing a feature/line for `t` (e.g. shifting the future does not change historical values)."
+  },
+  {
+    "path": "ENG/build_contract_eng.md",
+    "line": 378,
+    "text": "- [ ] OOS one-shot: artifacts frozen before the test; the OOS result never returns to tuning."
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 54,
+    "text": "**Touch test (the load-bearing definition).** A swing point at index `s` with price `p_s`"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 77,
+    "text": "`ATR(t)` appears in L6 **only** inside `TOUCH_TOL\u00b7ATR(s)` (the touch test) and in the DET-09 guard"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 131,
+    "text": "  swing highs**, then *grow* the touch set: every swing high in the window that passes the touch test"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 148,
+    "text": "  validated by the same touch test (\u00a71) requiring **`\u2265 2`** opposite-side touches."
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 152,
+    "text": "If fewer than 2 opposite-side swings exist in the window (or none pass the touch test), `L_opp` is"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 188,
+    "text": "(or a superset that still passes the touch test against the recorded `(a, b)` within `TOUCH_TOL\u00b7ATR`)."
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 195,
+    "text": "(resistance \u2194 support), and `sign` flips from `+1` to `\u22121` in the break test and in `take_profit_level`."
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 244,
+    "text": "        topo   = [ s for s in swings_trend if touch(s, Ltrend) ]              # \u00a71 touch test, dedup"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 250,
+    "text": "        # ---- Step 4: break test (close-based, strict) ----"
+  },
+  {
+    "path": "ENG/detector_algorithm_eng.md",
+    "line": 362,
+    "text": "| `entry_candle` `t0` | first close with `sign\u00b7(c \u2212 L_trend) > 0` after validation | \u00a76 break test (strict `>`) | first-break check over `(last_touch, t0)` |"
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 27,
+    "text": "- **ML pipeline** \u2014 the whole flow from raw market data to the strategy file and the OOS test; 10 levels L1\u2013L10 in the visualization."
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 34,
+    "text": "- **Causality / zero look-ahead** \u2014 the overriding rule: for candle `t` we use only data from candles **\u2264 t**. No feature, line or decision depends on the future (the only exception: the explicit label window counted for"
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 36,
+    "text": "- **One-shot** \u2014 we test the OOS window **once**, after freezing the artifacts; the OOS result never goes back into tuning."
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 105,
+    "text": "- **OOS** (`2024-01-02 \u2192 2026-05-29`) \u2014 **frozen**: one test run; zero tuning after looking at the results."
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 111,
+    "text": "- **boundary assertion** \u2014 an automatic test: no `[t0, t0+H]` window crosses a window boundary (DoD F4)."
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 189,
+    "text": "## L10 \u00b7 OOS test: 503 assets \u00d7 metrics"
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 193,
+    "text": "- **OOS test** \u2014 one run over the OOS window (`2024-01-02 \u2192 2026-05-29`)."
+  },
+  {
+    "path": "ENG/glossary_eng.md",
+    "line": 194,
+    "text": "- **hash registry** \u2014 the hash of each artifact recorded **before** the test; from that moment the files are immutable."
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 169,
+    "text": "<h2 class=\"sr-only\">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten lev"
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 171,
+    "text": "<p class=\"tlc-sub\"><b>S&amp;P 500 ML Pipeline \u2014 rotatable 3D</b> \u00b7 Alpaca 1h \u2192 LEAN ZIP \u2192 DuckDB+QC \u2192 snapshot \u2192 parquet OHLCV \u2192 split \u2192 setup detector \u2192 trendline features X+Y \u2192 quality validation (dashboard) \u2192 Optuna+X"
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 338,
+    "text": "     note:'frozen to the end \u00b7 single strategy test run \u00b7 zero tuning after seeing results'}],"
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 490,
+    "text": "     title:'OOS TEST: 503 ASSETS \u00d7 METRICS',subtitle:'evaluate on the frozen OOS window',"
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 2347,
+    "text": "  else if(/^[1-9]$/.test(hm))hm=MODE_KEYS[parseInt(hm,10)-1];"
+  },
+  {
+    "path": "viz/main_data_flow.html",
+    "line": 2348,
+    "text": "  if(/^[lL]\\d+$/.test(hm)&&NODE_BY_ID[hm.toUpperCase()]){            // inspection deep-link: #L6 \u2192 frame + contract"
+  },
+  {
+    "path": "audit/rerun_2026-06-15_134807/decoded_feature_dag/41435e90-9480-46fc-9463-93717634ef0c.js",
+    "line": 228,
+    "text": "     * @param {ReactClass} publicInstance The instance we want to test."
+  },
+  {
+    "path": "audit/rerun_2026-06-15_134807/decoded_feature_dag/41435e90-9480-46fc-9463-93717634ef0c.js",
+    "line": 696,
+    "text": "   * will not work. Instead test $$typeof field against Symbol.for('react.element') to check"
+  },
+  {
+    "path": "audit/rerun_2026-06-15_134807/decoded_feature_dag/41435e90-9480-46fc-9463-93717634ef0c.js",
+    "line": 735,
+    "text": "      // include every environment we run tests in), so the test framework"
+  },
+  {
+    "path": "audit/rerun_2026-06-15_134807/decoded_feature_dag/41435e90-9480-46fc-9463-93717634ef0c.js",
+    "line": 972,
+    "text": "   * TODO: Test that a single child and an array with one item have the same key"
+  }
+]

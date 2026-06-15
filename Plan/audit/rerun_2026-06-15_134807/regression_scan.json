@@ -1,0 +1,14 @@
+[
+  {
+    "pattern": "canonical_qc_bad",
+    "path": "ENG/glossary_eng.md",
+    "line": 217,
+    "match": "QC-01\u202611"
+  },
+  {
+    "pattern": "canonical_metrics_bad",
+    "path": "ENG/glossary_eng.md",
+    "line": 216,
+    "match": "PF \u00b7 MDD \u00b7 TIM \u00b7 Sharpe \u00b7 WR"
+  }
+]

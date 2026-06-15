@@ -1,0 +1,19 @@
+{
+  "node_count": 55,
+  "bad_ids": [],
+  "edge_count": 101,
+  "bad_edges": [],
+  "l4_atr_lines": [
+    "    { id: \"l4_atr\",                  layer: 4, family: \"range\",   name: \"l4_atr_n\",                formula: \"mean_n( TR ),  TR = max(H\u2212L, |H\u2212C_{\u22121}|, |L\u2212C_{\u22121}|)\" },",
+    "    [\"H\",\"l4_atr\"],[\"L\",\"l4_atr\"],[\"C\",\"l4_atr\"],",
+    "    [\"l4_atr\",\"l5_stack\"],"
+  ],
+  "zscore_lines": [
+    "    { id: \"l2_range_z_n\",            layer: 2, family: \"range\",   name: \"l2_range_z_n\",            formula: \"(range_pct \u2212 \u03bc_n) / \u03c3_n  (\u03c3_n=0 \u2192 0)\" },",
+    "    { id: \"l2_vol_z_n\",              layer: 2, family: \"volume\",  name: \"l2_vol_z_n\",              formula: \"(log_V \u2212 \u03bc_n) / \u03c3_n  (\u03c3_n=0 \u2192 0)\" },",
+    "    { id: \"l2_dvol_z_n\",             layer: 2, family: \"volume\",  name: \"l2_dvol_z_n\",             formula: \"(log_$V \u2212 \u03bc_n) / \u03c3_n  (\u03c3_n=0 \u2192 0)\" },",
+    "    { id: \"l4_boll_z\",               layer: 4, family: \"price\",   name: \"l4_boll_z_n\",             formula: \"(C \u2212 SMA_n) / \u03c3_n(C)  (\u03c3_n=0 \u2192 0)\" },",
+    "    { id: \"l5_stack\",                layer: 5, family: \"meta\",    name: \"X_raw  =  stack & standardize( L1..L4 )\", formula: \"z = (x \u2212 \u03bc) / \u03c3 per column  (\u03c3=0 \u2192 0)\" },",
+    "    [\"C\",\"l4_boll_z\"],"
+  ]
+}

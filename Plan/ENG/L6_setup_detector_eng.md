@@ -1,7 +1,7 @@
 # L6 · Trend-line setup detector (summary)
 
 - Input: files `parquet/<TICKER>/ohlcv.parquet` in the Train window from [L5](L5_time_split_eng.md).
-- The detector returns setup objects (contract spec §3).
+- The detector returns setup objects (contract in `build_contract_eng.md` §Detector output; reference algorithm in `detector_algorithm_eng.md`).
   - direction: `direction ±1`
   - lines: `L_trend(t)` and `L_opp(t)` as functions of the candle index
   - touchpoints: touches strictly before `t0` (minimum: MIN_TOUCHES=2)

@@ -1,0 +1,3 @@
+Page.loadEventFired :
+Page.loadEventFired :
+renderProbe : {"title": "S&P 500 ML Pipeline — rotatable 3D Canvas (503 companies)", "body": "A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten levels from the bottom: an Alpaca SIP 1h source", "canvas": true, "canvas_w": 732, "canvas_h": 360, "svg": false}

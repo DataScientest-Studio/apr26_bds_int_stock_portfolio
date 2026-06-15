@@ -8,7 +8,7 @@
   - row count: 8 841 820
   - symbol count: 503 (ticker list: file `config/universe.txt`)
 - USD exists only in the view `VIEW ohlcv_1h` (= prices `/10000.0`).
-  - this view is `price_view = raw_usd_view` from the input contract (spec §2)
+  - this view is `price_view = raw_usd_view` from the input contract (`build_contract_eng.md` §Input)
   - the view does not copy data (zero storage duplication)
 - The `_meta` table holds the schema version, source and counters.
 - Every load passes 11 gates QC-01…QC-11:

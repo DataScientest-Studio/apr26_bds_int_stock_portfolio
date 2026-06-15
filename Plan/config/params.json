@@ -1,0 +1,77 @@
+{
+  "TF": "1h",
+  "H": 24,
+  "MIN_TOUCHES": 2,
+  "W_VOL": 20,
+  "W_ATR": 14,
+  "ATR_VARIANT": "wilder",
+  "PRICE_VIEW": "raw_usd_view",
+  "EPS": 1e-9,
+  "BARRIER_MODE": "close",
+  "DISTANCE_NORM": "atr",
+  "THRESHOLD_ENTRY": 0.6,
+  "PURGE_CANDLES": 24,
+  "EMBARGO_SESSIONS": 5,
+  "N_TRIALS": 200,
+  "CV_SCHEME": "purged_walk_forward",
+  "ESTIMATOR": "xgboost_binary_logistic",
+  "TUNER": "optuna_tpe_median_pruner",
+  "TOUCH_TOL": 0.25,
+  "splits": {
+    "warmup_start": "2016-01-04",
+    "warmup_end": "2016-10-14",
+    "train_start": "2016-10-17",
+    "train_end": "2023-12-29",
+    "oos_start": "2024-01-02",
+    "oos_end": "2026-05-29"
+  },
+  "detector": {
+    "pivot_k": 3,
+    "lookback_candles": 120,
+    "cooldown_candles": 24
+  },
+  "l8": {
+    "in_session_gaps_fail_gt": 0,
+    "filled_gaps_fail_gt": 0,
+    "duplicates_fail_gt": 0,
+    "prices_nonpos_fail_gt": 0,
+    "nan_inf_outputB_fail_gt": 0,
+    "parity_fail_on_mismatch": true,
+    "volume_zero_warn_fraction": 0.005,
+    "volume_zero_fail_fraction": 0.02,
+    "zero_range_warn_fraction": 0.005,
+    "zero_range_fail_fraction": 0.02,
+    "det09_rejected_warn_fraction": 0.2
+  },
+  "pipeline_b": {
+    "native_bar": "1h",
+    "resample_to": ["1d"],
+    "windows_1h": [5, 10, 20, 50],
+    "windows_1d": [20, 200],
+    "lag_k": 1,
+    "regime_quantiles": [0.33, 0.66],
+    "volume_z_thresholds": [-1.0, 1.0]
+  },
+  "pipeline_b_l4": {
+    "rsi_n": 14,
+    "macd_fast": 12,
+    "macd_slow": 26,
+    "macd_signal": 9,
+    "stoch_n": 14,
+    "stoch_d": 3,
+    "adx_n": 14,
+    "mfi_n": 14,
+    "vwap_policy": "session"
+  },
+  "pipeline_b_l5": {
+    "pca_n_components": 8,
+    "dwt_wavelet": "db4",
+    "dwt_level": 3,
+    "dwt_window": 64,
+    "ae_encoder_dims": [64, 32, 8],
+    "ae_epochs": 50,
+    "lstm_hidden": 32,
+    "lstm_layers": 1,
+    "lstm_window": 24
+  }
+}

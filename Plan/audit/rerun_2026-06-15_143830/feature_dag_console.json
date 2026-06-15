@@ -1,0 +1,101 @@
+[
+  {
+    "method": "Runtime.consoleAPICalled",
+    "params": {
+      "type": "info",
+      "args": [
+        {
+          "type": "string",
+          "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+        },
+        {
+          "type": "string",
+          "value": "font-weight:bold"
+        }
+      ],
+      "executionContextId": 2,
+      "timestamp": 1781534479304.329,
+      "stackTrace": {
+        "callFrames": [
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8767/eb7f462d-1151-44c2-aa10-45b3c8dbd5ab",
+            "lineNumber": 29904,
+            "columnNumber": 18
+          },
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8767/eb7f462d-1151-44c2-aa10-45b3c8dbd5ab",
+            "lineNumber": 12,
+            "columnNumber": 28
+          },
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8767/eb7f462d-1151-44c2-aa10-45b3c8dbd5ab",
+            "lineNumber": 13,
+            "columnNumber": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "Page.loadEventFired",
+    "params": {
+      "timestamp": 100270.047166
+    }
+  },
+  {
+    "method": "Runtime.consoleAPICalled",
+    "params": {
+      "type": "warning",
+      "args": [
+        {
+          "type": "string",
+          "value": "You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/"
+        }
+      ],
+      "executionContextId": 2,
+      "timestamp": 1781534479511.796,
+      "stackTrace": {
+        "callFrames": [
+          {
+            "functionName": "",
+            "scriptId": "9",
+            "url": "blob:http://127.0.0.1:8767/50dca70f-7cbe-431f-8a04-9efa8ad32b27",
+            "lineNumber": 2,
+            "columnNumber": 3132940
+          },
+          {
+            "functionName": "VEe",
+            "scriptId": "9",
+            "url": "blob:http://127.0.0.1:8767/50dca70f-7cbe-431f-8a04-9efa8ad32b27",
+            "lineNumber": 2,
+            "columnNumber": 3133089
+          },
+          {
+            "functionName": "",
+            "scriptId": "5",
+            "url": "http://127.0.0.1:8767/viz/feature_dag.html",
+            "lineNumber": 183,
+            "columnNumber": 19
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "audit.renderProbe",
+    "params": {
+      "title": "OHLCV \u2192 L5 \u00b7 pipeline wireframe",
+      "body": "L5 \u00b7 Research representations\nStack \u2192 standardize \u2192 compression: PCA, wavelets, AE, sequences.\nL4 \u00b7 Classical indicators\nRSI / MACD / ATR / OBV. Compressed functions of L1\u2013L3, not magic.\nL3 \u00b7 MTF \u00b7 regime\nResample 1h \u2192 1d (native 1h store),",
+      "canvas": false,
+      "canvas_w": 0,
+      "canvas_h": 0,
+      "svg": true
+    }
+  }
+]

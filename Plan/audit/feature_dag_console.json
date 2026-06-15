@@ -1,0 +1,103 @@
+[
+  {
+    "method": "Runtime.consoleAPICalled",
+    "params": {
+      "type": "info",
+      "args": [
+        {
+          "type": "string",
+          "value": "%cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools"
+        },
+        {
+          "type": "string",
+          "value": "font-weight:bold"
+        }
+      ],
+      "executionContextId": 2,
+      "timestamp": 1781527990900.661,
+      "stackTrace": {
+        "callFrames": [
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8765/9b7eab62-9c2a-497c-872d-5de3b3212f8c",
+            "lineNumber": 29904,
+            "columnNumber": 18
+          },
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8765/9b7eab62-9c2a-497c-872d-5de3b3212f8c",
+            "lineNumber": 12,
+            "columnNumber": 28
+          },
+          {
+            "functionName": "",
+            "scriptId": "8",
+            "url": "blob:http://127.0.0.1:8765/9b7eab62-9c2a-497c-872d-5de3b3212f8c",
+            "lineNumber": 13,
+            "columnNumber": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "Page.loadEventFired",
+    "params": {
+      "timestamp": 93781.640714
+    }
+  },
+  {
+    "method": "Runtime.consoleAPICalled",
+    "params": {
+      "type": "warning",
+      "args": [
+        {
+          "type": "string",
+          "value": "You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/"
+        }
+      ],
+      "executionContextId": 2,
+      "timestamp": 1781527991104.874,
+      "stackTrace": {
+        "callFrames": [
+          {
+            "functionName": "",
+            "scriptId": "9",
+            "url": "blob:http://127.0.0.1:8765/6974156d-90a8-420a-8690-545ec32d5479",
+            "lineNumber": 2,
+            "columnNumber": 3132940
+          },
+          {
+            "functionName": "VEe",
+            "scriptId": "9",
+            "url": "blob:http://127.0.0.1:8765/6974156d-90a8-420a-8690-545ec32d5479",
+            "lineNumber": 2,
+            "columnNumber": 3133089
+          },
+          {
+            "functionName": "",
+            "scriptId": "5",
+            "url": "http://127.0.0.1:8765/viz/feature_dag.html",
+            "lineNumber": 183,
+            "columnNumber": 19
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "Log.entryAdded",
+    "params": {
+      "entry": {
+        "source": "network",
+        "level": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "timestamp": 1781527991345.962,
+        "url": "http://127.0.0.1:8765/favicon.ico",
+        "networkRequestId": "577991.68"
+      }
+    }
+  }
+]

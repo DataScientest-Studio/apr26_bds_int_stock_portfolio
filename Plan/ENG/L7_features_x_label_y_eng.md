@@ -7,10 +7,10 @@
 - The model's X takes 7 columns.
   - `closed_through_line` is an audit column (at `t0` always = 1)
 - Label Y = triple barrier (close-based, first-touch).
-  - TP: close reaches `close[t0] + R0` → Y=1
+  - TP: close reaches `close[t0] + direction·R0` → Y=1
   - SL: close breaks through the moving `L_opp(t)` → Y=0
   - time: no resolution by `t0+24` → Y=0
-- Every row gets a `label_uniqueness_weight` weight (formula: spec §6).
+- Every row gets a `label_uniqueness_weight` weight (formula in `build_contract_eng.md` §Outputs).
 - Output: Output B — one row per setup.
   - data partition: `{asset × direction}`
   - the column schema is frozen (a change = hard fail)

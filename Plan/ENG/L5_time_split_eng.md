@@ -1,6 +1,6 @@
 # L5 · Time split (summary)
 
-- We split each ticker's series into three windows (dates = parameters, spec §5a).
+- We split each ticker's series into three windows (dates = parameters; see `build_contract_eng.md` §Splits and `config/params.json` `splits`).
 - WARM-UP window: `2016-01-04 → 2016-10-14`.
   - used to roll-in the rolling windows: max(W_ATR=14, W_VOL=20) = 20 candles
   - in warm-up there is no training and no detection
@@ -15,5 +15,5 @@
   - the embargo fully covers the max feature lookback (20 candles)
 - Indices, `H` and the purge are computed by integer candle position, not by timestamp.
 - The same rules separate the CV folds inside Train.
-- The windows are indices on one continuous series, not separate parquet files (register C-71).
+- The windows are indices on one continuous series, not separate parquet files (a fixed design decision).
   - reason: the rolling windows (20 candles) and the label windows `[t0, t0+24]` cross the window boundaries

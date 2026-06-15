@@ -12,4 +12,4 @@
   - zero derived columns — features are computed only by the transformer ([L7](L7_features_x_label_y_eng.md))
 - Transformations read only the snapshot, never the live store.
 - After every materialization we check row and symbol parity against the snapshot.
-- One parquet file serves both training and the OOS test — that is why it has no cuts and no features (register C-71).
+- One parquet file serves both training and the OOS test — that is why it has no cuts and no features (a fixed design decision: one parquet serves train and the OOS test).

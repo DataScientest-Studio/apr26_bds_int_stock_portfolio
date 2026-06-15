@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,11 +12,11 @@
   --color-background-secondary:#2b2b28;
   --color-text-primary:#ece9e1;
   --color-text-secondary:#a8a69d;
-  --color-text-tertiary:#a09d93;           /* WCAG: 6.15:1 on primary bg, 5.23:1 on secondary (było #76746c = 3.57:1, fail) */
+  --color-text-tertiary:#a09d93;           /* WCAG: 6.15:1 on primary bg, 5.23:1 on secondary (was #76746c = 3.57:1, fail) */
   --color-border-secondary:rgba(255,255,255,0.18);
   --color-border-tertiary:rgba(255,255,255,0.12);
-  /* text-safe warianty akcentów: każdy ≥4.5:1 na obu tłach (dark). Akcenty-jako-TEKST
-     mapują się tu przez txc(); nasycone stałe JS (RED/TEAL/…) zostają dla wypełnień/obrysów. */
+  /* text-safe accent variants: each ≥4.5:1 on both backgrounds (dark). Accents-as-TEXT
+     map here via txc(); saturated JS constants (RED/TEAL/…) stay for fills/strokes. */
   --c-error-text:#F26B6A;                  /* 5.63 / 4.79 */
   --c-store-text:#2BB587;                  /* 6.41 / 5.45 */
   --c-train-text:#86B23A;                  /* 6.71 / 5.71 */
@@ -34,10 +34,10 @@
     --color-background-secondary:#e7e5dc;
     --color-text-primary:#2b2b28;
     --color-text-secondary:#5f5e57;
-    --color-text-tertiary:#67665e;          /* WCAG: 5.24:1 on #f5f4ee, 4.57:1 on #e7e5dc (było #8f8e86 = fail) */
+    --color-text-tertiary:#67665e;          /* WCAG: 5.24:1 on #f5f4ee, 4.57:1 on #e7e5dc (was #8f8e86 = fail) */
     --color-border-secondary:rgba(0,0,0,0.18);
     --color-border-tertiary:rgba(0,0,0,0.12);
-    /* text-safe akcenty dla jasnego motywu — ciemniejsze, ≥4.5:1 na obu jasnych tłach */
+    /* text-safe accents for the light theme — darker, ≥4.5:1 on both light backgrounds */
     --c-error-text:#BC3531;                 /* 5.16 / 4.51 */
     --c-store-text:#0F6F50;                 /* 5.59 / 4.88 */
     --c-train-text:#4E6E1C;                 /* 5.34 / 4.66 */
@@ -50,8 +50,8 @@
 }
 html,body{margin:0}
 html{height:100%}
-/* layout pełnoekranowy: strona nie scrolluje → brak paska → brak zmian szerokości →
-   panele-nakładki przełączają się bez fit()/resetu kanwy (koniec migotania) */
+/* full-screen layout: the page doesn't scroll → no scrollbar → no width changes →
+   overlay panels toggle without fit()/canvas reset (no more flicker) */
 body{
   background:var(--color-background-primary);
   color:var(--color-text-primary);
@@ -100,24 +100,24 @@ body{
 .tlc-msgs li{margin:2px 0}
 .tlc-msgs b{color:var(--color-text-primary)}
 
-/* przyciski zawsze w tym samym miejscu (z-index nad edytorem, nie znikają) */
+/* buttons always in the same place (z-index above the editor, they don't disappear) */
 #botTabs{position:fixed;left:14px;bottom:14px;z-index:32;display:flex;gap:8px}
 #lblTab,#legTab{background:var(--color-background-secondary);
   color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);
   border-radius:8px;padding:9px 11px;font-size:12.5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 #lblTab:hover,#legTab:hover{background:var(--color-background-primary)}
 #legTab[aria-pressed="true"]{color:var(--color-text-tertiary)}
-/* gdy edytor otwarty — odsuń jego stopkę, by pływające przyciski jej nie zasłaniały */
+/* when the editor is open — push its footer aside so the floating buttons don't cover it */
 body.le-open #leFoot{padding-left:210px}
-/* Legenda = nakładka dolna (jak edytor); sterowana klasą body.leg-open */
+/* Legend = bottom overlay (like the editor); controlled by the body.leg-open class */
 #botInfo{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:min(52vh,480px);overflow:auto;
   background:var(--color-background-primary);border-top:0.5px solid var(--color-border-secondary);
   box-shadow:0 -6px 26px rgba(0,0,0,.4);transform:translateY(103%);transition:transform .22s ease;
   will-change:transform;padding:0 24px 56px;box-sizing:border-box}
 body.leg-open #botInfo{transform:translateY(0)}
 #botInfo>.bi-inner{min-height:0}
-/* dolny padding (56px) rezerwuje pas pod pływające przyciski ✎/▦ (left:14 bottom:14) — treść ich nie chowa */
-/* titlebar legendy — styl jak #leHead (nagłówek edytora), klik = zwiń */
+/* bottom padding (56px) reserves a strip for the floating ✎/▦ buttons (left:14 bottom:14) — content doesn't hide them */
+/* legend titlebar — styled like #leHead (editor header), click = collapse */
 .bi-head{display:flex;align-items:center;gap:8px;padding:9px 2px 10px;margin-bottom:8px;
   border-bottom:1px solid var(--color-border-tertiary);font-size:14px;font-weight:600;
   color:var(--color-text-primary);cursor:pointer;user-select:none}
@@ -166,7 +166,7 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten levels from the bottom: an Alpaca SIP 1h source for a universe of 503 tickers, a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01 to QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, quality validation of stores and transforms with a dashboard as a gate before training, Optuna tuning and XGBoost training into a strategy file with a base64-encoded model, and a wall of OOS test results for 503 assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten levels from the bottom: an Alpaca SIP 1h source for a universe of 503 tickers, a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, quality validation of stores and transforms with a dashboard as a gate before training, Optuna tuning and XGBoost training into a strategy file with a base64-encoded model, and a wall of OOS test results for 503 assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
 <p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → quality validation (dashboard) → Optuna+XGB → strategy .py (base64) → OOS test 503 assets. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9 and 0 = views.</p>
 
@@ -248,7 +248,7 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Trend-line setup</b> = 8 transformer features (7 X + closed_through_line audit) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
   <li><b>Quality validation</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
   <li><b>Optuna tunes XGBoost on Train</b> (200 trials, purged walk-forward); champion → <b>strategy .py with a base64 model</b> + selfcheck.</li>
-  <li><b>OOS single run</b>: 503 assets × PF/Sharpe/MDD/TIM/WR.</li>
+  <li><b>OOS single run</b>: 503 assets × PF · Sharpe · MDD · TIM · WR.</li>
 </ol>
 </div></div>
 
@@ -281,9 +281,9 @@ function vget(n,f){
   if(v==null){try{v=THEME._cs?THEME._cs.getPropertyValue(n).trim():'';}catch(e){v='';}THEME[n]=v;}
   return v||f;}
 function rgba(hex,a){var n=parseInt(hex.slice(1),16);return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';}
-// Akcent-jako-TEKST → text-safe wariant CSS (rozwiązywany per-motyw przez vget, ≥4.5:1).
-// Nasycone stałe JS (RED/TEAL/…) zostają dla wypełnień/obrysów (≥3:1). txc() mapuje TYLKO
-// dokładne dopasowania akcentów; rozwiązane hexy (prim/sec/tert) i rgba() przechodzą bez zmian.
+// Accent-as-TEXT → text-safe CSS variant (resolved per-theme via vget, ≥4.5:1).
+// Saturated JS constants (RED/TEAL/…) stay for fills/strokes (≥3:1). txc() maps ONLY
+// exact accent matches; resolved hexes (prim/sec/tert) and rgba() pass through unchanged.
 var TEXT_SAFE={};
 TEXT_SAFE[RED]='--c-error-text';  TEXT_SAFE[SL]='--c-fail-text';
 TEXT_SAFE[TEAL]='--c-store-text'; TEXT_SAFE[GREEN]='--c-train-text';
@@ -291,7 +291,7 @@ TEXT_SAFE[AMB]='--c-control-text';TEXT_SAFE[CAN]='--c-source-text';
 TEXT_SAFE[PINK]='--c-gate-text';  TEXT_SAFE[TP]='--c-good-text';
 function txc(col){var v=TEXT_SAFE[col];return v?vget(v,col):col;}
 function clamp(v,a,b){return v<a?a:(v>b?b:v);}
-function zScale(){return clamp(CAM.z,0.8,1.45)*EXPORT_FONT;}                       // zoom→font-scale clamp (×EXPORT_FONT przy eksporcie)
+function zScale(){return clamp(CAM.z,0.8,1.45)*EXPORT_FONT;}                       // zoom→font-scale clamp (×EXPORT_FONT on export)
 function pulse(){return 0.5+0.5*Math.sin(performance.now()/260);}                  // 0..1 highlight pulse
 function uiFont(wt,fz){return (wt?wt+' ':'')+fz.toFixed(1)+'px "Anthropic Sans",system-ui,sans-serif';}
 function lerp2(p,q,t){return {x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t};}
@@ -307,7 +307,7 @@ var FEATURES=[
     special:'feature X + Y geometry parameter (defines R0) — importance can be mechanical, interpret separately'},
   {name:'bar_return_pct',          family:'price_action',       src:'OHLCV',              unit:'%',     formula:'(c − c[t−1]) / c[t−1] · 100'},
   {name:'body_to_range_ratio',     family:'price_action',       src:'OHLCV',              unit:'[0,1]', formula:'|c − o| / max(ε, h − l)'},
-  {name:'volume_z_score',          family:'volume',             src:'OHLCV · W=20',       unit:'z',     formula:'(v − mean_20) / std_20'},
+  {name:'volume_z_score',          family:'volume',             src:'OHLCV · W=20',       unit:'z',     formula:'(v − mean_20) / std_20  (std=0 → 0)'},
   {name:'touch_count',             family:'trendline_geometry', src:'detector',           unit:'n',     formula:'count(topo_candles ≤ t)'},
   {name:'closed_through_line',     family:'trendline_geometry', src:'detector',           unit:'{0,1}', formula:'1 if sign·(c − L_trend(t)) > 0',
     special:'in Output B (t0) always =1 — break invariant; audit column, outside FEATURE_MANIFEST'}
@@ -339,13 +339,13 @@ var SPLIT={
   purge:'purge = H = 24 candles — the triple barrier window of setups at the end of Train overlaps the boundary',
   embargo:'embargo ≈ 5 sessions (~35 candles) after the boundary — rolling-feature autocorrelation; covers max feature lookback (20 candles)'
 };
-// L5 jako oś czasu: daty → frakcja pełnego zakresu (warmup-start → oos-end). Czyste, bez Date.now (stałe stringi).
-function dord(s){var p=s.split('-');return Math.floor(365.25*p[0])+Math.floor(30.6*(+p[1]+1))+ +p[2];} // monotoniczny licznik dni; liczą się tylko różnice
+// L5 as a time axis: dates → fraction of the full range (warmup-start → oos-end). Clean, no Date.now (constant strings).
+function dord(s){var p=s.split('-');return Math.floor(365.25*p[0])+Math.floor(30.6*(+p[1]+1))+ +p[2];} // monotonic day counter; only differences matter
 var SPLIT_T0=dord(SPLIT.bands[0].from), SPLIT_SPAN=dord(SPLIT.bands[SPLIT.bands.length-1].to)-SPLIT_T0;
 function dfrac(s){return (dord(s)-SPLIT_T0)/SPLIT_SPAN;}
-function aOf(f){return 0.06+0.88*f;}                            // a0=0.06, total=0.88 (oś czasu wzdłuż 'a')
+function aOf(f){return 0.06+0.88*f;}                            // a0=0.06, total=0.88 (time axis along 'a')
 SPLIT.bands.forEach(function(b){b._f0=dfrac(b.from);b._f1=dfrac(b.to);});
-SPLIT.edgeF=[];                                                 // granice wewnętrzne w środku luki między oknami → pasma stykają się, granica = kotwica ząbka
+SPLIT.edgeF=[];                                                 // internal boundaries in the middle of the gap between windows → bands touch, boundary = tick anchor
 for(var _i=0;_i<SPLIT.bands.length-1;_i++)SPLIT.edgeF.push((SPLIT.bands[_i]._f1+SPLIT.bands[_i+1]._f0)/2);
 SPLIT.years=[];
 for(var _y=+SPLIT.bands[0].from.slice(0,4);_y<=+SPLIT.bands[SPLIT.bands.length-1].to.slice(0,4);_y++)
@@ -415,13 +415,13 @@ function manifest(a){var r=rng(a*991+7);
     selfcheck:'golden input → output: PASS'};
 }
 
-var BND_DZ=[189,189,192,189,189,189,185,189,202];   // 9 granic (10 poziomów): wstawiona granica L6 detektor
+var BND_DZ=[189,189,192,189,189,189,185,189,202];   // 9 boundaries (10 levels): inserted L6 detector boundary
 
-// ===== JEDNO ŹRÓDŁO PRAWDY: graf sceny (spec v1.2) =====
-// family = jedna z 5 sylwetek (PR-5), role = klucz palety wg roli (PR-5),
-// col = bieżący kolor (używany teraz przez caption; PR-5 przełączy na roleColor(role)).
-// title BEZ prefiksu 'Lx · ' — caption() dokleja numer z lev, więc renumeracja jest darmowa.
-// dataKey wskazuje istniejące tablice (nie kopiujemy treści) → caption/legenda/inspect czytają z nich.
+// ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
+// family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
+// col = current color (now used by caption; PR-5 will switch to roleColor(role)).
+// title WITHOUT the 'Lx · ' prefix — caption() appends the number from lev, so renumbering is free.
+// dataKey points to existing arrays (we don't copy content) → caption/legend/inspect read from them.
 var DATA={FEATURES:FEATURES,QC:QC,SPLIT:SPLIT,DQ:DQ,METRICS:METRICS,OPTUNA:OPTUNA};
 var PIPELINE={
   nodes:[
@@ -429,7 +429,7 @@ var PIPELINE={
      title:'SOURCE: ALPACA SIP · S&P 500 (503)',subtitle:'fetch 1h OHLCV for the S&P 500 universe',
      summary:'SIP 1h feed, session 09:00–16:00 ET (~7 candles/day), cron :05',
      input_contract:'Alpaca Market Data API (feed=sip, API key)',transform_verb:'parse',
-     output_contract:'raw 1h OHLCV per ticker (UTC tz-aware)',
+     output_contract:'raw 1h OHLCV per ticker (naive ET)',
      metric:{label:'tickers',value:'503'},invariants:['ET session guard','upsert lookback 5 days'],
      status:'ok',hitType:'universe'},
     {id:'L2',lev:1,family:'store',role:'source',col:CAN,
@@ -460,7 +460,7 @@ var PIPELINE={
      status:'ok',dataKey:'SPLIT',hitType:'split'},
     {id:'L6',lev:5,family:'transform',role:'transform',col:GREEN,
      title:'TREND-LINE SETUP DETECTOR',subtitle:'detect L_trend, L_opp, entry_candle, R0',
-     summary:'detector contract (spec §3) — bridge between raw candles and feature rows',
+     summary:'detector contract (build_contract_eng.md §Detector output) — bridge between raw candles and feature rows',
      input_contract:'OHLCV in the Train window (candles ≤ t0)',transform_verb:'detect',
      output_contract:'per setup: direction, L_trend(t), L_opp(t), topo_candles, t0, R0, take_profit, time_barrier',
      metric:{label:'min touch',value:'2'},invariants:['causal fits (candles ≤ t0)','MIN_TOUCHES = 2','first break close-based'],
@@ -516,8 +516,8 @@ var PIPELINE={
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
 PIPELINE.nodes.forEach(function(n){NODE_BY_ID[n.id]=n;NODE_BY_LEV[n.lev]=n;});
-function edgeAt(i){return PIPELINE.edges[i];}                       // granica i = krawędź między poziomem i a i+1
-// BND_DEF wyprowadzone z krawędzi (treść = edge.detail) — każda granica ma czasownik (edge.verb).
+function edgeAt(i){return PIPELINE.edges[i];}                       // boundary i = edge between level i and i+1
+// BND_DEF derived from the edges (content = edge.detail) — each boundary has a verb (edge.verb).
 var BND_DEF=PIPELINE.edges.map(function(e){return e.detail;});
 
 var stage=document.getElementById('stage'),cv=document.getElementById('tlc'),ctx=cv.getContext('2d');
@@ -526,13 +526,13 @@ var tip=document.getElementById('tip'),panel=document.getElementById('panel'),
 var cw=940,chh=600;
 
 var STATE={mode:'overview',asset:0,labels:true,flow:true,names:'sample',metric:'pf',speed:1,paused:false,camPreset:'iso',inspect:null};
-var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','leak']; // klawisze 1-9,0 → tryb (jedno źródło)
+var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','leak']; // keys 1-9,0 → mode (single source)
 var CLK=0,lastTick=0,flash=0;
 var LOD={cap:0.55,obj:0.55,name:0.75,micro:1.1};
 var LBL_DEBUG=false;try{LBL_DEBUG=location.search.indexOf('lbldebug')>=0;}catch(e){}
-var LBL_AUDIT=false;try{LBL_AUDIT=location.search.indexOf('lblaudit')>=0;}catch(e){}  // CI: zrzut pudełek etykiet do <pre id=lblaudit>
-var PIX_AUDIT=false;try{PIX_AUDIT=location.search.indexOf('pixaudit')>=0;}catch(e){}  // CI: podpis pikselowy (downsample 64×40) do <pre id=pixaudit>
-var EXPORT_FONT=1;                                                                   // mnożnik tierów fontów przy eksporcie PNG
+var LBL_AUDIT=false;try{LBL_AUDIT=location.search.indexOf('lblaudit')>=0;}catch(e){}  // CI: dump label boxes to <pre id=lblaudit>
+var PIX_AUDIT=false;try{PIX_AUDIT=location.search.indexOf('pixaudit')>=0;}catch(e){}  // CI: pixel signature (downsample 64×40) to <pre id=pixaudit>
+var EXPORT_FONT=1;                                                                   // font-tier multiplier for PNG export
 
 var userMoved=false;
 
@@ -643,13 +643,13 @@ function txtS(s,x,y,col,al,sz,wt){
     var ax=(al==='center')?x-tw/2:((al==='right')?x-tw:x);
     var ph=pulse();
     fillRR(ax-5,y-fz-3,tw+10,fz+8,5,rgba(TEAL,0.14+0.14*ph),rgba(TEAL,0.55+0.4*ph),1.3);}
-  ctx.fillStyle=txc(col);ctx.fillText(s,x,y);}                                    // txc(): akcent→text-safe (WCAG ≥4.5:1)
+  ctx.fillStyle=txc(col);ctx.fillText(s,x,y);}                                    // txc(): accent→text-safe (WCAG ≥4.5:1)
 function txt(s,p,col,al,sz,wt,dx,dy){var q=CAM.S(p);txtS(s,q.x+(dx||0),q.y+(dy||0),col,al,sz,wt);}
 function rrectS(x,y,w,h,r){if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}else{ctx.beginPath();ctx.rect(x,y,w,h);}}
-function fillRR(x,y,w,h,r,fillStyle,strokeStyle,lw){           // wypełniony + obrysowany rounded-rect (kafel/pill)
+function fillRR(x,y,w,h,r,fillStyle,strokeStyle,lw){           // filled + stroked rounded-rect (tile/pill)
   ctx.fillStyle=fillStyle;rrectS(x,y,w,h,r);ctx.fill();
   ctx.save();ctx.strokeStyle=strokeStyle;ctx.lineWidth=lw||1.2;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
-function strokeRR(x,y,w,h,r,col,lw){                          // sam obrys rounded-rect (glow/flash)
+function strokeRR(x,y,w,h,r,col,lw){                          // outline-only rounded-rect (glow/flash)
   ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw||1;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
 function triUpS(x,y,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4.5,y+7);ctx.lineTo(x+4.5,y+7);ctx.closePath();ctx.fill();}
 
@@ -672,17 +672,17 @@ function prism(lev,a0,b0,a1,b1,base,h,col,topA){
     if(f.s)topScr=scr;}
   return topScr||[CAM.S(T0),CAM.S(T1),CAM.S(T2),CAM.S(T3)];}
 
-// Paleta wg ROLI (5 rodzin), czerwień (RED/SL) zarezerwowana na błąd/FAIL — nie jest kolorem kategorii.
+// Palette by ROLE (5 families), red (RED/SL) reserved for error/FAIL — it is not a category color.
 function roleColor(role){var m={source:CAN,store:TEAL,transform:GREEN,control:AMB,output:TP};return m[role]||CAN;}
-// tytuł + kolor warstwy czytane z grafu (NODE_BY_LEV). Numer 'Lx' doklejany z lev → renumeracja darmowa.
+// layer title + color read from the graph (NODE_BY_LEV). The 'Lx' number is appended from lev → renumbering is free.
 function caption(lev){if(!STATE.labels)return;
   var n=NODE_BY_LEV[lev];if(!n)return;
   var s=T('lvl'+(lev+1),'L'+(lev+1)+' · '+n.title,'Levels');if(!s)return;
   var by=(BNDY[lev]!=null)?BNDY[lev]:CAM.S(P3(0,0,lev*ISO.LEVH+255)).y;
-  txtS(s,10,by+15,roleColor(n.role),'left',12.5,'700');         // kolor wg roli (qualitative) — tytuł nigdy czerwony
+  txtS(s,10,by+15,roleColor(n.role),'left',12.5,'700');         // color by role (qualitative) — the title is never red
   var fz=12.5*zScale(),w=ctx.measureText(s).width;
   obstacle(10,by+15-fz-2,10+w,by+18);
-  HITS.addRect(8,by+15-fz-4,w+10,fz+10,{type:'layercap',lev:lev});  // klik tytułu = Inspekcja warstwy
+  HITS.addRect(8,by+15-fz-4,w+10,fz+10,{type:'layercap',lev:lev});  // title click = Layer inspection
 }
 
 function flowArrow(lev){
@@ -764,7 +764,7 @@ function boundaryCards(){
     rrectS(x,y,W,H,8);ctx.stroke();ctx.restore();
     if(c.hl)strokeRR(x-2.5,y-2.5,W+5,H+5,10,rgba(TEAL,0.25+0.45*pulse()),3.5);
     var yT=y+pad+tz;
-    var ev=(edgeAt(c.i)||{}).verb||'';                          // każda granica wiedzie czasownikiem (z krawędzi grafu)
+    var ev=(edgeAt(c.i)||{}).verb||'';                          // each boundary leads with a verb (from the graph edge)
     txtS('L'+(c.i+1)+' → L'+(c.i+2)+(ev?' · '+ev:''),x+9,yT,TEAL,'left',8,'700');
     for(i=0;i<lines.length;i++)txtS(lines[i],x+9,yT+6+i*lh+fz,sec,'left',8.5);
     HITS.addRect(x,y,W,H,{type:'bnote',i:c.i});
@@ -878,7 +878,7 @@ DuckDBLayer.prototype.draw=function(){
 };
 function QCGateRing(){}
 QCGateRing.prototype.draw=function(){
-  // zamki rozmieszczone w ułamkowym 'a' (nie stałe px) → rozsuwają się i siedzą na planie warstwy
+  // locks placed at fractional 'a' (not fixed px) → they spread out and sit on the layer plane
   var k,n=QC.length,aStart=0.10,aStep=0.045;
   var s0=SS(2,aStart,0.88,4),sN=SS(2,aStart+(n-1)*aStep,0.88,4);
   HITS.addRect(s0.x-8,s0.y-12,(sN.x-s0.x)+20,24,{type:'qcAll'});
@@ -914,7 +914,7 @@ TransformLayer.prototype.draw=function(){
   HITS.addRect(pq.x-24,pq.y-30,58,54,{type:'parquet'});
   if(STATE.labels){
     var pt1=SS(3,0.5,0.16,8),pt2=SS(3,0.5,0.97,0);
-    qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, spec §4)',grp:'Snapshot / Parquet',
+    qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, build_contract_eng.md §Features)',grp:'Snapshot / Parquet',
       x:pt1.x,y:pt1.y,col:sec,al:'center',sz:8.5,pr:1});
     qLabel({key:'tf_caption',def:'503 files · zstd · <TICKER>/ohlcv.parquet',grp:'Snapshot / Parquet',
       x:pt2.x,y:pt2.y,col:tert,al:'center',sz:8.5,pr:1});
@@ -952,22 +952,22 @@ SplitLayer.prototype.draw=function(){
     HITS.addPts([lp(4,e-0.02,0.28,8),lp(4,e+0.02,0.80,0)],{type:'purge',k:i});
     HITS.addPts([lp(4,e+0.006,0.28,8),lp(4,e+0.032,0.80,0)],{type:'embargo',k:i});
   }
-  // --- Oś czasu pod pasmami: linia bazowa + ząbki lat (do skali) + wyróżnione granice ---
+  // --- Time axis under the bands: baseline + year ticks (for scale) + highlighted boundaries ---
   var axB=0.86,axZ=1,axA0=aOf(0),axA1=aOf(1);
   line2(lp(4,axA0,axB,axZ),lp(4,axA1,axB,axZ),tert,1.4,[]);
-  var pe=CAM.S(lp(4,axA1,axB,axZ)),                               // strzałka „czas →" jako szewron z punktów świata (slab przechylony)
+  var pe=CAM.S(lp(4,axA1,axB,axZ)),                               // "time →" arrow as a chevron from world points (tilted slab)
       pk1=CAM.S(lp(4,axA1-0.018,axB-0.03,axZ)),pk2=CAM.S(lp(4,axA1-0.018,axB+0.03,axZ));
   ctx.save();ctx.strokeStyle=tert;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.lineCap='round';
   ctx.beginPath();ctx.moveTo(pk1.x,pk1.y);ctx.lineTo(pe.x,pe.y);ctx.lineTo(pk2.x,pk2.y);ctx.stroke();ctx.restore();
-  if(STATE.labels)txt('czas',lp(4,axA1,axB,axZ),tert,'left',7.5,null,8,4);
+  if(STATE.labels)txt('time',lp(4,axA1,axB,axZ),tert,'left',7.5,null,8,4);
   var emphF=[{f:dfrac('2016-10-14'),col:CAN,key:'split_axis_warmend',date:'2016-10-14'},
              {f:SPLIT.edgeF[1],col:SL,key:'split_axis_trainoos',date:'2023-12-29 → 2024-01-02'}];
   var firstY=SPLIT.years[0].y,lastY=SPLIT.years[SPLIT.years.length-1].y;
   for(i=0;i<SPLIT.years.length;i++){
     var Y=SPLIT.years[i],ay=aOf(Y.f),dup=false,e2,keep;
-    for(e2=0;e2<emphF.length;e2++)if(Math.abs(Y.f-emphF[e2].f)<0.004)dup=true;   // dedup: rok ≈ granica → granica przejmuje znacznik
+    for(e2=0;e2<emphF.length;e2++)if(Math.abs(Y.f-emphF[e2].f)<0.004)dup=true;   // dedup: year ≈ boundary → boundary takes the marker
     if(dup)continue;
-    if(CAM.z>=0.75)keep=true;                                                     // LOD: pełne lata / co 2 / rzadkie; końce zawsze
+    if(CAM.z>=0.75)keep=true;                                                     // LOD: every year / every 2 / sparse; ends always
     else if(CAM.z>=0.55)keep=(Y.y%2===0)||Y.y===firstY||Y.y===lastY;
     else keep=(Y.y%4===0)||Y.y===firstY||Y.y===lastY;
     if(!keep)continue;
@@ -975,11 +975,11 @@ SplitLayer.prototype.draw=function(){
     if(STATE.labels){var sy=CAM.S(lp(4,ay,axB+0.03,axZ)),fz=7.5*zScale();
       txtS(String(Y.y),sy.x,sy.y+10,tert,'center',7.5);
       var tw=ctx.measureText(String(Y.y)).width;
-      obstacle(sy.x-tw/2-2,sy.y+10-fz-2,sy.x+tw/2+2,sy.y+13);}                     // zarezerwuj miejsce → qLabel-e unikają lat
+      obstacle(sy.x-tw/2-2,sy.y+10-fz-2,sy.x+tw/2+2,sy.y+13);}                     // reserve space → qLabels avoid the years
   }
   for(i=0;i<emphF.length;i++){
     var E=emphF[i],ae=aOf(E.f);
-    line2(lp(4,ae,axB-0.05,axZ),lp(4,ae,axB+0.05,axZ),E.col,1.6,[]);              // wyższy ząbek granicy okna
+    line2(lp(4,ae,axB-0.05,axZ),lp(4,ae,axB+0.05,axZ),E.col,1.6,[]);              // taller tick for the window boundary
     if(STATE.labels){var se=SS(4,ae,axB+0.06,axZ);
       qLabel({key:E.key,def:E.date,grp:'Time split',
         x:se.x,y:se.y,col:E.col,al:'center',sz:8,wt:'600',pr:2,lod:0.55});}
@@ -990,16 +990,16 @@ SplitLayer.prototype.draw=function(){
 };
 
 function FeatureForest(){}
-// L6 · detektor setupu linii trendu (kontrakt §3) — kompaktowy rig na płaszczyźnie postera.
-// Pełna anatomia w widoku płaskim 'setup' (SetupGeometryView); tu tylko ikona etapu.
+// L6 · trend-line setup detector (contract §3) — compact rig on the poster plane.
+// Full anatomy in the flat 'setup' view (SetupGeometryView); here only the stage icon.
 function SetupDetectorLayer(){}
 SetupDetectorLayer.prototype.draw=function(){
   caption(5);
   var n=NODE_BY_LEV[5],tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
   var a0=0.10,aw=0.80,bd=0.5,base=4,hgt=150,N=9,t0=6,ut0=t0/(N-1),i;
-  function W(u,h){return lp(5,a0+u*aw,bd,base+h*hgt);}    // u∈[0,1] poziom, h∈[0,1] „cena”
-  function LT(u){return 0.80-0.34*u;}                      // opór (handlowana) — opada
-  function LO(u){return LT(u)-0.26;}                       // linia przeciwna (tu leży SL)
+  function W(u,h){return lp(5,a0+u*aw,bd,base+h*hgt);}    // u∈[0,1] level, h∈[0,1] "price"
+  function LT(u){return 0.80-0.34*u;}                      // resistance (traded) — falls
+  function LO(u){return LT(u)-0.26;}                       // opposing line (the SL sits here)
   polyS([CAM.S(W(0,1.02)),CAM.S(W(1,1.02)),CAM.S(W(1,0)),CAM.S(W(0,0))],rgba(TEAL,0.05),bord,1,[]);
   line2(W(0,LT(0)),W(1,LT(1)),RED,2,[]);                   // L_trend solid
   line2(W(0,LO(0)),W(1,LO(1)),CAN,1.5,[6,4]);              // L_opp dashed
@@ -1011,12 +1011,12 @@ SetupDetectorLayer.prototype.draw=function(){
     else{hc=prevc+0.05;htop=hc+0.04;hbot=hc-0.04;}
     prevc=hc;
     var col=(i>=t0)?TP:CAN,du=0.030,bb=0.022;
-    line2(W(u,hbot),W(u,htop),col,1.2,[]);                 // knot
+    line2(W(u,hbot),W(u,htop),col,1.2,[]);                 // wick
     poly([W(u-du,hc+bb),W(u+du,hc+bb),W(u+du,hc-bb),W(u-du,hc-bb)],rgba(col,0.5),col,1);
     if(i===2||i===4){var st=CAM.S(W(u,lt));ctx.fillStyle=AMB;ctx.beginPath();ctx.arc(st.x,st.y,3.5,0,7);ctx.fill();
       HITS.addRect(st.x-6,st.y-6,12,12,{type:'setupTouch'});}
   }
-  line2(W(ut0,0),W(ut0,1.0),rgba(TEAL,0.55),1.4,[2,3]);    // pion entry
+  line2(W(ut0,0),W(ut0,1.0),rgba(TEAL,0.55),1.4,[2,3]);    // vertical entry
   var se=CAM.S(W(ut0,LT(ut0)+0.06));
   ctx.save();ctx.strokeStyle=TEAL;ctx.lineWidth=2;ctx.beginPath();ctx.arc(se.x,se.y,5,0,7);ctx.stroke();ctx.restore();
   HITS.addRect(se.x-7,se.y-7,14,14,{type:'setupEntry'});
@@ -1034,62 +1034,62 @@ SetupDetectorLayer.prototype.draw=function(){
   }
 };
 
-// L7 jako stojąca macierz 3D (setupy t × cechy X + label Y) — wzorzec PT(u,v) z OOSWall
+// L7 as a standing 3D matrix (setups t × features X + label Y) — PT(u,v) pattern from OOSWall
 FeatureForest.prototype.draw=function(){
   caption(6);
   var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
       bord=vget('--color-border-secondary','#555'),ai=STATE.asset;
   var bw=0.55,base=4,HZ6=150,nf=FEATURES.length;        // nf=8 (7 X + 1 audit)
-  var NCOL=nf+2,NROW=6,ycol=NCOL-1;                      // kol 0=nagłówek t · 1..nf=cechy · ycol=Y;  rzędy 0=nagłówek x · 1..4=setupy · 5=…
+  var NCOL=nf+2,NROW=6,ycol=NCOL-1;                      // col 0=header t · 1..nf=features · ycol=Y;  rows 0=header x · 1..4=setups · 5=…
   var A=CAM.S(lp(6,0.08,bw,base)),B=CAM.S(lp(6,0.92,bw,base)),
       T1=CAM.S(lp(6,0.08,bw,base+HZ6)),T2=CAM.S(lp(6,0.92,bw,base+HZ6));
   function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
   polyS([T1,T2,B,A],rgba(CAN,0.06),bord,1,[]);
   var SUB='₁₂₃₄₅₆₇₈',rr,cc,showVal=(CAM.z>=1.0);
-  // czytelne skróty kolumn (work order) mapowane 1:1 na FEATURES; pełne nazwy w hover/inspect
+  // readable column abbreviations (work order) mapped 1:1 to FEATURES; full names in hover/inspect
   var FEAT_ABBR=['dTrend','dOpp','risk%','ret%','body/range','volZ','touches','close>line'];
   for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
     var u0=cc/NCOL,u1=(cc+0.94)/NCOL,v0=rr/NROW,v1=(rr+0.92)/NROW;
     var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
     var hdrRow=(rr===0),hdrCol=(cc===0),isY=(cc===ycol),isEll=(rr===NROW-1);
-    if(hdrCol&&hdrRow){                                  // róg z przekątną x/t
+    if(hdrCol&&hdrRow){                                  // corner with the x/t diagonal
       polyS([p00,p10,p11,p01],rgba(CAN,0.14),bord,0.8,[]);
       ctx.save();ctx.strokeStyle=prim;ctx.lineWidth=1.4;ctx.setLineDash([]);
       ctx.beginPath();ctx.moveTo(p00.x,p00.y);ctx.lineTo(p11.x,p11.y);ctx.stroke();ctx.restore();
       var px=lerp2(p10,pc,0.4),pt=lerp2(p01,pc,0.4);
       txtS('x',px.x,px.y+4,prim,'center',11,'700');txtS('t',pt.x,pt.y+4,prim,'center',11,'700');
-    }else if(hdrRow){                                    // nagłówek kolumny — transform=GREEN (X) vs cel=TP (Y)
+    }else if(hdrRow){                                    // column header — transform=GREEN (X) vs target=TP (Y)
       polyS([p00,p10,p11,p01],isY?rgba(TP,0.20):rgba(GREEN,0.18),bord,0.8,[]);
       if(isY)txtS('Y',pc.x,pc.y+5,TP,'center',12,'700');
-      else{var f=FEATURES[cc-1];                            // glif rodziny zamiast placeholderu x₁..x₈; skrót na etykiecie osi
+      else{var f=FEATURES[cc-1];                            // family glyph instead of the x₁..x₈ placeholder; abbreviation on the axis label
         drawFamilyMarker(pc.x,pc.y+3,f.family,GREEN);
         if(f.special)txtS('!',p10.x-6,p00.y+12,AMB,'center',9,'700');}
-    }else if(hdrCol){                                    // nagłówek wiersza (setup)
+    }else if(hdrCol){                                    // row header (setup)
       polyS([p00,p10,p11,p01],rgba(CAN,0.10),bord,0.8,[]);
       txtS(isEll?'…':('t'+SUB.charAt(rr-1)),pc.x,pc.y+4,prim,'center',10,'700');
-    }else if(isY){                                       // komórka label Y (0/1)
+    }else if(isY){                                       // label Y cell (0/1)
       var yv=isEll?-1:(rng(ai*23+rr*557+131)()<0.5?0:1);
       polyS([p00,p10,p11,p01],yv<0?null:rgba(TP,0.10+0.45*yv),bord,0.8,[]);
       if(showVal&&yv>=0)txtS(String(yv),pc.x,pc.y+3,yv?TP:tert,'center',8.5,'700');
-    }else{                                               // komórka cechy X — neutralna (dane), nie czerwona
+    }else{                                               // feature X cell — neutral (data), not red
       polyS([p00,p10,p11,p01],rgba(CAN,0.09),bord,0.8,[]);
       if(showVal&&!isEll)txtS((rng(ai*7+rr*131+cc*977)()*4-2).toFixed(1),pc.x,pc.y+3,tert,'center',7.5);
     }
   }
-  for(cc=1;cc<NCOL;cc++){                                // HITS per kolumna
+  for(cc=1;cc<NCOL;cc++){                                // HITS per column
     var q0=PT(cc/NCOL,0),q1=PT((cc+0.94)/NCOL,0),q2=PT(cc/NCOL,1),q3=PT((cc+0.94)/NCOL,1);
     var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
         y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
     HITS.addRect(x0,y0,x1-x0,y1-y0,cc===ycol?{type:'label'}:{type:'feature',f:cc-1});
   }
   if(STATE.labels){
-    for(cc=1;cc<ycol;cc++){var ph=PT((cc+0.47)/NCOL,-0.05),pg=PT((cc+0.47)/NCOL,0.0);   // skróty kolumn (pełne nazwy: hover/inspect)
+    for(cc=1;cc<ycol;cc++){var ph=PT((cc+0.47)/NCOL,-0.05),pg=PT((cc+0.47)/NCOL,0.0);   // column abbreviations (full names: hover/inspect)
       qLabel({key:'feat'+(cc-1),text:FEAT_ABBR[cc-1],x:ph.x,y:ph.y,col:vget('--color-text-secondary','#999'),
         al:'left',sz:9,rot:-0.62,pr:2,lod:LOD.name,ax:pg.x,ay:pg.y});}
-    var phY=PT((ycol+0.47)/NCOL,-0.05),pgY=PT((ycol+0.47)/NCOL,0.0);                     // etykieta celu
+    var phY=PT((ycol+0.47)/NCOL,-0.05),pgY=PT((ycol+0.47)/NCOL,0.0);                     // target label
     qLabel({key:'feat_Y',def:'Y_outcome',grp:'Features & label',x:phY.x,y:phY.y,col:TP,
       al:'left',sz:9,wt:'600',rot:-0.62,pr:2,lod:LOD.name,ax:pgY.x,ay:pgY.y});
-    var pw=PT(1.02,0.12),pwa=PT(0.99,0.12);                                              // waga próbki (chip obok Y)
+    var pw=PT(1.02,0.12),pwa=PT(0.99,0.12);                                              // sample weight (chip next to Y)
     qLabel({key:'feat_w',def:'w_unique (weight)',grp:'Features & label',x:pw.x,y:pw.y,col:vget('--color-text-secondary','#999'),
       al:'left',sz:8.5,rot:-0.62,pr:2,lod:LOD.name,ax:pwa.x,ay:pwa.y});
     var pcap=PT(0.5,-0.17);
@@ -1182,8 +1182,8 @@ OOSWall.prototype.draw=function(){
       drawMicroSheet(ms.x-7,ms.y-9,14,18,AMB);
     }
   }
-  // przeszkoda ściany w 6 paskach (AABB całego pochylonego quada obejmowałby
-  // pusty trójkąt nad ścianą i wypychał etykiety nazw)
+  // wall obstacle in 6 strips (the AABB of the whole tilted quad would cover
+  // the empty triangle above the wall and push name labels away)
   for(r=0;r<6;r++){
     var su0=r/6,su1=(r+1)/6,
         q00=PT(su0,0),q10=PT(su1,0),q01=PT(su0,1),q11=PT(su1,1);
@@ -1191,7 +1191,7 @@ OOSWall.prototype.draw=function(){
              Math.max(q00.x,q10.x,q01.x,q11.x),Math.max(q00.y,q10.y,q01.y,q11.y));
   }
   var r,c,omc=[];
-  for(c=0;c<C;c++)omc[c]=oosMock(c);   // oosMock zależy tylko od c → policz raz na kolumnę (nie 5×)
+  for(c=0;c<C;c++)omc[c]=oosMock(c);   // oosMock depends only on c → compute once per column (not 5×)
   for(r=0;r<R;r++)for(c=0;c<C;c++){
     var u0=c/C,u1=(c+0.82)/C,v0=r/R,v1=(r+0.78)/R;
     var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1);
@@ -1222,7 +1222,7 @@ OOSWall.prototype.draw=function(){
   }
 };
 
-function pillCore(px,py,w,h,col,label,fillA,lw,fz,dy){         // wspólny rdzeń pill/pillF (jedno źródło, brak rozjazdu)
+function pillCore(px,py,w,h,col,label,fillA,lw,fz,dy){         // shared core of pill/pillF (single source, no divergence)
   var s=CAM.S({x:px,y:py});
   fillRR(s.x-w/2,s.y-h/2,w,h,8,rgba(col,fillA==null?0.12:fillA),col,lw);
   txtS(label,s.x,s.y+dy,vget('--color-text-primary','#eee'),'center',fz,'600');
@@ -1237,10 +1237,10 @@ function monoS(s,x,y,col,al,sz){
   ctx.fillStyle=col;ctx.fillText(s,x,y);}
 
 /* === GLYPH PASS ===
-   Immediate-mode renderery obiektów 3D. Każdy glif sam rejestruje hit-area,
-   przeszkodę dla deklutteru i zostawia canvas bez dashy. */
+   Immediate-mode renderers for 3D objects. Each glyph registers its own hit-area,
+   an obstacle for the declutter, and leaves the canvas without dashes. */
 var GLYPHS={};
-function scr(p){return CAM.S(p);} // bound wrapper do .map(scr); NIE zamieniać na .map(CAM.S) — CAM.S używa this
+function scr(p){return CAM.S(p);} // bound wrapper for .map(scr); do NOT replace with .map(CAM.S) — CAM.S uses this
 function addObstacleRect(x,y,w,h){obstacle(x,y,x+w,y+h);}
 function addObstaclePts(pts,pad){
   var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i,p;
@@ -1420,8 +1420,8 @@ function drawPyFile(x,y,w,h,col,label){
   txtS('.b64',x,y+14,col,'center',8,'700');
 }
 function drawModelTree(x,y,col){
-  // czysty glif drzewka — napis "XGB" idzie przez kolejkę etykiet (xgb_title),
-  // żeby był edytowalny i decluttowany; tu zero tekstu (brak duplikatu)
+  // clean tree glyph — the "XGB" label goes through the label queue (xgb_title),
+  // so it's editable and decluttered; zero text here (no duplicate)
   var pts=[[0,-17],[-16,0],[0,0],[16,0],[-24,16],[-8,16],[8,16],[24,16]],i;
   ctx.save();ctx.strokeStyle=rgba(col,0.8);ctx.fillStyle=rgba(col,0.20);ctx.lineWidth=1;ctx.setLineDash([]);
   for(i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+pts[0][0],y+pts[0][1]);ctx.lineTo(x+pts[i][0],y+pts[i][1]);ctx.stroke();}
@@ -1443,7 +1443,7 @@ function drawTrialFunnel(lev,a,b,col){
   HITS.addPts([lp(lev,a-0.36,b-0.90,34),lp(lev,a+0.36,b+0.90,14)],{type:'optuna'});
   addObstacleRect(sT.x-18,sT.y-7,36,14);
 }
-// Rejestr glifów. World-space (args lev,a,b lub g={lev,a,b,...}): zipCrate, stackBadge,
+// Glyph registry. World-space (args lev,a,b or g={lev,a,b,...}): zipCrate, stackBadge,
 // dbCylinder, sqlView, trialFunnel. Screen-space (args x,y w px): cloud, snapshotCam,
 // parquetFile, labelTag, pyFile, modelTree.
 GLYPHS.cloud=drawCloudSource;
@@ -1459,10 +1459,10 @@ GLYPHS.modelTree=drawModelTree;
 GLYPHS.trialFunnel=drawTrialFunnel;
 
 /* === LABEL PASS ===
-   Odroczone etykiety obiektów: warstwy kolejkują przez qLabel(), rysuje
-   drawLabels() na samym końcu klatki. q={key,def,grp,x,y,col,al,sz,wt,
-   rot,pr,lod,ax,ay}: (x,y) preferowana pozycja ekranowa, (ax,ay) kotwica
-   leader-line, pr=3 nigdy nie znika, lod = min CAM.z. */
+   Deferred object labels: layers enqueue via qLabel(), drawn by
+   drawLabels() at the very end of the frame. q={key,def,grp,x,y,col,al,sz,wt,
+   rot,pr,lod,ax,ay}: (x,y) preferred screen position, (ax,ay) anchor for the
+   leader-line, pr=3 never disappears, lod = min CAM.z. */
 var LQ=[],OBST=[];
 function obstacle(x0,y0,x1,y1){OBST.push({x0:x0,y0:y0,x1:x1,y1:y1});}
 function qLabel(q){
@@ -1475,7 +1475,7 @@ function qLabel(q){
   LQ.push(q);
 }
 function lblBoxes(q,dx,dy){
-  // rotowane etykiety: 3 segmenty wzdłuż tekstu zamiast jednego grubego AABB
+  // rotated labels: 3 segments along the text instead of one thick AABB
   var x=q.x+dx,y=q.y+dy,out=[],i,k;
   var x0=(q.al==='center')?-q.w/2:((q.al==='right')?-q.w:0),x1=x0+q.w,y0=-q.fz-2,y1=3;
   if(q.rot){
@@ -1515,8 +1515,8 @@ function drawLabels(){
   for(i=0;i<ord.length;i++){q=ord[i];
     var dyS=q.fz+7,dxS=q.w/2+8,CAND,best=null,bestA=1e18,chosen=null;
     if(q.rot){
-      // rotowane: przesunięcia wzdłuż własnej osi tekstu (u) i prostopadle (v)
-      // — etykiety schodkują się po swojej diagonali zamiast rozsypywać po ekranie
+      // rotated: offsets along the text's own axis (u) and perpendicular (v)
+      // — labels step along their diagonal instead of scattering across the screen
       var uc=Math.cos(q.rot),us=Math.sin(q.rot);
       CAND=[[0,0],
         [-uc*dyS,-us*dyS],[uc*dyS,us*dyS],
@@ -1529,7 +1529,7 @@ function drawLabels(){
     }
     for(k=0;k<CAND.length;k++){
       var bs=lblBoxes(q,CAND[k][0],CAND[k][1]),u=boxUnion(bs),a=0,m,n;
-      // clamp do kadru (chroni krawędzie eksportu PNG)
+      // clamp to the frame (protects the PNG export edges)
       var sx=0,sy=0;
       if(u.x0<4)sx=4-u.x0;else if(u.x1>cw-4)sx=cw-4-u.x1;
       if(u.y0<12)sy=12-u.y0;else if(u.y1>chh-4)sy=chh-4-u.y1;
@@ -1543,7 +1543,7 @@ function drawLabels(){
       if(a<bestA){bestA=a;best={bs:bs,dx:CAND[k][0]+sx,dy:CAND[k][1]+sy};}
     }
     if(!chosen){
-      if(q.pr<=2){if(auditD)auditD.push({key:q.key,pr:q.pr});continue;} // drop — pr3 nigdy nie znika
+      if(q.pr<=2){if(auditD)auditD.push({key:q.key,pr:q.pr});continue;} // drop — pr3 never disappears
       chosen=best;
     }
     var fx=q.x+chosen.dx,fy=q.y+chosen.dy;
@@ -1570,7 +1570,7 @@ function drawLabels(){
     ctx.setLineDash([]);setFont('700 14px ui-monospace,monospace');ctx.textAlign='left';
     ctx.fillStyle='#f0f';ctx.fillText('CAM.z='+CAM.z.toFixed(3),8,chh-10);
     ctx.restore();CUR_FONT='';}
-  if(LBL_AUDIT){                                       // CI: zrzut rozmieszczonych pudełek + odrzuconych do DOM
+  if(LBL_AUDIT){                                       // CI: dump placed boxes + rejected ones to the DOM
     var el=document.getElementById('lblaudit');
     if(!el){el=document.createElement('pre');el.id='lblaudit';el.style.display='none';document.body.appendChild(el);}
     el.textContent=JSON.stringify({mode:STATE.mode,z:+CAM.z.toFixed(3),cw:Math.round(cw),chh:Math.round(chh),placed:auditP,dropped:auditD});
@@ -1592,7 +1592,7 @@ DataDAGView.prototype.draw=function(){
   s=pill(0,45,290,26,CAN,'atomic snapshot + manifest JSON (price_view)',0.08);HITS.addRect(s.x-145,s.y-13,290,26,{type:'snapshot'});
   s=pill(0,145,310,28,AMB,'parquet/<TICKER>/ohlcv.parquet · ×503',0.10);HITS.addRect(s.x-155,s.y-14,310,28,{type:'parquet'});
   txt('zero duplication: USD exists only in the VIEW · raw stays in BIGINT ×10000',{x:0,y:200},sec,'center',10);
-  txt('features computed only by the transformer (L7, spec §4) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
+  txt('features computed only by the transformer (L7, build_contract_eng.md §Features) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
 };
 
 function SplitTimelineView(){}
@@ -1702,7 +1702,7 @@ SetupGeometryView.prototype.draw=function(){
     HITS.addRect(sT.x-7,sT.y-7,14,14,{type:'setupTouch'});
   }
   txt('entry_candle t0',{x:X(t0),y:Y(S.cs[t0].h)-26},TEAL,'center',9,'700');
-  txt('first close > L_trend (after ≥ MIN_TOUCHES=2)',{x:X(t0),y:Y(S.cs[t0].h)-14},tert,'center',7.5);
+  txt('first close breaks L_trend in the direction (after ≥ MIN_TOUCHES=2)',{x:X(t0),y:Y(S.cs[t0].h)-14},tert,'center',7.5);
 
   var xR=X(t0)+10;
   line2({x:xR,y:Y(S.cs[t0].c)},{x:xR,y:Y(S.LO(t0))},AMB,2,[]);
@@ -1713,7 +1713,7 @@ SetupGeometryView.prototype.draw=function(){
   HITS.addRect(sR.x-10,sR.y-26,34,52,{type:'setupR0'});
 
   line2({x:X(t0),y:Y(S.TPL)},{x:X(37)+12,y:Y(S.TPL)},TP,1.5,[6,4]);
-  txt('take_profit = close[t0] + 1·R0',{x:X(t0)-6,y:Y(S.TPL)-7},TP,'right',8.5,'600');
+  txt('take_profit = close[t0] + direction·R0',{x:X(t0)-6,y:Y(S.TPL)-7},TP,'right',8.5,'600');
   if(S.tpHit>=0){
     var sH=CAM.S({x:X(S.tpHit),y:Y(S.cs[S.tpHit].c)});
     ctx.save();ctx.strokeStyle=TP;ctx.lineWidth=2;ctx.beginPath();ctx.arc(sH.x,sH.y,7,0,7);ctx.stroke();ctx.restore();
@@ -1791,7 +1791,7 @@ ArtifactView.prototype.draw=function(){
   var a=STATE.asset,nm=ASSETS[a];
   txt('Artifact = self-contained strategy file',{x:0,y:-262},prim,'center',14,'700');
   txt('one file per asset → 503 artifacts in total · deterministic build (hash)',{x:0,y:-240},sec,'center',10.5);
-  // tooltipy pasm żyją w abandTip() (jedyne źródło — czytane przez tipFor)
+  // band tooltips live in abandTip() (single source — read by tipFor)
   var BANDS=[
     {h:26,col:tert,t:'# strategy_'+nm+'.py — generated by the pipeline'},
     {h:30,col:prim,t:'PARAMS: TF=1h · H=24 · MIN_TOUCHES=2 · BARRIER=close'},
@@ -1818,7 +1818,7 @@ ArtifactView.prototype.draw=function(){
 function abandTip(i){
   return [
     'file header\ngenerated, not hand-edited\nhash = artifact identifier',
-    'contract parameters (spec §7)\nfrozen at build time',
+    'contract parameters (build_contract_eng.md §Parameters)\nfrozen at build time',
     'exactly these columns and in this order,\non which the model was trained\nwithout closed_through_line (audit)',
     'XGBoost model serialized\nand base64-encoded (~180 kB)\ndecoded on file import',
     'label contract identifier\nSL = moving L_opp(t) (decision v1.2)\nthe model answers the question of this contract',
@@ -1865,7 +1865,7 @@ QCView.prototype.draw=function(){
     txt(QC[k].desc,{x:colX-52,y:y+4},sec,'left',9.5);
     HITS.addRect(s.x-42,s.y-12,84,24,{type:'qc',g:k});
   }
-  txt('PASS = condition for publishing a load · in the 3D overview: a row of dots by the store (L3) · full description: FLOW/L3',{x:0,y:285},tert,'center',9);
+  txt('PASS = condition for publishing a load · in the 3D overview: a row of dots by the store (L3) · full description: ENG/L3_duckdb_raw_view_qc_eng.md',{x:0,y:285},tert,'center',9);
 };
 
 function DQView(){}
@@ -1911,7 +1911,7 @@ function drawScene(){
     .sort(function(p,q){return q.d-p.d;});
   for(i=0;i<10;i++){
     var l=ord[i].l;
-    ctx.save();ctx.globalAlpha=(!insp||(NODE_BY_LEV[l]&&NODE_BY_LEV[l].id===insp))?1:0.16;  // Inspekcja: przyciemnij niewybrane
+    ctx.save();ctx.globalAlpha=(!insp||(NODE_BY_LEV[l]&&NODE_BY_LEV[l].id===insp))?1:0.16;  // Inspection: dim the unselected
     if(l===0)LAYERS.src.draw();
     else if(l===1)LAYERS.zip.draw();
     else if(l===2){LAYERS.db.draw();LAYERS.qcring.draw();}
@@ -1924,12 +1924,12 @@ function drawScene(){
     else LAYERS.oos.draw();
     ctx.restore();
   }
-  if(!insp)boundaryCards();                            // w inspekcji kontrakt jest w panelu, nie na kartach granic
+  if(!insp)boundaryCards();                            // in inspection the contract is in the panel, not on the boundary cards
   else{var nn=NODE_BY_ID[insp];if(nn){
     var lv=nn.lev,cor=[lp(lv,0.02,0,0),lp(lv,0.98,0,0),lp(lv,0.02,1,0),lp(lv,0.98,1,0),lp(lv,0.5,0.5,170)],
         x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,ci;
     for(ci=0;ci<cor.length;ci++){var sc=CAM.S(cor[ci]);if(sc.x<x0)x0=sc.x;if(sc.y<y0)y0=sc.y;if(sc.x>x1)x1=sc.x;if(sc.y>y1)y1=sc.y;}
-    strokeRR(x0-12,y0-12,(x1-x0)+24,(y1-y0)+24,14,rgba(roleColor(nn.role),0.22+0.30*pulse()),2.2);  // jeden aktywny halo
+    strokeRR(x0-12,y0-12,(x1-x0)+24,(y1-y0)+24,14,rgba(roleColor(nn.role),0.22+0.30*pulse()),2.2);  // one active halo
     txtS('Inspect: L'+(nn.lev+1)+' · '+nn.title+'  —  Esc / click background = overview',
       cw/2,18,vget('--color-text-secondary','#999'),'center',11,'600');}}
 }
@@ -1957,7 +1957,7 @@ function preset(mode){
   return {x:0,y:-10,z:clamp(Math.min((chh-90)/520,(cw-60)/660),1,1.9)};
 }
 function setMode(m){
-  STATE.inspect=null;STATE.mode=m;CAM.t=preset(m);userMoved=false;   // zmiana trybu kończy inspekcję
+  STATE.inspect=null;STATE.mode=m;CAM.t=preset(m);userMoved=false;   // changing mode ends inspection
   var bs=document.querySelectorAll('#segMode button'),i;
   for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-m')===m);
 }
@@ -1978,8 +1978,8 @@ SidePanel.prototype.hide=function(){panel.style.display='none';};
 var PANEL=new SidePanel();
 document.getElementById('panelClose').onclick=function(){PANEL.hide();};
 
-// === Tryb INSPEKCJI: klik tytułu warstwy → kadruj + przyciemnij resztę + karta kontraktu ===
-function renderContract(n){                            // karta kontraktu z węzła + krawędzi grafu
+// === INSPECTION mode: click a layer title → frame + dim the rest + contract card ===
+function renderContract(n){                            // contract card from the node + graph edges
   var inc=PIPELINE.edges.filter(function(e){return e.to===n.id;})[0];
   var out=PIPELINE.edges.filter(function(e){return e.from===n.id;})[0];
   var tg=vget('--color-text-tertiary','#777');
@@ -1994,7 +1994,7 @@ function renderContract(n){                            // karta kontraktu z węz
   h+='<br><br><span style="color:'+tg+'">status: '+(n.status||'ok')+' · family: '+n.family+' · hover an object = details</span>';
   return h;
 }
-function frameLevel(lev){                               // kadr na jeden poziom (uogólnione preset('oos'))
+function frameLevel(lev){                               // frame on a single level (generalized preset('oos'))
   return fitView([lp(lev,0.02,0.0,0),lp(lev,0.98,0.0,0),lp(lev,0.02,1.0,0),lp(lev,0.98,1.0,0),
                   lp(lev,0.5,0.5,170)],64,64,84,150,1.25);
 }
@@ -2024,7 +2024,7 @@ function tipFor(p){
   if(p.type==='embargo')return '<b>embargo</b>\n'+SPLIT.embargo;
   if(p.type==='feature'){var f=FEATURES[p.f];
     return '<b>Feature: '+f.name+'</b>\nFamily: '+f.family+'\nSource: '+f.src+'\nFormula: '+f.formula+' ['+f.unit+']'+(f.special?'\n<span style="color:'+AMB+'">! '+f.special+'</span>':'');}
-  if(p.type==='label')return '<b>Y = triple barrier (TB_v1.1)</b>\nTP=1: close reaches close[t0]+R0\nSL=0: close pierces L_opp(t) (moving line)\ntime=0: nothing by t0+H (H=24)\nfirst-touch · close-based';
+  if(p.type==='label')return '<b>Y = triple barrier (TB_v1.1)</b>\nTP=1: close reaches close[t0]+direction·R0\nSL=0: close pierces L_opp(t) (moving line)\ntime=0: nothing by t0+H (H=24)\nfirst-touch · close-based';
   if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset × direction';
   if(p.type==='optuna')return '<b>Optuna</b>\n200 trials · TPE · MedianPruner\nobjective: AUC-PR (purged WF CV on Train)\n<i>click = study</i>';
   if(p.type==='trial'){var t=TRIALS[p.i];return '<b>trial #'+p.i+'</b>\nAUC-PR: '+t.v.toFixed(3)+(t.pruned?' · PRUNED':'')+'\ndepth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nn_est '+t.params.n_estimators+' · subsample '+t.params.subsample;}
@@ -2038,8 +2038,8 @@ function tipFor(p){
   if(p.type==='detector'){var nd=NODE_BY_ID['L6'];return '<b>'+nd.title+'</b>\n'+nd.subtitle+'\noutput: '+nd.output_contract+'\n'+nd.invariants.join(' · ')+'\n<i>click = contract · view 5 = full anatomy</i>';}
   if(p.type==='setupEntry')return '<b>entry_candle (t0)</b>\nfirst close piercing L_trend\nafter line validation (≥ MIN_TOUCHES=2)\nall X features computed at t0';
   if(p.type==='setupTouch')return '<b>touchpoint</b>\na touch of L_trend before t0\ntouch_count counts them up to candle t';
-  if(p.type==='setupR0')return '<b>R0</b>\n|close[t0] − L_opp(t0)|\none geometric risk unit\nTP = close[t0] + 1·R0';
-  if(p.type==='setupTP')return '<b>Y_outcome = 1</b>\nfirst close ≥ take_profit\nfirst-touch · close-based\nin window [t0+1, t0+H]';
+  if(p.type==='setupR0')return '<b>R0</b>\n|close[t0] − L_opp(t0)|\none geometric risk unit\nTP = close[t0] + direction·R0';
+  if(p.type==='setupTP')return '<b>Y_outcome = 1</b>\nfirst t: sign·close ≥ sign·take_profit\nfirst-touch · close-based\nin window [t0+1, t0+H]';
   if(p.type==='bnote')return '<b>Boundary note L'+(p.i+1)+' → L'+(p.i+2)+'</b>\nexplains the flow between levels\n<i>click = edit text (label panel)</i>';
   return null;}
 
@@ -2059,16 +2059,16 @@ function clickFor(p){
   else if(p.type==='qc')PANEL.show(QC[p.g].name,'<b>'+QC[p.g].desc+'</b><br>'+qcStat()+'<br><br><b>All gates:</b><br>'+QC.map(function(g){return g.id+' — '+g.desc;}).join('<br>'));
   else if(p.type==='qcAll')PANEL.show('QC gates','<pre>'+QC.map(function(g){return g.id+'  '+g.desc;}).join('\n')+'</pre>'+qcStat());
   else if(p.type==='zip')PANEL.show((ASSETS[p.a]||'aapl').toLowerCase()+'.zip','<b>CSV (LEAN, headerless):</b><pre>20240102 10:00,1851200,1853900,1849100,1852300,182345\n20240102 11:00,1852300,1856800,1851700,1855400,141280\n20240102 12:00,1855400,1857200,1853000,1854100,98430</pre>prices ×10000 → USD only in the VIEW');
-  else if(p.type==='db')PANEL.show('DuckDB raw_ohlcv_1h','<pre>symbol  VARCHAR\nts      TIMESTAMP\nopen    BIGINT  ×10000\nhigh    BIGINT  ×10000\nlow     BIGINT  ×10000\nclose   BIGINT  ×10000\nvolume  BIGINT</pre><b>8 841 820 rows · 503 symbols</b><br>2016-01-04 09:00 → 2026-05-22 15:00<br>QC-01…QC-11: PASS');
+  else if(p.type==='db')PANEL.show('DuckDB raw_ohlcv_1h','<pre>symbol  VARCHAR\nts      TIMESTAMP\nopen    BIGINT  ×10000\nhigh    BIGINT  ×10000\nlow     BIGINT  ×10000\nclose   BIGINT  ×10000\nvolume  BIGINT</pre><b>8 841 820 rows · 503 symbols</b><br>2016-01-04 09:00 → 2026-05-29 15:00<br>QC-01…QC-11: PASS');
   else if(p.type==='view')PANEL.show('VIEW ohlcv_1h','<pre>SELECT symbol, ts,\n  open/10000.0  AS open,\n  high/10000.0  AS high,\n  low/10000.0   AS low,\n  close/10000.0 AS close,\n  volume\nFROM raw_ohlcv_1h</pre><b>canonical USD · zero duplication</b>');
   else if(p.type==='meta')PANEL.show('_meta','<pre>schema_version : v1\nsource         : alpaca sip 1h\nbuilt_at_utc   : …\nrows           : 8 841 820\nsymbols        : 503</pre>');
-  else if(p.type==='snapshot')PANEL.show('Snapshot manifest','<pre>'+JSON.stringify({rows:8838306,symbols:503,ts_min:'2016-01-04 09:00',ts_max:'2026-05-21 15:00',price_view:'raw_usd_view'},null,2)+'</pre>atomic copy · torn-read guard · zero derived columns');
+  else if(p.type==='snapshot')PANEL.show('Snapshot manifest','<pre>'+JSON.stringify({rows:8841820,symbols:503,ts_min:'2016-01-04 09:00',ts_max:'2026-05-29 15:00',price_view:'raw_usd_view'},null,2)+'</pre>atomic copy · torn-read guard · zero derived columns');
   else if(p.type==='split'||p.type==='purge'||p.type==='embargo'){var html='',k;
     for(k=0;k<SPLIT.bands.length;k++){var b=SPLIT.bands[k];html+='<b>'+b.name+'</b> '+b.from+' → '+b.to+'<br>'+b.note+'<br><br>';}
     PANEL.show('Time split',html+'<b>Purge:</b> '+SPLIT.purge+'<br><b>Embargo:</b> '+SPLIT.embargo);}
   else if(p.type==='feature'){var f=FEATURES[p.f];
     PANEL.show('Feature: '+f.name,'<b>Formula:</b> '+f.formula+'<br><b>Unit:</b> '+f.unit+'<br><b>Family:</b> '+f.family+'<br><b>Source:</b> '+f.src+(f.special?'<br><b style="color:'+AMB+'">! '+f.special+'</b>':'')+'<br><br>computed causally at t0 (candles ≤ t0)');}
-  else if(p.type==='label'||p.type==='setupTP')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first close ≥ close[t0]+R0<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (spec §5, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (spec §6)');
+  else if(p.type==='label'||p.type==='setupTP')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first t: sign·close[t] ≥ sign·(close[t0]+direction·R0)<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (build_contract_eng.md §Label, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (build_contract_eng.md §Outputs)');
   else if(p.type==='xgb')PANEL.show('XGBoost estimator','<b>Objective:</b> binary:logistic — p(TP)<br><b>Role:</b> meta-labeling, trend-line setup signal filter<br><b>Training:</b> Train with uniqueness weights<br><b>Tuning:</b> Optuna 200 trials (purged WF CV)<br><b>Per:</b> asset × direction');
   else if(p.type==='optuna'||p.type==='trial'){var bt=TRIALS[BEST_TRIAL];
     var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';
@@ -2078,11 +2078,11 @@ function clickFor(p){
     PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+' · <b>Sharpe:</b> '+m2.sharpe+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}
   else if(p.type==='dqTile'){var q=DQ[p.q];
     PANEL.show('Quality: '+q.name,'<b>Status:</b> '+q.status+'<br>'+q.detail.split(' · ').join('<br>')+'<br><br>source: reports/quality/summary.json');}
-  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({parity:'OK',gaps:'OK',zero_values:'WARN',features:'OK',split:'OK',alarms:{fail:0,warn:1},gate:'OPEN',inputs_hash:'…'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
+  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({schema_version:'1.0',built_at_utc:'…',inputs_hash:'…',counters:{rows:8841820,symbols:503,parquet_files:503,setups_total:0,det09_rejected:0,gaps_in_session:0,gaps_filled:0,volume_zero_bars:0,zero_range_bars:0,prices_nonpos:0,duplicates:0,nan_inf_outputB:0},parities:{zip_duckdb_rows:true,duckdb_parquet_files:true,parquet_outputB:true},checks:[{id:'QC-06',level:'WARN',value:1,threshold:0,desc:'volume=0 bars'}],overall_status:'WARN'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
   else if(p.type==='detector'){var nd=NODE_BY_ID['L6'];
     PANEL.show('L6 · '+nd.title,'<b>'+nd.subtitle+'</b><br><b>Input:</b> '+nd.input_contract+'<br><b>Output:</b> '+nd.output_contract+'<br><b>Invariants:</b><br>• '+nd.invariants.join('<br>• ')+'<br><br>full anatomy: view <b>5 (Setup geometry)</b>');}
   else if(p.type==='setupEntry')PANEL.show('entry_candle (t0)','first close piercing L_trend in the direction,<br>after line validation (≥ MIN_TOUCHES=2 touches)<br><br>all X features computed at t0 — only candles ≤ t0');
-  else if(p.type==='setupTouch'||p.type==='setupR0')PANEL.show('Setup geometry','<b>touchpoints:</b> touches of L_trend before t0 (validate the line)<br><b>L_opp:</b> opposing line — the stop loss sits on it<br><b>R0:</b> |close[t0] − L_opp(t0)| — one risk unit<br><b>TP:</b> close[t0] + 1·R0 · <b>time barrier:</b> t0+H (H=24)');
+  else if(p.type==='setupTouch'||p.type==='setupR0')PANEL.show('Setup geometry','<b>touchpoints:</b> touches of L_trend before t0 (validate the line)<br><b>L_opp:</b> opposing line — the stop loss sits on it<br><b>R0:</b> |close[t0] − L_opp(t0)| — one risk unit<br><b>TP:</b> close[t0] + direction·R0 · <b>time barrier:</b> t0+H (H=24)');
   else if(p.type==='bnote')leOpenFocus('bnd'+p.i);
 }
 
@@ -2101,7 +2101,7 @@ function draw(){
   if(PIX_AUDIT)pixAuditDump();
 }
 var PIX_OFF=null;
-function pixAuditDump(){                                // podpis sceny: skala całej kanwy do 64×40 i luminancja per komórka
+function pixAuditDump(){                                // scene signature: scale the whole canvas to 64×40 and luminance per cell
   try{
     var GW=64,GH=40,i;
     if(!PIX_OFF){PIX_OFF=document.createElement('canvas');PIX_OFF.width=GW;PIX_OFF.height=GH;}
@@ -2120,7 +2120,7 @@ Animator.prototype.frame=function(now){
   ROT.step(dt);CAM.step(dt);
   if(!STATE.paused){
     CLK+=dt*STATE.speed;
-    if(CLK-lastTick>1.8){lastTick=CLK;if(!STATE.inspect)flash=1;}  // bez ambientowego błysku w inspekcji (jeden aktywny halo)
+    if(CLK-lastTick>1.8){lastTick=CLK;if(!STATE.inspect)flash=1;}  // no ambient flash in inspection (one active halo)
   }
   flash=Math.max(0,flash-dt*1.1);
   draw();
@@ -2157,7 +2157,7 @@ cv.addEventListener('mousedown',function(e){
   drag={moved:false,dist:0,btn:e.button,pan:(e.button===2||e.shiftKey||isFlatView()||STATE.camPreset==='flat')};
   cv.style.cursor='grabbing';});
 window.addEventListener('mouseup',function(){
-  if(drag&&!drag.moved&&drag.btn===0){var h=HITS.find(mx,my);if(h)clickFor(h);else if(STATE.inspect)setInspect(null);}  // klik w tło = wyjście z inspekcji
+  if(drag&&!drag.moved&&drag.btn===0){var h=HITS.find(mx,my);if(h)clickFor(h);else if(STATE.inspect)setInspect(null);}  // click on the background = exit inspection
   drag=null;cv.style.cursor='grab';});
 cv.addEventListener('mouseleave',function(){TIPM.hide();});
 cv.addEventListener('wheel',function(e){
@@ -2175,7 +2175,7 @@ cv.addEventListener('dblclick',function(){
   CAM.t=preset(STATE.mode);userMoved=false;});
 window.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&currentPanel()==='editor'){setPanel(null);return;}
-  if(e.key==='Escape'&&STATE.inspect){setInspect(null);return;}    // Esc = wyjście z inspekcji
+  if(e.key==='Escape'&&STATE.inspect){setInspect(null);return;}    // Esc = exit inspection
   var tg=e.target&&e.target.tagName;
   if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT')return;
   var i=['1','2','3','4','5','6','7','8','9','0'].indexOf(e.key);
@@ -2201,7 +2201,7 @@ document.getElementById('cFlow').onchange=function(){STATE.flow=this.checked;};
 var bPause=document.getElementById('bPause');
 bPause.onclick=function(){STATE.paused=!STATE.paused;bPause.textContent=STATE.paused?'▶ Resume':'⏸ Pause';};
 document.getElementById('bPng').onclick=function(){
-  EXPORT_FONT=1.3;draw();                                  // eksport prezentacyjny: większe tiery fontów (declutter reflowuje)
+  EXPORT_FONT=1.3;draw();                                  // presentation export: larger font tiers (declutter reflows)
   try{cv.toBlob(function(b){EXPORT_FONT=1;draw();if(!b)return;var a=document.createElement('a');
     a.href=URL.createObjectURL(b);a.download='sp500_pipeline_3d.png';a.click();});}
   catch(e){EXPORT_FONT=1;draw();}
@@ -2282,8 +2282,8 @@ function loadPanel(){try{var p=localStorage.getItem('sp500_pipeline_panel');
 function savePanel(p){try{localStorage.setItem('sp500_pipeline_panel',p||'');}catch(e){}}
 function currentPanel(){return document.body.classList.contains('le-open')?'editor':
   (document.body.classList.contains('leg-open')?'legend':null);}
-// p ∈ null|'editor'|'legend' — wzajemnie wykluczające; oba mogą być zamknięte (pełny ekran).
-// BEZ fit()/paddingBottom — panele to nakładki fixed, kanwa się nie resetuje (brak re-renderu).
+// p ∈ null|'editor'|'legend' — mutually exclusive; both can be closed (full screen).
+// WITHOUT fit()/paddingBottom — panels are fixed overlays, the canvas doesn't reset (no re-render).
 function setPanel(p){
   var editor=(p==='editor'),legend=(p==='legend');
   if(editor&&!leBuilt)buildLabelEditor();
@@ -2295,7 +2295,7 @@ function setPanel(p){
   if(!editor)HL.key=null;
   savePanel(p||'');
 }
-function leOpen(){setPanel('editor');}   // shim dla leOpenFocus (klik na scenie → otwórz edytor)
+function leOpen(){setPanel('editor');}   // shim for leOpenFocus (click on the scene → open the editor)
 
 function leOpenFocus(key){
   leOpen();
@@ -2324,14 +2324,14 @@ function fit(){
   var dpr=window.devicePixelRatio||1;
   var w=Math.max(360,stage.clientWidth||940),h=Math.max(360,stage.clientHeight||600);
   var bw=Math.floor(w*dpr),bh=Math.floor(h*dpr);
-  if(cv.width===bw&&cv.height===bh)return;  // backing-store bez zmian → nie resetuj kanwy/kamery (anty-migotanie)
+  if(cv.width===bw&&cv.height===bh)return;  // backing-store unchanged → don't reset canvas/camera (anti-flicker)
   cw=w;chh=h;
   cv.style.width=w+'px';cv.style.height=h+'px';
   cv.width=bw;cv.height=bh;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   CUR_FONT='';
   if(!userMoved)CAM.t=preset(STATE.mode);
-  try{draw();}catch(e){}                  // odmaluj od razu — bez 1 pustej klatki do następnego rAF
+  try{draw();}catch(e){}                  // repaint immediately — without 1 empty frame until the next rAF
 }
 try{new ResizeObserver(function(){fit();}).observe(stage);}catch(e){window.addEventListener('resize',fit);}
 var reduce=false;try{reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
@@ -2341,11 +2341,11 @@ if(reduce){STATE.paused=true;STATE.flow=false;
 lblLoad();
 fit();
 var hp=homeFit();CAM.x=hp.x;CAM.y=hp.y;CAM.z=hp.z;CAM.t=hp;
-setPanel(loadPanel());   // zastosuj zapamiętany/domyślny panel (domyślnie: Legenda otwarta) — bez fit()
+setPanel(loadPanel());   // apply the remembered/default panel (default: Legend open) — without fit()
 try{var hm=decodeURIComponent(location.hash.slice(1));
   if(hm==='0')hm='leak';
   else if(/^[1-9]$/.test(hm))hm=MODE_KEYS[parseInt(hm,10)-1];
-  if(/^[lL]\d+$/.test(hm)&&NODE_BY_ID[hm.toUpperCase()]){            // deep-link inspekcji: #L6 → kadr + kontrakt
+  if(/^[lL]\d+$/.test(hm)&&NODE_BY_ID[hm.toUpperCase()]){            // inspection deep-link: #L6 → frame + contract
     setInspect(hm.toUpperCase());var fp=frameLevel(NODE_BY_ID[hm.toUpperCase()].lev);CAM.x=fp.x;CAM.y=fp.y;CAM.z=fp.z;}
   else if(MODE_KEYS.indexOf(hm)>=0&&hm!=='overview'){setMode(hm);var hp2=preset(hm);CAM.x=hp2.x;CAM.y=hp2.y;CAM.z=hp2.z;}
 }catch(e){}

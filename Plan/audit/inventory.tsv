@@ -1,0 +1,17 @@
+AUDIT_BRIEF.md	13795 bytes
+ENG/L10_oos_test_eng.md	771 bytes
+ENG/L1_source_alpaca_eng.md	696 bytes
+ENG/L2_lean_zip_store_eng.md	849 bytes
+ENG/L3_duckdb_raw_view_qc_eng.md	1214 bytes
+ENG/L4_snapshot_parquet_eng.md	909 bytes
+ENG/L5_time_split_eng.md	1138 bytes
+ENG/L6_setup_detector_eng.md	754 bytes
+ENG/L7_features_x_label_y_eng.md	976 bytes
+ENG/L8_data_quality_eng.md	1183 bytes
+ENG/L9_optuna_xgboost_eng.md	981 bytes
+ENG/glossary_eng.md	21582 bytes
+ENG/readme_eng.md	1861 bytes
+ENG/summary_rules_eng.md	2951 bytes
+README.md	4013 bytes
+viz/feature_dag.html	2355338 bytes
+viz/main_data_flow.html	146630 bytes

@@ -1,12 +1,13 @@
-# Summary writing rules (FLOW/streszczenie)
+# Summary writing rules
 
 Goal: a summary reads like an account of what **physically** happens to files,
 folders and data — no theory, no guesswork.
 
-**Division of roles:** the full files `FLOW/L*.md` (Polish, in the source project) are the complete reference for a
-layer (role, invariants, visualization, links) — and at the same time an example of "how
-not to" write a summary: that form causes cognitive overload. `streszczenie/` is the "how
-to": **best practice without cognitive overload** — only actions and physical objects.
+**Division of roles:** the **complete reference** for a layer is `build_contract_eng.md` plus the
+companion specs (`detector_algorithm_eng.md`, `quality_gate_spec_eng.md`, `pipelineB_spec_eng.md`) —
+role, invariants, full contracts. Their verbose form is also an example of "how not to" write a
+summary: it causes cognitive overload. The `ENG/` layer summaries are the "how to":
+**best practice without cognitive overload** — only actions and physical objects. Any upstream source documents are optional provenance only.
 
 ## Rules
 
@@ -25,10 +26,10 @@ to": **best practice without cognitive overload** — only actions and physical 
 6. **Concrete details whenever they exist:** paths (`parquet/<TICKER>/ohlcv.parquet`),
    naming conventions (`<ticker>.zip`, `strategy_<TICKER>.py`), numbers (503, ×10000),
    formats (CSV without header, BIGINT, zstd).
-7. **Parameters and decisions by reference only** (spec §7, register C-xx) —
-   the summary points to the source, it does not redefine it.
-8. **The summary is 1:1 with the full FLOW file:** the same facts, shorter form;
-   on any divergence we fix both files in the same commit.
+7. **Parameters and decisions by reference** — point to the inlined build contract
+   (`build_contract_eng.md` §Parameters); the summary does not redefine them.
+8. **The summary is 1:1 with the full build contract (`build_contract_eng.md`):** the same facts,
+   shorter form; on any divergence we fix both files in the same commit.
 
 ## Pattern
 
@@ -42,7 +43,7 @@ to": **best practice without cognitive overload** — only actions and physical 
 
 ## Anti-pattern
 
-"How not to" is shown by the full files `FLOW/L*.md`: sections, tables, roles
+"How not to" is shown by the verbose full reference docs: sections, tables, roles
 and invariants are correct as a reference, but as a summary they cause cognitive
 overload — compound sentences, many facts per line, abstractions next to concretes.
 A summary is exclusively an extract of actions and physical objects. Example sentences

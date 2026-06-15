@@ -1,0 +1,4 @@
+console info: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+Page.loadEventFired :
+console warning: You are using the in-browser Babel transformer. Be sure to precompile your scripts for production - https://babeljs.io/docs/setup/
+renderProbe : {"title": "OHLCV → L5 · pipeline wireframe", "body": "L5 · Research representations\nStack → standardize → compression: PCA, wavelets, AE, sequences.\nL4 · Classical indicators\nRSI / MACD / ATR / OBV. Compressed functions of L1–L3, not magic.\nL3 · MTF · regime\nResample 1h → 1d (native 1h store),", "canvas": false, "canvas_w": 0, "canvas_h": 0, "svg": true}
