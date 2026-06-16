@@ -12,7 +12,7 @@
 L8 sits between L7 (Output B) and L9 (Optuna → XGBoost). It **measures and reports; it fixes nothing** —
 fixes belong to the source layers (L2–L7). Its single contract with L9 is binary: a **FAIL** anywhere closes
 the gate and **training (L9) does not start**. L8 guards **Pipeline A** only; the feature explanation
-("Plan B", feature-stages F0–F5) is out of this gate's scope. The detector is a *reference implementation*
+("Plan B", Stages F0–F14) is out of this gate's scope. The detector is a *reference implementation*
 of its output contract and L8 is Pipeline A's gate.
 
 The canonical *set* of counters/parities and the FAIL-on-any-mismatch parity rule come from the contract and

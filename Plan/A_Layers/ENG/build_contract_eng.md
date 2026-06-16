@@ -92,5 +92,5 @@ replaceable behind the output contract / gate structure without changing what th
 
 What the features *are* and where they come from (families, derivation) is a **subordinate helper**, not
 part of this build SOT: see [`feature_explanation_plan_b_eng.md`](../../B_Features/feature_explanation_plan_b_eng.md)
-(an OHLCV → feature DAG, **feature-stages F0–F5**, ids `f{stage}_…`). It is not a build pipeline; Pipeline A
+(an OHLCV → feature DAG, **Stages F0–F14**, ids `f{stage}_…`). It is not a build pipeline; Pipeline A
 does not depend on it.

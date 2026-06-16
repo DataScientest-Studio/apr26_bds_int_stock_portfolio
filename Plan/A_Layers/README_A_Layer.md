@@ -12,4 +12,4 @@ truth** that owns every parameter, formula, schema and contract — is the folde
 - Viz: [`viz/main_data_flow.html`](viz/main_data_flow.html)
 
 Feature explanation (what the features *are*) is a separate, subordinate helper in
-[`../B_Features/`](../B_Features/) — it uses feature-stages `F0–F5`, never `L#`.
+[`../B_Features/`](../B_Features/) — it uses Stages `F0–F14`, never `L#`.

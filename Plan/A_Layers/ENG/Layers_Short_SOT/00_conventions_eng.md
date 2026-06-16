@@ -27,7 +27,7 @@ Owned here; companion docs reference this file and restate nothing.
 | Presentation language | viz UI + `README.md` + this `ENG/` package = English | — |
 
 **Scheme reservation:** `layer` / `L1–L10` belong to **Pipeline A only**. The feature explanation
-("Plan B") uses **feature-stages `F0–F5`** and ids `f{stage}_…` — never `L#`.
+("Plan B") uses **Stages `F0–F14`** and ids `f{stage}_…` — never `L#`.
 
 ## Global numbers (agree everywhere)
 

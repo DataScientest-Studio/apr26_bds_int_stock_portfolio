@@ -148,5 +148,5 @@ The canonical naming forms (DuckDB, `VIEW ohlcv_1h`, the `PF · Sharpe · MDD ·
 
 What the features *are* and where they come from is explained separately in
 [feature_explanation_plan_b_eng.md](../../B_Features/feature_explanation_plan_b_eng.md): an OHLCV → feature
-DAG with its **own feature-stage scheme F0–F5** (never `L#`) and ids `f{stage}_…`. It is a helper for
+DAG with its **own Stage scheme F0–F14** (never `L#`) and ids `f{stage}_…`. It is a helper for
 understanding features — **not** part of the Pipeline-A SOT and **not** a build pipeline.

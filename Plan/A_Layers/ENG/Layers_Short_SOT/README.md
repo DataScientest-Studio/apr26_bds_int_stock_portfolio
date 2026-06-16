@@ -70,5 +70,5 @@ Per layer (own that layer's contract):
 - [../readme_eng.md](../readme_eng.md) — ENG package index.
 - [../summary_rules_eng.md](../summary_rules_eng.md) — the writing standard.
 
-Feature explanation ("Plan B", feature-stages F0–F5) is a separate, subordinate helper in
+Feature explanation ("Plan B", Stages F0–F14) is a separate, subordinate helper in
 [`../../../B_Features/`](../../../B_Features/) — not part of this SOT.

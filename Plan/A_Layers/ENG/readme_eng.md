@@ -43,6 +43,6 @@ Per layer:
 
 **Feature explanation ("Plan B").** What the features *are* (families, derivation) is a separate,
 subordinate helper — [feature_explanation_plan_b_eng.md](../../B_Features/feature_explanation_plan_b_eng.md)
-(feature-stages F0–F5) — **not** part of the Pipeline-A SOT.
+(Stages F0–F14) — **not** part of the Pipeline-A SOT.
 
 See [`../README_A_Layer.md`](../README_A_Layer.md).
