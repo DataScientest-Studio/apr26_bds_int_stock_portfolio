@@ -10,7 +10,7 @@ The final verdict: a one-time run of the frozen strategies on the untouched OOS 
   - the model returns `p = model(x)`
   - entry rule: `p ≥ 0.60 → ENTRY`
   - exits per triple barrier: fixed TP from `R0` · SL = moving `L_opp(t)` · time barrier 24 candles
-- Result: a matrix `503 assets × {PF · Sharpe · MDD% · TIM% · WR% · trades}`.
+- Result: a matrix `<!--na:universe_size-->503<!--/na--> assets × {PF · Sharpe · MDD% · TIM% · WR% · trades}`.
   - **OOS metrics canonical order: PF · Sharpe · MDD · TIM · WR** (= `METRICS`)
   - PF (profit factor) = gross profits / gross losses
   - Sharpe — informational; treat with caution at low TIM

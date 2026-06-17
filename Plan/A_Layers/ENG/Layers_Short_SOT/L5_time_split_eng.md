@@ -1,7 +1,7 @@
 # L5 · Time split (SOT)
 
 Time hygiene: three disjoint windows per asset with hard buffer zones at the boundaries. Boundary dates are
-parameters in `config/params.json` → `splits` (defaults for this project's universe); not hardcode.
+parameters in `config/parameters.json` → `splits` (defaults for this project's universe); not hardcode.
 
 - We split each ticker's series into three disjoint windows (indices on one continuous series).
 - **WARM-UP** window: `2016-01-04 → 2016-10-14`.

@@ -6,7 +6,7 @@ The notebook header cell: choose the one asset, pin determinism, resolve paths, 
 - Role: scaffold cell.
 - Input: none (notebook entry point).
 - Does:
-  - set `SYMBOL` — one ticker from the 503-name universe (`A_Layers/config/universe.txt`); a single variable drives the whole notebook.
+  - set `SYMBOL` — one ticker from the 503-name universe (`A_Layers/config/universe_tickers.txt`); a single variable drives the whole notebook.
   - assert `SYMBOL` ∈ universe; fail fast otherwise.
   - set one global `SEED`; seed every RNG (numpy, xgboost, optuna sampler, torch if used).
   - resolve paths: raw OHLCV input, optional cross-check parquet, artifact output dir (see [README.md](README.md) → Notebook contract).

@@ -2,8 +2,8 @@
 
 > **Subordinate to the SOT.** The canonical L8 facts — the counter catalogue, the parity chain P1/P2/P3, the
 > `summary.json` field schema and the gate aggregation rule — are owned by
-> [`Layers_Short_SOT/L8_data_quality_eng.md`](Layers_Short_SOT/L8_data_quality_eng.md); the numeric WARN/FAIL
-> thresholds by [`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md) (`l8` block).
+> [`Layers_Short_SOT/L8_data_quality_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L8_data_quality_eng.md); the numeric WARN/FAIL
+> thresholds by [`Layers_Short_SOT/00_parameters_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_parameters_eng.md) (`l8` block).
 > This document is **narrative**: the QC defense-in-depth rationale, the dashboard layout, a worked OK-path
 > example and the L8 build invariants. It restates no canonical value; on any divergence, the SOT wins.
 
@@ -24,7 +24,7 @@ roadmap item F4b. Both are owned by the SOT files above — see them for the exa
 L3 already enforces QC-01…QC-11 on **every load** (a load that fails QC is not published). L8 **re-derives**
 the QC-relevant population counts from the published parquet / Output B, so the dashboard restates them as
 gate items rather than trusting the upstream load alone (defense in depth). The QC predicates are owned by
-[`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md); each maps to
+[`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md); each maps to
 an L8 counter or parity as follows: high/low integrity (QC-01/02) → `zero_range_bars` + internal assertions;
 duplicates (QC-03/10) → `duplicates`; nulls (QC-04) → null assertion + `nan_inf_outputB` discipline; prices
 (QC-05) → `prices_nonpos`; volume (QC-06) → `volume_zero_bars`; universe (QC-07) → `symbols` + parity P1;

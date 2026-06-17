@@ -10,7 +10,7 @@ Read isolation: an atomic database snapshot materialized as clean OHLCV per tick
   - IN-07: `price_view = raw_usd_view` written into the manifest (input repeatability)
 - From the snapshot, `COPY … TO parquet` writes a parquet per ticker.
   - path convention: `parquet/<TICKER>/ohlcv.parquet`
-  - file count: 503
+  - file count: <!--na:universe_size-->503<!--/na-->
   - compression: zstd
 - Columns in parquet: only `timestamp · open · high · low · close · volume`.
   - zero derived columns — features are computed only by the transformer ([L7](L7_features_x_label_y_eng.md))

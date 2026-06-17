@@ -1,10 +1,10 @@
 # Build contract — Pipeline A (reader's guide)
 
 > **This document is subordinate to the SOT.** Every parameter, formula, schema, contract and number for
-> Pipeline A is owned by the short fact-only files in [`Layers_Short_SOT/`](Layers_Short_SOT/). This guide
+> Pipeline A is owned by the short fact-only files in [`Layers_Short_SOT/`](../../A_Layers/ENG/Layers_Short_SOT/). This guide
 > is **narrative only** — it explains *why* the pipeline is shaped the way it is and *where* each fact
 > lives. It **restates no fact**; on any divergence, the SOT wins. Start at
-> [`Layers_Short_SOT/README.md`](Layers_Short_SOT/README.md).
+> [`Layers_Short_SOT/README.md`](../../A_Layers/ENG/Layers_Short_SOT/README.md).
 
 Pipeline A is the **S&P 500 trend-line meta-labeling strategy pipeline** — layers **L1–L10**: source
 candles → LEAN ZIP store → DuckDB (`raw_ohlcv_1h` + `VIEW ohlcv_1h`, QC-gated) → parquet snapshot → time
@@ -15,12 +15,12 @@ only.
 ## How to build from this package
 
 A competent engineer can build Pipeline A from `Plan/A_Layers/` alone. The build-critical facts are all in
-[`Layers_Short_SOT/`](Layers_Short_SOT/):
+[`Layers_Short_SOT/`](../../A_Layers/ENG/Layers_Short_SOT/):
 
-- Conventions, naming and global numbers → [`Layers_Short_SOT/00_conventions_eng.md`](Layers_Short_SOT/00_conventions_eng.md).
-- Every parameter (the only configuration site) → [`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md).
-- The input table contract → [`Layers_Short_SOT/00_input_contract_eng.md`](Layers_Short_SOT/00_input_contract_eng.md).
-- Acceptance / Definition of Done → [`Layers_Short_SOT/00_definition_of_done_eng.md`](Layers_Short_SOT/00_definition_of_done_eng.md).
+- Conventions, naming and global numbers → [`Layers_Short_SOT/00_conventions_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_conventions_eng.md).
+- Every parameter (the only configuration site) → [`Layers_Short_SOT/00_parameters_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_parameters_eng.md).
+- The input table contract → [`Layers_Short_SOT/00_input_contract_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_input_contract_eng.md).
+- Acceptance / Definition of Done → [`Layers_Short_SOT/00_definition_of_done_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_definition_of_done_eng.md).
 - One file per layer (L1–L10), each owning that layer's contract.
 
 This guide walks the same ground in prose; the companions [detector_algorithm_eng.md](detector_algorithm_eng.md)
@@ -31,36 +31,36 @@ example) add depth without owning facts. Terminology is defined in [glossary_eng
 
 - **L1 — Source (Alpaca).** Hourly OHLCV for the 503-ticker universe is downloaded via QuantConnect LEAN,
   topped up hourly. Prices arrive raw (no corporate-action adjustment — open risk R1). Details:
-  [`Layers_Short_SOT/L1_source_alpaca_eng.md`](Layers_Short_SOT/L1_source_alpaca_eng.md).
+  [`Layers_Short_SOT/L1_source_alpaca_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L1_source_alpaca_eng.md).
 - **L2 — LEAN ZIP store.** The durable archive; one zip per ticker, integer prices, naive-ET timestamps.
   It is the source of truth from which the database is rebuilt.
-  [`Layers_Short_SOT/L2_lean_zip_store_eng.md`](Layers_Short_SOT/L2_lean_zip_store_eng.md).
+  [`Layers_Short_SOT/L2_lean_zip_store_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L2_lean_zip_store_eng.md).
 - **L3 — DuckDB + QC.** The analytical store: raw integers in `raw_ohlcv_1h`, USD only in `VIEW ohlcv_1h`
   (a view, not a copy). Every load is gated by QC-01…QC-11; a failing load is not published.
-  [`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md).
+  [`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md).
 - **L4 — Snapshot → parquet.** An atomic snapshot isolates transforms from the live store; it is
   materialized to one clean OHLCV parquet per ticker (zero derived columns — features come only at L7).
-  [`Layers_Short_SOT/L4_snapshot_parquet_eng.md`](Layers_Short_SOT/L4_snapshot_parquet_eng.md).
+  [`Layers_Short_SOT/L4_snapshot_parquet_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L4_snapshot_parquet_eng.md).
 - **L5 — Time split.** Three disjoint windows (warm-up / Train / OOS) as indices on one continuous series,
   with a purge and an embargo at the boundaries so a label window never reaches across.
-  [`Layers_Short_SOT/L5_time_split_eng.md`](Layers_Short_SOT/L5_time_split_eng.md).
+  [`Layers_Short_SOT/L5_time_split_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L5_time_split_eng.md).
 - **L6 — Detector.** A causal trend-line setup detector emits, per setup, the geometric objects the features
   and label need. This package fixes the **output contract** (the objects + 5 invariants + DET-09) and
   defers the *geometry* to a reference algorithm. Contract:
-  [`Layers_Short_SOT/L6_setup_detector_eng.md`](Layers_Short_SOT/L6_setup_detector_eng.md); reference
+  [`Layers_Short_SOT/L6_setup_detector_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L6_setup_detector_eng.md); reference
   geometry: [detector_algorithm_eng.md](detector_algorithm_eng.md).
 - **L7 — Features X + label Y.** The transformer computes 8 columns at `t0` (7 of them the model's X), and a
   triple-barrier label. Output B (one row per setup, partitioned by `{asset × direction}`) is the ML
-  deliverable. [`Layers_Short_SOT/L7_features_x_label_y_eng.md`](Layers_Short_SOT/L7_features_x_label_y_eng.md).
+  deliverable. [`Layers_Short_SOT/L7_features_x_label_y_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L7_features_x_label_y_eng.md).
 - **L8 — Quality gate.** One dashboard measures the whole flow (parities + counters) and reports; a FAIL
-  closes the gate and L9 does not start. [`Layers_Short_SOT/L8_data_quality_eng.md`](Layers_Short_SOT/L8_data_quality_eng.md);
+  closes the gate and L9 does not start. [`Layers_Short_SOT/L8_data_quality_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L8_data_quality_eng.md);
   worked example: [quality_gate_spec_eng.md](quality_gate_spec_eng.md).
 - **L9 — Optuna → XGBoost → strategy.py.** Tuning and training happen in Train only; the deliverable is one
   self-contained `strategy_<TICKER>.py` per asset (model in base64, frozen feature manifest, self-check).
-  [`Layers_Short_SOT/L9_optuna_xgboost_eng.md`](Layers_Short_SOT/L9_optuna_xgboost_eng.md).
+  [`Layers_Short_SOT/L9_optuna_xgboost_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L9_optuna_xgboost_eng.md).
 - **L10 — OOS test.** Artifacts are frozen (hashed), then run exactly once over the OOS window; the result
   is a per-asset metrics matrix read as a distribution, never fed back into tuning.
-  [`Layers_Short_SOT/L10_oos_test_eng.md`](Layers_Short_SOT/L10_oos_test_eng.md).
+  [`Layers_Short_SOT/L10_oos_test_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L10_oos_test_eng.md).
 
 ## Why the pipeline is shaped this way (rationale)
 

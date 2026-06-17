@@ -12,8 +12,8 @@ Each hop is a store boundary; both sides are re-counted and asserted **exactly e
 
 | Hop | Compared | v1 reference target |
 |---|---|---|
-| **P1** `zip → DuckDB` | total row count **and** symbol count | 8 841 820 rows · 503 symbols |
-| **P2** `DuckDB → parquet` | parquet file count **and** per-ticker row count | 503 files; per-ticker row equality |
+| **P1** `zip → DuckDB` | total row count **and** symbol count | <!--na:duckdb_row_count_str-->8 841 820<!--/na--> rows · <!--na:universe_size-->503<!--/na--> symbols |
+| **P2** `DuckDB → parquet` | parquet file count **and** per-ticker row count | <!--na:universe_size-->503<!--/na--> files; per-ticker row equality |
 | **P3** `parquet → Output B` | per `{asset_id}×{direction}`: setups emitted vs detector entries surviving DET-09 (audit R4) | per-partition setup-count equality |
 
 ## Counter catalogue (the populations L8 counts)
@@ -59,7 +59,7 @@ HTML dashboard is a pure render of it. Schema frozen; a change bumps `schema_ver
   "built_at_utc": "<ISO-8601 UTC, 'Z'>",   // string
   "inputs_hash": "<lowercase hex>",        // digest over zip set + duckdb + parquet tree + Output B (ties QC-11)
   "counters": {                            // each int >= 0
-    "rows": 8841820, "symbols": 503, "parquet_files": 503,
+    "rows": <!--na:duckdb_row_count-->8841820<!--/na-->, "symbols": <!--na:universe_size-->503<!--/na-->, "parquet_files": <!--na:universe_size-->503<!--/na-->,
     "setups_total": 0, "det09_rejected": 0,
     "gaps_in_session": 0, "gaps_filled": 0,
     "volume_zero_bars": 0, "zero_range_bars": 0,

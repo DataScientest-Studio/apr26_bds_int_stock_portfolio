@@ -31,11 +31,15 @@ Owned here; companion docs reference this file and restate nothing.
 
 ## Global numbers (agree everywhere)
 
-- **503** — S&P 500 universe tickers (list pinned in `config/universe.txt`).
-- **510** — LEAN zip files = 503 universe tickers + a few non-constituents.
-- **8 841 820** — rows in `raw_ohlcv_1h` (503 symbols).
-- **×10000** — price storage scale in the LEAN archive / `raw_ohlcv_1h` table (deci-cents).
-- **~7** — 1h candles per RTH session day (09:00–16:00 ET); candles/day ∈ [5, 9].
+_Canonical values mirror [`../../config/data_state_numbers.json`](../../config/data_state_numbers.json); rendered here via `na:` markers — edit the registry, not these lines._
+
+- **<!--na:universe_size-->503<!--/na-->** — universe size (quality-filtered subset of the <!--na:lean_zip_count-->510<!--/na--> ZIP inventory); derivation in `config/data_state_numbers.json` → `_universe_derivation`; list pinned in `config/universe_tickers.txt`.
+- **<!--na:lean_zip_count-->510<!--/na-->** — full LEAN ZIP inventory (one zip per downloaded ticker). The universe is its quality-filtered subset, so a few inventory tickers (non-constituents / failing the history-gap criteria) are not in the universe. Derivation: `config/data_state_numbers.json` → `_universe_derivation`.
+- **<!--na:duckdb_row_count_str-->8 841 820<!--/na-->** — rows in `raw_ohlcv_1h` (<!--na:universe_size-->503<!--/na--> symbols).
+- **<!--na:lean_zip_size_mb-->139<!--/na--> MB** — LEAN zip store total size.
+- **<!--na:duckdb_size_mb-->166<!--/na--> MB** — DuckDB database file size.
+- **×<!--na:price_scale-->10000<!--/na-->** — price storage scale in the LEAN archive / `raw_ohlcv_1h` table (deci-cents).
+- **~<!--na:candles_per_day_typical-->7<!--/na-->** — 1h candles per RTH session day (09:00–16:00 ET); candles/day ∈ <!--na:candles_per_day_range_str-->[5, 9]<!--/na-->.
 
 ## Cross-cutting rules
 
@@ -48,4 +52,4 @@ Owned here; companion docs reference this file and restate nothing.
 - **Determinism** — the same input state → the same result; guaranteed by seeds, artifact hashes and manifests at every stage.
 - **One-shot** — the OOS window is tested **once**, after freezing the artifacts; the OOS result never goes back into tuning.
 - **Gate** — an automatic pass-on condition (QC on the L3 load; a non-FAIL L8 dashboard before training).
-- **Parameters** — the only configuration site is `config/params.json`; all values are owned by [00_parameters_eng.md](00_parameters_eng.md).
+- **Parameters** — the only configuration site is `config/parameters.json`; all values are owned by [00_parameters_eng.md](00_parameters_eng.md).

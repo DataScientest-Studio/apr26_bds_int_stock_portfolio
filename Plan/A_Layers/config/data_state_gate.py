@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Single-source generator + gate for frozen data-state numbers of Pipeline A.
 
-The ONLY hand-edited home for data-state numbers is ./numerical-amounts.json (same directory).
+The ONLY hand-edited home for data-state numbers is ./data_state_numbers.json (same directory).
 Every other place those numbers appear is a *generated region*:
   - Markdown (the SOT under ENG/Layers_Short_SOT/ + README_A_Layer.md): inline marker regions
         <!--na:KEY-->VALUE<!--/na-->   (HTML comments are invisible when rendered)
@@ -20,9 +20,9 @@ Commands
             (3) excludes the registry and the generated viz .html (scanned: the SOT under
                 ENG/Layers_Short_SOT/ + README_A_Layer.md).
           Genuine non-data-state coincidences (none exist today) can be allow-listed in
-          config/na_allowlist.txt.
+          config/data_state_allowlist.txt.
 
-Run from anywhere:  python3 config/numbers.py {init|build|check}
+Run from anywhere:  python3 config/data_state_gate.py {init|build|check}
 """
 import json
 import re
@@ -31,10 +31,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent          # .../A_Layers
 TOOLS = Path(__file__).resolve().parent
-REGISTRY = ROOT / "config" / "numerical-amounts.json"
+REGISTRY = ROOT / "config" / "data_state_numbers.json"
 VIZ_HTML = ROOT / "viz" / "main_data_flow.html"
 VIZ_TMPL = ROOT / "config" / "main_data_flow.html.tmpl"
-ALLOWLIST = ROOT / "config" / "na_allowlist.txt"
+ALLOWLIST = ROOT / "config" / "data_state_allowlist.txt"
 
 # Ordered data-state literal rules: (compiled regex matching the raw literal, registry key).
 # Order matters: longer / context-specific tokens first so they win before bare \b503\b etc.

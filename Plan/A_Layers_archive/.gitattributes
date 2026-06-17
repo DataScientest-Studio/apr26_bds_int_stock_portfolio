@@ -1,0 +1,5 @@
+# FROZEN archive snapshot (A_Layers minimalism cleanup, 2026-06-17).
+# Preserve files as-is: do not apply the whitespace gate to this directory,
+# so `git diff --check` / commit hooks never flag the frozen content.
+* -whitespace
+*.pdf binary

@@ -1,8 +1,8 @@
 # Detector algorithm — reference implementation (Pipeline A · L6)
 
 > **Subordinate to the SOT.** The detector **output contract** (objects, the 5 invariants, DET-09) is owned
-> by [`Layers_Short_SOT/L6_setup_detector_eng.md`](Layers_Short_SOT/L6_setup_detector_eng.md), and every
-> parameter value by [`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md). This
+> by [`Layers_Short_SOT/L6_setup_detector_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L6_setup_detector_eng.md), and every
+> parameter value by [`Layers_Short_SOT/00_parameters_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_parameters_eng.md). This
 > document is **one concrete, causal geometric algorithm** ("reference design — one valid realization") that
 > satisfies that contract end-to-end. It owns the *geometry* (pseudocode, fits, worked examples), not the
 > contract or the parameter values; on any divergence, the SOT wins.
@@ -47,7 +47,7 @@ to L7 (triple barrier), **not** to the detector.
 All values used below — the canonical contract parameters (`k` is reference-design; `MIN_TOUCHES`, `H`,
 `W_ATR`, `ATR_VARIANT`, `EPS` are canonical) and the detector reference-design values (`TOUCH_TOL=0.25`,
 `LOOKBACK=120`, `COOLDOWN=H`) — are **defined and pinned in**
-[`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md) (mirrored in
+[`Layers_Short_SOT/00_parameters_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_parameters_eng.md) (mirrored in
 `config/params.json`, `detector` block + top-level `TOUCH_TOL`). This document uses those symbols and does
 not re-pin their values; the concrete numbers in the worked examples (§10) are illustrative computations,
 not parameter definitions.

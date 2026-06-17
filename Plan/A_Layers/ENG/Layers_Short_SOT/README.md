@@ -6,24 +6,25 @@ contracts, QC predicates — is defined here, **once**, in short fact-only files
 
 ## Governance (the canonical rule)
 
-1. **This folder is canonical.** The companion docs at [`../`](..) (`build_contract_eng.md`,
-   `detector_algorithm_eng.md`, `quality_gate_spec_eng.md`, `glossary_eng.md`, `readme_eng.md`,
-   `summary_rules_eng.md`) are **subordinate**: narrative, rationale, worked examples and term
-   definitions only. They **must not redefine** any fact owned here — they reference it.
+1. **This folder is canonical and self-contained** — it is the entire build SOT. There are no companion docs:
+   every build-critical fact lives here (and data-state numbers in `../../config/data_state_numbers.json`).
 2. **Each fact has exactly one home** (the fact-ownership map below). A fact appears in its home file and
    nowhere else; everything else points to it.
-3. **On any divergence, the SOT wins** — fix the companion (or the viz) to match this folder, never the
-   reverse.
+3. **On any divergence, the SOT wins** — fix the viz to match this folder, never the reverse.
 4. **Style:** facts only — dense bullets/tables, one fact per line, physical/object perspective, no prose
-   rationale and no worked examples (those live in the companions). This is what keeps the *total* SOT
-   *short*.
+   rationale and no worked examples. This is what keeps the SOT *short*.
+5. **Frozen data-state numbers** (universe size, zip count, row count, store sizes, candles/day, price scale)
+   are owned by [`../../config/data_state_numbers.json`](../../config/data_state_numbers.json), **not** typed into prose. They
+   are generated into this SOT (and the viz) as `<!--na:…-->…<!--/na-->` marker regions.
+   Never hand-edit such a number; edit the registry and run `python3 ../../config/data_state_gate.py build`.
+   `python3 ../../config/data_state_gate.py check` enforces it. Tunable design knobs remain in `config/parameters.json`.
 
 ## Files
 
 Cross-cutting (own facts that span layers):
 
 - [00_conventions_eng.md](00_conventions_eng.md) — notation · canonical naming forms · global numbers · cross-cutting rules.
-- [00_parameters_eng.md](00_parameters_eng.md) — the single parameter registry (mirror of `config/params.json`): 17 keys + EPS + detector reference values + L8 threshold constants.
+- [00_parameters_eng.md](00_parameters_eng.md) — the single parameter registry (mirror of `config/parameters.json`): 17 keys + EPS + detector reference values + L8 threshold constants.
 - [00_input_contract_eng.md](00_input_contract_eng.md) — input OHLCV table schema + invariants + `price_view` + naive-ET→UTC rule.
 - [00_definition_of_done_eng.md](00_definition_of_done_eng.md) — the build acceptance checklist.
 
@@ -46,12 +47,13 @@ Per layer (own that layer's contract):
 
 | Canonical fact | Home |
 |---|---|
-| Notation; canonical naming forms; global numbers (503 / 510 / 8 841 820); causality / determinism / one-shot / gate / scale-independence | `00_conventions_eng.md` |
-| All parameters (17 `params.json` keys + EPS + `TOUCH_TOL` + detector `k`/`LOOKBACK`/`COOLDOWN` + L8 threshold constants) | `00_parameters_eng.md` |
+| Notation; canonical naming forms; causality / determinism / one-shot / gate / scale-independence | `00_conventions_eng.md` |
+| Frozen data-state numbers (universe size <!--na:universe_size-->503<!--/na--> / zip count <!--na:lean_zip_count-->510<!--/na--> / row count <!--na:duckdb_row_count_str-->8 841 820<!--/na--> / store sizes / candles per day / price scale) | [`../../config/data_state_numbers.json`](../../config/data_state_numbers.json) — single source; rendered into `00_conventions_eng.md` and elsewhere via `<!--na:…-->` markers; includes the ZIP-inventory to universe-size derivation note |
+| All parameters (17 `parameters.json` keys + EPS + `TOUCH_TOL` + detector `k`/`LOOKBACK`/`COOLDOWN` + L8 threshold constants) | `00_parameters_eng.md` |
 | Input table schema + cross-bar invariants + `price_view` manifest + naive-ET→UTC rule | `00_input_contract_eng.md` |
 | Definition of Done checklist | `00_definition_of_done_eng.md` |
 | Source contract | `L1` |
-| LEAN zip store + CSV row layout + ×10000 + naive ET | `L2` |
+| LEAN zip store + CSV row layout + ×<!--na:price_scale-->10000<!--/na--> + naive ET | `L2` |
 | DuckDB schema + `VIEW ohlcv_1h` + **QC-01…QC-11** + `_meta` + key numbers | `L3` |
 | Atomic snapshot + parquet schema/path + parity | `L4` |
 | Split dates + purge (=H=24) + embargo (=5 sess) + CV scheme | `L5` |
@@ -59,16 +61,7 @@ Per layer (own that layer's contract):
 | 8 feature formulas + 7-X `FEATURE_MANIFEST` + label Y + Output A/B schema + `label_uniqueness_weight` | `L7` |
 | L8 counters + parities P1/P2/P3 + `summary.json` schema + aggregation rule | `L8` |
 | Optuna/XGBoost + `strategy_<TICKER>.py` artifact contract | `L9` |
-| OOS one-shot + entry rule + TB exits + 503×metrics matrix + distribution report | `L10` |
-
-## Companion docs (subordinate)
-
-- [../build_contract_eng.md](../build_contract_eng.md) — build narrative / reader's guide; cites this folder, restates no fact.
-- [../detector_algorithm_eng.md](../detector_algorithm_eng.md) — reference detector algorithm (one valid realization): pseudocode, fit math, worked examples.
-- [../quality_gate_spec_eng.md](../quality_gate_spec_eng.md) — L8 worked example, dashboard layout, rationale.
-- [../glossary_eng.md](../glossary_eng.md) — term dictionary (definitions).
-- [../readme_eng.md](../readme_eng.md) — ENG package index.
-- [../summary_rules_eng.md](../summary_rules_eng.md) — the writing standard.
+| OOS one-shot + entry rule + TB exits + <!--na:universe_size-->503<!--/na-->×metrics matrix + distribution report | `L10` |
 
 Feature explanation ("Plan B", Stages F0–F14) is a separate, subordinate helper in
 [`../../../B_Features/`](../../../B_Features/) — not part of this SOT.

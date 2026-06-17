@@ -2,15 +2,15 @@
 
 > **Subordinate to the SOT.** This is a **term dictionary** — concise definitions of every concept in
 > Pipeline A. It is **not** the canonical source: the authoritative parameters, formulas, schemas, QC
-> predicates and naming forms are owned by [`Layers_Short_SOT/`](Layers_Short_SOT/). Where an entry needs a
+> predicates and naming forms are owned by [`Layers_Short_SOT/`](../../A_Layers/ENG/Layers_Short_SOT/). Where an entry needs a
 > build-critical artifact (a formula, a value, a full table), it **points to the SOT** rather than restating
 > it; on any divergence, the SOT wins.
 
 Order = layer by layer (L1 → L10), the way data flows bottom-to-top in the `1 Overview` view of
 `viz/main_data_flow.html`; concepts that apply to every layer are gathered under *Cross-cutting concepts*.
 Canonical naming forms and notation are owned by
-[`Layers_Short_SOT/00_conventions_eng.md`](Layers_Short_SOT/00_conventions_eng.md); parameter values by
-[`Layers_Short_SOT/00_parameters_eng.md`](Layers_Short_SOT/00_parameters_eng.md).
+[`Layers_Short_SOT/00_conventions_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_conventions_eng.md); parameter values by
+[`Layers_Short_SOT/00_parameters_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_parameters_eng.md).
 
 ---
 
@@ -59,7 +59,7 @@ Canonical naming forms and notation are owned by
 - **`price_view = raw_usd_view`** — the semantic name of the input price view (contract in `00_input_contract_eng.md`); one value per dataset.
 - **`_meta`** — schema metadata: `schema_version`, source, `built_at`, row/symbol counters.
 - **upsert per symbol** — `DELETE-then-INSERT`; uniqueness of `(symbol, ts)` guaranteed by the process + QC.
-- **QC gate / QC-01…QC-11** — 11 load-validation predicates (a load that fails any is **not published**); the predicate set is owned by [`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md).
+- **QC gate / QC-01…QC-11** — 11 load-validation predicates (a load that fails any is **not published**); the predicate set is owned by [`Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md).
 - **key numbers** — 8 841 820 rows · 503 symbols · database 166 MB · range 2016-01-04 → rolling.
 
 ## L4 · Snapshot → parquet OHLCV per ticker
@@ -76,7 +76,7 @@ Canonical naming forms and notation are owned by
 ## L5 · Split: warm-up / train / OOS (+ purge / embargo)
 
 - **time split** — splitting the series into three disjoint windows; the foundation of OOS-result credibility.
-- **WARM-UP / TRAIN / OOS** — three disjoint windows; only Train is touched repeatedly; OOS is frozen and tested once. Dates owned by [`Layers_Short_SOT/L5_time_split_eng.md`](Layers_Short_SOT/L5_time_split_eng.md).
+- **WARM-UP / TRAIN / OOS** — three disjoint windows; only Train is touched repeatedly; OOS is frozen and tested once. Dates owned by [`Layers_Short_SOT/L5_time_split_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L5_time_split_eng.md).
 - **indices, not files per window** — windows are sets of indices on one continuous series (the rolling lookback crosses boundaries).
 - **rolling lookback** — the longest backward window of a feature: `max(W_ATR, W_VOL) = 20` candles.
 - **purge** — a training row whose label window `[t0, t0+H]` crosses a window boundary is removed; operates on **setups**.
@@ -86,7 +86,7 @@ Canonical naming forms and notation are owned by
 
 ## L6 · Trend-line setup detector
 
-- **detector** — we define the **output contract**, not the geometric algorithm; contract owned by [`Layers_Short_SOT/L6_setup_detector_eng.md`](Layers_Short_SOT/L6_setup_detector_eng.md), reference geometry in [detector_algorithm_eng.md](detector_algorithm_eng.md).
+- **detector** — we define the **output contract**, not the geometric algorithm; contract owned by [`Layers_Short_SOT/L6_setup_detector_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L6_setup_detector_eng.md), reference geometry in [detector_algorithm_eng.md](detector_algorithm_eng.md).
 - **setup** — a single occurrence of a trend-line structure (formation → entry → outcome).
 - **`direction` (±1)** — `+1` long (break up through resistance) · `−1` short (break down through support).
 - **`L_trend(t)` / `L_opp(t)`** — the traded line / the opposing line (the stop loss sits on `L_opp`); both linear fits `a·t + b`.
@@ -99,7 +99,7 @@ Canonical naming forms and notation are owned by
 
 ## L7 · Features X + label Y (triple barrier)
 
-- **transformer** — computes exactly 8 columns at `t0` (Feature Set v1); the 8 formulas + guards + the 7-X manifest + Output A/B schema are owned by [`Layers_Short_SOT/L7_features_x_label_y_eng.md`](Layers_Short_SOT/L7_features_x_label_y_eng.md).
+- **transformer** — computes exactly 8 columns at `t0` (Feature Set v1); the 8 formulas + guards + the 7-X manifest + Output A/B schema are owned by [`Layers_Short_SOT/L7_features_x_label_y_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L7_features_x_label_y_eng.md).
 - **Feature Set v1 (8 features)** — `distance_to_trend_line · distance_to_opposing_line · risk_if_entered_pct · bar_return_pct · body_to_range_ratio · volume_z_score · touch_count · closed_through_line`.
 - **`FEATURE_MANIFEST` (7 X)** — the model's feature vector = the 8 columns minus `closed_through_line`; order frozen.
 - **`closed_through_line` (audit)** — at `t0` definitionally `=1` (break invariant); an audit column, outside X.
@@ -112,7 +112,7 @@ Canonical naming forms and notation are owned by
 
 ## L8 · Quality validation: stores + transforms (dashboard)
 
-- **quality validation** — measures and reports, **fixes nothing**. Counters, parities, `summary.json` schema and aggregation owned by [`Layers_Short_SOT/L8_data_quality_eng.md`](Layers_Short_SOT/L8_data_quality_eng.md); thresholds in `00_parameters_eng.md`; rationale + dashboard layout in [quality_gate_spec_eng.md](quality_gate_spec_eng.md).
+- **quality validation** — measures and reports, **fixes nothing**. Counters, parities, `summary.json` schema and aggregation owned by [`Layers_Short_SOT/L8_data_quality_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L8_data_quality_eng.md); thresholds in `00_parameters_eng.md`; rationale + dashboard layout in [quality_gate_spec_eng.md](quality_gate_spec_eng.md).
 - **parities** — agreement of counts across stores: zip → DuckDB · DuckDB → parquet · parquet → Output B.
 - **gaps** — in-session = 0 (hard fail) · overnight/weekend = counted (normal) · filled gaps = 0 (we fill nothing).
 - **zero-values** — `volume = 0` bars · `high == low` (zero-range) · prices ≤ 0 (must be 0).
@@ -126,12 +126,12 @@ Canonical naming forms and notation are owned by
 - **OOS guard** — in the tuning/training phase an attempt to read OOS = exception.
 - **XGBoost `binary:logistic` / meta-labeling** — the model returns `p(TP)` and **filters** the detector's setup signal (it does not look for trades).
 - **champion** — retrain on the full Train with the best trial's parameters; one model per `{asset × direction}`; deterministic seed.
-- **`strategy_<TICKER>.py`** — a self-contained artifact (target ×503), imported standalone; sections `MODEL_B64`, `FEATURE_MANIFEST`, `LABEL_CONTRACT`, `THRESHOLD_ENTRY`, `selfcheck()` owned by [`Layers_Short_SOT/L9_optuna_xgboost_eng.md`](Layers_Short_SOT/L9_optuna_xgboost_eng.md).
+- **`strategy_<TICKER>.py`** — a self-contained artifact (target ×503), imported standalone; sections `MODEL_B64`, `FEATURE_MANIFEST`, `LABEL_CONTRACT`, `THRESHOLD_ENTRY`, `selfcheck()` owned by [`Layers_Short_SOT/L9_optuna_xgboost_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L9_optuna_xgboost_eng.md).
 - **deterministic build** — the same run → the same file hash.
 
 ## L10 · OOS test: 503 assets × metrics
 
-- **OOS test** — one run over the OOS window; the entry rule and TB exits are owned by [`Layers_Short_SOT/L10_oos_test_eng.md`](Layers_Short_SOT/L10_oos_test_eng.md).
+- **OOS test** — one run over the OOS window; the entry rule and TB exits are owned by [`Layers_Short_SOT/L10_oos_test_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/L10_oos_test_eng.md).
 - **hash registry** — the hash of each artifact recorded before the test; from that moment the files are immutable.
 - **results matrix `503 × metrics`** — aggregation per asset, canonical order **PF · Sharpe · MDD · TIM · WR** (+ trades).
   - **PF** — gross profits / gross losses · **Sharpe** — informational, caution at low TIM · **MDD %** — max drawdown · **TIM %** — time in market · **WR %** — win-rate · **trades** — the denominator of significance.
@@ -144,7 +144,7 @@ Canonical naming forms and notation are owned by
 
 The canonical naming forms (DuckDB, `VIEW ohlcv_1h`, the `PF · Sharpe · MDD · TIM · WR` order, `QC-01…QC-11`,
 `warm-up`, `raw_usd_view`, the `L1–L10` reservation, the global numbers) are owned by
-[`Layers_Short_SOT/00_conventions_eng.md`](Layers_Short_SOT/00_conventions_eng.md). Use them verbatim.
+[`Layers_Short_SOT/00_conventions_eng.md`](../../A_Layers/ENG/Layers_Short_SOT/00_conventions_eng.md). Use them verbatim.
 
 What the features *are* and where they come from is explained separately in
 [feature_explanation_plan_b_eng.md](../../B_Features/feature_explanation_plan_b_eng.md): an OHLCV → feature

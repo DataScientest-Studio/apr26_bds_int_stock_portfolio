@@ -2,7 +2,7 @@
 
 Canonical home for the numeric guards and the (illustrative) window conventions. Plan B is **decoupled from
 any store**, so these are **explanatory conventions for understanding the formulas**, not a pinned store
-contract — there is no `config/params.json` here (that belongs to Pipeline A).
+contract — there is no `config/parameters.json` here (that belongs to Pipeline A).
 
 ## Guard conventions (`ε = 1e-9`)
 

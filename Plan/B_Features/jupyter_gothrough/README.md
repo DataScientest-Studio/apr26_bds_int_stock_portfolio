@@ -28,7 +28,7 @@ the cell files **reference** them, never restate them.
 
 ## Notebook contract
 
-- **One selectable asset.** `SYMBOL` ∈ the 503-name universe (`A_Layers/config/universe.txt`); change one
+- **One selectable asset.** `SYMBOL` ∈ the 503-name universe (`A_Layers/config/universe_tickers.txt`); change one
   variable → the whole notebook re-runs for a different ticker. No cross-asset logic.
 - **Recompute every Stage from raw OHLCV.** F2–F6 are computed in-notebook from the F0 channels; the
   pre-built transforms parquet is used (if at all) only as an **optional cross-check**, never as the source.

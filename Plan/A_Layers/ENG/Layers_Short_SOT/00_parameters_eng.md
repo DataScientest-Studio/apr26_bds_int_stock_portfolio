@@ -1,10 +1,10 @@
 # 00 · Parameters (SOT)
 
-The **only** configuration site is `config/params.json` (canonical file: `Plan/config/params.json`,
-mirror of the source `config/params.json`); zero thresholds are hardcoded in code. This file owns every
+The **only** configuration site is `config/parameters.json` (canonical file: `Plan/config/parameters.json`,
+mirror of the source `config/parameters.json`); zero thresholds are hardcoded in code. This file owns every
 parameter value; companion docs reference it and restate no number.
 
-## Contract parameters (17 keys from `params.json`)
+## Contract parameters (17 keys from `parameters.json`)
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -32,7 +32,7 @@ reconfiguration of parameters, not logic changes.
 ## Detector reference-design values (`detector` block + top-level `TOUCH_TOL`)
 
 Reference design (one valid realization) — F2 may replace these without breaking the L6 output contract.
-Mirrored in `config/params.json` (`detector` block, plus top-level `TOUCH_TOL`).
+Mirrored in `config/parameters.json` (`detector` block, plus top-level `TOUCH_TOL`).
 
 | Symbol | Value | Units | Status |
 |---|---|---|---|
@@ -47,7 +47,7 @@ Touch test: a swing point at index `s` with price `p_s` **touches** a line `L(·
 ## L8 threshold constants (the `l8` block)
 
 Reference design (one valid realization) pending roadmap item F4b; the comparison operators and structure
-are frozen, the numbers may be re-pinned in `config/params.json`. Applied to the counters in
+are frozen, the numbers may be re-pinned in `config/parameters.json`. Applied to the counters in
 [L8_data_quality_eng.md](L8_data_quality_eng.md).
 
 | Counter / parity | OK iff | WARN iff | FAIL iff | Ceiling |

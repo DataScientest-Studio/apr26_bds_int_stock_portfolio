@@ -19,7 +19,7 @@ Start condition = a non-FAIL L8 dashboard ([L8](L8_data_quality_eng.md)).
 
 ## Strategy artifact contract
 
-Final deliverable: **one self-contained `strategy_<TICKER>.py` per Asset** (target ×503), imported
+Final deliverable: **one self-contained `strategy_<TICKER>.py` per Asset** (target ×<!--na:universe_size-->503<!--/na-->), imported
 standalone with no access to the training data. Mandatory sections:
 
 | Section | Content |

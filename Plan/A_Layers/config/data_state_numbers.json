@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "purpose": "Single source of truth for FROZEN, observed data-state numbers of Pipeline A (counts and sizes derived from the source-data snapshot). Tunable design knobs live in parameters.json, not here.",
+    "frozen": true,
+    "as_of": "2026-06-17",
+    "snapshot_note": "Values reflect the v1 raw_ohlcv_1h build / LEAN zip set. Update ONLY this file when the underlying DuckDB/zip snapshot changes, then run: python3 config/data_state_gate.py build && python3 config/data_state_gate.py check",
+    "provenance": {
+      "universe_size": "derived from _universe_derivation (quality-filtered subset of the 510 ZIP inventory)",
+      "lean_zip_count": "count of <ticker>.zip in the LEAN store before the universe quality filter",
+      "duckdb_row_count": "SELECT count(*) FROM raw_ohlcv_1h",
+      "lean_zip_size_mb": "du -m of the LEAN zip store",
+      "duckdb_size_mb": "size of the *.duckdb file (MB)",
+      "candles_per_day_*": "RTH session 09:00-16:00 ET, 1h candles"
+    },
+    "consumers": "Generated into ENG/Layers_Short_SOT/** and README_A_Layer.md via na: marker regions, and into viz/main_data_flow.html from config/main_data_flow.html.tmpl. Do NOT hand-edit these numbers in those files; edit this registry and run config/data_state_gate.py build."
+  },
+  "_universe_derivation": {
+    "source_zip_count": 510,
+    "universe_size_source": "wc -l config/universe_tickers.txt",
+    "universe_file": "config/universe_tickers.txt",
+    "relationship": "503 universe tickers are the quality-filtered subset of the 510 ZIP files in the LEAN inventory.",
+    "quality_filter_rule": "Keep tickers with sufficient 1h price history and acceptable gap coverage for the Pipeline A snapshot.",
+    "min_history_years": 2,
+    "coverage_threshold_pct": null,
+    "coverage_threshold_note": "v1: exact numeric threshold intentionally left undefined (qualitative rule in quality_filter_rule)",
+    "excluded_zip_count": 7,
+    "excluded_ticker_list": "not stored in A_Layers v1; add a filter artifact before treating this as a recomputable value",
+    "as_of": "2026-06-17"
+  },
+  "universe_size": 503,
+  "lean_zip_count": 510,
+  "duckdb_row_count": 8841820,
+  "duckdb_row_count_str": "8 841 820",
+  "duckdb_row_count_short": "8.84M",
+  "lean_zip_size_mb": 139,
+  "duckdb_size_mb": 166,
+  "price_scale": 10000,
+  "candles_per_day_typical": 7,
+  "candles_per_day_min": 5,
+  "candles_per_day_max": 9,
+  "candles_per_day_range_str": "[5, 9]"
+}

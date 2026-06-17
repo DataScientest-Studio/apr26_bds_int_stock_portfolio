@@ -9,9 +9,9 @@
   - top-up lookback: ~5 days (upsert overwrites the tail of the series)
   - idempotent: re-running with the same window gives the same state
   - session guard: outside ET market hours (Mon–Fri) the cron does nothing (no-op)
-- Download scope: 503 S&P 500 tickers.
-  - ticker list: file `config/universe.txt`
-  - interval: 1h candles, RTH session 09:00–16:00 ET only (~7 candles/day)
+- Download scope: <!--na:universe_size-->503<!--/na--> S&P 500 tickers.
+  - ticker list: file `config/universe_tickers.txt`
+  - interval: 1h candles, RTH session 09:00–16:00 ET only (~<!--na:candles_per_day_typical-->7<!--/na--> candles/day)
 - Download result: ZIP files in LEAN format, one file per ticker.
 - Prices arrive raw, with no split/dividend adjustments (adjustment = a deliberate decision of later layers; open risk R1 — corporate actions).
 - The `volume` column is required; its absence = hard fail QC.

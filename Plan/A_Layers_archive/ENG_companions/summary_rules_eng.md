@@ -1,6 +1,6 @@
 # SOT writing rules
 
-Goal: each SOT file in [`Layers_Short_SOT/`](Layers_Short_SOT/) reads like an account of what
+Goal: each SOT file in [`Layers_Short_SOT/`](../../A_Layers/ENG/Layers_Short_SOT/) reads like an account of what
 **physically** happens to files, folders and data — no theory, no guesswork. Short, fact-only files that
 *own* the canonical facts.
 
@@ -27,7 +27,7 @@ physical objects.
 6. **Concrete details whenever they exist:** paths (`parquet/<TICKER>/ohlcv.parquet`), naming conventions
    (`<ticker>.zip`, `strategy_<TICKER>.py`), numbers (503, ×10000), formats (CSV without header, BIGINT, zstd).
 7. **Each fact has exactly one home (DRY).** A fact is defined in its owner file (the fact-ownership map in
-   [`Layers_Short_SOT/README.md`](Layers_Short_SOT/README.md)) and **referenced** everywhere else — even
+   [`Layers_Short_SOT/README.md`](../../A_Layers/ENG/Layers_Short_SOT/README.md)) and **referenced** everywhere else — even
    within the SOT (e.g. a layer file points to `00_parameters_eng.md` for parameter values rather than
    restating them).
 8. **The companions follow the SOT (1:1 direction).** The companion docs must state the same facts as the
