@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>S&amp;P 500 ML Pipeline — rotatable 3D Canvas ({{universe_size}} companies)</title>
+
+<style>
+:root{
+  --color-background-primary:#1e1e1c;
+  --color-background-secondary:#2b2b28;
+  --color-text-primary:#ece9e1;
+  --color-text-secondary:#a8a69d;
+  --color-text-tertiary:#a09d93;           /* WCAG: 6.15:1 on primary bg, 5.23:1 on secondary (was #76746c = 3.57:1, fail) */
+  --color-border-secondary:rgba(255,255,255,0.18);
+  --color-border-tertiary:rgba(255,255,255,0.12);
+  /* text-safe accent variants: each ≥4.5:1 on both backgrounds (dark). Accents-as-TEXT
+     map here via txc(); saturated JS constants (RED/TEAL/…) stay for fills/strokes. */
+  --c-error-text:#F26B6A;                  /* 5.63 / 4.79 */
+  --c-store-text:#2BB587;                  /* 6.41 / 5.45 */
+  --c-train-text:#86B23A;                  /* 6.71 / 5.71 */
+  --c-control-text:#D89A3A;                /* 6.84 / 5.82 */
+  --c-source-text:#ABA99F;                 /* 7.08 / 6.02 */
+  --c-gate-text:#E673A3;                   /* 5.84 / 4.97 */
+  --c-good-text:#34C96A;                   /* 7.72 / 6.56 */
+  --c-fail-text:#FF6B62;                   /* 5.99 / 5.09 */
+  --border-radius-md:8px;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --color-background-primary:#f5f4ee;
+    --color-background-secondary:#e7e5dc;
+    --color-text-primary:#2b2b28;
+    --color-text-secondary:#5f5e57;
+    --color-text-tertiary:#67665e;          /* WCAG: 5.24:1 on #f5f4ee, 4.57:1 on #e7e5dc (was #8f8e86 = fail) */
+    --color-border-secondary:rgba(0,0,0,0.18);
+    --color-border-tertiary:rgba(0,0,0,0.12);
+    /* text-safe accents for the light theme — darker, ≥4.5:1 on both light backgrounds */
+    --c-error-text:#BC3531;                 /* 5.16 / 4.51 */
+    --c-store-text:#0F6F50;                 /* 5.59 / 4.88 */
+    --c-train-text:#4E6E1C;                 /* 5.34 / 4.66 */
+    --c-control-text:#8F5410;               /* 5.53 / 4.83 */
+    --c-source-text:#67665e;                /* 5.24 / 4.57 */
+    --c-gate-text:#A82E68;                  /* 5.85 / 5.11 */
+    --c-good-text:#0F7035;                  /* 5.62 / 4.91 */
+    --c-fail-text:#BC3531;                  /* 5.16 / 4.51 */
+  }
+}
+html,body{margin:0}
+html{height:100%}
+/* full-screen layout: the page doesn't scroll → no scrollbar → no width changes →
+   overlay panels toggle without fit()/canvas reset (no more flicker) */
+body{
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  font-family:"Anthropic Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  line-height:1.5;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding:14px 24px 0;
+  max-width:980px;
+  margin:0 auto;
+  box-sizing:border-box;
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.tlc-sub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 10px}
+.tlc-sub b{color:var(--color-text-primary);font-weight:600}
+.tlc-ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:10px 0 2px;font-size:13px;color:var(--color-text-secondary)}
+.tlc-ctrls .lbl{color:var(--color-text-primary)}
+.tlc-seg{display:inline-flex;flex-wrap:wrap;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden}
+.tlc-seg button{border:0;background:transparent;padding:5px 10px;font-size:12.5px;color:var(--color-text-secondary);cursor:pointer}
+.tlc-seg button.on{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.tlc-btn{border:0.5px solid var(--color-border-secondary);background:transparent;border-radius:6px;padding:5px 10px;font-size:12.5px;color:var(--color-text-secondary);cursor:pointer}
+.tlc-btn:hover{color:var(--color-text-primary)}
+.tlc-ctrls label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.tlc-ctrls input[type=checkbox]{width:15px;height:15px;margin:0}
+.tlc-ctrls select{font:inherit;background:var(--color-background-secondary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:4px 6px}
+.tlc-stage{position:relative;margin-top:4px;flex:1 1 auto;min-height:0;overflow:hidden}
+#tlc{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:grab}
+#tip{position:absolute;display:none;pointer-events:none;z-index:3;max-width:260px;
+  background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);
+  border-radius:8px;padding:7px 10px;font-size:12px;color:var(--color-text-primary);white-space:pre-line;line-height:1.45}
+#panel{position:absolute;top:10px;right:10px;width:262px;max-height:calc(100% - 20px);overflow:auto;display:none;z-index:4;
+  background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px}
+#panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;
+  border-bottom:1px solid var(--color-border-tertiary);font-size:13px;font-weight:600}
+#panelClose{border:0;background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:15px;line-height:1}
+#panelBody{padding:8px 10px;font-size:12.5px;color:var(--color-text-secondary)}
+#panelBody b{color:var(--color-text-primary)}
+#panelBody pre{font-family:var(--font-mono);font-size:10.5px;white-space:pre-wrap;word-break:break-all;
+  background:var(--color-background-secondary);border-radius:6px;padding:7px;color:var(--color-text-primary);margin:6px 0}
+.tlc-leg{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 0 2px;font-size:12.5px;color:var(--color-text-secondary)}
+.tlc-leg span{display:inline-flex;align-items:center;gap:6px}
+.tlc-msgs{font-size:12.5px;color:var(--color-text-secondary);margin:10px 0 0;padding-left:20px}
+.tlc-msgs li{margin:2px 0}
+.tlc-msgs b{color:var(--color-text-primary)}
+
+/* buttons always in the same place (z-index above the editor, they don't disappear) */
+#botTabs{position:fixed;left:14px;bottom:14px;z-index:32;display:flex;gap:8px}
+#lblTab,#legTab{background:var(--color-background-secondary);
+  color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);
+  border-radius:8px;padding:9px 11px;font-size:12.5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#lblTab:hover,#legTab:hover{background:var(--color-background-primary)}
+#legTab[aria-pressed="true"]{color:var(--color-text-tertiary)}
+/* when the editor is open — push its footer aside so the floating buttons don't cover it */
+body.le-open #leFoot{padding-left:210px}
+/* Legend = bottom overlay (like the editor); controlled by the body.leg-open class */
+#botInfo{position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:min(52vh,480px);overflow:auto;
+  background:var(--color-background-primary);border-top:0.5px solid var(--color-border-secondary);
+  box-shadow:0 -6px 26px rgba(0,0,0,.4);transform:translateY(103%);transition:transform .22s ease;
+  will-change:transform;padding:0 24px 56px;box-sizing:border-box}
+body.leg-open #botInfo{transform:translateY(0)}
+#botInfo>.bi-inner{min-height:0}
+/* bottom padding (56px) reserves a strip for the floating ✎/▦ buttons (left:14 bottom:14) — content doesn't hide them */
+/* legend titlebar — styled like #leHead (editor header), click = collapse */
+.bi-head{display:flex;align-items:center;gap:8px;padding:9px 2px 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--color-border-tertiary);font-size:14px;font-weight:600;
+  color:var(--color-text-primary);cursor:pointer;user-select:none}
+.bi-cue{margin-left:auto;font-size:11px;font-weight:400;color:var(--color-text-tertiary)}
+.bi-head:hover .bi-cue{color:var(--color-text-secondary)}
+
+#lblEditor{position:fixed;left:0;right:0;bottom:0;height:min(360px,44vh);z-index:31;
+  background:var(--color-background-primary);border-top:0.5px solid var(--color-border-secondary);
+  box-shadow:0 -6px 26px rgba(0,0,0,.4);transform:translateY(103%);transition:transform .22s ease;
+  will-change:transform;display:flex;flex-direction:column;font-size:13px}
+
+body.le-open #lblEditor{transform:translateY(0)}
+#leHead{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;user-select:none;
+  border-bottom:1px solid var(--color-border-tertiary);font-size:14px;font-weight:600}
+#leCue{margin-left:auto;font-size:11px;font-weight:400;color:var(--color-text-tertiary)}
+#leHead:hover #leCue{color:var(--color-text-secondary)}
+#leClose{border:0;background:transparent;color:var(--color-text-secondary);font-size:19px;cursor:pointer;line-height:1}
+#leClose:hover{color:var(--color-text-primary)}
+#leSearch{margin:10px 12px 4px;padding:6px 9px;font:inherit;font-size:12.5px;background:var(--color-background-secondary);
+  color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:6px}
+#leHint{margin:0 14px 6px;font-size:11px;color:var(--color-text-tertiary)}
+#leBody{flex:1;overflow:auto;padding:0 10px 10px;position:relative}
+.le-grp{margin:8px 0 2px}
+.le-gh{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--color-text-primary);
+  padding:7px 4px;border-bottom:1px solid var(--color-border-tertiary);user-select:none}
+.le-gh .le-car{color:var(--color-text-secondary);width:10px;display:inline-block}
+.le-gh .le-cnt{color:var(--color-text-tertiary);font-weight:400}
+.le-rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:0 18px}
+.le-grp.collapsed .le-rows{display:none}
+.le-row{display:flex;align-items:flex-start;gap:8px;padding:5px 4px}
+.le-row input[type=checkbox]{width:15px;height:15px;margin:6px 0 0;flex:0 0 auto;cursor:pointer}
+.le-fields{flex:1;min-width:0}
+.le-hint{font-size:10px;color:var(--color-text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 1px}
+.le-txt{width:100%;box-sizing:border-box;font:inherit;font-size:12px;background:var(--color-background-secondary);
+  color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:4px 7px}
+.le-txt:focus{outline:1.5px solid rgba(29,158,117,.85);border-color:#1D9E75}
+.le-row.editing .le-hint{color:#1D9E75}
+.le-row.off .le-txt{opacity:.45;text-decoration:line-through}
+#leFoot{display:flex;flex-wrap:wrap;gap:7px;padding:10px 12px;border-top:1px solid var(--color-border-tertiary)}
+#leFoot button{border:0.5px solid var(--color-border-secondary);background:transparent;border-radius:6px;
+  padding:6px 9px;font-size:11.5px;color:var(--color-text-secondary);cursor:pointer}
+#leFoot button:hover{color:var(--color-text-primary)}
+</style>
+</head>
+<body>
+<script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
+  if(_p==='legend')document.body.classList.add('leg-open');
+  else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten levels from the bottom: an Alpaca SIP 1h source for a universe of {{universe_size}} tickers, a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, quality validation of stores and transforms with a dashboard as a gate before training, Optuna tuning and XGBoost training into a strategy file with a base64-encoded model, and a wall of OOS test results for {{universe_size}} assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+
+<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → quality validation (dashboard) → Optuna+XGB → strategy .py (base64) → OOS test {{universe_size}} assets. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9 and 0 = views.</p>
+
+<div class="tlc-ctrls">
+  <span class="lbl">View:</span>
+  <span class="tlc-seg" id="segMode">
+    <button data-m="overview" class="on">1 Overview</button>
+    <button data-m="dataflow">2 Data (DAG)</button>
+    <button data-m="qc">3 QC gates</button>
+    <button data-m="split">4 Split</button>
+    <button data-m="setup">5 Setup geometry</button>
+    <button data-m="dq">6 Data quality</button>
+    <button data-m="optuna">7 Optuna</button>
+    <button data-m="artifact">8 Artifact</button>
+    <button data-m="oos">9 OOS results</button>
+    <button data-m="leak">0 Anti-leakage</button>
+  </span>
+</div>
+
+<div class="tlc-stage" id="stage">
+  <canvas id="tlc"></canvas>
+  <div id="tip"></div>
+  <div id="panel">
+    <div id="panelHead"><span id="panelTitle">Details</span><button id="panelClose" aria-label="Close">×</button></div>
+    <div id="panelBody"></div>
+  </div>
+</div>
+
+<div id="botInfo"><div class="bi-inner">
+<div class="bi-head" id="legHead" title="Click to collapse the legend">▦ XGB S&amp;P500 Data Processing Pipeline<span class="bi-cue">collapse ▾</span></div>
+<div class="tlc-ctrls" id="botCtrls">
+  <span class="lbl">Asset:</span>
+  <select id="selAsset"></select>
+  <span class="lbl">OOS metric:</span>
+  <span class="tlc-seg" id="segMetric">
+    <button data-s="pf" class="on">PF</button>
+    <button data-s="sharpe">Sharpe</button>
+    <button data-s="mdd">MDD</button>
+  </span>
+  <span class="lbl">Camera:</span>
+  <span class="tlc-seg" id="segCam">
+    <button data-c="iso" class="on">3D (iso)</button>
+    <button data-c="flat">front (flat)</button>
+  </span>
+  <span class="lbl">Speed:</span>
+  <span class="tlc-seg" id="segSpd">
+    <button data-v="0.5">½×</button>
+    <button data-v="1" class="on">1×</button>
+    <button data-v="2">2×</button>
+  </span>
+  <label><input type="checkbox" id="cLabels" checked> Labels</label>
+  <label><input type="checkbox" id="cFlow" checked> Flow</label>
+  <span class="lbl">Names:</span>
+  <span class="tlc-seg" id="segNames">
+    <button data-n="sample" class="on">sample</button>
+    <button data-n="none">none</button>
+  </span>
+  <button class="tlc-btn" id="bPause">⏸ Pause</button>
+  <button class="tlc-btn" id="bPng">⤓ PNG</button>
+</div>
+
+<!-- Legend by 5 families (color = role, shape = silhouette). Red reserved for errors. -->
+<div class="tlc-leg">
+  <span><span style="display:inline-block;width:12px;height:12px;border:1.5px solid #8a8980"></span> Source / gate <span style="color:var(--color-text-tertiary)">(L1–L2)</span></span>
+  <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3)</span></span>
+  <span><span style="display:inline-block;width:9px;height:14px;background:rgba(99,153,34,.20);border:1.5px solid #639922"></span> Transform <span style="color:var(--color-text-tertiary)">(L4·L6·L7·L9)</span></span>
+  <span><span style="display:inline-block;width:13px;height:11px;border:1.5px solid #BA7517;border-radius:4px"></span> Gate / control <span style="color:var(--color-text-tertiary)">(L5·L8)</span></span>
+  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / report <span style="color:var(--color-text-tertiary)">(L10)</span></span>
+  <span><span style="display:inline-block;width:11px;height:11px;background:linear-gradient(90deg,var(--c-fail-text),#9a9890,#22C55E)"></span> Result scale: bad ↔ good (diverging)</span>
+  <span style="color:var(--c-fail-text)">✕ Red = error / block / FAIL (reserved)</span>
+</div>
+
+<ol class="tlc-msgs">
+  <li><b>Alpaca SIP · 1h</b> — {{universe_size}} S&amp;P 500 tickers, session 09:00–16:00 ET (~{{candles_per_day_typical}} candles/day), 2016 → today.</li>
+  <li><b>LEAN ZIP</b>: {{lean_zip_count}} zips (1 per ticker), CSV with prices in deci-cents <b>×{{price_scale}}</b>, {{lean_zip_size_mb}} MB.</li>
+  <li><b>DuckDB</b>: raw table (BIGINT ×{{price_scale}}) + <b>VIEW ohlcv_1h</b> (USD, /{{price_scale}}.0); every load is gated by QC-01…QC-11.</li>
+  <li><b>Snapshot → parquet OHLCV</b> per ticker (×{{universe_size}}) — features are computed only by the transformer (L7).</li>
+  <li><b>Time split</b>: warm-up → train → OOS; <b>purge H=24 + embargo</b>, because TB labels overlap the boundaries.</li>
+  <li><b>Trend-line setup</b> = 8 transformer features (7 X + closed_through_line audit) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
+  <li><b>Quality validation</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
+  <li><b>Optuna tunes XGBoost on Train</b> (200 trials, purged walk-forward); champion → <b>strategy .py with a base64 model</b> + selfcheck.</li>
+  <li><b>OOS single run</b>: {{universe_size}} assets × PF · Sharpe · MDD · TIM · WR.</li>
+</ol>
+</div></div>
+
+<div id="botTabs">
+  <button id="lblTab" title="Edit label names">✎ Labels</button>
+  <button id="legTab" title="Show/hide legend" aria-pressed="false">▦ Legend</button>
+</div>
+<aside id="lblEditor" aria-label="Label editor" aria-hidden="true">
+  <div id="leHead" title="Click the bar to collapse the panel"><span>✎ Label editor</span><span id="leCue">click bar = collapse ▾</span><button id="leClose" aria-label="Close">×</button></div>
+  <input id="leSearch" type="text" placeholder="Filter labels…">
+  <div id="leHint">☑ = visible on the scene · text field = name · editing a field = teal highlight of the element on the scene (live) · L→L boundary cards are also editable by clicking on the scene · click the title bar or Esc = collapse. Changes save automatically.</div>
+  <div id="leBody"></div>
+  <div id="leFoot">
+    <button id="leAll">Show all</button>
+    <button id="leReset">Reset to defaults</button>
+    <button id="leExport">Export JSON</button>
+  </div>
+</aside>
+
+<script>
+(function(){
+'use strict';
+
+var RED='#E24B4A',TEAL='#1D9E75',GREEN='#639922',AMB='#BA7517',CAN='#8a8980',PINK='#D8568E',TP='#22C55E',SL='#FF3B30';
+var THEME=null;
+function themeRefresh(){THEME=null;}
+function vget(n,f){
+  if(!THEME){THEME={};try{THEME._cs=getComputedStyle(document.body);}catch(e){}}
+  var v=THEME[n];
+  if(v==null){try{v=THEME._cs?THEME._cs.getPropertyValue(n).trim():'';}catch(e){v='';}THEME[n]=v;}
+  return v||f;}
+function rgba(hex,a){var n=parseInt(hex.slice(1),16);return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';}
+// Accent-as-TEXT → text-safe CSS variant (resolved per-theme via vget, ≥4.5:1).
+// Saturated JS constants (RED/TEAL/…) stay for fills/strokes (≥3:1). txc() maps ONLY
+// exact accent matches; resolved hexes (prim/sec/tert) and rgba() pass through unchanged.
+var TEXT_SAFE={};
+TEXT_SAFE[RED]='--c-error-text';  TEXT_SAFE[SL]='--c-fail-text';
+TEXT_SAFE[TEAL]='--c-store-text'; TEXT_SAFE[GREEN]='--c-train-text';
+TEXT_SAFE[AMB]='--c-control-text';TEXT_SAFE[CAN]='--c-source-text';
+TEXT_SAFE[PINK]='--c-gate-text';  TEXT_SAFE[TP]='--c-good-text';
+function txc(col){var v=TEXT_SAFE[col];return v?vget(v,col):col;}
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+function zScale(){return clamp(CAM.z,0.8,1.45)*EXPORT_FONT;}                       // zoom→font-scale clamp (×EXPORT_FONT on export)
+function pulse(){return 0.5+0.5*Math.sin(performance.now()/260);}                  // 0..1 highlight pulse
+function uiFont(wt,fz){return (wt?wt+' ':'')+fz.toFixed(1)+'px "Anthropic Sans",system-ui,sans-serif';}
+function lerp2(p,q,t){return {x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t};}
+function rng(seed){var t=seed>>>0;return function(){t+=0x6D2B79F5;var r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296;};}
+
+var N_ASSETS={{universe_size}};
+var ASSETS=['AAPL','MSFT','NVDA','AMZN','META','JPM','XOM'];
+
+var FEATURES=[
+  {name:'distance_to_trend_line',  family:'trendline_geometry', src:'detector + Wilder ATR(14)', unit:'×ATR',  formula:'sign·(c − L_trend(t)) / ATR(t)'},
+  {name:'distance_to_opposing_line',family:'trendline_geometry',src:'detector + Wilder ATR(14)', unit:'×ATR',  formula:'sign·(c − L_opp(t)) / ATR(t)'},
+  {name:'risk_if_entered_pct',     family:'trendline_geometry', src:'detector',           unit:'%',     formula:'|c − L_opp(t)| / c · 100',
+    special:'feature X + Y geometry parameter (defines R0) — importance can be mechanical, interpret separately'},
+  {name:'bar_return_pct',          family:'price_action',       src:'OHLCV',              unit:'%',     formula:'(c − c[t−1]) / c[t−1] · 100'},
+  {name:'body_to_range_ratio',     family:'price_action',       src:'OHLCV',              unit:'[0,1]', formula:'|c − o| / max(ε, h − l)'},
+  {name:'volume_z_score',          family:'volume',             src:'OHLCV · W=20',       unit:'z',     formula:'(v − mean_20) / std_20  (std=0 → 0)'},
+  {name:'touch_count',             family:'trendline_geometry', src:'detector',           unit:'n',     formula:'count(topo_candles ≤ t)'},
+  {name:'closed_through_line',     family:'trendline_geometry', src:'detector',           unit:'{0,1}', formula:'1 if sign·(c − L_trend(t)) > 0',
+    special:'in Output B (t0) always =1 — break invariant; audit column, outside FEATURE_MANIFEST'}
+];
+
+var QC=[
+  {id:'QC-01',name:'QC-01 INTEGRITY',    desc:'high ≥ low on every candle'},
+  {id:'QC-02',name:'QC-02 OHLC CONSISTENT', desc:'high ≥ max(o,c) · low ≤ min(o,c)'},
+  {id:'QC-03',name:'QC-03 DUPLICATES',   desc:'no duplicates (symbol, ts)'},
+  {id:'QC-04',name:'QC-04 NULL',         desc:'zero NULL in o/h/l/c/v'},
+  {id:'QC-05',name:'QC-05 PRICES > 0',   desc:'all prices positive'},
+  {id:'QC-06',name:'QC-06 VOLUME ≥ 0',   desc:'volume non-negative'},
+  {id:'QC-07',name:'QC-07 UNIVERSE',     desc:'{{universe_size}}/{{universe_size}} symbols present'},
+  {id:'QC-08',name:'QC-08 BARS/DAY',     desc:'candles per day ∈ {{candles_per_day_range_str}}'},
+  {id:'QC-09',name:'QC-09 SESSION',      desc:'ts in 09:00–16:00 ET'},
+  {id:'QC-10',name:'QC-10 MONOTONIC',    desc:'ts increasing per symbol'},
+  {id:'QC-11',name:'QC-11 MANIFEST',     desc:'date range and counters match _meta'}
+];
+function qcStat(){return '{{duckdb_row_count_str}} rows · violations: 0 · PASS';}
+
+var SPLIT={
+  bands:[
+    {id:'warmup',name:'WARM-UP',from:'2016-01-04',to:'2016-10-14',frac:0.075,col:CAN,
+     note:'roll-in for transformer windows: max(W_ATR=14, W_VOL=20) = 20 candles 1h → features without NULL; no training or detection'},
+    {id:'train', name:'TRAIN',  from:'2016-10-17',to:'2023-12-29',frac:0.695,col:TEAL,
+     note:'the only window touched multiple times: setup detection, features, Optuna (purged walk-forward CV), XGB training'},
+    {id:'oos',   name:'OOS',    from:'2024-01-02',to:'2026-05-29',frac:0.230,col:AMB,
+     note:'frozen to the end · single strategy test run · zero tuning after seeing results'}],
+  purge:'purge = H = 24 candles — the triple barrier window of setups at the end of Train overlaps the boundary',
+  embargo:'embargo ≈ 5 sessions (~35 candles) after the boundary — rolling-feature autocorrelation; covers max feature lookback (20 candles)'
+};
+// L5 as a time axis: dates → fraction of the full range (warmup-start → oos-end). Clean, no Date.now (constant strings).
+function dord(s){var p=s.split('-');return Math.floor(365.25*p[0])+Math.floor(30.6*(+p[1]+1))+ +p[2];} // monotonic day counter; only differences matter
+var SPLIT_T0=dord(SPLIT.bands[0].from), SPLIT_SPAN=dord(SPLIT.bands[SPLIT.bands.length-1].to)-SPLIT_T0;
+function dfrac(s){return (dord(s)-SPLIT_T0)/SPLIT_SPAN;}
+function aOf(f){return 0.06+0.88*f;}                            // a0=0.06, total=0.88 (time axis along 'a')
+SPLIT.bands.forEach(function(b){b._f0=dfrac(b.from);b._f1=dfrac(b.to);});
+SPLIT.edgeF=[];                                                 // internal boundaries in the middle of the gap between windows → bands touch, boundary = tick anchor
+for(var _i=0;_i<SPLIT.bands.length-1;_i++)SPLIT.edgeF.push((SPLIT.bands[_i]._f1+SPLIT.bands[_i+1]._f0)/2);
+SPLIT.years=[];
+for(var _y=+SPLIT.bands[0].from.slice(0,4);_y<=+SPLIT.bands[SPLIT.bands.length-1].to.slice(0,4);_y++)
+  SPLIT.years.push({y:_y,f:clamp(dfrac(_y+'-01-01'),0,1)});
+
+var OPTUNA={n_trials:200,sampler:'TPE',pruner:'MedianPruner(n_warmup_steps=2)',
+  objective:'AUC-PR (mean over k=4 purged walk-forward folds on Train)',
+  space:{max_depth:'3–9',learning_rate:'0.01–0.3 (log)',n_estimators:'100–1200',
+    min_child_weight:'1–20',subsample:'0.5–1.0',colsample_bytree:'0.5–1.0',
+    reg_lambda:'1e-3–10 (log)',scale_pos_weight:'0.5–4'}};
+function buildTrials(){var r=rng(4242),out=[],best=0.382,i;
+  for(i=0;i<OPTUNA.n_trials;i++){
+    var explore=Math.exp(-i/60), v=0.36+0.20*(1-explore)+(r()-0.5)*0.10*(0.4+explore);
+    var pruned=(i>15)&&(v<best-0.018)&&(r()<0.7);
+    v=Math.round(v*1000)/1000;
+    if(!pruned&&v>best)best=v;
+    out.push({i:i,v:v,pruned:pruned,best:Math.round(best*1000)/1000,
+      params:{max_depth:3+Math.floor(r()*7),learning_rate:+(0.01*Math.pow(30,r())).toFixed(3),
+        n_estimators:100+Math.floor(r()*1100),subsample:+(0.5+0.5*r()).toFixed(2)}});}
+  return out;}
+var TRIALS=buildTrials();
+var BEST_TRIAL=(function(){var b=0,i;for(i=0;i<TRIALS.length;i++)if(!TRIALS[i].pruned&&TRIALS[i].v>=TRIALS[b].v)b=i;return b;})();
+var PARAM_IMPORTANCE=[['learning_rate',0.31],['max_depth',0.22],['min_child_weight',0.14],
+  ['subsample',0.12],['n_estimators',0.09],['colsample_bytree',0.07],['reg_lambda',0.05]];
+
+function setupsMock(a){var r=rng(a*131+9);return {long:Math.round(70+130*r()),short:Math.round(60+120*r())};}
+function oosMock(a){var r=rng(a*7919+101),q=r();
+  return {pf:+(0.75+1.35*q+0.2*(r()-0.5)).toFixed(2), sharpe:+(-0.4+2.4*q+0.3*(r()-0.5)).toFixed(2),
+    mdd:+(32-24*q+4*r()).toFixed(1), tim:+(5+20*r()).toFixed(1),
+    wr:+(33+22*q+4*r()).toFixed(1), trades:Math.round(25+115*r())};}
+function importanceMock(a,f){return Math.round(rng(a*31+f*131)()*0.30*100)/100;}
+
+var METRICS=[
+  {id:'pf',name:'PF',hi:true,lo:0.7,hiV:2.1},
+  {id:'sharpe',name:'Sharpe',hi:true,lo:-0.5,hiV:2.2},
+  {id:'mdd',name:'MDD %',hi:false,lo:5,hiV:35},
+  {id:'tim',name:'TIM %',hi:true,lo:4,hiV:28},
+  {id:'wr',name:'WR %',hi:true,lo:32,hiV:58}];
+function metricQ(val,m){var M=METRICS[m],q=clamp((val-M.lo)/(M.hiV-M.lo),0,1);return M.hi?q:1-q;}
+
+var DQ=[
+  {id:'parity',name:'PARITIES',status:'OK',
+   detail:'zip → DuckDB: {{duckdb_row_count_str}} rows / {{universe_size}} symbols · DuckDB → parquet: {{universe_size}} files · parquet → Output B: setup count per {asset × direction} (R4)'},
+  {id:'gaps',name:'GAPS',status:'OK',
+   detail:'in-session gaps: 0 (hard fail QC-08/09/10) · overnight/weekend gaps: counted (normal for 1h) · filled gaps: 0 — we fill nothing'},
+  {id:'zeros',name:'ZERO-VALUES',status:'WARN',
+   detail:'volume=0 bars: 1 274 · high==low candles (zero-range): 312 · prices ≤ 0: 0 · WARN: zero-volume above the informational threshold'},
+  {id:'features',name:'FEATURES',status:'OK',
+   detail:'NaN/Inf in Output B: 0 · warm-up NULLs: cut off (gating) · DET-09 rejections: 1 982 (audit) · touch_count distribution: report R3'},
+  {id:'split',name:'SPLIT',status:'OK',
+   detail:'boundary assertion: no window [t0, t0+24] crosses a window boundary · embargo 5 sessions ≥ lookback 20 candles'},
+  {id:'alarms',name:'ALARMS',status:'OK',
+   detail:'FAIL: 0 · WARN: 1 (zero-values) · gate: OPEN — training (L9) can start'}
+];
+function dqCol(s){return s==='OK'?TP:(s==='WARN'?AMB:SL);}
+
+function manifest(a){var r=rng(a*991+7);
+  return {asset:ASSETS[a],strategy_file:'strategy_'+ASSETS[a]+'.py',
+    estimator:'XGBoost binary:logistic (meta-labeling: trend-line setup signal filter)',
+    model_b64:'QmFzZTY0LWFydGVmYWt0Li4u (truncated, ~180 kB)',
+    feature_manifest:FEATURES.filter(function(f){return f.name!=='closed_through_line';}).map(function(f){return f.name;}),
+    label_contract:'TB_v1.1 · close-based · SL=L_opp(t) moving · geometric barriers R0 · H=24',
+    threshold_entry:0.60,
+    optuna:{n_trials:200,best_trial:BEST_TRIAL,best_value:TRIALS[BEST_TRIAL].v},
+    windows:{train:'2016-10-17 → 2023-12-29',oos:'2024-01-02 → 2026-05-29'},
+    metrics_cv:{auc_pr:+(0.52+0.10*r()).toFixed(3),logloss:+(0.58+0.08*r()).toFixed(3)},
+    selfcheck:'golden input → output: PASS'};
+}
+
+var BND_DZ=[189,189,192,189,189,189,185,189,202];   // 9 boundaries (10 levels): inserted L6 detector boundary
+
+// ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
+// family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
+// col = current color (now used by caption; PR-5 will switch to roleColor(role)).
+// title WITHOUT the 'Lx · ' prefix — caption() appends the number from lev, so renumbering is free.
+// dataKey points to existing arrays (we don't copy content) → caption/legend/inspect read from them.
+var DATA={FEATURES:FEATURES,QC:QC,SPLIT:SPLIT,DQ:DQ,METRICS:METRICS,OPTUNA:OPTUNA};
+var PIPELINE={
+  nodes:[
+    {id:'L1',lev:0,family:'source',role:'source',col:CAN,
+     title:'SOURCE: ALPACA SIP · S&P 500 ({{universe_size}})',subtitle:'fetch 1h OHLCV for the S&P 500 universe',
+     summary:'SIP 1h feed, session 09:00–16:00 ET (~{{candles_per_day_typical}} candles/day), cron :05',
+     input_contract:'Alpaca Market Data API (feed=sip, API key)',transform_verb:'parse',
+     output_contract:'raw 1h OHLCV per ticker (naive ET)',
+     metric:{label:'tickers',value:'{{universe_size}}'},invariants:['ET session guard','upsert lookback 5 days'],
+     status:'ok',hitType:'universe'},
+    {id:'L2',lev:1,family:'store',role:'source',col:CAN,
+     title:'LEAN ZIP STORE ({{lean_zip_count}} zip · prices ×{{price_scale}})',subtitle:'write LEAN cache: 1 zip / ticker',
+     summary:'headerless CSV, prices in deci-cents ×{{price_scale}}, {{lean_zip_size_mb}} MB',
+     input_contract:'raw 1h OHLCV',transform_verb:'store',
+     output_contract:'{{lean_zip_count}} zip (CSV, prices ×{{price_scale}})',metric:{label:'zip',value:'{{lean_zip_count}}'},
+     invariants:['immutable cache','prices ×{{price_scale}} (BIGINT)'],status:'ok',hitType:'zip'},
+    {id:'L3',lev:2,family:'store',role:'store',col:TEAL,
+     title:'DUCKDB raw + VIEW ohlcv_1h (USD) · QC-01…QC-11',subtitle:'load into DuckDB + VIEW ohlcv_1h, QC gates',
+     summary:'{{duckdb_row_count_str}} rows · {{universe_size}} symbols; QC-01…QC-11 gate every load',
+     input_contract:'{{lean_zip_count}} zip',transform_verb:'load',
+     output_contract:'raw_ohlcv_1h (BIGINT ×{{price_scale}}) + VIEW ohlcv_1h (USD)',
+     metric:{label:'rows',value:'{{duckdb_row_count_short}}'},invariants:['QC-01…QC-11 PASS','VIEW = /{{price_scale}}.0 USD'],
+     status:'ok',dataKey:'QC',hitType:'db'},
+    {id:'L4',lev:3,family:'transform',role:'transform',col:GREEN,
+     title:'SNAPSHOT → PARQUET OHLCV (×{{universe_size}})',subtitle:'freeze snapshot → serialize parquet',
+     summary:'atomic snapshot + manifest → parquet per ticker, zero derived columns',
+     input_contract:'DuckDB raw + VIEW ohlcv_1h (USD, after QC)',transform_verb:'freeze',
+     output_contract:'{{universe_size}} × <TICKER>/ohlcv.parquet (clean OHLCV)',metric:{label:'files',value:'×{{universe_size}}'},
+     invariants:['zero derived columns','atomic snapshot / torn-read guard'],status:'ok',hitType:'parquet'},
+    {id:'L5',lev:4,family:'gate',role:'control',col:AMB,
+     title:'SPLIT: WARM-UP / TRAIN / OOS',subtitle:'split by time + purge/embargo',
+     summary:'warm-up → train → OOS · purge H=24 + embargo ~5 sessions',
+     input_contract:'{{universe_size}} parquet OHLCV',transform_verb:'split',
+     output_contract:'disjoint time windows per asset',metric:{label:'OOS frac',value:'0.23'},
+     invariants:['purge = H = 24','embargo ≥ lookback (20 candles)','OOS frozen'],
+     status:'ok',dataKey:'SPLIT',hitType:'split'},
+    {id:'L6',lev:5,family:'transform',role:'transform',col:GREEN,
+     title:'TREND-LINE SETUP DETECTOR',subtitle:'detect L_trend, L_opp, entry_candle, R0',
+     summary:'detector contract (Layers_Short_SOT/L6_setup_detector_eng.md) — bridge between raw candles and feature rows',
+     input_contract:'OHLCV in the Train window (candles ≤ t0)',transform_verb:'detect',
+     output_contract:'per setup: direction, L_trend(t), L_opp(t), topo_candles, t0, R0, take_profit, time_barrier',
+     metric:{label:'min touch',value:'2'},invariants:['causal fits (candles ≤ t0)','MIN_TOUCHES = 2','first break close-based'],
+     status:'ok',icon:'setupGeometry',hitType:'detector'},
+    {id:'L7',lev:6,family:'transform',role:'transform',col:GREEN,
+     title:'FEATURES X + LABEL Y (TRIPLE BARRIER)',subtitle:'transform setups → 7 X + audit + Y',
+     summary:'X,Y matrix per setup (Output B), features computed at t0',
+     input_contract:'setup objects (detector) in the Train window',transform_verb:'transform',
+     output_contract:'Output B: 7 X + closed_through_line(audit) + Y_outcome + w_unique',
+     metric:{label:'features',value:'7 X'},invariants:['features at t0 ⇐ candles ≤ t0','FEATURE_MANIFEST = 7 X'],
+     status:'ok',dataKey:'FEATURES',hitType:'feature'},
+    {id:'L8',lev:7,family:'gate',role:'control',col:AMB,
+     title:'QUALITY VALIDATION: STORES + TRANSFORMS',subtitle:'validate parities/gaps/NaN → dashboard',
+     summary:'parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion',
+     input_contract:'Output B + store manifests',transform_verb:'validate',
+     output_contract:'reports/quality/summary.json + dashboard (FAIL blocks L9)',
+     metric:{label:'gate',value:'OPEN'},invariants:['any FAIL blocks training','green dashboard = start condition'],
+     status:'ok',dataKey:'DQ',hitType:'dqSummary'},
+    {id:'L9',lev:8,family:'transform',role:'transform',col:GREEN,
+     title:'OPTUNA → XGBOOST → STRATEGY .py',subtitle:'tune + train → pack artifact',
+     summary:'Optuna 200 trials (TPE, purged WF CV) → XGBoost → strategy .py (model b64)',
+     input_contract:'Output B (green dashboard)',transform_verb:'train',
+     output_contract:'strategy_<TICKER>.py: model b64 + FEATURE_MANIFEST + threshold + selfcheck',
+     metric:{label:'trials',value:'200'},invariants:['training only on Train','meta-labeling: setup signal filter'],
+     status:'ok',dataKey:'OPTUNA',hitType:'xgb'},
+    {id:'L10',lev:9,family:'output',role:'output',col:TP,
+     title:'OOS TEST: {{universe_size}} ASSETS × METRICS',subtitle:'evaluate on the frozen OOS window',
+     summary:'single run on OOS 2024-01-02 → 2026-05-29',
+     input_contract:'{{universe_size}} frozen strategy artifacts',transform_verb:'evaluate',
+     output_contract:'results matrix: PF · Sharpe · MDD · TIM · WR',metric:{label:'assets',value:'{{universe_size}}'},
+     invariants:['single run','zero tuning after seeing results'],status:'ok',dataKey:'METRICS',hitType:'oos'}
+  ],
+  edges:[
+    {from:'L1',to:'L2',verb:'parse',payload:'Alpaca 1h → LEAN zip',causal_scope:'per ticker',
+     detail:'Alpaca SIP 1h (session 09:00–16:00 ET, ~{{candles_per_day_typical}} candles/day) → LEAN write: 1 zip per ticker, CSV in deci-cents ×{{price_scale}}, hourly cron :05'},
+    {from:'L2',to:'L3',verb:'load',payload:'zip → DuckDB + VIEW ohlcv_1h (QC)',causal_scope:'QC-gated load',
+     detail:'{{lean_zip_count}} zip ({{lean_zip_size_mb}} MB) → DuckDB raw_ohlcv_1h: {{duckdb_row_count_str}} rows BIGINT ×{{price_scale}} + VIEW ohlcv_1h = prices/{{price_scale}}.0 USD; QC-01…QC-11 gate every load'},
+    {from:'L3',to:'L4',verb:'freeze',payload:'snapshot → parquet OHLCV',causal_scope:'atomic',
+     detail:'atomic database snapshot + manifest JSON (rows / symbols / ts range / price_view) → COPY to parquet OHLCV per ticker — zero derived columns'},
+    {from:'L4',to:'L5',verb:'split',payload:'parquet OHLCV → time windows',causal_scope:'per asset',
+     detail:'{{universe_size}} parquet OHLCV (1/ticker) → time split: warm-up (roll-in max(W_ATR,W_VOL)=20 candles) / train / OOS + purge H=24 and embargo at boundaries'},
+    {from:'L5',to:'L6',verb:'detect',payload:'Train window → trend-line setups',causal_scope:'candles ≤ t0',
+     detail:'Train only: trend-line setup detector — fits of L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead)'},
+    {from:'L6',to:'L7',verb:'transform',payload:'setup objects → 7 X + audit + Y',causal_scope:'features at t0',
+     detail:'setup objects (detector) → 8 transformer features (7 X + 1 audit) computed at t0 + label Y = triple barrier (Output B)'},
+    {from:'L7',to:'L8',verb:'validate',payload:'Output B → quality dashboard',causal_scope:'checkpoint',
+     detail:'X,Y matrix per setup (Output B) + store manifests → quality validation: parities zip→DuckDB→parquet→Output B · gaps · zero-values · NaN/Inf · split assertion → summary.json + dashboard'},
+    {from:'L8',to:'L9',verb:'train',payload:'green dashboard → Optuna+XGB → .py',causal_scope:'Train only',
+     detail:'quality gate: training starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + pruning, purged walk-forward CV) → XGBoost → strategy .py with a base64 model + selfcheck'},
+    {from:'L9',to:'L10',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
+     detail:'{{universe_size}} frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · Sharpe · MDD · TIM · WR'}
+  ]
+};
+var NODE_BY_ID={},NODE_BY_LEV=[];
+PIPELINE.nodes.forEach(function(n){NODE_BY_ID[n.id]=n;NODE_BY_LEV[n.lev]=n;});
+function edgeAt(i){return PIPELINE.edges[i];}                       // boundary i = edge between level i and i+1
+// BND_DEF derived from the edges (content = edge.detail) — each boundary has a verb (edge.verb).
+var BND_DEF=PIPELINE.edges.map(function(e){return e.detail;});
+
+var stage=document.getElementById('stage'),cv=document.getElementById('tlc'),ctx=cv.getContext('2d');
+var tip=document.getElementById('tip'),panel=document.getElementById('panel'),
+    panelTitle=document.getElementById('panelTitle'),panelBody=document.getElementById('panelBody');
+var cw=940,chh=600;
+
+var STATE={mode:'overview',asset:0,labels:true,flow:true,names:'sample',metric:'pf',speed:1,paused:false,camPreset:'iso',inspect:null};
+var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','leak']; // keys 1-9,0 → mode (single source)
+var CLK=0,lastTick=0,flash=0;
+var LOD={cap:0.55,obj:0.55,name:0.75,micro:1.1};
+var LBL_DEBUG=false;try{LBL_DEBUG=location.search.indexOf('lbldebug')>=0;}catch(e){}
+var LBL_AUDIT=false;try{LBL_AUDIT=location.search.indexOf('lblaudit')>=0;}catch(e){}  // CI: dump label boxes to <pre id=lblaudit>
+var PIX_AUDIT=false;try{PIX_AUDIT=location.search.indexOf('pixaudit')>=0;}catch(e){}  // CI: pixel signature (downsample 64×40) to <pre id=pixaudit>
+var EXPORT_FONT=1;                                                                   // font-tier multiplier for PNG export
+
+var userMoved=false;
+
+var LBL_DEF={},LBL_OVR={},LBL_OFF={},LBL_ORDER=[],LBL_GRP={};
+
+var HL={key:null,pending:false};
+var ORIG_LBL={feat:FEATURES.map(function(f){return f.name;}),asset:ASSETS.slice(),
+  gateId:QC.map(function(g){return g.id;}),gateName:QC.map(function(g){return g.name;})};
+function tVal(key,def,grp){
+  if(LBL_DEF[key]==null){LBL_DEF[key]=def;LBL_GRP[key]=grp||'Other';LBL_ORDER.push(key);}
+  if(LBL_OFF[key])return '';
+  var o=LBL_OVR[key];return o!=null?o:LBL_DEF[key];
+}
+function T(key,def,grp){
+  var v=tVal(key,def,grp);
+  if(!LBL_OFF[key]&&HL.key===key)HL.pending=true;
+  return v;
+}
+function aname(i){if(HL.key==='asset'+i)HL.pending=true;return LBL_OFF['asset'+i]?'':ASSETS[i];}
+function fname(i){if(HL.key==='feat'+i)HL.pending=true;return LBL_OFF['feat'+i]?'':FEATURES[i].name;}
+function anameV(i){return LBL_OFF['asset'+i]?'':ASSETS[i];}
+function fnameV(i){return LBL_OFF['feat'+i]?'':FEATURES[i].name;}
+function gidv(k){if(HL.key==='gate'+k||HL.key==='gateN'+k)HL.pending=true;return LBL_OFF['gate'+k]?'':QC[k].id;}
+function lblSave(){try{localStorage.setItem('sp500_pipeline_labels_v3',JSON.stringify({
+  ovr:LBL_OVR,off:LBL_OFF,
+  feat:FEATURES.map(function(f){return f.name;}),asset:ASSETS.slice(),
+  gateId:QC.map(function(g){return g.id;}),gateName:QC.map(function(g){return g.name;})
+}));}catch(e){}}
+function lblLoad(){try{var s=localStorage.getItem('sp500_pipeline_labels_v3');if(!s)return;var d=JSON.parse(s);
+  if(d.ovr)LBL_OVR=d.ovr;if(d.off)LBL_OFF=d.off;
+  if(d.feat)d.feat.forEach(function(v,i){if(FEATURES[i]&&v!=null)FEATURES[i].name=v;});
+  if(d.asset)d.asset.forEach(function(v,i){if(v!=null&&i<ASSETS.length)ASSETS[i]=v;});
+  if(d.gateId)d.gateId.forEach(function(v,i){if(QC[i]&&v!=null)QC[i].id=v;});
+  if(d.gateName)d.gateName.forEach(function(v,i){if(QC[i]&&v!=null)QC[i].name=v;});
+}catch(e){}}
+function lblResetAll(){LBL_OVR={};LBL_OFF={};
+  ORIG_LBL.feat.forEach(function(v,i){if(FEATURES[i])FEATURES[i].name=v;});
+  ORIG_LBL.asset.forEach(function(v,i){ASSETS[i]=v;});
+  ORIG_LBL.gateId.forEach(function(v,i){if(QC[i])QC[i].id=v;});
+  ORIG_LBL.gateName.forEach(function(v,i){if(QC[i])QC[i].name=v;});
+  lblSave();}
+
+var ISO={W:260,D:150,LEVH:240};
+var PD0=5400;
+var ROT={yaw:-0.62,pitch:0.55,t:{yaw:-0.62,pitch:0.55},cy:1,sy:0,cp:1,sp:0};
+ROT.step=function(dt){var k=Math.min(1,dt*5);
+  this.yaw+=(this.t.yaw-this.yaw)*k;this.pitch+=(this.t.pitch-this.pitch)*k;
+  this.pitch=clamp(this.pitch,0.05,1.45);this.t.pitch=clamp(this.t.pitch,0.05,1.45);
+  this.cy=Math.cos(this.yaw);this.sy=Math.sin(this.yaw);
+  this.cp=Math.cos(this.pitch);this.sp=Math.sin(this.pitch);};
+ROT.step(0);
+
+function P3(x,y,z){
+  var x1=x*ROT.cy-y*ROT.sy, y1=x*ROT.sy+y*ROT.cy;
+  var d=y1*ROT.cp-z*ROT.sp;
+  var f=PD0/(PD0+d);
+  return {x:x1*f, y:-(y1*ROT.sp+z*ROT.cp)*f, d:d};}
+function lp(lev,a,b,dz){return P3((a-0.5)*ISO.W,(b-0.5)*ISO.D,lev*ISO.LEVH+(dz||0));}
+
+function bp(i,a,b){return P3((a-0.5)*ISO.W,(b-0.5)*ISO.D,i*ISO.LEVH+BND_DZ[i]);}
+
+function faceVis(nx,ny,nz){var ny1=nx*ROT.sy+ny*ROT.cy;return (ny1*ROT.cp-nz*ROT.sp)<-1e-4;}
+
+function Camera2D(){this.x=0;this.y=0;this.z=1;this.t={x:0,y:0,z:1};}
+Camera2D.prototype.step=function(dt){var k=Math.min(1,dt*5);
+  this.x+=(this.t.x-this.x)*k;this.y+=(this.t.y-this.y)*k;this.z+=(this.t.z-this.z)*k;};
+Camera2D.prototype.S=function(p){return {x:(p.x-this.x)*this.z+cw/2,y:(p.y-this.y)*this.z+chh/2};};
+var CAM=new Camera2D();
+function SS(lev,a,b,dz){return CAM.S(lp(lev,a,b,dz));}
+
+function HitTestIndex(){this.items=[];}
+HitTestIndex.prototype.clear=function(){this.items.length=0;};
+HitTestIndex.prototype.addPts=function(pts,payload){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i;
+  for(i=0;i<pts.length;i++){var p=CAM.S(pts[i]);if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  this.items.push({x0:x0,y0:y0,x1:x1,y1:y1,p:payload});};
+HitTestIndex.prototype.addRect=function(x,y,w,h,payload){this.items.push({x0:x,y0:y,x1:x+w,y1:y+h,p:payload});};
+HitTestIndex.prototype.find=function(mx,my){
+  for(var i=this.items.length-1;i>=0;i--){var it=this.items[i];
+    if(mx>=it.x0&&mx<=it.x1&&my>=it.y0&&my<=it.y1)return it.p;}
+  return null;};
+var HITS=new HitTestIndex();
+
+function poly(pts,fill,stroke,lw,dash){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){var s=CAM.S(pts[i]);if(i)ctx.lineTo(s.x,s.y);else ctx.moveTo(s.x,s.y);}
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.save();ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.setLineDash(dash||[]);ctx.stroke();ctx.restore();}
+  return pts.map(function(p){return CAM.S(p);});}
+function polyS(pts,fill,stroke,lw,dash){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){if(i)ctx.lineTo(pts[i].x,pts[i].y);else ctx.moveTo(pts[i].x,pts[i].y);}
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.save();ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.setLineDash(dash||[]);ctx.stroke();ctx.restore();}}
+function line2(p1,p2,col,w,dash){var a=CAM.S(p1),b=CAM.S(p2);
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w||1;ctx.setLineDash(dash||[]);ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();}
+var CUR_FONT='';
+function setFont(f){if(f!==CUR_FONT){CUR_FONT=f;ctx.font=f;}}
+function txtS(s,x,y,col,al,sz,wt){
+  var fz=(sz||11)*zScale();
+  setFont(uiFont(wt,fz));
+  ctx.textAlign=al||'left';ctx.textBaseline='alphabetic';
+  if(HL.pending){HL.pending=false;
+    var tw=Math.max(10,ctx.measureText(s).width);
+    var ax=(al==='center')?x-tw/2:((al==='right')?x-tw:x);
+    var ph=pulse();
+    fillRR(ax-5,y-fz-3,tw+10,fz+8,5,rgba(TEAL,0.14+0.14*ph),rgba(TEAL,0.55+0.4*ph),1.3);}
+  ctx.fillStyle=txc(col);ctx.fillText(s,x,y);}                                    // txc(): accent→text-safe (WCAG ≥4.5:1)
+function txt(s,p,col,al,sz,wt,dx,dy){var q=CAM.S(p);txtS(s,q.x+(dx||0),q.y+(dy||0),col,al,sz,wt);}
+function rrectS(x,y,w,h,r){if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}else{ctx.beginPath();ctx.rect(x,y,w,h);}}
+function fillRR(x,y,w,h,r,fillStyle,strokeStyle,lw){           // filled + stroked rounded-rect (tile/pill)
+  ctx.fillStyle=fillStyle;rrectS(x,y,w,h,r);ctx.fill();
+  ctx.save();ctx.strokeStyle=strokeStyle;ctx.lineWidth=lw||1.2;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
+function strokeRR(x,y,w,h,r,col,lw){                          // outline-only rounded-rect (glow/flash)
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw||1;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
+function triUpS(x,y,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4.5,y+7);ctx.lineTo(x+4.5,y+7);ctx.closePath();ctx.fill();}
+
+function prism(lev,a0,b0,a1,b1,base,h,col,topA){
+  var B0=lp(lev,a0,b0,base),B1=lp(lev,a1,b0,base),B2=lp(lev,a1,b1,base),B3=lp(lev,a0,b1,base);
+  var T0=lp(lev,a0,b0,base+h),T1=lp(lev,a1,b0,base+h),T2=lp(lev,a1,b1,base+h),T3=lp(lev,a0,b1,base+h);
+  var F=[
+    {n:[0,0,1], p:[T0,T1,T2,T3], a:(topA==null?0.14:topA), s:true},
+    {n:[0,0,-1],p:[B0,B3,B2,B1], a:0.26},
+    {n:[1,0,0], p:[B1,B2,T2,T1], a:0.30},
+    {n:[-1,0,0],p:[B0,T0,T3,B3], a:0.30},
+    {n:[0,1,0], p:[B2,B3,T3,T2], a:0.20},
+    {n:[0,-1,0],p:[B0,B1,T1,T0], a:0.20}];
+  var vis=[],i;
+  for(i=0;i<6;i++)if(faceVis(F[i].n[0],F[i].n[1],F[i].n[2]))vis.push(F[i]);
+  vis.sort(function(p,q){return (q.p[0].d+q.p[2].d)-(p.p[0].d+p.p[2].d);});
+  var topScr=null;
+  for(i=0;i<vis.length;i++){var f=vis[i];
+    var scr=poly(f.p,rgba(col,f.a),f.s?col:null,1.1);
+    if(f.s)topScr=scr;}
+  return topScr||[CAM.S(T0),CAM.S(T1),CAM.S(T2),CAM.S(T3)];}
+
+// Palette by ROLE (5 families), red (RED/SL) reserved for error/FAIL — it is not a category color.
+function roleColor(role){var m={source:CAN,store:TEAL,transform:GREEN,control:AMB,output:TP};return m[role]||CAN;}
+// layer title + color read from the graph (NODE_BY_LEV). The 'Lx' number is appended from lev → renumbering is free.
+function caption(lev){if(!STATE.labels)return;
+  var n=NODE_BY_LEV[lev];if(!n)return;
+  var s=T('lvl'+(lev+1),'L'+(lev+1)+' · '+n.title,'Levels');if(!s)return;
+  var by=(BNDY[lev]!=null)?BNDY[lev]:CAM.S(P3(0,0,lev*ISO.LEVH+255)).y;
+  txtS(s,10,by+15,roleColor(n.role),'left',12.5,'700');         // color by role (qualitative) — the title is never red
+  var fz=12.5*zScale(),w=ctx.measureText(s).width;
+  obstacle(10,by+15-fz-2,10+w,by+18);
+  HITS.addRect(8,by+15-fz-4,w+10,fz+10,{type:'layercap',lev:lev});  // title click = Layer inspection
+}
+
+function flowArrow(lev){
+  var tert=vget('--color-text-tertiary','#777');
+  var p1=lp(lev,0.5,0.30,58),p2=lp(lev+1,0.5,0.30,2);
+  line2(p1,p2,tert,1.4,[]);
+  var s=CAM.S(p2);triUpS(s.x,s.y,tert);
+  if(STATE.flow&&!STATE.paused){
+    var k=((CLK*0.45+lev*0.19)%1),a=CAM.S(p1),b=CAM.S(p2);
+    var px=a.x+(b.x-a.x)*k,py=a.y+(b.y-a.y)*k;
+    ctx.fillStyle=TEAL;ctx.beginPath();ctx.arc(px,py,3,0,7);ctx.fill();}}
+
+function byD(arr){return arr.slice().sort(function(p,q){return q.d-p.d;});}
+
+var BNDY=[];
+function boundaryLines(){
+  BNDY.length=0;
+  var col=vget('--color-border-tertiary','rgba(255,255,255,0.12)'),i,y;
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([7,6]);
+  for(i=0;i<BND_DEF.length;i++){
+    y=CAM.S(bp(i,0.5,0.5)).y;BNDY[i]=y;
+    if(y<-8||y>chh+8)continue;
+    y=Math.round(y)+0.5;
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();
+  }
+  ctx.restore();
+}
+function wrapLines(s,maxW){
+  var words=String(s).split(/\s+/),lines=[],cur='',i;
+  for(i=0;i<words.length;i++){var t=cur?cur+' '+words[i]:words[i];
+    if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=t;}
+  if(cur)lines.push(cur);
+  if(lines.length>4){lines.length=4;lines[3]+='…';}
+  return lines;}
+function boundaryCards(){
+  if(!STATE.labels)return;
+  var sc=zScale(),W=178,inW=W-18,fz=8.5*sc,tz=8*sc,lh=Math.round(fz+3.5),pad=8;
+  var sec=vget('--color-text-secondary','#999'),bg=vget('--color-background-secondary','#2b2b28'),
+      brd=vget('--color-border-secondary','#555');
+  var cards=[],i,k;
+  for(i=0;i<BND_DEF.length;i++){
+    var s=T('bnd'+i,BND_DEF[i],'Layer boundaries');
+    var isHL=(HL.key==='bnd'+i);HL.pending=false;
+    if(!s)continue;
+    var sp=CAM.S(bp(i,(i%2===0)?1.04:-0.04,0.5)),c0=CAM.S(bp(i,0.5,0.5));
+
+    var yLo=(i>0)?BNDY[i-1]:CAM.S(P3(0,0,0)).y;
+    var anch={x:sp.x,y:(BNDY[i]+yLo)/2};
+    if(anch.x<-cw*0.2||anch.x>cw*1.2||anch.y<-chh*0.25||anch.y>chh*1.25)continue;
+    cards.push({i:i,s:s,hl:isHL,anch:anch,right:sp.x>=c0.x});
+  }
+  cards.sort(function(p,q){return p.anch.y-q.anch.y;});
+  var minY={l:6,r:6};
+  for(k=0;k<cards.length;k++){
+    var c=cards[k];
+    setFont(uiFont('400',fz));
+    var lines=wrapLines(c.s,inW);
+    var H=pad+Math.round(tz)+6+lines.length*lh+pad-2;
+    var x=c.right?cw-W-8:8;
+    var y=clamp(c.anch.y-H/2,c.right?minY.r:minY.l,Math.max(6,chh-H-6));
+
+    if(!c.right){
+      var lk='lvl'+(c.i+1),
+          capOn=STATE.labels&&!LBL_OFF[lk]&&(LBL_OVR[lk]==null||LBL_OVR[lk]!=='');
+      if(capOn){
+        var ycap=(BNDY[c.i]!=null?BNDY[c.i]:CAM.S(P3(0,0,c.i*ISO.LEVH+255)).y)+15;
+        if(ycap>y-13&&ycap<y+H+13){
+          var above=ycap-16-H,below=ycap+9;
+          y=(Math.abs(above-y)<=Math.abs(below-y)&&above>=6)?above:below;
+          y=clamp(y,c.right?minY.r:minY.l,Math.max(6,chh-H-6));
+        }
+      }
+    }
+    y=Math.min(y,chh-H-6);
+    if(c.right)minY.r=y+H+5;else minY.l=y+H+5;
+
+    ctx.fillStyle=bg;rrectS(x,y,W,H,8);ctx.fill();
+    ctx.save();ctx.strokeStyle=c.hl?TEAL:brd;ctx.lineWidth=c.hl?1.5:1;ctx.setLineDash(c.hl?[]:[5,4]);
+    rrectS(x,y,W,H,8);ctx.stroke();ctx.restore();
+    if(c.hl)strokeRR(x-2.5,y-2.5,W+5,H+5,10,rgba(TEAL,0.25+0.45*pulse()),3.5);
+    var yT=y+pad+tz;
+    var ev=(edgeAt(c.i)||{}).verb||'';                          // each boundary leads with a verb (from the graph edge)
+    txtS('L'+(c.i+1)+' → L'+(c.i+2)+(ev?' · '+ev:''),x+9,yT,TEAL,'left',8,'700');
+    for(i=0;i<lines.length;i++)txtS(lines[i],x+9,yT+6+i*lh+fz,sec,'left',8.5);
+    HITS.addRect(x,y,W,H,{type:'bnote',i:c.i});
+    obstacle(x,y,x+W,y+H);
+  }
+}
+
+function AlpacaSource(){}
+AlpacaSource.prototype.draw=function(){
+  caption(0);
+
+  var cols=36,rows=14,n=7,r,c;
+  ctx.save();ctx.fillStyle=rgba(CAN,0.30);ctx.beginPath();
+  for(r=0;r<rows&&n<N_ASSETS;r++)for(c=0;c<cols&&n<N_ASSETS;c++,n++){
+    var a0=0.05+0.90*(c/cols),b0=0.34+0.62*(r/rows),da=0.90/cols*0.72,db=0.62/rows*0.62;
+    var q=[SS(0,a0,b0,1),SS(0,a0+da,b0,1),SS(0,a0+da,b0+db,1),SS(0,a0,b0+db,1)];
+    ctx.moveTo(q[0].x,q[0].y);ctx.lineTo(q[1].x,q[1].y);ctx.lineTo(q[2].x,q[2].y);ctx.lineTo(q[3].x,q[3].y);ctx.closePath();
+  }
+  ctx.fill();ctx.restore();
+  HITS.addPts([lp(0,0.05,0.34,0),lp(0,0.95,0.96,0)],{type:'universe'});
+  if(STATE.labels){var pu=SS(0,0.5,1.06,0);
+    qLabel({key:'uni_caption',def:'S&P 500 universe: {{universe_size}} tickers · 7 named + the rest as a grid',grp:'Source / Universe',
+      x:pu.x,y:pu.y,col:vget('--color-text-secondary','#999'),al:'center',sz:10,pr:1});}
+
+  var named=[],i,k;
+  for(i=0;i<7;i++)named.push({i:i,a:0.18+i*0.114,d:lp(0,0.18+i*0.114,0.16,0).d});
+  named=byD(named);
+  for(k=0;k<named.length;k++){
+    var t=named[k],sel=(t.i===STATE.asset);
+    prism(0,t.a,0.10,t.a+0.056,0.24,1,sel?26:18,sel?GREEN:CAN,sel?0.30:0.22);
+    HITS.addPts([lp(0,t.a-0.008,0.08,sel?30:22),lp(0,t.a+0.064,0.26,0)],{type:'asset',a:t.i});
+    if(STATE.names==='sample'&&STATE.labels){
+      var s=SS(0,t.a+0.028,0.30,0),sa=SS(0,t.a+0.028,0.22,0);
+      qLabel({key:'asset'+t.i,text:anameV(t.i),x:s.x,y:s.y,col:sel?GREEN:vget('--color-text-secondary','#999'),
+        al:'right',sz:9,wt:sel?'600':'',rot:-0.55,pr:sel?3:2,lod:LOD.name,ax:sa.x,ay:sa.y});}
+  }
+
+  var L='OHLCV'.split(''),cubes=[];
+  for(i=0;i<5;i++)cubes.push({i:i,d:lp(0,0.055+i*0.058,0.11,4).d});
+  cubes=byD(cubes);
+  for(k=0;k<cubes.length;k++){
+    i=cubes[k].i;
+    prism(0,0.04+i*0.058,0.07,0.075+i*0.058,0.15,1,9,CAN,0.26);
+    if(STATE.labels)txt(L[i],lp(0,0.057+i*0.058,0.11,10),vget('--color-text-primary','#eee'),'center',8,'600',0,-3);
+  }
+  if(STATE.labels){var pf=SS(0,0.16,0.34,0);
+    qLabel({key:'raw_flow',def:'1h OHLCV · session 09:00–16:00 ET (~{{candles_per_day_typical}} candles/day) · 2016-01-04 → today',grp:'Source / Universe',
+      x:pf.x,y:pf.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});}
+
+  var sA=SS(0,0.84,0.10,24),wA=112,hA=34;
+  if(STATE.flow){
+    var start=SS(0,0.78,0.16,20),end=SS(1,0.18,0.50,16),iLine;
+    ctx.save();ctx.strokeStyle=rgba(TEAL,0.45);ctx.lineWidth=1;ctx.setLineDash([5,6]);
+    ctx.lineDashOffset=STATE.paused?0:-CLK*22;
+    for(iLine=-1;iLine<=1;iLine++){
+      ctx.beginPath();ctx.moveTo(start.x,start.y+iLine*5);ctx.bezierCurveTo(start.x-35,start.y-30+iLine*3,end.x+30,end.y+24-iLine*4,end.x,end.y+iLine*4);ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if(flash>0)strokeRR(sA.x-wA/2-6,sA.y-hA/2-6,wA+12,hA+12,13,rgba(TEAL,flash*0.8),2);
+  GLYPHS.cloud(sA.x,sA.y,wA,hA,TEAL,T('api_pill','Alpaca SIP · 1h','Source / Universe')||'');
+  if(STATE.labels)qLabel({key:'api_cron',def:'REST · cron :05 · ET session guard',grp:'Source / Universe',
+    x:sA.x,y:sA.y+hA/2+14,col:vget('--color-text-tertiary','#777'),al:'center',sz:7.5,pr:1,ax:sA.x,ay:sA.y+hA/2});
+  HITS.addRect(sA.x-wA/2,sA.y-hA/2,wA,hA,{type:'api'});
+};
+
+function ZipStore(){}
+ZipStore.prototype.draw=function(){
+  caption(1);
+  var list=[],i;
+  for(i=0;i<7;i++){var pj=lp(1,0.08+i*0.128,0.5,16);list.push({i:i,pj:pj,d:pj.d});}
+  list=byD(list);
+  for(var k=0;k<list.length;k++){
+    var t=list[k],sel=(t.i===STATE.asset),s=CAM.S(t.pj);
+    if(flash>0&&sel)strokeRR(s.x-20,s.y-26,40,52,10,rgba(GREEN,flash*0.8),2);
+    var cZip=GLYPHS.zipCrate({lev:1,a:0.08+t.i*0.128,b:0.5,i:t.i,sel:sel,h:sel?32:24});
+    if(STATE.names==='sample'&&STATE.labels)qLabel({key:'asset'+t.i,text:(anameV(t.i)||'').toLowerCase(),
+      x:cZip.x,y:cZip.y+25,col:sel?GREEN:vget('--color-text-secondary','#999'),al:'center',sz:8.5,wt:sel?'600':'',
+      pr:sel?3:2,lod:LOD.name,ax:cZip.x,ay:cZip.y+12});
+  }
+  GLYPHS.stackBadge(1,0.91,0.5,16,CAN,'×{{lean_zip_count}}','zip');
+  if(STATE.labels){var pz=SS(1,0.5,0.93,0);
+    qLabel({key:'zip_caption',def:'1 zip = 1 ticker · CSV: YYYYMMDD HH:MM,o,h,l,c,v · prices ×{{price_scale}} · {{lean_zip_size_mb}} MB',grp:'Store / DuckDB',
+      x:pz.x,y:pz.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});}
+};
+
+function DuckDBLayer(){}
+DuckDBLayer.prototype.draw=function(){
+  caption(2);
+  GLYPHS.dbCylinder({lev:2,a:0.26,b:0.52,ra:0.17,rb:0.40,dz:2,h:34,col:TEAL});
+  if(STATE.labels){
+    var pd1=SS(2,0.26,0.52,40),pd2=SS(2,0.26,0.80,0),pda=SS(2,0.26,0.52,34);
+    qLabel({key:'db_raw',def:'raw_ohlcv_1h · BIGINT ×{{price_scale}}',grp:'Store / DuckDB',
+      x:pd1.x,y:pd1.y-2,col:vget('--color-text-primary','#eee'),al:'center',sz:9,wt:'600',pr:2,ax:pda.x,ay:pda.y});
+    qLabel({key:'db_rows',def:'{{duckdb_row_count_str}} rows · {{duckdb_size_mb}} MB',grp:'Store / DuckDB',
+      x:pd2.x,y:pd2.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8,pr:1});
+  }
+  GLYPHS.sqlView({lev:2,a0:0.64,b0:0.40,a1:0.92,b1:0.64,dz:20,col:TEAL,linkA:0.56,linkB:0.54,linkDz:26});
+  if(STATE.labels){
+    var pv1=SS(2,0.78,0.52,22),pv2=SS(2,0.78,0.80,0),pva=SS(2,0.78,0.52,16);
+    qLabel({key:'db_view',def:'VIEW ohlcv_1h → USD (/{{price_scale}}.0)',grp:'Store / DuckDB',
+      x:pv1.x,y:pv1.y-2,col:vget('--color-text-secondary','#999'),al:'center',sz:8.5,wt:'600',pr:2,ax:pva.x,ay:pva.y});
+    qLabel({key:'db_zero',def:'zero storage duplication',grp:'Store / DuckDB',
+      x:pv2.x,y:pv2.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8,pr:1});
+  }
+  var sm=SS(2,0.94,0.20,8),link=SS(2,0.56,0.40,18);
+  ctx.save();ctx.strokeStyle=rgba(TEAL,0.50);ctx.lineWidth=1;ctx.setLineDash([3,4]);
+  ctx.beginPath();ctx.moveTo(link.x,link.y);ctx.lineTo(sm.x-22,sm.y);ctx.stroke();ctx.restore();
+  GLYPHS.labelTag(sm.x,sm.y,48,20,TEAL,'_meta');
+  HITS.addRect(sm.x-24,sm.y-10,48,20,{type:'meta'});
+};
+function QCGateRing(){}
+QCGateRing.prototype.draw=function(){
+  // locks placed at fractional 'a' (not fixed px) → they spread out and sit on the layer plane
+  var k,n=QC.length,aStart=0.10,aStep=0.045;
+  var s0=SS(2,aStart,0.88,4),sN=SS(2,aStart+(n-1)*aStep,0.88,4);
+  HITS.addRect(s0.x-8,s0.y-12,(sN.x-s0.x)+20,24,{type:'qcAll'});
+  for(k=0;k<n;k++){
+    var sk=SS(2,aStart+k*aStep,0.88,4);
+    drawLockS(sk.x,sk.y,12,PINK,String(k+1));
+    HITS.addRect(sk.x-6,sk.y-9,12,18,{type:'qc',g:k});
+  }
+  obstacle(s0.x-8,s0.y-12,sN.x+12,s0.y+16);
+  if(STATE.labels)qLabel({key:'qc_badge',def:'QC-01…QC-11 gate every load · view 3',grp:'QC gates',
+    x:sN.x+14,y:sN.y+3,col:vget('--color-text-tertiary','#777'),al:'left',sz:7.5,pr:1,
+    ax:sN.x+10,ay:sN.y});
+};
+
+function TransformLayer(){}
+TransformLayer.prototype.draw=function(){
+  caption(3);
+  var sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+
+  var sn=SS(3,0.16,0.52,18),wS=86,hS=26;
+  GLYPHS.snapshotCam(sn.x,sn.y,CAN,T('tf_snap','snapshot','Snapshot / Parquet')||'');
+  if(STATE.labels)qLabel({key:'tf_manifest',def:'atomic copy + manifest JSON (price_view)',grp:'Snapshot / Parquet',
+    x:sn.x,y:sn.y+hS/2+11,col:tert,al:'center',sz:7.5,pr:1,ax:sn.x,ay:sn.y+hS/2});
+  HITS.addRect(sn.x-27,sn.y-21,70,40,{type:'snapshot'});
+
+  line2(lp(3,0.24,0.52,18),lp(3,0.70,0.52,18),tert,1.2,[]);
+  var ah=CAM.S(lp(3,0.70,0.52,18));
+  ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
+
+  var pq=SS(3,0.80,0.52,18);
+  GLYPHS.parquetFile(pq.x,pq.y,AMB,true);
+  txtS('×{{universe_size}}',pq.x+20,pq.y+18,sec,'center',7.5,'700');
+  HITS.addRect(pq.x-24,pq.y-30,58,54,{type:'parquet'});
+  if(STATE.labels){
+    var pt1=SS(3,0.5,0.16,8),pt2=SS(3,0.5,0.97,0);
+    qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md)',grp:'Snapshot / Parquet',
+      x:pt1.x,y:pt1.y,col:sec,al:'center',sz:8.5,pr:1});
+    qLabel({key:'tf_caption',def:'{{universe_size}} files · zstd · <TICKER>/ohlcv.parquet',grp:'Snapshot / Parquet',
+      x:pt2.x,y:pt2.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+function SplitLayer(){}
+SplitLayer.prototype.draw=function(){
+  caption(4);
+  var tert=vget('--color-text-tertiary','#777'),sec=vget('--color-text-secondary','#999');
+  var i,edges=[],nb=SPLIT.bands.length;
+  for(i=0;i<nb;i++){
+    var b=SPLIT.bands[i];
+    var acc=aOf(i===0?0:SPLIT.edgeF[i-1]),a1=aOf(i===nb-1?1:SPLIT.edgeF[i]);
+    poly([lp(4,acc,0.30,3),lp(4,a1,0.30,3),lp(4,a1,0.78,3),lp(4,acc,0.78,3)],rgba(b.col,0.20),b.col,1.1);
+    HITS.addPts([lp(4,acc,0.28,12),lp(4,a1,0.80,0)],{type:'split',k:i});
+    if(STATE.labels){
+      var ps1=SS(4,(acc+a1)/2,0.52,10);
+      qLabel({key:'split_'+b.id,def:b.name,grp:'Time split',
+        x:ps1.x,y:ps1.y,col:b.col,al:'center',sz:9.5,wt:'600',pr:3});
+    }
+    if(i<nb-1)edges.push(aOf(SPLIT.edgeF[i]));
+  }
+  for(i=0;i<edges.length;i++){
+    var e=edges[i],j,bb0,bb1;
+    if(CAM.z<0.7){
+      poly([lp(4,e-0.012,0.30,4),lp(4,e+0.012,0.30,4),lp(4,e+0.012,0.78,4),lp(4,e-0.012,0.78,4)],rgba(SL,0.26),SL,1,[4,3]);
+    }else{
+      for(j=0;j<5;j++){
+        bb0=0.31+j*0.092;bb1=bb0+0.052;
+        poly([lp(4,e-0.020,bb0,5),lp(4,e-0.011,bb0,5),lp(4,e-0.011,bb1,5),lp(4,e-0.020,bb1,5)],rgba(SL,0.35),SL,0.7,[]);
+        poly([lp(4,e+0.011,bb0,5),lp(4,e+0.020,bb0,5),lp(4,e+0.020,bb1,5),lp(4,e+0.011,bb1,5)],rgba(AMB,0.20),AMB,0.8,[3,3]);
+      }
+    }
+    HITS.addPts([lp(4,e-0.02,0.28,8),lp(4,e+0.02,0.80,0)],{type:'purge',k:i});
+    HITS.addPts([lp(4,e+0.006,0.28,8),lp(4,e+0.032,0.80,0)],{type:'embargo',k:i});
+  }
+  // --- Time axis under the bands: baseline + year ticks (for scale) + highlighted boundaries ---
+  var axB=0.86,axZ=1,axA0=aOf(0),axA1=aOf(1);
+  line2(lp(4,axA0,axB,axZ),lp(4,axA1,axB,axZ),tert,1.4,[]);
+  var pe=CAM.S(lp(4,axA1,axB,axZ)),                               // "time →" arrow as a chevron from world points (tilted slab)
+      pk1=CAM.S(lp(4,axA1-0.018,axB-0.03,axZ)),pk2=CAM.S(lp(4,axA1-0.018,axB+0.03,axZ));
+  ctx.save();ctx.strokeStyle=tert;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(pk1.x,pk1.y);ctx.lineTo(pe.x,pe.y);ctx.lineTo(pk2.x,pk2.y);ctx.stroke();ctx.restore();
+  if(STATE.labels)txt('time',lp(4,axA1,axB,axZ),tert,'left',7.5,null,8,4);
+  var emphF=[{f:dfrac('2016-10-14'),col:CAN,key:'split_axis_warmend',date:'2016-10-14'},
+             {f:SPLIT.edgeF[1],col:SL,key:'split_axis_trainoos',date:'2023-12-29 → 2024-01-02'}];
+  var firstY=SPLIT.years[0].y,lastY=SPLIT.years[SPLIT.years.length-1].y;
+  for(i=0;i<SPLIT.years.length;i++){
+    var Y=SPLIT.years[i],ay=aOf(Y.f),dup=false,e2,keep;
+    for(e2=0;e2<emphF.length;e2++)if(Math.abs(Y.f-emphF[e2].f)<0.004)dup=true;   // dedup: year ≈ boundary → boundary takes the marker
+    if(dup)continue;
+    if(CAM.z>=0.75)keep=true;                                                     // LOD: every year / every 2 / sparse; ends always
+    else if(CAM.z>=0.55)keep=(Y.y%2===0)||Y.y===firstY||Y.y===lastY;
+    else keep=(Y.y%4===0)||Y.y===firstY||Y.y===lastY;
+    if(!keep)continue;
+    line2(lp(4,ay,axB-0.025,axZ),lp(4,ay,axB+0.025,axZ),tert,1,[]);
+    if(STATE.labels){var sy=CAM.S(lp(4,ay,axB+0.03,axZ)),fz=7.5*zScale();
+      txtS(String(Y.y),sy.x,sy.y+10,tert,'center',7.5);
+      var tw=ctx.measureText(String(Y.y)).width;
+      obstacle(sy.x-tw/2-2,sy.y+10-fz-2,sy.x+tw/2+2,sy.y+13);}                     // reserve space → qLabels avoid the years
+  }
+  for(i=0;i<emphF.length;i++){
+    var E=emphF[i],ae=aOf(E.f);
+    line2(lp(4,ae,axB-0.05,axZ),lp(4,ae,axB+0.05,axZ),E.col,1.6,[]);              // taller tick for the window boundary
+    if(STATE.labels){var se=SS(4,ae,axB+0.06,axZ);
+      qLabel({key:E.key,def:E.date,grp:'Time split',
+        x:se.x,y:se.y,col:E.col,al:'center',sz:8,wt:'600',pr:2,lod:0.55});}
+  }
+  if(STATE.labels){var pn=SS(4,0.5,0.14,6);
+    qLabel({key:'split_note',def:'TB labels overlap the boundaries → purge H=24 candles + embargo ~5 sessions',grp:'Time split',
+      x:pn.x,y:pn.y,col:sec,al:'center',sz:8.5,pr:1});}
+};
+
+function FeatureForest(){}
+// L6 · trend-line setup detector (contract §3) — compact rig on the poster plane.
+// Full anatomy in the flat 'setup' view (SetupGeometryView); here only the stage icon.
+function SetupDetectorLayer(){}
+SetupDetectorLayer.prototype.draw=function(){
+  caption(5);
+  var n=NODE_BY_LEV[5],tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
+  var a0=0.10,aw=0.80,bd=0.5,base=4,hgt=150,N=9,t0=6,ut0=t0/(N-1),i;
+  function W(u,h){return lp(5,a0+u*aw,bd,base+h*hgt);}    // u∈[0,1] level, h∈[0,1] "price"
+  function LT(u){return 0.80-0.34*u;}                      // resistance (traded) — falls
+  function LO(u){return LT(u)-0.26;}                       // opposing line (the SL sits here)
+  polyS([CAM.S(W(0,1.02)),CAM.S(W(1,1.02)),CAM.S(W(1,0)),CAM.S(W(0,0))],rgba(TEAL,0.05),bord,1,[]);
+  line2(W(0,LT(0)),W(1,LT(1)),RED,2,[]);                   // L_trend solid
+  line2(W(0,LO(0)),W(1,LO(1)),CAN,1.5,[6,4]);              // L_opp dashed
+  var prevc=0;
+  for(i=0;i<N;i++){
+    var u=i/(N-1),lt=LT(u),lo=LO(u),hc,htop,hbot;
+    if(i<t0){var mid=lo+0.45*(lt-lo);hc=mid;htop=(i===2||i===4)?lt:mid+0.05;hbot=mid-0.06;}
+    else if(i===t0){hc=lt+0.06;htop=hc+0.04;hbot=lo+0.10;}
+    else{hc=prevc+0.05;htop=hc+0.04;hbot=hc-0.04;}
+    prevc=hc;
+    var col=(i>=t0)?TP:CAN,du=0.030,bb=0.022;
+    line2(W(u,hbot),W(u,htop),col,1.2,[]);                 // wick
+    poly([W(u-du,hc+bb),W(u+du,hc+bb),W(u+du,hc-bb),W(u-du,hc-bb)],rgba(col,0.5),col,1);
+    if(i===2||i===4){var st=CAM.S(W(u,lt));ctx.fillStyle=AMB;ctx.beginPath();ctx.arc(st.x,st.y,3.5,0,7);ctx.fill();
+      HITS.addRect(st.x-6,st.y-6,12,12,{type:'setupTouch'});}
+  }
+  line2(W(ut0,0),W(ut0,1.0),rgba(TEAL,0.55),1.4,[2,3]);    // vertical entry
+  var se=CAM.S(W(ut0,LT(ut0)+0.06));
+  ctx.save();ctx.strokeStyle=TEAL;ctx.lineWidth=2;ctx.beginPath();ctx.arc(se.x,se.y,5,0,7);ctx.stroke();ctx.restore();
+  HITS.addRect(se.x-7,se.y-7,14,14,{type:'setupEntry'});
+  var ur=ut0+0.05;                                          // R0 bracket (close[t0] → L_opp)
+  line2(W(ur,LT(ut0)+0.06),W(ur,LO(ut0)),AMB,2,[]);
+  var sr=CAM.S(W(ur,(LT(ut0)+0.06+LO(ut0))/2));
+  txtS('R0',sr.x+7,sr.y+3,AMB,'left',9,'700');HITS.addRect(sr.x-8,sr.y-22,30,44,{type:'setupR0'});
+  HITS.addPts([W(0,0),W(1,0),W(0,1.02),W(1,1.02)],{type:'detector'});
+  if(STATE.labels){
+    var plt=CAM.S(W(1,LT(1))),plo=CAM.S(W(1,LO(1))),pe=CAM.S(W(ut0,1.05)),pinv=CAM.S(W(0.5,-0.12));
+    qLabel({key:'det_ltrend',def:'L_trend (resistance)',grp:'Setup detector',x:plt.x+4,y:plt.y,col:RED,al:'left',sz:8,wt:'600',pr:2,lod:LOD.name});
+    qLabel({key:'det_lopp',def:'L_opp (SL)',grp:'Setup detector',x:plo.x+4,y:plo.y+10,col:CAN,al:'left',sz:8,pr:2,lod:LOD.name});
+    qLabel({key:'det_t0',def:'entry_candle t0',grp:'Setup detector',x:pe.x,y:pe.y,col:TEAL,al:'center',sz:8.5,wt:'600',pr:2,lod:LOD.name});
+    qLabel({key:'det_inv',def:n.invariants.join(' · '),grp:'Setup detector',x:pinv.x,y:pinv.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+// L7 as a standing 3D matrix (setups t × features X + label Y) — PT(u,v) pattern from OOSWall
+FeatureForest.prototype.draw=function(){
+  caption(6);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
+      bord=vget('--color-border-secondary','#555'),ai=STATE.asset;
+  var bw=0.55,base=4,HZ6=150,nf=FEATURES.length;        // nf=8 (7 X + 1 audit)
+  var NCOL=nf+2,NROW=6,ycol=NCOL-1;                      // col 0=header t · 1..nf=features · ycol=Y;  rows 0=header x · 1..4=setups · 5=…
+  var A=CAM.S(lp(6,0.08,bw,base)),B=CAM.S(lp(6,0.92,bw,base)),
+      T1=CAM.S(lp(6,0.08,bw,base+HZ6)),T2=CAM.S(lp(6,0.92,bw,base+HZ6));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(CAN,0.06),bord,1,[]);
+  var SUB='₁₂₃₄₅₆₇₈',rr,cc,showVal=(CAM.z>=1.0);
+  // readable column abbreviations (work order) mapped 1:1 to FEATURES; full names in hover/inspect
+  var FEAT_ABBR=['dTrend','dOpp','risk%','ret%','body/range','volZ','touches','close>line'];
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var u0=cc/NCOL,u1=(cc+0.94)/NCOL,v0=rr/NROW,v1=(rr+0.92)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    var hdrRow=(rr===0),hdrCol=(cc===0),isY=(cc===ycol),isEll=(rr===NROW-1);
+    if(hdrCol&&hdrRow){                                  // corner with the x/t diagonal
+      polyS([p00,p10,p11,p01],rgba(CAN,0.14),bord,0.8,[]);
+      ctx.save();ctx.strokeStyle=prim;ctx.lineWidth=1.4;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(p00.x,p00.y);ctx.lineTo(p11.x,p11.y);ctx.stroke();ctx.restore();
+      var px=lerp2(p10,pc,0.4),pt=lerp2(p01,pc,0.4);
+      txtS('x',px.x,px.y+4,prim,'center',11,'700');txtS('t',pt.x,pt.y+4,prim,'center',11,'700');
+    }else if(hdrRow){                                    // column header — transform=GREEN (X) vs target=TP (Y)
+      polyS([p00,p10,p11,p01],isY?rgba(TP,0.20):rgba(GREEN,0.18),bord,0.8,[]);
+      if(isY)txtS('Y',pc.x,pc.y+5,TP,'center',12,'700');
+      else{var f=FEATURES[cc-1];                            // family glyph instead of the x₁..x₈ placeholder; abbreviation on the axis label
+        drawFamilyMarker(pc.x,pc.y+3,f.family,GREEN);
+        if(f.special)txtS('!',p10.x-6,p00.y+12,AMB,'center',9,'700');}
+    }else if(hdrCol){                                    // row header (setup)
+      polyS([p00,p10,p11,p01],rgba(CAN,0.10),bord,0.8,[]);
+      txtS(isEll?'…':('t'+SUB.charAt(rr-1)),pc.x,pc.y+4,prim,'center',10,'700');
+    }else if(isY){                                       // label Y cell (0/1)
+      var yv=isEll?-1:(rng(ai*23+rr*557+131)()<0.5?0:1);
+      polyS([p00,p10,p11,p01],yv<0?null:rgba(TP,0.10+0.45*yv),bord,0.8,[]);
+      if(showVal&&yv>=0)txtS(String(yv),pc.x,pc.y+3,yv?TP:tert,'center',8.5,'700');
+    }else{                                               // feature X cell — neutral (data), not red
+      polyS([p00,p10,p11,p01],rgba(CAN,0.09),bord,0.8,[]);
+      if(showVal&&!isEll)txtS((rng(ai*7+rr*131+cc*977)()*4-2).toFixed(1),pc.x,pc.y+3,tert,'center',7.5);
+    }
+  }
+  for(cc=1;cc<NCOL;cc++){                                // HITS per column
+    var q0=PT(cc/NCOL,0),q1=PT((cc+0.94)/NCOL,0),q2=PT(cc/NCOL,1),q3=PT((cc+0.94)/NCOL,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,cc===ycol?{type:'label'}:{type:'feature',f:cc-1});
+  }
+  if(STATE.labels){
+    for(cc=1;cc<ycol;cc++){var ph=PT((cc+0.47)/NCOL,-0.05),pg=PT((cc+0.47)/NCOL,0.0);   // column abbreviations (full names: hover/inspect)
+      qLabel({key:'feat'+(cc-1),text:FEAT_ABBR[cc-1],x:ph.x,y:ph.y,col:vget('--color-text-secondary','#999'),
+        al:'left',sz:9,rot:-0.62,pr:2,lod:LOD.name,ax:pg.x,ay:pg.y});}
+    var phY=PT((ycol+0.47)/NCOL,-0.05),pgY=PT((ycol+0.47)/NCOL,0.0);                     // target label
+    qLabel({key:'feat_Y',def:'Y_outcome',grp:'Features & label',x:phY.x,y:phY.y,col:TP,
+      al:'left',sz:9,wt:'600',rot:-0.62,pr:2,lod:LOD.name,ax:pgY.x,ay:pgY.y});
+    var pw=PT(1.02,0.12),pwa=PT(0.99,0.12);                                              // sample weight (chip next to Y)
+    qLabel({key:'feat_w',def:'w_unique (weight)',grp:'Features & label',x:pw.x,y:pw.y,col:vget('--color-text-secondary','#999'),
+      al:'left',sz:8.5,rot:-0.62,pr:2,lod:LOD.name,ax:pwa.x,ay:pwa.y});
+    var pcap=PT(0.5,-0.17);
+    qLabel({key:'ff_causal',def:'Features computed at t0 — only candles ≤ t0 (causality)',grp:'Features & label',
+      x:pcap.x,y:pcap.y,col:GREEN,al:'center',sz:10.5,wt:'600',pr:3});
+    var pn=PT(0.5,1.12);
+    qLabel({key:'ff_setup',def:'row = trend-line setup · columns = 7 X features + audit (close>line) + Y_outcome + weight w_unique · partition: asset × direction',grp:'Features & label',
+      x:pn.x,y:pn.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+function QualityLayer(){}
+QualityLayer.prototype.draw=function(){
+  caption(7);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),i;
+  var ord=[];
+  for(i=0;i<DQ.length;i++){var ta=0.06+(i%3)*0.32,tb=(i<3)?0.24:0.76;
+    ord.push({i:i,a:ta,b:tb,d:lp(7,ta,tb,0).d});}
+  ord=byD(ord);
+  for(var k=0;k<ord.length;k++){
+    var t=ord[k],q=DQ[t.i],s=SS(7,t.a,t.b,16),w=46,h=20,col=dqCol(q.status);
+    fillRR(s.x-w/2,s.y-h/2,w,h,5,rgba(col,0.16),col,1.1);
+    drawStatusIcon(s.x-w/2+8,s.y-1,col,q.status);
+    txtS(q.name,s.x+5,s.y-2,prim,'center',7.5,'600');
+    txtS(q.status,s.x+5,s.y+8,col,'center',7.5,'700');
+    HITS.addRect(s.x-w/2,s.y-h/2,w,h,{type:'dqTile',q:t.i});
+    obstacle(s.x-w/2,s.y-h/2,s.x+w/2,s.y+h/2);
+  }
+  var sp=SS(7,0.88,0.5,16),wp=58,hp=36;
+  drawFold(sp.x-wp/2,sp.y-hp/2,wp,hp,9,PINK,0.12);
+  txtS('summary.json',sp.x,sp.y-2,prim,'center',7.5,'600');
+  txtS('+ dashboard',sp.x,sp.y+9,tert,'center',7.5);
+  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'dqSummary'});
+  addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
+  if(STATE.labels){
+    var pq1=SS(7,0.5,0.12,4),pq2=SS(7,0.5,0.95,0);
+    qLabel({key:'dq_gate',def:'quality gate: training (L9) starts only with a green dashboard — FAIL blocks',grp:'Quality validation',
+      x:pq1.x,y:pq1.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'dq_scope',def:'validation of the whole flow: zip → DuckDB → parquet → split → Output B',grp:'Quality validation',
+      x:pq2.x,y:pq2.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+function TrainingLayer(){}
+TrainingLayer.prototype.draw=function(){
+  caption(8);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
+  GLYPHS.trialFunnel(8,0.32,0.5,PINK);
+
+  var top=prism(8,0.20,0.38,0.44,0.64,2,26,GREEN,0.25),tc=ctr(top);
+  if(CAM.z>=0.75)GLYPHS.modelTree(tc.x,tc.y+2,GREEN);
+  HITS.addPts([lp(8,0.18,0.36,32),lp(8,0.46,0.66,0)],{type:'xgb'});
+  if(STATE.labels){
+    var px1=SS(8,0.32,0.5,32),px2=SS(8,0.32,0.74,0),pxa=SS(8,0.32,0.5,28);
+    qLabel({key:'xgb_title',def:'XGB',grp:'Training / Optuna',
+      x:px1.x,y:px1.y-2,col:prim,al:'center',sz:11,wt:'700',pr:3,ax:pxa.x,ay:pxa.y});
+    qLabel({key:'xgb_sub',def:'binary:logistic · meta-label',grp:'Training / Optuna',
+      x:px2.x,y:px2.y,col:tert,al:'center',sz:8,pr:1});
+  }
+  line2(lp(8,0.50,0.5,18),lp(8,0.72,0.5,18),tert,1.4,[]);
+  var ah=CAM.S(lp(8,0.72,0.5,18));
+  ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
+
+  var sp=SS(8,0.82,0.5,20),wp=92,hp=42;
+  if(flash>0)strokeRR(sp.x-wp/2-3,sp.y-hp/2-3,wp+6,hp+6,13,rgba(AMB,flash*0.8),2);
+  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_'+(aname(STATE.asset)||ASSETS[STATE.asset])+'.py');
+  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy',a:STATE.asset});
+  addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
+  GLYPHS.stackBadge(8,0.94,0.5,20,AMB,'×{{universe_size}}','strategy');
+  if(STATE.labels){
+    var po1=SS(8,0.5,0.10,2),po2=SS(8,0.5,0.97,0);
+    qLabel({key:'opt_caption',def:'Optuna: 200 trials (TPE + MedianPruner) · purged walk-forward CV only on Train',grp:'Training / Optuna',
+      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'champ_caption',def:'champion → strategy .py = base64 model + feature manifest + threshold 0.60 + selfcheck',grp:'Training / Optuna',
+      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+function OOSWall(){}
+OOSWall.prototype.draw=function(){
+  caption(9);
+  var C=26,R=METRICS.length,HZ=170,bw=0.60;
+  var A=CAM.S(lp(9,0.06,bw,6)),B=CAM.S(lp(9,0.94,bw,6)),
+      T1=CAM.S(lp(9,0.06,bw,6+HZ)),T2=CAM.S(lp(9,0.94,bw,6+HZ));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(CAN,0.08),vget('--color-border-secondary','#555'),1,[]);
+  if(CAM.z>=1.0){
+    for(c=0;c<7;c++){
+      var ms=PT((c+0.45)/C,-0.105);
+      drawMicroSheet(ms.x-7,ms.y-9,14,18,AMB);
+    }
+  }
+  // wall obstacle in 6 strips (the AABB of the whole tilted quad would cover
+  // the empty triangle above the wall and push name labels away)
+  for(r=0;r<6;r++){
+    var su0=r/6,su1=(r+1)/6,
+        q00=PT(su0,0),q10=PT(su1,0),q01=PT(su0,1),q11=PT(su1,1);
+    obstacle(Math.min(q00.x,q10.x,q01.x,q11.x),Math.min(q00.y,q10.y,q01.y,q11.y),
+             Math.max(q00.x,q10.x,q01.x,q11.x),Math.max(q00.y,q10.y,q01.y,q11.y));
+  }
+  var r,c,omc=[];
+  for(c=0;c<C;c++)omc[c]=oosMock(c);   // oosMock depends only on c → compute once per column (not 5×)
+  for(r=0;r<R;r++)for(c=0;c<C;c++){
+    var u0=c/C,u1=(c+0.82)/C,v0=r/R,v1=(r+0.78)/R;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1);
+    var val=omc[c][METRICS[r].id],q=metricQ(val,r);
+    var colq=q>=0.5?rgba(TP,0.10+0.80*(q-0.5)*2):rgba(SL,0.10+0.72*(0.5-q)*2);
+    polyS([p00,p10,p11,p01],colq,null);
+    var bx0=Math.min(p00.x,p01.x,p10.x,p11.x),bx1=Math.max(p00.x,p01.x,p10.x,p11.x);
+    var by0=Math.min(p00.y,p01.y,p10.y,p11.y),by1=Math.max(p00.y,p01.y,p10.y,p11.y);
+    HITS.addRect(bx0,by0,bx1-bx0,by1-by0,{type:'oosCell',a:c,m:r});
+  }
+  var mi=0;for(r=0;r<R;r++)if(METRICS[r].id===STATE.metric)mi=r;
+  polyS([PT(-0.008,mi/R-0.01),PT(1.008,mi/R-0.01),PT(1.008,(mi+0.85)/R+0.01),PT(-0.008,(mi+0.85)/R+0.01)],null,TEAL,1.6,[5,3]);
+  if(STATE.labels){
+    var pc=PT(0.5,-0.07);
+    qLabel({key:'oos_caption',def:'OOS results matrix · {{universe_size}} assets × 5 metrics · 2024-01-02 → 2026-05-29',grp:'OOS results',
+      x:pc.x,y:pc.y,col:vget('--color-text-primary','#eee'),al:'center',sz:10.5,wt:'600',pr:3});
+    for(r=0;r<R;r++){var pl=PT(-0.045,(r+0.55)/R);
+      qLabel({text:METRICS[r].name,x:pl.x,y:pl.y,col:r===mi?TEAL:vget('--color-text-secondary','#999'),
+        al:'right',sz:8.5,wt:r===mi?'600':'',pr:3,ax:pl.x+6,ay:pl.y});}
+    var pb=PT(0.5,1.12);
+    qLabel({key:'oos_note',def:'columns = assets (26 of {{universe_size}} in frame) · rows = metrics · color = result quality',grp:'OOS results',
+      x:pb.x,y:pb.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});
+    if(STATE.names==='sample'){
+      for(c=0;c<7;c++){var ph=PT((c+0.45)/C,-0.155),pg=PT((c+0.45)/C,0.02);
+        qLabel({key:'asset'+c,text:anameV(c),x:ph.x,y:ph.y,col:vget('--color-text-tertiary','#777'),
+          al:'left',sz:7.5,rot:-0.7,pr:3,lod:0.65,ax:pg.x,ay:pg.y});}
+    }
+  }
+};
+
+function pillCore(px,py,w,h,col,label,fillA,lw,fz,dy){         // shared core of pill/pillF (single source, no divergence)
+  var s=CAM.S({x:px,y:py});
+  fillRR(s.x-w/2,s.y-h/2,w,h,8,rgba(col,fillA==null?0.12:fillA),col,lw);
+  txtS(label,s.x,s.y+dy,vget('--color-text-primary','#eee'),'center',fz,'600');
+  return s;}
+function pill(px,py,w,h,col,label,fillA){return pillCore(px,py,w,h,col,label,fillA,1.2,10,3.5);}
+function pillF(px,py,w,h,col,label,fillA,fz){return pillCore(px,py,w,h,col,label,fillA,1.1,fz||9,3);}
+function edge(x1,y1,x2,y2){line2({x:x1,y:y1},{x:x2,y:y2},vget('--color-border-secondary','#555'),1,[]);}
+function monoS(s,x,y,col,al,sz){
+  var fz=(sz||9)*zScale();
+  setFont(fz.toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  ctx.textAlign=al||'left';ctx.textBaseline='alphabetic';
+  ctx.fillStyle=col;ctx.fillText(s,x,y);}
+
+/* === GLYPH PASS ===
+   Immediate-mode renderers for 3D objects. Each glyph registers its own hit-area,
+   an obstacle for the declutter, and leaves the canvas without dashes. */
+var GLYPHS={};
+function scr(p){return CAM.S(p);} // bound wrapper for .map(scr); do NOT replace with .map(CAM.S) — CAM.S uses this
+function addObstacleRect(x,y,w,h){obstacle(x,y,x+w,y+h);}
+function addObstaclePts(pts,pad){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i,p;
+  pad=pad||0;
+  for(i=0;i<pts.length;i++){p=pts[i];if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  obstacle(x0-pad,y0-pad,x1+pad,y1+pad);
+}
+function ctr(pts){var x=0,y=0,i;for(i=0;i<pts.length;i++){x+=pts[i].x;y+=pts[i].y;}return {x:x/pts.length,y:y/pts.length};}
+function pathPtsS(pts,close){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){if(i)ctx.lineTo(pts[i].x,pts[i].y);else ctx.moveTo(pts[i].x,pts[i].y);}
+  if(close)ctx.closePath();
+}
+function ringPts(lev,ca,cb,ra,rb,dz,n){
+  var pts=[],i,ang;
+  for(i=0;i<n;i++){ang=Math.PI*2*i/n;pts.push(lp(lev,ca+ra*Math.cos(ang),cb+rb*Math.sin(ang),dz));}
+  return pts;
+}
+function ringScr(lev,ca,cb,ra,rb,dz,n){return ringPts(lev,ca,cb,ra,rb,dz,n).map(scr);}
+function foldedSheetPath(x,y,w,h,f){
+  f=f||8;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w-f,y);ctx.lineTo(x+w,y+f);
+  ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.closePath();
+}
+function drawFold(x,y,w,h,f,col,fillA){
+  foldedSheetPath(x,y,w,h,f);
+  ctx.fillStyle=rgba(col,fillA==null?0.13:fillA);ctx.fill();
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([]);foldedSheetPath(x,y,w,h,f);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+w-f,y);ctx.lineTo(x+w-f,y+f);ctx.lineTo(x+w,y+f);ctx.stroke();ctx.restore();
+}
+function tagPathS(x,y,w,h){
+  var cut=Math.min(10,w*0.18);
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w-cut,y);ctx.lineTo(x+w,y+h/2);
+  ctx.lineTo(x+w-cut,y+h);ctx.lineTo(x,y+h);ctx.closePath();
+}
+function drawTagS(x,y,w,h,col,label,fillA,fz){
+  ctx.fillStyle=rgba(col,fillA==null?0.12:fillA);tagPathS(x,y,w,h);ctx.fill();
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([]);tagPathS(x,y,w,h);ctx.stroke();
+  ctx.beginPath();ctx.arc(x+w-9,y+h/2,2.2,0,7);ctx.stroke();ctx.restore();
+  if(label)txtS(label,x+w/2-4,y+h/2+(fz||8)*0.35,vget('--color-text-primary','#eee'),'center',fz||8,'600');
+  addObstacleRect(x,y,w,h);
+}
+function zigzagS(x0,y0,x1,y1,teeth,amp,col){
+  var dx=x1-x0,dy=y1-y0,len=Math.max(1,Math.sqrt(dx*dx+dy*dy)),nx=-dy/len,ny=dx/len,i,t,x,y;
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.1;ctx.setLineDash([]);ctx.beginPath();
+  for(i=0;i<=teeth;i++){t=i/teeth;x=x0+dx*t+nx*amp*(i%2?-1:1);y=y0+dy*t+ny*amp*(i%2?-1:1);
+    if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);}
+  ctx.stroke();ctx.restore();
+}
+function drawLockS(x,y,s,col,label){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=rgba(col,0.18);ctx.lineWidth=1.05;ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(x,y-s*0.16,s*0.30,Math.PI,0);ctx.stroke();
+  rrectS(x-s*0.34,y-s*0.12,s*0.68,s*0.52,2.5);ctx.fill();ctx.stroke();
+  ctx.strokeStyle=TP;ctx.beginPath();ctx.moveTo(x-s*0.17,y+s*0.12);ctx.lineTo(x-s*0.04,y+s*0.25);ctx.lineTo(x+s*0.20,y);ctx.stroke();
+  ctx.restore();
+  if(label&&CAM.z>=LOD.micro)txtS(label,x,y+s*0.73,col,'center',7.5,'700');
+}
+function drawStatusIcon(x,y,col,status){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.lineCap='round';ctx.setLineDash([]);
+  ctx.beginPath();
+  if(status==='OK'){ctx.moveTo(x-4,y);ctx.lineTo(x-1,y+3);ctx.lineTo(x+5,y-4);}
+  else if(status==='WARN'){ctx.moveTo(x,y-5);ctx.lineTo(x,y+2);ctx.moveTo(x,y+5);ctx.lineTo(x,y+5.2);}
+  else{ctx.moveTo(x-4,y-4);ctx.lineTo(x+4,y+4);ctx.moveTo(x+4,y-4);ctx.lineTo(x-4,y+4);}
+  ctx.stroke();ctx.restore();
+}
+function drawFamilyMarker(x,y,fam,col){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=rgba(col,0.18);ctx.lineWidth=1.15;ctx.setLineDash([]);
+  if(fam==='price_action'){
+    ctx.beginPath();ctx.moveTo(x-3,y+4);ctx.lineTo(x-3,y-4);ctx.moveTo(x+3,y+5);ctx.lineTo(x+3,y-5);ctx.stroke();
+    ctx.fillRect(x-5,y-1,4,5);ctx.fillRect(x+1,y-4,4,6);
+  }else if(fam==='volume'){
+    ctx.fillRect(x-5,y+1,3,5);ctx.fillRect(x-1,y-3,3,9);ctx.fillRect(x+3,y-6,3,12);
+  }else{
+    ctx.beginPath();ctx.moveTo(x-6,y+4);ctx.lineTo(x-1,y-2);ctx.lineTo(x+2,y+0);ctx.lineTo(x+6,y-6);ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawMicroSheet(x,y,w,h,col){
+  drawFold(x,y,w,h,Math.min(6,w*0.26),col,0.10);
+  ctx.save();ctx.strokeStyle=rgba(col,0.7);ctx.lineWidth=1;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(x+4,y+h*0.45);ctx.lineTo(x+w-5,y+h*0.45);
+  ctx.moveTo(x+4,y+h*0.66);ctx.lineTo(x+w-7,y+h*0.66);ctx.stroke();ctx.restore();
+}
+function drawCloudSource(x,y,w,h,col,label){
+  ctx.save();ctx.fillStyle=rgba(col,0.13);ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(x-w*0.39,y+h*0.17);
+  ctx.quadraticCurveTo(x-w*0.47,y-h*0.08,x-w*0.25,y-h*0.10);
+  ctx.quadraticCurveTo(x-w*0.18,y-h*0.37,x+w*0.05,y-h*0.24);
+  ctx.quadraticCurveTo(x+w*0.20,y-h*0.43,x+w*0.36,y-h*0.18);
+  ctx.quadraticCurveTo(x+w*0.52,y-h*0.14,x+w*0.43,y+h*0.14);
+  ctx.quadraticCurveTo(x+w*0.17,y+h*0.32,x-w*0.39,y+h*0.17);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x-w*0.06,y-h*0.27);ctx.lineTo(x-w*0.06,y-h*0.53);
+  ctx.moveTo(x-w*0.12,y-h*0.47);ctx.lineTo(x-w*0.06,y-h*0.56);ctx.lineTo(x,y-h*0.47);
+  ctx.stroke();
+  ctx.beginPath();ctx.arc(x+w*0.28,y-h*0.28,7,4.0,5.65);ctx.stroke();
+  ctx.beginPath();ctx.arc(x+w*0.28,y-h*0.28,12,3.95,5.7);ctx.stroke();
+  ctx.restore();
+  txtS(label,x,y+3,vget('--color-text-primary','#eee'),'center',8.5,'700');
+  addObstacleRect(x-w*0.48,y-h*0.58,w*1.0,h*0.96);
+}
+function drawZipCrate(g){
+  var top=prism(g.lev,g.a-0.025,g.b-0.055,g.a+0.025,g.b+0.055,1,g.h||24,g.sel?GREEN:CAN,g.sel?0.32:0.24);
+  var c=ctr(top),pad=4;
+  txtS('.zip',c.x,c.y+3,vget('--color-text-primary','#eee'),'center',7.5,'700');
+  if(CAM.z>=0.8)zigzagS(c.x-7,c.y-12,c.x+7,c.y+12,7,1.7,g.sel?GREEN:CAN);
+  HITS.addPts([lp(g.lev,g.a-0.033,g.b-0.07,(g.h||24)+4),lp(g.lev,g.a+0.033,g.b+0.07,0)],{type:'zip',a:g.i});
+  addObstaclePts(top,pad);
+  return c;
+}
+function drawStackBadge(lev,a,b,dz,col,label,type){
+  var p=SS(lev,a,b,dz),i,payload={type:type};
+  if(type==='strategy')payload.a=STATE.asset;
+  ctx.save();ctx.strokeStyle=rgba(col,0.7);ctx.lineWidth=1;ctx.setLineDash([]);
+  for(i=2;i>=0;i--)rrectS(p.x-16+i*5,p.y-19+i*4,27,36,8);
+  ctx.stroke();ctx.restore();
+  txtS(label,p.x+3,p.y+5,vget('--color-text-secondary','#999'),'center',8.5,'700');
+  HITS.addRect(p.x-18,p.y-20,38,42,payload);
+  addObstacleRect(p.x-18,p.y-20,38,42);
+}
+function drawDbCylinder(g){
+  var top=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz+g.h,28),bot=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz,28),i,body=[];
+  for(i=0;i<bot.length;i++)body.push(bot[i]);for(i=top.length-1;i>=0;i--)body.push(top[i]);
+  ctx.save();pathPtsS(body,true);ctx.fillStyle=rgba(g.col,0.18);ctx.fill();ctx.strokeStyle=rgba(g.col,0.55);ctx.lineWidth=1;ctx.stroke();
+  pathPtsS(bot,true);ctx.strokeStyle=rgba(g.col,0.35);ctx.stroke();
+  pathPtsS(top,true);ctx.fillStyle=rgba(g.col,0.18);ctx.fill();ctx.strokeStyle=g.col;ctx.lineWidth=1.3;ctx.stroke();
+  if(CAM.z>=0.7){for(i=1;i<=2;i++){var mid=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz+g.h*i/3,28);pathPtsS(mid,true);ctx.strokeStyle=rgba(g.col,0.35);ctx.stroke();}}
+  ctx.restore();
+  var c=ctr(top);
+  if(CAM.z>=0.9){
+    txtS(T('db_badge','DuckDB','Store / DuckDB')||'',c.x,c.y-14,g.col,'center',7.5,'700');
+  }
+  HITS.addPts([lp(g.lev,g.a-g.ra*1.15,g.b-g.rb*1.15,g.dz+g.h+4),lp(g.lev,g.a+g.ra*1.15,g.b+g.rb*1.15,g.dz)],{type:'db'});
+  addObstaclePts(top.concat(bot),4);
+  return c;
+}
+function drawSqlView(g){
+  var p=[lp(g.lev,g.a0,g.b0,g.dz),lp(g.lev,g.a1,g.b0,g.dz),lp(g.lev,g.a1,g.b1,g.dz),lp(g.lev,g.a0,g.b1,g.dz)];
+  var s=poly(p,rgba(g.col,0.08),rgba(g.col,0.75),1,[5,4]);
+  ctx.save();ctx.strokeStyle=rgba(g.col,0.45);ctx.lineWidth=1;ctx.setLineDash([3,4]);
+  var c=ctr(s),d=SS(g.lev,g.linkA,g.linkB,g.linkDz);
+  ctx.beginPath();ctx.moveTo(s[0].x,s[0].y);ctx.lineTo(d.x,d.y);ctx.moveTo(s[1].x,s[1].y);ctx.lineTo(d.x,d.y);
+  ctx.moveTo(s[2].x,s[2].y);ctx.lineTo(d.x,d.y);ctx.moveTo(s[3].x,s[3].y);ctx.lineTo(d.x,d.y);ctx.stroke();ctx.restore();
+  ctx.save();ctx.strokeStyle=rgba(vget('--color-text-primary','#eee'),0.45);ctx.beginPath();ctx.moveTo(c.x-12,c.y-8);ctx.lineTo(c.x+8,c.y-14);ctx.stroke();ctx.restore();
+  HITS.addPts([lp(g.lev,g.a0-0.02,g.b0-0.02,g.dz+4),lp(g.lev,g.a1+0.02,g.b1+0.02,g.dz-4)],{type:'view'});
+  addObstaclePts(s,4);
+  return c;
+}
+function drawSnapshotCam(x,y,col,label){
+  var prim=vget('--color-text-primary','#eee');
+  fillRR(x-23,y-13,46,26,6,rgba(col,0.12),col,1.3);
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.3;ctx.setLineDash([]);
+  rrectS(x-13,y-19,20,7,3);ctx.stroke();ctx.beginPath();ctx.arc(x+2,y,8,0,7);ctx.stroke();ctx.arc(x+2,y,4,0,7);ctx.stroke();ctx.restore();
+  drawMicroSheet(x+22,y-10,18,24,col);
+  txtS(label,x,y+3,prim,'center',7.5,'700');
+  addObstacleRect(x-25,y-21,67,38);
+}
+function drawParquetFile(x,y,col,stack){
+  var i,prim=vget('--color-text-primary','#eee');
+  if(stack){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.setLineDash([]);
+    for(i=2;i>0;i--){foldedSheetPath(x-18+i*5,y-24-i*4,36,44,8);ctx.stroke();}ctx.restore();}
+  drawFold(x-18,y-24,36,44,8,col,0.13);
+  if(CAM.z>=0.8){ctx.save();ctx.fillStyle=rgba(col,0.35);
+    for(i=0;i<4;i++)ctx.fillRect(x-12+i*6,y-14,3,25);ctx.restore();}
+  txtS('parquet',x,y+5,prim,'center',7,'700');
+  addObstacleRect(x-20,y-29,stack?54:40,51);
+}
+function drawLabelTag(x,y,w,h,col,label){
+  drawTagS(x-w/2,y-h/2,w,h,col,label,0.12,8);
+}
+function drawPyFile(x,y,w,h,col,label){
+  var prim=vget('--color-text-primary','#eee'),i;
+  drawFold(x-w/2,y-h/2,w,h,10,col,0.14);
+  for(i=0;i<4;i++){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(x-w/2+9,y-h/2+17+i*8);ctx.lineTo(x+w/2-10-i*5,y-h/2+17+i*8);ctx.stroke();ctx.restore();}
+  txtS(label,x,y+1,prim,'center',7,'700');
+  txtS('.b64',x,y+14,col,'center',8,'700');
+}
+function drawModelTree(x,y,col){
+  // clean tree glyph — the "XGB" label goes through the label queue (xgb_title),
+  // so it's editable and decluttered; zero text here (no duplicate)
+  var pts=[[0,-17],[-16,0],[0,0],[16,0],[-24,16],[-8,16],[8,16],[24,16]],i;
+  ctx.save();ctx.strokeStyle=rgba(col,0.8);ctx.fillStyle=rgba(col,0.20);ctx.lineWidth=1;ctx.setLineDash([]);
+  for(i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+pts[0][0],y+pts[0][1]);ctx.lineTo(x+pts[i][0],y+pts[i][1]);ctx.stroke();}
+  for(i=4;i<8;i++){ctx.beginPath();ctx.moveTo(x+pts[2+(i>5?1:0)][0],y+pts[2+(i>5?1:0)][1]);ctx.lineTo(x+pts[i][0],y+pts[i][1]);ctx.stroke();}
+  for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(x+pts[i][0],y+pts[i][1],3.2,0,7);ctx.fill();ctx.stroke();}
+  ctx.restore();
+}
+function drawTrialFunnel(lev,a,b,col){
+  var rings=[[0.33,0.86,30,'opt_funnel1','200 trials'],[0.23,0.58,24,'opt_funnel2','pruning'],[0.13,0.33,18,'opt_funnel3','champion']],i,rs,c;
+  for(i=0;i<rings.length;i++){
+    rs=ringScr(lev,a,b,rings[i][0],rings[i][1],rings[i][2],36);
+    ctx.save();pathPtsS(rs,true);ctx.strokeStyle=rgba(col,0.50+i*0.12);ctx.lineWidth=1.2;ctx.setLineDash(i===0?[5,4]:[]);ctx.stroke();ctx.restore();
+    if(STATE.labels&&CAM.z>=0.85){c=ctr(rs);qLabel({key:rings[i][3],def:rings[i][4],grp:'Training / Optuna',
+      x:c.x,y:c.y-12-i*2,col:rgba(col,0.85),al:'center',sz:7.5,pr:1,lod:0.9});}
+  }
+  var sT=CAM.S(lp(lev,a,b-0.86,30));drawTagS(sT.x-18,sT.y-7,36,14,col,'TPE',0.16,7.5);
+  var pp=CAM.S(lp(lev,a+0.33*Math.cos(CLK*1.3),b+0.86*Math.sin(CLK*1.3),30));
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(pp.x,pp.y,3,0,7);ctx.fill();
+  HITS.addPts([lp(lev,a-0.36,b-0.90,34),lp(lev,a+0.36,b+0.90,14)],{type:'optuna'});
+  addObstacleRect(sT.x-18,sT.y-7,36,14);
+}
+// Glyph registry. World-space (args lev,a,b or g={lev,a,b,...}): zipCrate, stackBadge,
+// dbCylinder, sqlView, trialFunnel. Screen-space (args x,y w px): cloud, snapshotCam,
+// parquetFile, labelTag, pyFile, modelTree.
+GLYPHS.cloud=drawCloudSource;
+GLYPHS.zipCrate=drawZipCrate;
+GLYPHS.stackBadge=drawStackBadge;
+GLYPHS.dbCylinder=drawDbCylinder;
+GLYPHS.sqlView=drawSqlView;
+GLYPHS.snapshotCam=drawSnapshotCam;
+GLYPHS.parquetFile=drawParquetFile;
+GLYPHS.labelTag=drawLabelTag;
+GLYPHS.pyFile=drawPyFile;
+GLYPHS.modelTree=drawModelTree;
+GLYPHS.trialFunnel=drawTrialFunnel;
+
+/* === LABEL PASS ===
+   Deferred object labels: layers enqueue via qLabel(), drawn by
+   drawLabels() at the very end of the frame. q={key,def,grp,x,y,col,al,sz,wt,
+   rot,pr,lod,ax,ay}: (x,y) preferred screen position, (ax,ay) anchor for the
+   leader-line, pr=3 never disappears, lod = min CAM.z. */
+var LQ=[],OBST=[];
+function obstacle(x0,y0,x1,y1){OBST.push({x0:x0,y0:y0,x1:x1,y1:y1});}
+function qLabel(q){
+  if(q.text==null){
+    var s=tVal(q.key,q.def,q.grp);
+    if(!s)return;
+    q.text=s;
+  }
+  if(!q.text)return;
+  LQ.push(q);
+}
+function lblBoxes(q,dx,dy){
+  // rotated labels: 3 segments along the text instead of one thick AABB
+  var x=q.x+dx,y=q.y+dy,out=[],i,k;
+  var x0=(q.al==='center')?-q.w/2:((q.al==='right')?-q.w:0),x1=x0+q.w,y0=-q.fz-2,y1=3;
+  if(q.rot){
+    var c=Math.cos(q.rot),s=Math.sin(q.rot),n=3;
+    for(k=0;k<n;k++){
+      var sx0=x0+(x1-x0)*k/n,sx1=x0+(x1-x0)*(k+1)/n,
+          P=[[sx0,y0],[sx1,y0],[sx1,y1],[sx0,y1]],bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9;
+      for(i=0;i<4;i++){var X=P[i][0]*c-P[i][1]*s,Y=P[i][0]*s+P[i][1]*c;
+        if(X<bx0)bx0=X;if(Y<by0)by0=Y;if(X>bx1)bx1=X;if(Y>by1)by1=Y;}
+      out.push({x0:x+bx0,y0:y+by0,x1:x+bx1,y1:y+by1});
+    }
+  }else out.push({x0:x+x0,y0:y+y0,x1:x+x1,y1:y+y1});
+  return out;
+}
+function boxUnion(bs){
+  var u={x0:1e9,y0:1e9,x1:-1e9,y1:-1e9},i;
+  for(i=0;i<bs.length;i++){var b=bs[i];
+    if(b.x0<u.x0)u.x0=b.x0;if(b.y0<u.y0)u.y0=b.y0;if(b.x1>u.x1)u.x1=b.x1;if(b.y1>u.y1)u.y1=b.y1;}
+  return u;
+}
+function ovl(a,b,m){return a.x0-m<b.x1&&a.x1+m>b.x0&&a.y0-m<b.y1&&a.y1+m>b.y0;}
+function ovlArea(a,b){
+  var w=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),h=Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0);
+  return (w>0&&h>0)?w*h:0;}
+function drawLabels(){
+  var placed=[],ord=[],i,j,k,q;
+  var auditP=LBL_AUDIT?[]:null,auditD=LBL_AUDIT?[]:null;
+  for(i=0;i<LQ.length;i++){q=LQ[i];
+    if(q.lod!=null&&CAM.z<q.lod)continue;
+    q.fz=(q.sz||11)*zScale();
+    setFont(uiFont(q.wt,q.fz));
+    q.w=Math.max(6,ctx.measureText(q.text).width);
+    q.pr=q.pr||1;
+    ord.push(q);
+  }
+  ord.sort(function(p,r){return (r.pr-p.pr)||(p.y-r.y);});
+  for(i=0;i<ord.length;i++){q=ord[i];
+    var dyS=q.fz+7,dxS=q.w/2+8,CAND,best=null,bestA=1e18,chosen=null;
+    if(q.rot){
+      // rotated: offsets along the text's own axis (u) and perpendicular (v)
+      // — labels step along their diagonal instead of scattering across the screen
+      var uc=Math.cos(q.rot),us=Math.sin(q.rot);
+      CAND=[[0,0],
+        [-uc*dyS,-us*dyS],[uc*dyS,us*dyS],
+        [-uc*2*dyS,-us*2*dyS],[uc*2*dyS,us*2*dyS],
+        [us*dyS,-uc*dyS],[-us*dyS,uc*dyS],
+        [-uc*3*dyS,-us*3*dyS],[uc*3*dyS,us*3*dyS]];
+    }else{
+      CAND=[[0,0],[0,-dyS],[0,dyS],[0,-2*dyS],[0,2*dyS],[dxS,0],[-dxS,0],
+            [dxS,-dyS],[-dxS,-dyS],[dxS,dyS],[-dxS,dyS],[0,-3*dyS],[0,3*dyS]];
+    }
+    for(k=0;k<CAND.length;k++){
+      var bs=lblBoxes(q,CAND[k][0],CAND[k][1]),u=boxUnion(bs),a=0,m,n;
+      // clamp to the frame (protects the PNG export edges)
+      var sx=0,sy=0;
+      if(u.x0<4)sx=4-u.x0;else if(u.x1>cw-4)sx=cw-4-u.x1;
+      if(u.y0<12)sy=12-u.y0;else if(u.y1>chh-4)sy=chh-4-u.y1;
+      if(sx||sy)for(m=0;m<bs.length;m++){var bb=bs[m];bb.x0+=sx;bb.y0+=sy;bb.x1+=sx;bb.y1+=sy;}
+      for(m=0;m<bs.length&&a<1e17;m++){
+        for(j=0;j<placed.length;j++){var P2=placed[j];
+          for(n=0;n<P2.length;n++)if(ovl(bs[m],P2[n],2))a+=ovlArea(bs[m],P2[n])+40;}
+        for(j=0;j<OBST.length;j++)if(ovl(bs[m],OBST[j],2))a+=ovlArea(bs[m],OBST[j])+40;
+      }
+      if(a===0){chosen={bs:bs,dx:CAND[k][0]+sx,dy:CAND[k][1]+sy};break;}
+      if(a<bestA){bestA=a;best={bs:bs,dx:CAND[k][0]+sx,dy:CAND[k][1]+sy};}
+    }
+    if(!chosen){
+      if(q.pr<=2){if(auditD)auditD.push({key:q.key,pr:q.pr});continue;} // drop — pr3 never disappears
+      chosen=best;
+    }
+    var fx=q.x+chosen.dx,fy=q.y+chosen.dy;
+    placed.push(chosen.bs);
+    var ub=boxUnion(chosen.bs);
+    if(auditP)auditP.push({key:q.key||'?',pr:q.pr,x0:Math.round(ub.x0),y0:Math.round(ub.y0),x1:Math.round(ub.x1),y1:Math.round(ub.y1)});
+    if(q.ax!=null&&Math.abs(chosen.dx)+Math.abs(chosen.dy)>12){
+      var axx=q.ax,ayy=(q.ay!=null)?q.ay:q.y,
+          tx=clamp(axx,ub.x0,ub.x1),ty=clamp(ayy,ub.y0,ub.y1);
+      ctx.save();ctx.strokeStyle=rgba(vget('--color-text-tertiary','#777'),0.8);ctx.lineWidth=1;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(axx,ayy);ctx.lineTo(tx,ty);ctx.stroke();ctx.restore();
+    }
+    if(HL.key===q.key)HL.pending=true;
+    if(q.rot){ctx.save();ctx.translate(fx,fy);ctx.rotate(q.rot);
+      txtS(q.text,0,0,q.col,q.al,q.sz,q.wt);ctx.restore();CUR_FONT='';}
+    else txtS(q.text,fx,fy,q.col,q.al,q.sz,q.wt);
+    if(LBL_DEBUG){ctx.save();ctx.strokeStyle='rgba(0,200,255,0.7)';ctx.lineWidth=1;ctx.setLineDash([]);
+      for(k=0;k<chosen.bs.length;k++){var db=chosen.bs[k];
+        ctx.strokeRect(db.x0,db.y0,db.x1-db.x0,db.y1-db.y0);}
+      ctx.restore();}
+  }
+  if(LBL_DEBUG){ctx.save();ctx.strokeStyle='rgba(255,0,255,0.6)';ctx.lineWidth=1;ctx.setLineDash([2,3]);
+    for(i=0;i<OBST.length;i++){var o=OBST[i];ctx.strokeRect(o.x0,o.y0,o.x1-o.x0,o.y1-o.y0);}
+    ctx.setLineDash([]);setFont('700 14px ui-monospace,monospace');ctx.textAlign='left';
+    ctx.fillStyle='#f0f';ctx.fillText('CAM.z='+CAM.z.toFixed(3),8,chh-10);
+    ctx.restore();CUR_FONT='';}
+  if(LBL_AUDIT){                                       // CI: dump placed boxes + rejected ones to the DOM
+    var el=document.getElementById('lblaudit');
+    if(!el){el=document.createElement('pre');el.id='lblaudit';el.style.display='none';document.body.appendChild(el);}
+    el.textContent=JSON.stringify({mode:STATE.mode,z:+CAM.z.toFixed(3),cw:Math.round(cw),chh:Math.round(chh),placed:auditP,dropped:auditD});
+  }
+}
+
+function DataDAGView(){}
+DataDAGView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999');
+  txt('Data flow: from API to parquet per ticker',{x:0,y:-262},prim,'center',14,'700');
+  edge(0,-222,0,-168);edge(0,-142,0,-68);edge(0,-42,0,32);edge(0,58,0,132);
+  edge(125,-55,168,-55);edge(-167,-55,-205,-55);
+  var s;
+  s=pill(0,-235,250,26,CAN,'Alpaca SIP API · 1h · {{universe_size}} tickers',0.08);HITS.addRect(s.x-125,s.y-13,250,26,{type:'api'});
+  s=pill(0,-155,290,26,CAN,'{{lean_zip_count}} × ZIP LEAN · prices ×{{price_scale}} · {{lean_zip_size_mb}} MB',0.10);HITS.addRect(s.x-145,s.y-13,290,26,{type:'zip',a:STATE.asset});
+  s=pill(0,-55,250,26,TEAL,'DuckDB raw_ohlcv_1h · {{duckdb_row_count_str}} rows',0.10);HITS.addRect(s.x-125,s.y-13,250,26,{type:'db'});
+  s=pill(258,-55,176,26,TEAL,'VIEW ohlcv_1h → USD',0.05);HITS.addRect(s.x-88,s.y-13,176,26,{type:'view'});
+  s=pill(-262,-55,108,26,PINK,'QC-01…QC-11',0.12);HITS.addRect(s.x-54,s.y-13,108,26,{type:'qcAll'});
+  s=pill(0,45,290,26,CAN,'atomic snapshot + manifest JSON (price_view)',0.08);HITS.addRect(s.x-145,s.y-13,290,26,{type:'snapshot'});
+  s=pill(0,145,310,28,AMB,'parquet/<TICKER>/ohlcv.parquet · ×{{universe_size}}',0.10);HITS.addRect(s.x-155,s.y-14,310,28,{type:'parquet'});
+  txt('zero duplication: USD exists only in the VIEW · raw stays in BIGINT ×{{price_scale}}',{x:0,y:200},sec,'center',10);
+  txt('features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
+};
+
+function SplitTimelineView(){}
+SplitTimelineView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  txt('Time split per asset: warm-up → train → OOS (frozen)',{x:0,y:-262},prim,'center',14,'700');
+  txt('triple barrier labels and rolling windows overlap the boundaries → purge + embargo',{x:0,y:-240},sec,'center',10.5);
+  var x0=-310,x1=310,yT=-185,yB=-155,acc=x0,i,edges=[];
+  for(i=0;i<SPLIT.bands.length;i++){
+    var b=SPLIT.bands[i],xe=acc+(x1-x0)*b.frac;
+    poly([{x:acc,y:yT},{x:xe,y:yT},{x:xe,y:yB},{x:acc,y:yB}],rgba(b.col,0.22),b.col,1.1);
+    var sx=CAM.S({x:(acc+xe)/2,y:yT});
+    txtS(b.name,sx.x,sx.y-18,b.col,'center',10,'600');
+    var sd=CAM.S({x:(acc+xe)/2,y:yB});
+    txtS(b.from+' → '+b.to,sd.x,sd.y+16,tert,'center',8);
+    var sa=CAM.S({x:acc,y:yT}),sb=CAM.S({x:xe,y:yB});
+    HITS.addRect(sa.x,sa.y-4,sb.x-sa.x,sb.y-sa.y+8,{type:'split',k:i});
+    if(i<SPLIT.bands.length-1)edges.push(xe);
+    acc=xe;
+  }
+  var eb=edges[1];
+  line2({x:eb,y:yB},{x:-250,y:-115},tert,1,[4,3]);line2({x:eb,y:yB},{x:250,y:-115},tert,1,[4,3]);
+  var bx0=-250,bx1=250,by0=-115,by1=115;
+  poly([{x:bx0,y:by0},{x:bx1,y:by0},{x:bx1,y:by1},{x:bx0,y:by1}],null,vget('--color-border-secondary','#555'),1,[]);
+  poly([{x:bx0,y:by0},{x:-80,y:by0},{x:-80,y:by1},{x:bx0,y:by1}],rgba(TEAL,0.14));
+  poly([{x:-80,y:by0},{x:-10,y:by0},{x:-10,y:by1},{x:-80,y:by1}],rgba(SL,0.20),SL,1,[4,3]);
+  poly([{x:-10,y:by0},{x:40,y:by0},{x:40,y:by1},{x:-10,y:by1}],rgba(AMB,0.16),AMB,1,[4,3]);
+  poly([{x:40,y:by0},{x:bx1,y:by0},{x:bx1,y:by1},{x:40,y:by1}],rgba(AMB,0.10));
+  txt('TRAIN end',{x:-165,y:by0+22},TEAL,'center',9,'600');
+  txt('purge = 24 candles',{x:-45,y:by0+22},SL,'center',8.5,'600');
+  txt('windows [t0, t0+H]',{x:-45,y:by0+36},tert,'center',7.5);
+  txt('embargo ≈ 5 sessions',{x:15,y:by0+58},AMB,'center',8.5,'600');
+  txt('start OOS →',{x:150,y:by0+22},AMB,'center',9,'600');
+  var sP=CAM.S({x:-80,y:by0}),sP2=CAM.S({x:-10,y:by1});
+  HITS.addRect(sP.x,sP.y,sP2.x-sP.x,sP2.y-sP.y,{type:'purge',k:1});
+  var sE=CAM.S({x:-10,y:by0}),sE2=CAM.S({x:40,y:by1});
+  HITS.addRect(sE.x,sE.y,sE2.x-sE.x,sE2.y-sE.y,{type:'embargo'});
+  var sy=72;
+  line2({x:-220,y:sy},{x:220,y:sy},tert,1,[]);
+  line2({x:-130,y:sy},{x:-20,y:sy},SL,2.5,[]);
+  line2({x:-130,y:sy-5},{x:-130,y:sy+5},SL,2,[]);
+  line2({x:-20,y:sy-5},{x:-20,y:sy+5},SL,2,[]);
+  var sX=CAM.S({x:-75,y:sy});
+  ctx.save();ctx.strokeStyle=rgba(SL,0.9);ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(sX.x-12,sX.y-10);ctx.lineTo(sX.x+12,sX.y+10);ctx.moveTo(sX.x+12,sX.y-10);ctx.lineTo(sX.x-12,sX.y+10);ctx.stroke();ctx.restore();
+  txt('setup with a TB window crossing the boundary → row removed (purge)',{x:0,y:sy+28},sec,'center',9);
+  txt('Optuna and CV only on Train (purged walk-forward) · we touch OOS once, after freezing artifacts',{x:0,y:175},prim,'center',10.5,'600');
+};
+
+var SETUP=(function(){
+  var r=rng(7),n=38,t0=29,H=24,touch=[4,14,24],oppTouch=[9,19];
+  function LT(i){return 106-0.8*i;}
+  function LO(i){return LT(i)-6.2;}
+  var cs=[],prev=LO(0)+3.0,i;
+  for(i=0;i<n;i++){
+    var lt=LT(i),lo=LO(i),close,open=prev,high,low;
+    if(i<t0){
+      var f=0.30+0.42*r();
+      close=lo+f*(lt-lo);
+      high=Math.min(lt-0.4,Math.max(open,close)+0.4+1.2*r());
+      low=Math.max(lo+0.3,Math.min(open,close)-0.4-1.2*r());
+      if(touch.indexOf(i)>=0)high=lt;
+      if(oppTouch.indexOf(i)>=0)low=lo;
+    }else if(i===t0){
+      close=lt+1.6;high=close+0.9;low=open-0.8;
+    }else{
+      close=prev+1.0+1.0*r();
+      high=close+0.4+0.9*r();low=Math.min(open,close)-0.3-0.8*r();
+    }
+    high=Math.max(high,open,close);low=Math.min(low,open,close);
+    cs.push({o:open,h:high,l:low,c:close});
+    prev=close;
+  }
+  var R0=cs[t0].c-LO(t0),TPL=cs[t0].c+R0,tpHit=-1;
+  for(i=t0+1;i<n;i++)if(cs[i].c>=TPL){tpHit=i;break;}
+  return {cs:cs,n:n,t0:t0,H:H,touch:touch,oppTouch:oppTouch,LT:LT,LO:LO,R0:R0,TPL:TPL,tpHit:tpHit};
+})();
+
+function SetupGeometryView(){}
+SetupGeometryView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  var S=SETUP,t0=S.t0,i;
+  function X(i){return -300+i*14.8;}
+  function Y(p){return 40-(p-88)*7.5;}
+  txt('Trend-line setup anatomy → 8 X features + label Y',{x:0,y:-262},prim,'center',14,'700');
+  txt('detector (contract §3): fits using only candles ≤ t0 · zero look-ahead · direction = +1 (long)',{x:0,y:-240},sec,'center',10.5);
+
+  var sE=CAM.S({x:X(t0),y:-210}),sE2=CAM.S({x:X(t0),y:200});
+  ctx.fillStyle=rgba(TEAL,0.10);ctx.fillRect(sE.x-8,sE.y,16,sE2.y-sE.y);
+  HITS.addRect(sE.x-8,sE.y,16,sE2.y-sE.y,{type:'setupEntry'});
+
+  line2({x:X(0),y:Y(S.LT(0))},{x:X(34),y:Y(S.LT(34))},RED,2,[]);
+  line2({x:X(0),y:Y(S.LO(0))},{x:X(34),y:Y(S.LO(34))},CAN,1.5,[6,4]);
+  txt('L_trend (resistance · traded)',{x:X(33)+4,y:Y(S.LT(33))-8},RED,'left',8.5,'600');
+  txt('L_opp (SL sits here)',{x:X(33)+4,y:Y(S.LO(33))+14},CAN,'left',8.5);
+
+  for(i=0;i<S.n;i++){
+    var cd=S.cs[i],up=cd.c>=cd.o;
+    line2({x:X(i),y:Y(cd.l)},{x:X(i),y:Y(cd.h)},CAN,1,[]);
+    var yA=Y(Math.max(cd.o,cd.c)),yB=Y(Math.min(cd.o,cd.c));
+    poly([{x:X(i)-4,y:yA},{x:X(i)+4,y:yA},{x:X(i)+4,y:yB},{x:X(i)-4,y:yB}],up?rgba(TP,0.55):rgba(SL,0.5));
+  }
+  for(i=0;i<S.touch.length;i++){
+    var tx=S.touch[i],sT=CAM.S({x:X(tx),y:Y(S.LT(tx))});
+    ctx.fillStyle=AMB;ctx.beginPath();ctx.arc(sT.x,sT.y,4,0,7);ctx.fill();
+    txtS('touch '+(i+1),sT.x,sT.y-9,AMB,'center',8,'600');
+    HITS.addRect(sT.x-7,sT.y-7,14,14,{type:'setupTouch'});
+  }
+  txt('entry_candle t0',{x:X(t0),y:Y(S.cs[t0].h)-26},TEAL,'center',9,'700');
+  txt('first close breaks L_trend in the direction (after ≥ MIN_TOUCHES=2)',{x:X(t0),y:Y(S.cs[t0].h)-14},tert,'center',7.5);
+
+  var xR=X(t0)+10;
+  line2({x:xR,y:Y(S.cs[t0].c)},{x:xR,y:Y(S.LO(t0))},AMB,2,[]);
+  line2({x:xR-4,y:Y(S.cs[t0].c)},{x:xR+4,y:Y(S.cs[t0].c)},AMB,2,[]);
+  line2({x:xR-4,y:Y(S.LO(t0))},{x:xR+4,y:Y(S.LO(t0))},AMB,2,[]);
+  txt('R0',{x:xR+8,y:(Y(S.cs[t0].c)+Y(S.LO(t0)))/2+3},AMB,'left',9,'700');
+  var sR=CAM.S({x:xR,y:(Y(S.cs[t0].c)+Y(S.LO(t0)))/2});
+  HITS.addRect(sR.x-10,sR.y-26,34,52,{type:'setupR0'});
+
+  line2({x:X(t0),y:Y(S.TPL)},{x:X(37)+12,y:Y(S.TPL)},TP,1.5,[6,4]);
+  txt('take_profit = close[t0] + direction·R0',{x:X(t0)-6,y:Y(S.TPL)-7},TP,'right',8.5,'600');
+  if(S.tpHit>=0){
+    var sH=CAM.S({x:X(S.tpHit),y:Y(S.cs[S.tpHit].c)});
+    ctx.save();ctx.strokeStyle=TP;ctx.lineWidth=2;ctx.beginPath();ctx.arc(sH.x,sH.y,7,0,7);ctx.stroke();ctx.restore();
+    txtS('Y = 1 · TP first-touch (close-based)',sH.x,sH.y-14,TP,'center',8.5,'700');
+    HITS.addRect(sH.x-9,sH.y-9,18,18,{type:'setupTP'});
+  }
+  line2({x:308,y:-200},{x:308,y:195},tert,1.2,[3,4]);
+  txt('→ time barrier t0+H (H=24, off-frame)',{x:300,y:210},tert,'right',8);
+
+  var PA=[
+    {f:0,x:-272,y:236,ax:X(20),ay:(Y(S.cs[20].c)+Y(S.LT(20)))/2},
+    {f:1,x:-92, y:236,ax:X(17),ay:(Y(S.cs[17].c)+Y(S.LO(17)))/2},
+    {f:2,x:88,  y:236,ax:xR,ay:(Y(S.cs[t0].c)+Y(S.LO(t0)))/2},
+    {f:3,x:255, y:236},
+    {f:4,x:-272,y:266},
+    {f:5,x:-92, y:266},
+    {f:6,x:88,  y:266,ax:X(S.touch[2]),ay:Y(S.LT(S.touch[2]))},
+    {f:7,x:255, y:266,ax:X(t0),ay:Y(S.cs[t0].h)-4}
+  ];
+  for(i=0;i<PA.length;i++){
+    var pa=PA[i];
+    if(pa.ax!=null)line2({x:pa.x,y:pa.y-9},{x:pa.ax,y:pa.ay},rgba(CAN,0.5),1,[3,3]);
+    var sp=pillF(pa.x,pa.y,168,20,RED,fname(pa.f)||FEATURES[pa.f].name,0.10,8);
+    HITS.addRect(sp.x-84,sp.y-10,168,20,{type:'feature',f:pa.f});
+  }
+  txt('8 transformer features computed at t0 · model X = 7 (closed_through_line: audit) · click = formula and unit',{x:0,y:300},tert,'center',8.5);
+};
+
+function OptunaView(){}
+OptunaView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  txt('Optuna — XGBoost tuning on Train',{x:0,y:-262},prim,'center',14,'700');
+  txt('objective: '+OPTUNA.objective+' · '+OPTUNA.sampler+' · '+OPTUNA.pruner,{x:0,y:-240},sec,'center',9.5);
+  function X(i){return -320+i*2.7;}
+  function Y(v){return 110-(v-0.30)*820;}
+  line2({x:-320,y:Y(0.30)},{x:230,y:Y(0.30)},tert,1,[]);
+  line2({x:-320,y:Y(0.30)},{x:-320,y:Y(0.66)},tert,1,[]);
+  var i,tk=[0,50,100,150,200];
+  for(i=0;i<tk.length;i++)txt(String(tk[i]),{x:X(tk[i]),y:Y(0.30)+16},tert,'center',8);
+  txt('trial →',{x:240,y:Y(0.30)+16},tert,'left',8);
+  var vk=[0.35,0.45,0.55,0.65];
+  for(i=0;i<vk.length;i++){txt(vk[i].toFixed(2),{x:-328,y:Y(vk[i])+3},tert,'right',8);
+    line2({x:-320,y:Y(vk[i])},{x:230,y:Y(vk[i])},rgba(CAN,0.18),1,[2,4]);}
+  ctx.save();ctx.strokeStyle=TEAL;ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.beginPath();
+  for(i=0;i<TRIALS.length;i++){var sB=CAM.S({x:X(i),y:Y(TRIALS[i].best)});if(i)ctx.lineTo(sB.x,sB.y);else ctx.moveTo(sB.x,sB.y);}
+  ctx.stroke();ctx.restore();
+  for(i=0;i<TRIALS.length;i++){
+    var t=TRIALS[i],s=CAM.S({x:X(i),y:Y(t.v)});
+    if(t.pruned){ctx.save();ctx.strokeStyle=rgba(CAN,0.55);ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(s.x-2.5,s.y-2.5);ctx.lineTo(s.x+2.5,s.y+2.5);
+      ctx.moveTo(s.x+2.5,s.y-2.5);ctx.lineTo(s.x-2.5,s.y+2.5);ctx.stroke();ctx.restore();}
+    else{ctx.fillStyle=rgba(GREEN,0.8);ctx.beginPath();ctx.arc(s.x,s.y,2.4,0,7);ctx.fill();}
+    HITS.addRect(s.x-4,s.y-4,8,8,{type:'trial',i:i});
+  }
+  var bt=TRIALS[BEST_TRIAL],sBt=CAM.S({x:X(BEST_TRIAL),y:Y(bt.v)});
+  ctx.save();ctx.strokeStyle=AMB;ctx.lineWidth=2;ctx.beginPath();ctx.arc(sBt.x,sBt.y,7,0,7);ctx.stroke();ctx.restore();
+  txtS('best: trial #'+BEST_TRIAL+' · AUC-PR '+bt.v.toFixed(3),sBt.x+12,sBt.y-8,AMB,'left',9,'600');
+  txt('line = best-so-far · × = pruned (MedianPruner) · dot = completed trial',{x:-320,y:Y(0.30)+34},tert,'left',8.5);
+  txt('hyperparameter importance',{x:-320,y:168},prim,'left',10,'600');
+  for(i=0;i<PARAM_IMPORTANCE.length;i++){
+    var pi=PARAM_IMPORTANCE[i],yy=190+i*34;
+    txt(pi[0],{x:-180,y:yy+3},sec,'right',8.5);
+    poly([{x:-170,y:yy-6},{x:-170+pi[1]*620,y:yy-6},{x:-170+pi[1]*620,y:yy+6},{x:-170,y:yy+6}],rgba(RED,0.45),RED,1);
+    txt((pi[1]*100).toFixed(0)+'%',{x:-162+pi[1]*620,y:yy+3},tert,'left',8);
+  }
+  txt('search space: depth 3–9 · lr 0.01–0.3 log · estimators 100–1200 · subsample/colsample 0.5–1 · λ 1e-3–10 · spw 0.5–4',{x:0,y:430},tert,'center',8);
+};
+
+var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',rows=[],i,j;
+  for(i=0;i<4;i++){var s='';for(j=0;j<58;j++)s+=cset[Math.floor(r()*cset.length)];rows.push(s);}return rows;})();
+
+function ArtifactView(){}
+ArtifactView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  var a=STATE.asset,nm=ASSETS[a];
+  txt('Artifact = self-contained strategy file',{x:0,y:-262},prim,'center',14,'700');
+  txt('one file per asset → {{universe_size}} artifacts in total · deterministic build (hash)',{x:0,y:-240},sec,'center',10.5);
+  // band tooltips live in abandTip() (single source — read by tipFor)
+  var BANDS=[
+    {h:26,col:tert,t:'# strategy_'+nm+'.py — generated by the pipeline'},
+    {h:30,col:prim,t:'PARAMS: TF=1h · H=24 · MIN_TOUCHES=2 · BARRIER=close'},
+    {h:30,col:RED, t:'FEATURE_MANIFEST = [7 X columns — frozen order]'},
+    {h:92,col:AMB, t:'MODEL_B64 = "QmFzZTY0…"',b64:true},
+    {h:30,col:prim,t:'LABEL_CONTRACT = TB_v1.1 · close-based · SL=L_opp(t) moving · R0 · H=24'},
+    {h:30,col:TP,  t:'def selfcheck(): golden input → output · PASS'},
+    {h:32,col:TEAL,t:'def decide(x): p = model(x) · p ≥ 0.60 → ENTRY else FLAT'}
+  ];
+  var xw=225,y=-205,i,j;
+  var sTop=CAM.S({x:-xw,y:y-8}),sBot=CAM.S({x:xw,y:y+BANDS.reduce(function(p,q){return p+q.h+12;},0)+2});
+  ctx.save();ctx.strokeStyle=vget('--color-border-secondary','#555');ctx.lineWidth=1.2;ctx.setLineDash([]);
+  rrectS(sTop.x-8,sTop.y-6,sBot.x-sTop.x+16,sBot.y-sTop.y+10,10);ctx.stroke();ctx.restore();
+  for(i=0;i<BANDS.length;i++){
+    var b=BANDS[i],s0=CAM.S({x:-xw,y:y}),s1=CAM.S({x:xw,y:y+b.h});
+    fillRR(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,6,rgba(b.col===tert?CAN:b.col,b.b64?0.14:0.07),rgba(b.col===tert?CAN:b.col,0.6),1);
+    monoS(b.t,s0.x+10,s0.y+17*zScale(),b.col,'left',9.5);
+    if(b.b64)for(j=0;j<B64FILL.length;j++)monoS(B64FILL[j],s0.x+10,s0.y+(34+j*15)*zScale(),rgba(AMB,0.45),'left',8);
+    HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'aband',b:i,a:a});
+    y+=b.h+12;
+  }
+  txt('standalone import — no access to training data · click = full JSON manifest',{x:0,y:y+22},tert,'center',8.5);
+};
+function abandTip(i){
+  return [
+    'file header\ngenerated, not hand-edited\nhash = artifact identifier',
+    'contract parameters (Layers_Short_SOT/00_parameters_eng.md)\nfrozen at build time',
+    'exactly these columns and in this order,\non which the model was trained\nwithout closed_through_line (audit)',
+    'XGBoost model serialized\nand base64-encoded (~180 kB)\ndecoded on file import',
+    'label contract identifier\nSL = moving L_opp(t) (decision v1.2)\nthe model answers the question of this contract',
+    'golden vectors checked on import\nprediction mismatch → hard error',
+    'strategy decision rule\nTHRESHOLD_ENTRY=0.60 tuned on Train'][i];
+}
+
+function LeakView(){}
+LeakView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999');
+  txt('⚠ ZERO LEAKAGE — time hygiene',{x:0,y:-226},SL,'center',14,'700');
+  txt('The model must not see the future — not through features, not through the split, not through tuning.',{x:0,y:-202},sec,'center',10.5);
+  var bad=['training on full history (Train+OOS)','random split (shuffle) instead of time-based','Optuna tuning after seeing OOS results','LEAKAGE / OVERFIT'];
+  var good=['time split + purge H=24 + embargo','causal features: only candles ≤ t0','Optuna: purged walk-forward only on Train','OOS frozen → single run'];
+  var i;
+  txt('✗ incorrect',{x:-150,y:-160},SL,'center',12,'700');
+  txt('✓ correct',{x:150,y:-160},TP,'center',12,'700');
+  for(i=0;i<4;i++){
+    var y=-145+i*100;
+    pill(-150,y,236,30,SL,bad[i],i===3?0.22:0.08);
+    pill(150,y,236,30,TP,good[i],0.08);
+    if(i<3){var a=CAM.S({x:-150,y:y+15}),b=CAM.S({x:-150,y:y+85});
+      ctx.strokeStyle=rgba(SL,0.8);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      ctx.save();ctx.translate(b.x,b.y);ctx.rotate(Math.PI);triUpS(0,0,rgba(SL,0.8));ctx.restore();
+      var a2=CAM.S({x:150,y:y+15}),b2=CAM.S({x:150,y:y+85});
+      ctx.strokeStyle=rgba(TP,0.8);ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();
+      ctx.save();ctx.translate(b2.x,b2.y);ctx.rotate(Math.PI);triUpS(0,0,rgba(TP,0.8));ctx.restore();}
+  }
+  var sX=CAM.S({x:-150,y:5});
+  ctx.strokeStyle=rgba(SL,0.85);ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(sX.x-120,sX.y-165);ctx.lineTo(sX.x+120,sX.y+165);ctx.moveTo(sX.x+120,sX.y-165);ctx.lineTo(sX.x-120,sX.y+165);ctx.stroke();ctx.lineWidth=1;
+  txt('Rule: we touch OOS once — after freezing the strategy artifacts (hash).',{x:0,y:166},prim,'center',11,'600');
+};
+
+function QCView(){}
+QCView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  txt('Quality gates QC-01…QC-11 — every load into DuckDB',{x:0,y:-262},prim,'center',14,'700');
+  txt('any gate fail = load is not published · {{duckdb_row_count_str}} rows · violations: 0',{x:0,y:-240},sec,'center',10.5);
+  var k;
+  for(k=0;k<QC.length;k++){
+    var colX=(k<6)?-170:170,y=-220+(k%6)*95;
+    var s=pill(colX-105,y,84,24,PINK,gidv(k)||QC[k].id,0.12);
+    txt(QC[k].desc,{x:colX-52,y:y+4},sec,'left',9.5);
+    HITS.addRect(s.x-42,s.y-12,84,24,{type:'qc',g:k});
+  }
+  txt('PASS = condition for publishing a load · in the 3D overview: a row of dots by the store (L3) · full description: ENG/Layers_Short_SOT/L3_duckdb_raw_view_qc_eng.md',{x:0,y:285},tert,'center',9);
+};
+
+function DQView(){}
+DQView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  txt('Data quality dashboard — from raw zip to features',{x:0,y:-262},prim,'center',14,'700');
+  txt('validation of stores and transforms · gate before training (L9) · any FAIL blocks',{x:0,y:-240},sec,'center',10.5);
+  var st=['<ticker>.zip ×{{lean_zip_count}}','DuckDB raw+VIEW','parquet ×{{universe_size}}','Output B'],sx=[-255,-85,85,255],i,j;
+  for(i=0;i<4;i++){
+    pill(sx[i],-195,150,24,CAN,st[i],0.08);
+    if(i<3)edge(sx[i]+76,-195,sx[i+1]-76,-195);
+  }
+  for(i=0;i<DQ.length;i++){
+    var cx=[-220,0,220][i%3],cy=(i<3)?-108:62,col=dqCol(DQ[i].status);
+    var s0=CAM.S({x:cx-105,y:cy-58}),s1=CAM.S({x:cx+105,y:cy+58});
+    fillRR(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,9,rgba(col,0.07),col,1.3);
+    var hp=CAM.S({x:cx-95,y:cy-32});
+    txtS(DQ[i].name,hp.x,hp.y,prim,'left',10,'700');
+    var bp2=CAM.S({x:cx+95,y:cy-32});
+    txtS(DQ[i].status,bp2.x,bp2.y,col,'right',10,'700');
+    var lines=DQ[i].detail.split(' · ');
+    for(j=0;j<lines.length&&j<4;j++){
+      var lpb=CAM.S({x:cx-95,y:cy-12+j*19});
+      txtS(lines[j],lpb.x,lpb.y,tert,'left',7.5);
+    }
+    HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'dqTile',q:i});
+  }
+  txt('layer output: reports/quality/summary.json (counters + statuses + input hashes) + self-contained dashboard HTML',{x:0,y:150},tert,'center',9);
+  txt('Rule: green dashboard = start condition for Optuna (L9).',{x:0,y:172},prim,'center',10.5,'600');
+};
+
+var LAYERS={src:new AlpacaSource(),zip:new ZipStore(),db:new DuckDBLayer(),qcring:new QCGateRing(),
+  tf:new TransformLayer(),split:new SplitLayer(),detector:new SetupDetectorLayer(),feat:new FeatureForest(),
+  dq:new QualityLayer(),train:new TrainingLayer(),oos:new OOSWall()};
+var VIEWS={dataflow:new DataDAGView(),qc:new QCView(),split:new SplitTimelineView(),setup:new SetupGeometryView(),
+  optuna:new OptunaView(),artifact:new ArtifactView(),leak:new LeakView(),dq:new DQView()};
+
+function drawScene(){
+  var i,insp=STATE.inspect;
+  boundaryLines();
+  for(i=0;i<9;i++){ctx.save();ctx.globalAlpha=insp?0.22:1;flowArrow(i);ctx.restore();}
+  var ord=[0,1,2,3,4,5,6,7,8,9].map(function(l){return {l:l,d:lp(l,0.5,0.5,30).d};})
+    .sort(function(p,q){return q.d-p.d;});
+  for(i=0;i<10;i++){
+    var l=ord[i].l;
+    ctx.save();ctx.globalAlpha=(!insp||(NODE_BY_LEV[l]&&NODE_BY_LEV[l].id===insp))?1:0.16;  // Inspection: dim the unselected
+    if(l===0)LAYERS.src.draw();
+    else if(l===1)LAYERS.zip.draw();
+    else if(l===2){LAYERS.db.draw();LAYERS.qcring.draw();}
+    else if(l===3)LAYERS.tf.draw();
+    else if(l===4)LAYERS.split.draw();
+    else if(l===5)LAYERS.detector.draw();
+    else if(l===6)LAYERS.feat.draw();
+    else if(l===7)LAYERS.dq.draw();
+    else if(l===8)LAYERS.train.draw();
+    else LAYERS.oos.draw();
+    ctx.restore();
+  }
+  if(!insp)boundaryCards();                            // in inspection the contract is in the panel, not on the boundary cards
+  else{var nn=NODE_BY_ID[insp];if(nn){
+    var lv=nn.lev,cor=[lp(lv,0.02,0,0),lp(lv,0.98,0,0),lp(lv,0.02,1,0),lp(lv,0.98,1,0),lp(lv,0.5,0.5,170)],
+        x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,ci;
+    for(ci=0;ci<cor.length;ci++){var sc=CAM.S(cor[ci]);if(sc.x<x0)x0=sc.x;if(sc.y<y0)y0=sc.y;if(sc.x>x1)x1=sc.x;if(sc.y>y1)y1=sc.y;}
+    strokeRR(x0-12,y0-12,(x1-x0)+24,(y1-y0)+24,14,rgba(roleColor(nn.role),0.22+0.30*pulse()),2.2);  // one active halo
+    txtS('Inspect: L'+(nn.lev+1)+' · '+nn.title+'  —  Esc / click background = overview',
+      cw/2,18,vget('--color-text-secondary','#999'),'center',11,'600');}}
+}
+
+function fitView(pts,padL,padR,padT,padB,zCap){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i;
+  for(i=0;i<pts.length;i++){var p=pts[i];if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  x0-=padL;x1+=padR;y0-=padT;y1+=padB;
+  var z=Math.min((cw-20)/(x1-x0),(chh-20)/(y1-y0));
+  if(zCap)z=Math.min(z,zCap);
+  return {x:(x0+x1)/2,y:(y0+y1)/2,z:z};
+}
+function homeFit(){
+
+  return fitView([lp(0,0,1.1,0),lp(0,1,1.1,0),lp(0,1,0,0),lp(0,0,0,0),
+           lp(9,0,0,60),lp(9,1,0,60),lp(9,0,1,60),lp(9,0.5,0.6,226)],104,104,28,36,null);
+}
+
+function preset(mode){
+  if(mode==='overview')return homeFit();
+  if(mode==='oos'){
+    return fitView([lp(9,0.06,0.60,6),lp(9,0.94,0.60,6),lp(9,0.06,0.60,176),lp(9,0.94,0.60,176),
+      lp(9,0.5,0.60,226),lp(8,0.5,0.95,0),lp(7,0.5,0.95,0),lp(4,0.5,0.95,0)],58,58,88,190,0.94);
+  }
+  return {x:0,y:-10,z:clamp(Math.min((chh-90)/520,(cw-60)/660),1,1.9)};
+}
+function setMode(m){
+  STATE.inspect=null;STATE.mode=m;CAM.t=preset(m);userMoved=false;   // changing mode ends inspection
+  var bs=document.querySelectorAll('#segMode button'),i;
+  for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-m')===m);
+}
+function isFlatView(){return !!VIEWS[STATE.mode];}
+
+function TooltipManager(){}
+TooltipManager.prototype.show=function(html,mx,my){
+  tip.innerHTML=html;tip.style.display='block';
+  var r=stage.getBoundingClientRect();
+  var x=clamp(mx+14,4,r.width-280),y=clamp(my+14,4,r.height-90);
+  tip.style.left=x+'px';tip.style.top=y+'px';};
+TooltipManager.prototype.hide=function(){tip.style.display='none';};
+var TIPM=new TooltipManager();
+
+function SidePanel(){}
+SidePanel.prototype.show=function(title,html){panelTitle.textContent=title;panelBody.innerHTML=html;panel.style.display='block';};
+SidePanel.prototype.hide=function(){panel.style.display='none';};
+var PANEL=new SidePanel();
+document.getElementById('panelClose').onclick=function(){PANEL.hide();};
+
+// === INSPECTION mode: click a layer title → frame + dim the rest + contract card ===
+function renderContract(n){                            // contract card from the node + graph edges
+  var inc=PIPELINE.edges.filter(function(e){return e.to===n.id;})[0];
+  var out=PIPELINE.edges.filter(function(e){return e.from===n.id;})[0];
+  var tg=vget('--color-text-tertiary','#777');
+  var h='<b>'+(n.subtitle||n.summary||'')+'</b>';
+  if(n.input_contract)h+='<br><b>Input:</b> '+n.input_contract;
+  h+='<br><b>Operation:</b> '+(n.transform_verb||'—');
+  if(n.output_contract)h+='<br><b>Output:</b> '+n.output_contract;
+  if(n.metric)h+='<br><b>'+n.metric.label+':</b> '+n.metric.value;
+  if(n.invariants&&n.invariants.length)h+='<br><b>Invariants:</b><br>• '+n.invariants.join('<br>• ');
+  if(inc)h+='<br><br><b>← '+inc.from+':</b> '+inc.verb+' — '+inc.payload+' <span style="color:'+tg+'">('+inc.causal_scope+')</span>';
+  if(out)h+='<br><b>'+out.to+' →:</b> '+out.verb+' — '+out.payload;
+  h+='<br><br><span style="color:'+tg+'">status: '+(n.status||'ok')+' · family: '+n.family+' · hover an object = details</span>';
+  return h;
+}
+function frameLevel(lev){                               // frame on a single level (generalized preset('oos'))
+  return fitView([lp(lev,0.02,0.0,0),lp(lev,0.98,0.0,0),lp(lev,0.02,1.0,0),lp(lev,0.98,1.0,0),
+                  lp(lev,0.5,0.5,170)],64,64,84,150,1.25);
+}
+function setInspect(id){
+  if(id&&NODE_BY_ID[id]){var n=NODE_BY_ID[id];STATE.inspect=id;CAM.t=frameLevel(n.lev);userMoved=false;
+    PANEL.show('L'+(n.lev+1)+' · '+n.title,renderContract(n));}
+  else{STATE.inspect=null;CAM.t=preset(STATE.mode);userMoved=false;PANEL.hide();}
+}
+
+function tipFor(p){
+  if(!p)return null;
+  if(p.type==='layercap'){var nc=NODE_BY_LEV[p.lev];return '<b>'+nc.title+'</b>\n'+(nc.subtitle||nc.summary||'')+'\n<i>click = layer inspection (contract)</i>';}
+  if(p.type==='asset'){var st=setupsMock(p.a),m=oosMock(p.a);
+    return '<b>Asset: '+ASSETS[p.a]+'</b>\n~17 600 1h candles (2016 → 2026)\nsetups in Train: long '+st.long+' · short '+st.short+'\nOOS: PF '+m.pf.toFixed(2)+' · Sharpe '+m.sharpe.toFixed(2)+'\n<i>click = panel / select asset</i>';}
+  if(p.type==='universe')return '<b>Universe: {{universe_size}} S&P 500 tickers</b>\n7 named samples + the rest as a grid\n1h OHLCV · 2016-01-04 → today';
+  if(p.type==='api')return '<b>Alpaca Market Data API</b>\nfeed=sip · auth: API key\nhourly cron :05 · ET session guard\nupsert with 5-day lookback';
+  if(p.type==='zip')return '<b>'+(ASSETS[p.a]||'aapl').toLowerCase()+'.zip</b>\n1 ticker = 1 zip · headerless CSV\nYYYYMMDD HH:MM,o,h,l,c,v\nprices = deci-cents ×{{price_scale}}\n<i>click = sample rows</i>';
+  if(p.type==='db')return '<b>raw_ohlcv_1h</b>\n{{duckdb_row_count_str}} rows · {{duckdb_size_mb}} MB\nsymbol · ts · o/h/l/c BIGINT ×{{price_scale}} · volume\n<i>click = schema + QC</i>';
+  if(p.type==='view')return '<b>VIEW ohlcv_1h</b>\nprices /{{price_scale}}.0 → USD (canonical)\nzero storage duplication';
+  if(p.type==='meta')return '<b>_meta</b>\nschema_version · source · built_at\nrow and symbol counters';
+  if(p.type==='qc')return QC[p.g].name+'\n'+QC[p.g].desc+'\n'+qcStat();
+  if(p.type==='qcAll')return '<b>Quality gates QC-01…QC-11</b>\ngate every load into DuckDB\n<i>click = full list</i>';
+  if(p.type==='snapshot')return '<b>atomic snapshot</b>\ndatabase copy + torn-read guard\nmanifest: rows / symbols / ts range / price_view\n<i>click = JSON manifest</i>';
+  if(p.type==='parquet')return '<b>parquet per ticker</b>\n<TICKER>/ohlcv.parquet\n503 files · zstd · clean OHLCV\n(features: transformer L7)';
+  if(p.type==='split'){var b=SPLIT.bands[p.k];return '<b>'+b.name+'</b>\n'+b.from+' → '+b.to+'\n'+b.note;}
+  if(p.type==='purge')return '<b>purge</b>\n'+SPLIT.purge;
+  if(p.type==='embargo')return '<b>embargo</b>\n'+SPLIT.embargo;
+  if(p.type==='feature'){var f=FEATURES[p.f];
+    return '<b>Feature: '+f.name+'</b>\nFamily: '+f.family+'\nSource: '+f.src+'\nFormula: '+f.formula+' ['+f.unit+']'+(f.special?'\n<span style="color:'+AMB+'">! '+f.special+'</span>':'');}
+  if(p.type==='label')return '<b>Y = triple barrier (TB_v1.1)</b>\nTP=1: close reaches close[t0]+direction·R0\nSL=0: close pierces L_opp(t) (moving line)\ntime=0: nothing by t0+H (H=24)\nfirst-touch · close-based';
+  if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset × direction';
+  if(p.type==='optuna')return '<b>Optuna</b>\n200 trials · TPE · MedianPruner\nobjective: AUC-PR (purged WF CV on Train)\n<i>click = study</i>';
+  if(p.type==='trial'){var t=TRIALS[p.i];return '<b>trial #'+p.i+'</b>\nAUC-PR: '+t.v.toFixed(3)+(t.pruned?' · PRUNED':'')+'\ndepth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nn_est '+t.params.n_estimators+' · subsample '+t.params.subsample;}
+  if(p.type==='strategy')return '<b>strategy_'+ASSETS[p.a]+'.py</b>\nbase64 model + feature manifest\nthreshold 0.60 + selfcheck\n<i>click = full manifest</i>';
+  if(p.type==='aband')return abandTip(p.b)+'\n<i>click = full manifest</i>';
+  if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0');var m2=oosMock(p.a),M=METRICS[p.m];
+    return '<b>'+nm+' × '+M.name+'</b>\nvalue: '+m2[M.id]+'\ntrades: '+m2.trades+' · PF '+m2.pf+' · MDD '+m2.mdd+'%\n<i>click = full row</i>';}
+  if(p.type==='dqTile'){var q=DQ[p.q];
+    return '<b>'+q.name+' — '+q.status+'</b>\n'+q.detail.split(' · ').join('\n')+'\n<i>click = panel</i>';}
+  if(p.type==='dqSummary')return '<b>summary.json + dashboard</b>\ncounters + statuses + input hashes\nany FAIL blocks training (L9)\n<i>click = details</i>';
+  if(p.type==='detector'){var nd=NODE_BY_ID['L6'];return '<b>'+nd.title+'</b>\n'+nd.subtitle+'\noutput: '+nd.output_contract+'\n'+nd.invariants.join(' · ')+'\n<i>click = contract · view 5 = full anatomy</i>';}
+  if(p.type==='setupEntry')return '<b>entry_candle (t0)</b>\nfirst close piercing L_trend\nafter line validation (≥ MIN_TOUCHES=2)\nall X features computed at t0';
+  if(p.type==='setupTouch')return '<b>touchpoint</b>\na touch of L_trend before t0\ntouch_count counts them up to candle t';
+  if(p.type==='setupR0')return '<b>R0</b>\n|close[t0] − L_opp(t0)|\none geometric risk unit\nTP = close[t0] + direction·R0';
+  if(p.type==='setupTP')return '<b>Y_outcome = 1</b>\nfirst t: sign·close ≥ sign·take_profit\nfirst-touch · close-based\nin window [t0+1, t0+H]';
+  if(p.type==='bnote')return '<b>Boundary note L'+(p.i+1)+' → L'+(p.i+2)+'</b>\nexplains the flow between levels\n<i>click = edit text (label panel)</i>';
+  return null;}
+
+function clickFor(p){
+  if(!p)return;
+  if(p.type==='layercap'){setInspect(NODE_BY_LEV[p.lev].id);return;}
+  if(p.type==='asset'){
+    STATE.asset=p.a;document.getElementById('selAsset').value=String(p.a);
+    var st=setupsMock(p.a),m=oosMock(p.a),mf=manifest(p.a),feats=[],i;
+    for(i=0;i<FEATURES.length;i++)feats.push(FEATURES[i].name+' ('+importanceMock(p.a,i).toFixed(2)+')');
+    PANEL.show(ASSETS[p.a]+' — details',
+      '<b>Setups (Train):</b> long '+st.long+' · short '+st.short+
+      '<br><b>CV (Train):</b> AUC-PR '+mf.metrics_cv.auc_pr+' · logloss '+mf.metrics_cv.logloss+
+      '<br><b>OOS:</b> PF '+m.pf+' · Sharpe '+m.sharpe+' · MDD '+m.mdd+'% · TIM '+m.tim+'% · WR '+m.wr+'% · trades '+m.trades+
+      '<br><b>Artifact:</b> '+mf.strategy_file+
+      '<br><b>Top features (gain):</b><br>'+feats.slice(0,5).join('<br>'));}
+  else if(p.type==='qc')PANEL.show(QC[p.g].name,'<b>'+QC[p.g].desc+'</b><br>'+qcStat()+'<br><br><b>All gates:</b><br>'+QC.map(function(g){return g.id+' — '+g.desc;}).join('<br>'));
+  else if(p.type==='qcAll')PANEL.show('QC gates','<pre>'+QC.map(function(g){return g.id+'  '+g.desc;}).join('\n')+'</pre>'+qcStat());
+  else if(p.type==='zip')PANEL.show((ASSETS[p.a]||'aapl').toLowerCase()+'.zip','<b>CSV (LEAN, headerless):</b><pre>20240102 10:00,1851200,1853900,1849100,1852300,182345\n20240102 11:00,1852300,1856800,1851700,1855400,141280\n20240102 12:00,1855400,1857200,1853000,1854100,98430</pre>prices ×{{price_scale}} → USD only in the VIEW');
+  else if(p.type==='db')PANEL.show('DuckDB raw_ohlcv_1h','<pre>symbol  VARCHAR\nts      TIMESTAMP\nopen    BIGINT  ×{{price_scale}}\nhigh    BIGINT  ×{{price_scale}}\nlow     BIGINT  ×{{price_scale}}\nclose   BIGINT  ×{{price_scale}}\nvolume  BIGINT</pre><b>{{duckdb_row_count_str}} rows · {{universe_size}} symbols</b><br>2016-01-04 09:00 → 2026-05-29 15:00<br>QC-01…QC-11: PASS');
+  else if(p.type==='view')PANEL.show('VIEW ohlcv_1h','<pre>SELECT symbol, ts,\n  open/{{price_scale}}.0  AS open,\n  high/{{price_scale}}.0  AS high,\n  low/{{price_scale}}.0   AS low,\n  close/{{price_scale}}.0 AS close,\n  volume\nFROM raw_ohlcv_1h</pre><b>canonical USD · zero duplication</b>');
+  else if(p.type==='meta')PANEL.show('_meta','<pre>schema_version : v1\nsource         : alpaca sip 1h\nbuilt_at_utc   : …\nrows           : {{duckdb_row_count_str}}\nsymbols        : {{universe_size}}</pre>');
+  else if(p.type==='snapshot')PANEL.show('Snapshot manifest','<pre>'+JSON.stringify({rows:{{duckdb_row_count}},symbols:{{universe_size}},ts_min:'2016-01-04 09:00',ts_max:'2026-05-29 15:00',price_view:'raw_usd_view'},null,2)+'</pre>atomic copy · torn-read guard · zero derived columns');
+  else if(p.type==='split'||p.type==='purge'||p.type==='embargo'){var html='',k;
+    for(k=0;k<SPLIT.bands.length;k++){var b=SPLIT.bands[k];html+='<b>'+b.name+'</b> '+b.from+' → '+b.to+'<br>'+b.note+'<br><br>';}
+    PANEL.show('Time split',html+'<b>Purge:</b> '+SPLIT.purge+'<br><b>Embargo:</b> '+SPLIT.embargo);}
+  else if(p.type==='feature'){var f=FEATURES[p.f];
+    PANEL.show('Feature: '+f.name,'<b>Formula:</b> '+f.formula+'<br><b>Unit:</b> '+f.unit+'<br><b>Family:</b> '+f.family+'<br><b>Source:</b> '+f.src+(f.special?'<br><b style="color:'+AMB+'">! '+f.special+'</b>':'')+'<br><br>computed causally at t0 (candles ≤ t0)');}
+  else if(p.type==='label'||p.type==='setupTP')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first t: sign·close[t] ≥ sign·(close[t0]+direction·R0)<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (Layers_Short_SOT/L7_features_x_label_y_eng.md, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (Layers_Short_SOT/L7_features_x_label_y_eng.md)');
+  else if(p.type==='xgb')PANEL.show('XGBoost estimator','<b>Objective:</b> binary:logistic — p(TP)<br><b>Role:</b> meta-labeling, trend-line setup signal filter<br><b>Training:</b> Train with uniqueness weights<br><b>Tuning:</b> Optuna 200 trials (purged WF CV)<br><b>Per:</b> asset × direction');
+  else if(p.type==='optuna'||p.type==='trial'){var bt=TRIALS[BEST_TRIAL];
+    var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';
+    PANEL.show('Optuna study',extra+'<b>n_trials:</b> 200 · <b>sampler:</b> TPE<br><b>pruner:</b> '+OPTUNA.pruner+'<br><b>objective:</b> '+OPTUNA.objective+'<br><b>best:</b> #'+BEST_TRIAL+' → '+bt.v.toFixed(3)+'<br><b>search space:</b><pre>'+JSON.stringify(OPTUNA.space,null,2)+'</pre>');}
+  else if(p.type==='strategy'||p.type==='aband')PANEL.show('strategy_'+ASSETS[p.a!=null?p.a:STATE.asset]+'.py','<pre>'+JSON.stringify(manifest(p.a!=null?p.a:STATE.asset),null,2)+'</pre>');
+  else if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0'),m2=oosMock(p.a);
+    PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+' · <b>Sharpe:</b> '+m2.sharpe+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}
+  else if(p.type==='dqTile'){var q=DQ[p.q];
+    PANEL.show('Quality: '+q.name,'<b>Status:</b> '+q.status+'<br>'+q.detail.split(' · ').join('<br>')+'<br><br>source: reports/quality/summary.json');}
+  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({schema_version:'1.0',built_at_utc:'…',inputs_hash:'…',counters:{rows:{{duckdb_row_count}},symbols:{{universe_size}},parquet_files:{{universe_size}},setups_total:0,det09_rejected:0,gaps_in_session:0,gaps_filled:0,volume_zero_bars:0,zero_range_bars:0,prices_nonpos:0,duplicates:0,nan_inf_outputB:0},parities:{zip_duckdb_rows:true,duckdb_parquet_files:true,parquet_outputB:true},checks:[{id:'QC-06',level:'WARN',value:1,threshold:0,desc:'volume=0 bars'}],overall_status:'WARN'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
+  else if(p.type==='detector'){var nd=NODE_BY_ID['L6'];
+    PANEL.show('L6 · '+nd.title,'<b>'+nd.subtitle+'</b><br><b>Input:</b> '+nd.input_contract+'<br><b>Output:</b> '+nd.output_contract+'<br><b>Invariants:</b><br>• '+nd.invariants.join('<br>• ')+'<br><br>full anatomy: view <b>5 (Setup geometry)</b>');}
+  else if(p.type==='setupEntry')PANEL.show('entry_candle (t0)','first close piercing L_trend in the direction,<br>after line validation (≥ MIN_TOUCHES=2 touches)<br><br>all X features computed at t0 — only candles ≤ t0');
+  else if(p.type==='setupTouch'||p.type==='setupR0')PANEL.show('Setup geometry','<b>touchpoints:</b> touches of L_trend before t0 (validate the line)<br><b>L_opp:</b> opposing line — the stop loss sits on it<br><b>R0:</b> |close[t0] − L_opp(t0)| — one risk unit<br><b>TP:</b> close[t0] + direction·R0 · <b>time barrier:</b> t0+H (H=24)');
+  else if(p.type==='bnote')leOpenFocus('bnd'+p.i);
+}
+
+function draw(){
+  HL.pending=false;
+  themeRefresh();
+  LQ.length=0;OBST.length=0;
+  ctx.clearRect(0,0,cw,chh);
+  ctx.fillStyle=vget('--color-background-primary','#1e1e1c');
+  ctx.fillRect(0,0,cw,chh);
+  HITS.clear();
+  var v=VIEWS[STATE.mode];
+  if(v)v.draw();
+  else drawScene();
+  drawLabels();
+  if(PIX_AUDIT)pixAuditDump();
+}
+var PIX_OFF=null;
+function pixAuditDump(){                                // scene signature: scale the whole canvas to 64×40 and luminance per cell
+  try{
+    var GW=64,GH=40,i;
+    if(!PIX_OFF){PIX_OFF=document.createElement('canvas');PIX_OFF.width=GW;PIX_OFF.height=GH;}
+    var octx=PIX_OFF.getContext('2d');
+    octx.clearRect(0,0,GW,GH);octx.drawImage(cv,0,0,GW,GH);
+    var d=octx.getImageData(0,0,GW,GH).data,sig=[];
+    for(i=0;i<GW*GH;i++){var o=i*4;sig.push(Math.round(d[o]*0.299+d[o+1]*0.587+d[o+2]*0.114));}
+    var el=document.getElementById('pixaudit');
+    if(!el){el=document.createElement('pre');el.id='pixaudit';el.style.display='none';document.body.appendChild(el);}
+    el.textContent=JSON.stringify({mode:STATE.mode,inspect:STATE.inspect,gw:GW,gh:GH,sig:sig});
+  }catch(e){}
+}
+function Animator(){this.last=performance.now();}
+Animator.prototype.frame=function(now){
+  var dt=Math.min(0.05,(now-this.last)/1000);this.last=now;
+  ROT.step(dt);CAM.step(dt);
+  if(!STATE.paused){
+    CLK+=dt*STATE.speed;
+    if(CLK-lastTick>1.8){lastTick=CLK;if(!STATE.inspect)flash=1;}  // no ambient flash in inspection (one active halo)
+  }
+  flash=Math.max(0,flash-dt*1.1);
+  draw();
+  requestAnimationFrame(this.frame.bind(this));
+};
+var ANIM=new Animator();
+
+var mx=0,my=0,drag=null;
+function localXY(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+cv.addEventListener('contextmenu',function(e){e.preventDefault();});
+cv.addEventListener('mousemove',function(e){
+  var p=localXY(e);
+  if(drag){
+    var dx=p.x-mx,dy=p.y-my;mx=p.x;my=p.y;
+    drag.dist+=Math.abs(dx)+Math.abs(dy);
+    if(drag.dist>3){drag.moved=true;userMoved=true;}
+    if(drag.pan){
+      CAM.x-=dx/CAM.z;CAM.y-=dy/CAM.z;
+      CAM.t.x=CAM.x;CAM.t.y=CAM.y;CAM.t.z=CAM.z;
+    }else{
+      ROT.yaw+=dx*0.008;
+      ROT.pitch=clamp(ROT.pitch+dy*0.008,0.05,1.45);
+      ROT.t.yaw=ROT.yaw;ROT.t.pitch=ROT.pitch;
+    }
+    TIPM.hide();return;
+  }
+  mx=p.x;my=p.y;
+  var hit=HITS.find(mx,my),h=tipFor(hit);
+  if(h)TIPM.show(h.replace(/\n/g,'<br>'),mx,my);else TIPM.hide();
+});
+cv.addEventListener('mousedown',function(e){
+  if(e.button!==0&&e.button!==2)return;
+  var p=localXY(e);mx=p.x;my=p.y;
+  drag={moved:false,dist:0,btn:e.button,pan:(e.button===2||e.shiftKey||isFlatView()||STATE.camPreset==='flat')};
+  cv.style.cursor='grabbing';});
+window.addEventListener('mouseup',function(){
+  if(drag&&!drag.moved&&drag.btn===0){var h=HITS.find(mx,my);if(h)clickFor(h);else if(STATE.inspect)setInspect(null);}  // click on the background = exit inspection
+  drag=null;cv.style.cursor='grab';});
+cv.addEventListener('mouseleave',function(){TIPM.hide();});
+cv.addEventListener('wheel',function(e){
+  e.preventDefault();
+  var p=localXY(e),z2=clamp(CAM.z*Math.exp(-e.deltaY*0.0011),0.3,4);
+  var wx=(p.x-cw/2)/CAM.z+CAM.x,wy=(p.y-chh/2)/CAM.z+CAM.y;
+  CAM.z=z2;CAM.x=wx-(p.x-cw/2)/z2;CAM.y=wy-(p.y-chh/2)/z2;
+  CAM.t.x=CAM.x;CAM.t.y=CAM.y;CAM.t.z=CAM.z;userMoved=true;
+},{passive:false});
+function applyCamPreset(){
+  if(STATE.camPreset==='flat'){ROT.t.yaw=0;ROT.t.pitch=0.08;}
+  else{ROT.t.yaw=-0.62;ROT.t.pitch=0.55;}}
+cv.addEventListener('dblclick',function(){
+  STATE.inspect=null;applyCamPreset();
+  CAM.t=preset(STATE.mode);userMoved=false;});
+window.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&currentPanel()==='editor'){setPanel(null);return;}
+  if(e.key==='Escape'&&STATE.inspect){setInspect(null);return;}    // Esc = exit inspection
+  var tg=e.target&&e.target.tagName;
+  if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT')return;
+  var i=['1','2','3','4','5','6','7','8','9','0'].indexOf(e.key);
+  if(i>=0)setMode(MODE_KEYS[i]);
+});
+
+function bindSeg(id,attr,fn){
+  var box=document.getElementById(id),bs=box.querySelectorAll('button'),i;
+  for(i=0;i<bs.length;i++)(function(b){b.onclick=function(){
+    var j;for(j=0;j<bs.length;j++)bs[j].classList.toggle('on',bs[j]===b);
+    fn(b.getAttribute(attr));};})(bs[i]);
+}
+bindSeg('segMode','data-m',function(v){setMode(v);});
+bindSeg('segMetric','data-s',function(v){STATE.metric=v;});
+bindSeg('segCam','data-c',function(v){
+  STATE.camPreset=v;
+  applyCamPreset();
+  CAM.t=preset(STATE.mode);userMoved=false;});
+bindSeg('segSpd','data-v',function(v){STATE.speed=parseFloat(v);});
+bindSeg('segNames','data-n',function(v){STATE.names=v;});
+document.getElementById('cLabels').onchange=function(){STATE.labels=this.checked;};
+document.getElementById('cFlow').onchange=function(){STATE.flow=this.checked;};
+var bPause=document.getElementById('bPause');
+bPause.onclick=function(){STATE.paused=!STATE.paused;bPause.textContent=STATE.paused?'▶ Resume':'⏸ Pause';};
+document.getElementById('bPng').onclick=function(){
+  EXPORT_FONT=1.3;draw();                                  // presentation export: larger font tiers (declutter reflows)
+  try{cv.toBlob(function(b){EXPORT_FONT=1;draw();if(!b)return;var a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='sp500_pipeline_3d.png';a.click();});}
+  catch(e){EXPORT_FONT=1;draw();}
+};
+var selAsset=document.getElementById('selAsset');
+(function(){var i;for(i=0;i<7;i++){var o=document.createElement('option');o.value=String(i);o.textContent=ASSETS[i];selAsset.appendChild(o);}})();
+selAsset.onchange=function(){STATE.asset=parseInt(this.value,10)||0;};
+
+var leEl=document.getElementById('lblEditor'),leBody=document.getElementById('leBody'),
+    leTab=document.getElementById('lblTab'),leSearch=document.getElementById('leSearch'),leBuilt=false;
+var LE_GROUPS=['Levels','Layer boundaries','QC gates','Transformer features','Assets (sample)','Source / Universe',
+  'Store / DuckDB','Snapshot / Parquet','Time split','Features & label','Quality validation','Training / Optuna','OOS results','Other'];
+function leArrayItems(){var d=[],i;
+  for(i=0;i<QC.length;i++)(function(i){
+    d.push({key:'gate'+i,grp:'QC gates',hint:'Gate '+ORIG_LBL.gateId[i]+' — short (view 3 board)',
+      get:function(){return QC[i].id;},set:function(v){QC[i].id=v;}});
+    d.push({key:'gateN'+i,grp:'QC gates',novis:true,hint:'Gate '+ORIG_LBL.gateId[i]+' — full name (side panel)',
+      get:function(){return QC[i].name;},set:function(v){QC[i].name=v;}});
+  })(i);
+  for(i=0;i<FEATURES.length;i++)(function(i){
+    d.push({key:'feat'+i,grp:'Transformer features',hint:'Feature #'+(i+1)+' · full name (tooltip/inspect; short on scene) · default: '+ORIG_LBL.feat[i],
+      get:function(){return FEATURES[i].name;},set:function(v){FEATURES[i].name=v;}});
+  })(i);
+  for(i=0;i<ASSETS.length;i++)(function(i){
+    d.push({key:'asset'+i,grp:'Assets (sample)',hint:'Asset #'+(i+1)+' · default: '+ORIG_LBL.asset[i],
+      get:function(){return ASSETS[i];},set:function(v){ASSETS[i]=v;}});
+  })(i);
+  return d;}
+function leAllItems(){var items=leArrayItems(),i;
+  for(i=0;i<LBL_ORDER.length;i++){var k=LBL_ORDER[i];
+    items.push({key:k,grp:LBL_GRP[k]||'Other',hint:'default: '+LBL_DEF[k],reg:true,
+      get:(function(k){return function(){var o=LBL_OVR[k];return o!=null?o:LBL_DEF[k];};})(k),
+      set:(function(k){return function(v){if(v===LBL_DEF[k])delete LBL_OVR[k];else LBL_OVR[k]=v;};})(k)});}
+  return items;}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function buildLabelEditor(){
+  try{draw();}catch(e){}
+  var items=leAllItems(),byG={},i;
+  for(i=0;i<items.length;i++){var g=items[i].grp;(byG[g]=byG[g]||[]).push(items[i]);}
+  var order=LE_GROUPS.slice(),g2;for(g2 in byG)if(order.indexOf(g2)<0)order.push(g2);
+  var map={};for(i=0;i<items.length;i++)map[items[i].key]=items[i];
+  var html='';
+  for(i=0;i<order.length;i++){var gn=order[i],list=byG[gn];if(!list||!list.length)continue;
+    html+='<div class="le-grp"><div class="le-gh"><span class="le-car">▾</span><span class="le-gt">'+esc(gn)+'</span> <span class="le-cnt">('+list.length+')</span></div><div class="le-rows">';
+    for(var j=0;j<list.length;j++){var it=list[j],off=!!LBL_OFF[it.key];
+      html+='<div class="le-row'+(off?' off':'')+'" data-key="'+esc(it.key)+'">'+
+        (it.novis?'<span style="width:15px;flex:0 0 auto"></span>':'<input type="checkbox" class="le-vis"'+(off?'':' checked')+'>')+
+        '<div class="le-fields"><div class="le-hint">'+esc(it.hint)+'</div>'+
+        '<input type="text" class="le-txt" value="'+esc(it.get())+'"></div></div>';
+    }
+    html+='</div></div>';
+  }
+  leBody.innerHTML=html;
+  var rows=leBody.querySelectorAll('.le-row');
+  for(i=0;i<rows.length;i++)(function(row){
+    var key=row.getAttribute('data-key'),it=map[key],inp=row.querySelector('.le-txt'),cb=row.querySelector('.le-vis');
+
+    inp.addEventListener('focus',function(){HL.key=key;row.classList.add('editing');});
+    inp.addEventListener('blur',function(){if(HL.key===key)HL.key=null;row.classList.remove('editing');});
+    inp.addEventListener('input',function(){HL.key=key;it.set(inp.value);lblSave();});
+    if(cb)cb.addEventListener('change',function(){if(cb.checked)delete LBL_OFF[key];else LBL_OFF[key]=true;
+      row.classList.toggle('off',!cb.checked);lblSave();});
+  })(rows[i]);
+  var ghs=leBody.querySelectorAll('.le-gh');
+  for(i=0;i<ghs.length;i++)(function(gh){
+    gh.addEventListener('click',function(){var grp=gh.parentNode,c=grp.classList.toggle('collapsed');
+      gh.querySelector('.le-car').textContent=c?'▸':'▾';});
+  })(ghs[i]);
+  leBuilt=true;
+}
+function leApplyFilter(){var q=leSearch.value.toLowerCase(),rows=leBody.querySelectorAll('.le-row'),i;
+  for(i=0;i<rows.length;i++){var r=rows[i],t=(r.querySelector('.le-txt').value+' '+r.querySelector('.le-hint').textContent).toLowerCase();
+    r.style.display=(!q||t.indexOf(q)>=0)?'':'none';}}
+leSearch.addEventListener('input',leApplyFilter);
+var legTab=document.getElementById('legTab'),legHead=document.getElementById('legHead');
+function loadPanel(){try{var p=localStorage.getItem('sp500_pipeline_panel');
+  if(p==null)return 'legend';if(p==='editor'||p==='legend')return p;}catch(e){}return 'legend';}
+function savePanel(p){try{localStorage.setItem('sp500_pipeline_panel',p||'');}catch(e){}}
+function currentPanel(){return document.body.classList.contains('le-open')?'editor':
+  (document.body.classList.contains('leg-open')?'legend':null);}
+// p ∈ null|'editor'|'legend' — mutually exclusive; both can be closed (full screen).
+// WITHOUT fit()/paddingBottom — panels are fixed overlays, the canvas doesn't reset (no re-render).
+function setPanel(p){
+  var editor=(p==='editor'),legend=(p==='legend');
+  if(editor&&!leBuilt)buildLabelEditor();
+  document.body.classList.toggle('le-open',editor);
+  document.body.classList.toggle('leg-open',legend);
+  leEl.setAttribute('aria-hidden',editor?'false':'true');
+  leTab.setAttribute('aria-pressed',editor?'true':'false');
+  legTab.setAttribute('aria-pressed',legend?'true':'false');
+  if(!editor)HL.key=null;
+  savePanel(p||'');
+}
+function leOpen(){setPanel('editor');}   // shim for leOpenFocus (click on the scene → open the editor)
+
+function leOpenFocus(key){
+  leOpen();
+  if(leSearch.value){leSearch.value='';leApplyFilter();}
+  var row=leBody.querySelector('.le-row[data-key="'+key+'"]');
+  if(!row)return;
+  var grp=row.closest?row.closest('.le-grp'):null;
+  if(grp&&grp.classList.contains('collapsed')){grp.classList.remove('collapsed');
+    var car=grp.querySelector('.le-car');if(car)car.textContent='▾';}
+  leBody.scrollTop=Math.max(0,row.offsetTop-44);
+  var inp=row.querySelector('.le-txt');inp.focus();inp.select();
+}
+leTab.addEventListener('click',function(){setPanel(currentPanel()==='editor'?null:'editor');});
+legTab.addEventListener('click',function(){setPanel(currentPanel()==='legend'?null:'legend');});
+legHead.addEventListener('click',function(){setPanel(null);});
+document.getElementById('leHead').addEventListener('click',function(){setPanel(null);});
+document.getElementById('leClose').addEventListener('click',function(){setPanel(null);});
+document.getElementById('leReset').addEventListener('click',function(){lblResetAll();buildLabelEditor();});
+document.getElementById('leAll').addEventListener('click',function(){LBL_OFF={};lblSave();buildLabelEditor();});
+document.getElementById('leExport').addEventListener('click',function(){
+  var out={},items=leAllItems(),i;for(i=0;i<items.length;i++)out[items[i].key]={text:items[i].get(),hidden:!!LBL_OFF[items[i].key]};
+  try{var b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sp500_pipeline_labels.json';a.click();}catch(e){}});
+
+function fit(){
+  var dpr=window.devicePixelRatio||1;
+  var w=Math.max(360,stage.clientWidth||940),h=Math.max(360,stage.clientHeight||600);
+  var bw=Math.floor(w*dpr),bh=Math.floor(h*dpr);
+  if(cv.width===bw&&cv.height===bh)return;  // backing-store unchanged → don't reset canvas/camera (anti-flicker)
+  cw=w;chh=h;
+  cv.style.width=w+'px';cv.style.height=h+'px';
+  cv.width=bw;cv.height=bh;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  CUR_FONT='';
+  if(!userMoved)CAM.t=preset(STATE.mode);
+  try{draw();}catch(e){}                  // repaint immediately — without 1 empty frame until the next rAF
+}
+try{new ResizeObserver(function(){fit();}).observe(stage);}catch(e){window.addEventListener('resize',fit);}
+var reduce=false;try{reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+if(reduce){STATE.paused=true;STATE.flow=false;
+  document.getElementById('cFlow').checked=false;bPause.textContent='▶ Resume';}
+
+lblLoad();
+fit();
+var hp=homeFit();CAM.x=hp.x;CAM.y=hp.y;CAM.z=hp.z;CAM.t=hp;
+setPanel(loadPanel());   // apply the remembered/default panel (default: Legend open) — without fit()
+try{var hm=decodeURIComponent(location.hash.slice(1));
+  if(hm==='0')hm='leak';
+  else if(/^[1-9]$/.test(hm))hm=MODE_KEYS[parseInt(hm,10)-1];
+  if(/^[lL]\d+$/.test(hm)&&NODE_BY_ID[hm.toUpperCase()]){            // inspection deep-link: #L6 → frame + contract
+    setInspect(hm.toUpperCase());var fp=frameLevel(NODE_BY_ID[hm.toUpperCase()].lev);CAM.x=fp.x;CAM.y=fp.y;CAM.z=fp.z;}
+  else if(MODE_KEYS.indexOf(hm)>=0&&hm!=='overview'){setMode(hm);var hp2=preset(hm);CAM.x=hp2.x;CAM.y=hp2.y;CAM.z=hp2.z;}
+}catch(e){}
+requestAnimationFrame(ANIM.frame.bind(ANIM));
+})();
+</script>
+</body>
+</html>
