@@ -4,7 +4,7 @@ The **only** configuration site is `config/parameters.json` (i.e. `A_Layers/conf
 thresholds are hardcoded in code. This file owns every parameter value; companion docs reference it and restate
 no number.
 
-## Contract parameters (17 keys from `parameters.json`)
+## Contract parameters (19 keys from `parameters.json`)
 
 | Parameter | Default | Description |
 |---|---|---|
@@ -25,6 +25,8 @@ no number.
 | `CV_SCHEME` | `purged_walk_forward` | CV inside Train (folds with purge+embargo) |
 | `ESTIMATOR` | `xgboost_binary_logistic` | meta-labeling: setup-signal filter |
 | `TUNER` | `optuna_tpe_median_pruner` | hyperparameter tuning (TPE + MedianPruner) |
+| `OPTUNA_OBJECTIVE` | `auc_pr` | L9 in-fold tuning target (purged WF CV); classifier proxy, not the trading objective |
+| `STRATEGY_OBJECTIVE` | `PF↑ → MaxDD↓ → TIM↓` | strategy selection/acceptance objective (lexicographic; WR informational); rule in [00_conventions_eng.md](00_conventions_eng.md) |
 
 All timeframe dependence is confined to `H` (and optionally `W_VOL`/`W_ATR`); changing `TF` needs only
 reconfiguration of parameters, not logic changes.

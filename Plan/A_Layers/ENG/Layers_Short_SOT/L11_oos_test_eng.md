@@ -11,14 +11,14 @@ Input = the frozen `strategy_<TICKER>.py` artifacts from [L10](L10_xgboost_strat
   - the model returns `p = model(x)`
   - entry rule: `p ≥ 0.60 → ENTRY`
   - exits per triple barrier: fixed TP from `R0` · SL = moving `L_opp(t)` · time barrier 24 candles
-- Result: a matrix `<!--na:universe_size-->503<!--/na--> assets × {PF · Sharpe · MDD% · TIM% · WR% · trades}`.
-  - **OOS metrics canonical order: PF · Sharpe · MDD · TIM · WR** (= `METRICS`)
+- Result: a matrix `<!--na:universe_size-->503<!--/na--> assets × {PF · MDD% · TIM% · WR% · trades}`.
+  - **OOS metrics canonical order: PF · MDD · TIM · WR** (= `METRICS`)
   - PF (profit factor) = gross profits / gross losses
-  - Sharpe — informational; treat with caution at low TIM
   - MDD % — maximum drawdown
   - TIM % — time in market (% of candles with an open position)
   - WR % — win-rate (% of winning trades)
   - trades — number of trades (the denominator of significance)
 - The matrix is joined by a distribution report across the universe (distributions, top/bottom assets, the share with PF > 1) — we look for a **distribution**, not a single star.
+- **Verdict read through the objective** ([00_conventions_eng.md](00_conventions_eng.md)): rank/judge by PF (primary) → MaxDD → realized TIM; WR informational.
 - Storage: parquet/CSV + run manifest.
 - **One-shot:** the OOS result never goes back into tuning (the next iteration = a new cycle from Train with a later OOS).

@@ -16,6 +16,12 @@
   "CV_SCHEME": "purged_walk_forward",
   "ESTIMATOR": "xgboost_binary_logistic",
   "TUNER": "optuna_tpe_median_pruner",
+  "OPTUNA_OBJECTIVE": "auc_pr",
+  "STRATEGY_OBJECTIVE": {
+    "primary": "profit_factor_max",
+    "then": ["max_drawdown_min", "time_in_market_min"],
+    "informational": ["win_rate"]
+  },
   "TOUCH_TOL": 0.25,
   "splits": {
     "warmup_start": "2016-01-04",

@@ -1,7 +1,7 @@
-# A_Layers — Main_Pipeline (Pipeline A, L1–L11)
+# A_Layers — Main_Pipeline (Pipeline A, L1–L12)
 
 The build package for the project: the S&P 500 ML trend-line meta-labeling strategy pipeline,
-**layers L1–L11**. `layer` / `L1–L11` belong here only. Its canonical core — the **single source of
+**layers L1–L12** (L11 = OOS test, L12 = per-asset deliverable folder). `layer` / `L1–L12` belong here only. Its canonical core — the **single source of
 truth** that owns every parameter, formula, schema and contract — is the folder
 [`ENG/Layers_Short_SOT/`](ENG/Layers_Short_SOT/).
 

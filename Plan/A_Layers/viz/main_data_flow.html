@@ -168,9 +168,9 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Eleven levels from the bottom: an Alpaca SIP 1h source for a universe of 503 tickers, a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces best_params, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×503 independent files, one model per asset), and a wall of OOS test results for 503 assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for a universe of 503 tickers, a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×503 independent files, one model per asset), a wall of OOS test results for 503 assets across 4 metrics, and a per-asset deliverable folder (×503) holding the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json and the strategy_&lt;TICKER&gt;.py. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
-<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (best_params) → XGB final + b64 strategy ×503 → OOS test 503 assets. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9 and 0 = views.</p>
+<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final + b64 strategy ×503 → OOS test 503 assets → endproduct folder ×503. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
 
 <div class="tlc-ctrls">
   <span class="lbl">View:</span>
@@ -184,7 +184,8 @@ body.le-open #lblEditor{transform:translateY(0)}
     <button data-m="optuna">7 Optuna</button>
     <button data-m="artifact">8 Artifact</button>
     <button data-m="oos">9 OOS results</button>
-    <button data-m="leak">0 Anti-leakage</button>
+    <button data-m="endproduct">0 Endproduct</button>
+    <button data-m="leak">L Anti-leakage</button>
   </span>
 </div>
 
@@ -200,14 +201,6 @@ body.le-open #lblEditor{transform:translateY(0)}
 <div id="botInfo"><div class="bi-inner">
 <div class="bi-head" id="legHead" title="Click to collapse the legend">▦ XGB S&amp;P500 Data Processing Pipeline<span class="bi-cue">collapse ▾</span></div>
 <div class="tlc-ctrls" id="botCtrls">
-  <span class="lbl">Asset:</span>
-  <select id="selAsset"></select>
-  <span class="lbl">OOS metric:</span>
-  <span class="tlc-seg" id="segMetric">
-    <button data-s="pf" class="on">PF</button>
-    <button data-s="sharpe">Sharpe</button>
-    <button data-s="mdd">MDD</button>
-  </span>
   <span class="lbl">Camera:</span>
   <span class="tlc-seg" id="segCam">
     <button data-c="iso" class="on">3D (iso)</button>
@@ -236,7 +229,7 @@ body.le-open #lblEditor{transform:translateY(0)}
   <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3·L10)</span></span>
   <span><span style="display:inline-block;width:9px;height:14px;background:rgba(99,153,34,.20);border:1.5px solid #639922"></span> Transform <span style="color:var(--color-text-tertiary)">(L4·L6·L7·L9)</span></span>
   <span><span style="display:inline-block;width:13px;height:11px;border:1.5px solid #BA7517;border-radius:4px"></span> Gate / control <span style="color:var(--color-text-tertiary)">(L5·L8)</span></span>
-  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / report <span style="color:var(--color-text-tertiary)">(L11)</span></span>
+  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / endproduct <span style="color:var(--color-text-tertiary)">(L11·L12)</span></span>
   <span><span style="display:inline-block;width:11px;height:11px;background:linear-gradient(90deg,var(--c-fail-text),#9a9890,#22C55E)"></span> Result scale: bad ↔ good (diverging)</span>
   <span style="color:var(--c-fail-text)">✕ Red = error / block / FAIL (reserved)</span>
 </div>
@@ -249,9 +242,10 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Time split</b>: warm-up → train → OOS; <b>purge H=24 + embargo</b>, because TB labels overlap the boundaries.</li>
   <li><b>Trend-line setup</b> = 7 geometric X + closed_through_line audit (8 transformer columns); FEATURE_MANIFEST = 8 X (7 geom + direction) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
   <li><b>Data-quality gate</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
-  <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>best_params.json</b>.</li>
-  <li><b>XGB final training</b> per asset on best_params; champion → base64 → <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck → <b>×503 independent files</b> (1 model/hash/window per asset).</li>
-  <li><b>OOS single run</b>: 503 assets × PF · Sharpe · MDD · TIM · WR.</li>
+  <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>.</li>
+  <li><b>XGB final training</b> per asset on OPTUNAs_XGB_HPOs_best_params.json; champion → base64 → <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck → <b>×503 independent files</b> (1 model/hash/window per asset).</li>
+  <li><b>OOS single run</b>: 503 assets × PF · MDD · TIM · WR.</li>
+  <li><b>Endproduct</b>: per-asset folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> (×503 folders).</li>
 </ol>
 </div></div>
 
@@ -385,7 +379,6 @@ function importanceMock(a,f){return Math.round(rng(a*31+f*131)()*0.30*100)/100;}
 
 var METRICS=[
   {id:'pf',name:'PF',hi:true,lo:0.7,hiV:2.1},
-  {id:'sharpe',name:'Sharpe',hi:true,lo:-0.5,hiV:2.2},
   {id:'mdd',name:'MDD %',hi:false,lo:5,hiV:35},
   {id:'tim',name:'TIM %',hi:true,lo:4,hiV:28},
   {id:'wr',name:'WR %',hi:true,lo:32,hiV:58}];
@@ -454,7 +447,7 @@ function manifest(a){var r=rng(a*991+7);
     selfcheck:'golden input → output: PASS'};
 }
 
-var BND_DZ=[189,189,192,189,189,189,185,189,189,202];   // 10 boundaries (11 levels): split L9 (Optuna search) / L10 (XGB final + b64 artifact); L11 = OOS
+var BND_DZ=[189,189,192,189,189,189,185,189,189,202,196];   // 11 boundaries (12 levels): split L9 (Optuna search) / L10 (XGB final + b64 artifact); L11 = OOS; L11 → L12 endproduct folder
 
 // ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
 // family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
@@ -522,13 +515,13 @@ var PIPELINE={
      title:'OPTUNA HYPERPARAMETER SEARCH',subtitle:'tune XGB on Train (TPE + MedianPruner)',
      summary:'200 trials · TPE · MedianPruner · purged walk-forward CV (k=4) — Train only',
      input_contract:'Output B (green dashboard) — Train only',transform_verb:'tune',
-     output_contract:'best_params.json (+ trial_history, optuna_study)',
-     metric:{label:'trials',value:'200'},invariants:['Train only — no OOS read','TPE + MedianPruner','best trial → best_params.json'],
+     output_contract:'OPTUNAs_XGB_HPOs_best_params.json (+ trial_history, optuna_study)',
+     metric:{label:'trials',value:'200'},invariants:['Train only — no OOS read','TPE + MedianPruner','best trial → OPTUNAs_XGB_HPOs_best_params.json'],
      status:'ok',dataKey:'OPTUNA',hitType:'optuna'},
     {id:'L10',lev:9,family:'store',role:'store',col:TEAL,
      title:'XGB FINAL TRAIN → b64 STRATEGY ×503',subtitle:'train champion → serialize → b64 → 1 strategy .py per asset',
-     summary:'best_params + Train X/y + FEATURE_MANIFEST → final XGB → b64 → strategy_<TICKER>.py (×503)',
-     input_contract:'best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',transform_verb:'pack',
+     summary:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → final XGB → b64 → strategy_<TICKER>.py (×503)',
+     input_contract:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',transform_verb:'pack',
      output_contract:'×503 strategy_<TICKER>.py: MODEL_B64 + FEATURE_MANIFEST + THRESHOLD + selfcheck (1 model/asset)',
      metric:{label:'artifacts',value:'×503'},invariants:['1 model + 1 .py + 1 hash per asset','deterministic build (stable hash)','self-contained: no training data at import'],
      status:'ok',dataKey:'OPTUNA',hitType:'artifact'},
@@ -536,8 +529,16 @@ var PIPELINE={
      title:'OOS TEST: 503 ASSETS × METRICS',subtitle:'evaluate on the frozen OOS window',
      summary:'single run on OOS 2024-01-02 → 2026-05-29',
      input_contract:'503 frozen strategy artifacts',transform_verb:'evaluate',
-     output_contract:'results matrix: PF · Sharpe · MDD · TIM · WR',metric:{label:'assets',value:'503'},
-     invariants:['single run','zero tuning after seeing results'],status:'ok',dataKey:'METRICS',hitType:'oos'}
+     output_contract:'results matrix: PF · MDD · TIM · WR',metric:{label:'assets',value:'503'},
+     invariants:['single run','zero tuning after seeing results'],status:'ok',dataKey:'METRICS',hitType:'oos'},
+    {id:'L12',lev:11,family:'output',role:'output',col:TP,
+     title:'ENDPRODUCT: PER-ASSET DELIVERABLE FOLDER (×503)',subtitle:'package 1 deployable folder per asset',
+     summary:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet + OPTUNAs_XGB_HPOs_best_params.json + strategy_<TICKER>.py',
+     input_contract:'OOS-validated strategy artifacts + per-asset parquet + tuned params',transform_verb:'package',
+     output_contract:'×503 × <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py }',
+     metric:{label:'folders',value:'×503'},
+     invariants:['1 self-contained folder per asset','3 files: data + params + strategy','strategy .py carries the b64 model, not the training data'],
+     status:'ok',hitType:'endproduct'}
   ],
   edges:[
     {from:'L1',to:'L2',verb:'parse',payload:'Alpaca 1h → LEAN zip',causal_scope:'per ticker',
@@ -555,11 +556,13 @@ var PIPELINE={
     {from:'L7',to:'L8',verb:'validate',payload:'Output B → quality dashboard',causal_scope:'checkpoint',
      detail:'X,Y matrix per setup (Output B) + store manifests → data-quality gate: parities zip→DuckDB→parquet→Output B · gaps · zero-values · NaN/Inf · split assertion → summary.json + dashboard'},
     {from:'L8',to:'L9',verb:'tune',payload:'green dashboard → Optuna search',causal_scope:'Train only',
-     detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → best_params.json'},
-    {from:'L9',to:'L10',verb:'pack',payload:'best_params → final XGB → b64 strategy',causal_scope:'per asset',
-     detail:'best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×503 independent files, 1 model/hash/window per asset)'},
+     detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → OPTUNAs_XGB_HPOs_best_params.json'},
+    {from:'L9',to:'L10',verb:'pack',payload:'OPTUNAs_XGB_HPOs_best_params.json → final XGB → b64',causal_scope:'per asset',
+     detail:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×503 independent files, 1 model/hash/window per asset)'},
     {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
-     detail:'503 frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · Sharpe · MDD · TIM · WR'}
+     detail:'503 frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR'},
+    {from:'L11',to:'L12',verb:'package',payload:'OOS-validated → per-asset deliverable folders',causal_scope:'per asset',
+     detail:'OOS results confirm each strategy → assemble ×503 deliverable folders: <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 tuned HPOs) + strategy_<TICKER>.py (L10 b64 model + manifest) — one self-contained folder per asset'}
   ]
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
@@ -575,8 +578,8 @@ var cw=940,chh=600;
 var GUTTER_L=196;                                              // reserved LEFT gutter (px) for the screen-pinned boundary notes (card W=178 + margin)
 function gutterL(){return (STATE.labels&&!isFlatView())?Math.min(GUTTER_L,cw*0.34):0;}   // 0 in flat views / when labels are off
 
-var STATE={mode:'overview',asset:0,labels:true,flow:true,names:'sample',metric:'pf',speed:1,paused:false,camPreset:'iso',inspect:null,detFocus:'lw',splitFocus:2};
-var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','leak']; // keys 1-9,0 → mode (single source)
+var STATE={mode:'overview',labels:true,flow:true,names:'sample',speed:1,paused:false,camPreset:'iso',inspect:null,detFocus:'lw',splitFocus:2};
+var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','endproduct']; // keys 1-9,0 → mode (single source); 'leak' moved to key L
 var CLK=0,lastTick=0,flash=0;
 var LOD={cap:0.55,obj:0.55,name:0.75,micro:1.1};
 var LBL_DEBUG=false;try{LBL_DEBUG=location.search.indexOf('lbldebug')>=0;}catch(e){}
@@ -875,7 +878,7 @@ AlpacaSource.prototype.draw=function(){
   for(i=0;i<7;i++)named.push({i:i,a:0.18+i*0.114,d:lp(0,0.18+i*0.114,0.39,0).d});
   named=byD(named);
   for(k=0;k<named.length;k++){
-    var t=named[k],sel=(t.i===STATE.asset);
+    var t=named[k],sel=false;
     prism(0,t.a,0.32,t.a+0.056,0.46,1,sel?26:18,sel?GREEN:CAN,sel?0.30:0.22);
     HITS.addPts([lp(0,t.a-0.008,0.30,sel?30:22),lp(0,t.a+0.064,0.48,0)],{type:'asset',a:t.i});
     if(STATE.names==='sample'&&STATE.labels){
@@ -926,7 +929,7 @@ ZipStore.prototype.draw=function(){
   for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,d:lp(1,SERP[i].a,SERP[i].b,Z0+15).d});
   list=byD(list);
   for(k=0;k<list.length;k++){
-    var t=list[k],last=(t.i===N-1),sel=(!last&&t.i===STATE.asset);
+    var t=list[k],last=(t.i===N-1),sel=false;
     if(flash>0&&sel){var s=SS(1,t.a,t.b,Z0+15);strokeRR(s.x-20,s.y-30,40,56,10,rgba(GREEN,flash*0.8),2);}
     var cZip=GLYPHS.zipCrate({lev:1,a:t.a,b:t.b,i:t.i,sel:sel,h:(sel?17:12),all:last,z0:Z0});
     if(STATE.labels){
@@ -1041,7 +1044,7 @@ TransformLayer.prototype.draw=function(){
   for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,d:lp(3,SERP[i].a,SERP[i].b,16).d});
   list=byD(list);
   for(k=0;k<list.length;k++){
-    var t=list[k],last=(t.i===N-1),sel=(!last&&t.i===STATE.asset);
+    var t=list[k],last=(t.i===N-1),sel=false;
     if(flash>0&&sel){var s=SS(3,t.a,t.b,16);strokeRR(s.x-18,s.y-26,36,48,9,rgba(GREEN,flash*0.8),2);}   // selection halo (parity with L2)
     var cPq=last?GLYPHS.parquetFolder({lev:3,a:t.a,b:t.b,i:t.i,z0:16,col:AMB})                            // last node = folder the files flow into
                 :GLYPHS.parquetFile({lev:3,a:t.a,b:t.b,i:t.i,sel:sel,z0:16,col:AMB});                     // sample nodes = parquet file (document); each registers its own hit
@@ -1309,7 +1312,7 @@ SetupDetectorLayer.prototype.draw=function(){
 FeatureForest.prototype.draw=function(){
   caption(6);
   var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
-      bord=vget('--color-border-secondary','#555'),ai=STATE.asset;
+      bord=vget('--color-border-secondary','#555'),ai=0;
   var bw=0.55,base=4,HZ6=150,nf=FEATURES.length;        // nf=8 transformer columns (7 geometric X + closed_through_line audit); manifest adds direction → 8 X
   var NCOL=nf+2,NROW=6,ycol=NCOL-1;                      // col 0=header t · 1..nf=features · ycol=Y;  rows 0=header x · 1..4=setups · 5=…
   var A=CAM.S(lp(6,0.08,bw,base)),B=CAM.S(lp(6,0.92,bw,base)),
@@ -1442,7 +1445,7 @@ QualityLayer.prototype.draw=function(){
   }
 };
 
-// L9 — Optuna hyperparameter search ONLY: trial funnel → best_params.json. No final training, no .py, no b64.
+// L9 — Optuna hyperparameter search ONLY: trial funnel → OPTUNAs_XGB_HPOs_best_params.json. No final training, no .py, no b64.
 function OptunaSearchLayer(){}
 OptunaSearchLayer.prototype.draw=function(){
   caption(8);
@@ -1451,28 +1454,28 @@ OptunaSearchLayer.prototype.draw=function(){
   line2(lp(8,0.52,0.5,18),lp(8,0.72,0.5,18),tert,1.4,[]);
   var ah=CAM.S(lp(8,0.72,0.5,18));
   ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
-  var bp=SS(8,0.83,0.5,20);                                       // output artifact = best_params.json
-  GLYPHS.pyFile(bp.x,bp.y,84,40,GREEN,'best_params','.json');
-  HITS.addRect(bp.x-42,bp.y-20,84,40,{type:'optuna'});
-  addObstacleRect(bp.x-42,bp.y-20,84,40);
+  var bp=SS(8,0.83,0.5,20);                                       // output artifact = OPTUNAs_XGB_HPOs_best_params.json
+  GLYPHS.pyFile(bp.x,bp.y,112,42,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');
+  HITS.addRect(bp.x-56,bp.y-21,112,42,{type:'optuna'});
+  addObstacleRect(bp.x-56,bp.y-21,112,42);
   if(STATE.labels){
     var po1=SS(8,0.5,0.10,2),po2=SS(8,0.5,0.97,0);
     qLabel({key:'opt_caption',def:'Optuna search: 200 trials (TPE + MedianPruner) · purged walk-forward CV (k=4) — Train only · no OOS read',grp:'Optuna search',
       x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'optout_caption',def:'output: best trial → best_params.json (consumed by L10 final training)',grp:'Optuna search',
+    qLabel({key:'optout_caption',def:'output: best trial → OPTUNAs_XGB_HPOs_best_params.json (consumed by L10 final training)',grp:'Optuna search',
       x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
 
-// L10 — XGB FINAL training + b64 strategy export: best_params + Train X/y + schema → champion → serialize → b64 → strategy_<TICKER>.py × N (per-asset fan-out).
+// L10 — XGB FINAL training + b64 strategy export: OPTUNAs_XGB_HPOs_best_params.json + Train X/y + schema → champion → serialize → b64 → strategy_<TICKER>.py × N (per-asset fan-out).
 function StrategyExportLayer(){}
 StrategyExportLayer.prototype.draw=function(){
   caption(9);
   var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
-  var ip=SS(9,0.09,0.5,20);                                       // input artifact = best_params.json (from L9)
-  GLYPHS.pyFile(ip.x,ip.y,80,38,GREEN,'best_params','.json');
-  HITS.addRect(ip.x-40,ip.y-19,80,38,{type:'optuna'});
-  addObstacleRect(ip.x-40,ip.y-19,80,38);
+  var ip=SS(9,0.09,0.5,20);                                       // input artifact = OPTUNAs_XGB_HPOs_best_params.json (from L9)
+  GLYPHS.pyFile(ip.x,ip.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');
+  HITS.addRect(ip.x-56,ip.y-20,112,40,{type:'optuna'});
+  addObstacleRect(ip.x-56,ip.y-20,112,40);
   line2(lp(9,0.17,0.5,18),lp(9,0.27,0.5,18),tert,1.4,[]);
   var top=prism(9,0.28,0.38,0.50,0.62,2,26,TEAL,0.22),tc=ctr(top);  // final champion XGB
   if(CAM.z>=0.75)GLYPHS.modelTree(tc.x,tc.y+2,TEAL);
@@ -1491,15 +1494,15 @@ StrategyExportLayer.prototype.draw=function(){
   GLYPHS.pyFile(sp.x+14,sp.y-14,wp,hp,tert,'strategy_NVDA');      // per-asset fan-out (ghost siblings behind)
   GLYPHS.pyFile(sp.x+7,sp.y-7,wp,hp,tert,'strategy_MSFT');
   if(flash>0)strokeRR(sp.x-wp/2-3,sp.y-hp/2-3,wp+6,hp+6,13,rgba(AMB,flash*0.8),2);
-  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_'+(aname(STATE.asset)||ASSETS[STATE.asset]));
-  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy',a:STATE.asset});
+  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_<TICKER>');
+  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy'});
   addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
   GLYPHS.stackBadge(9,0.94,0.5,20,AMB,'×503','strategy');
   if(STATE.labels){
     var po1=SS(9,0.5,0.10,2),po2=SS(9,0.5,0.97,0);
-    qLabel({key:'exp_input',def:'input: best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',grp:'XGB final + artifact',
+    qLabel({key:'exp_input',def:'input: OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',grp:'XGB final + artifact',
       x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'champ_caption',def:'final XGB on best_params → serialize → base64 → strategy_<TICKER>.py + selfcheck · 1 model/hash/window per asset (×503)',grp:'XGB final + artifact',
+    qLabel({key:'champ_caption',def:'final XGB on OPTUNAs_XGB_HPOs_best_params.json → serialize → base64 → strategy_<TICKER>.py + selfcheck · 1 model/hash/window per asset (×503)',grp:'XGB final + artifact',
       x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
@@ -1538,15 +1541,14 @@ OOSWall.prototype.draw=function(){
     var by0=Math.min(p00.y,p01.y,p10.y,p11.y),by1=Math.max(p00.y,p01.y,p10.y,p11.y);
     HITS.addRect(bx0,by0,bx1-bx0,by1-by0,{type:'oosCell',a:c,m:r});
   }
-  var mi=0;for(r=0;r<R;r++)if(METRICS[r].id===STATE.metric)mi=r;
-  polyS([PT(-0.008,mi/R-0.01),PT(1.008,mi/R-0.01),PT(1.008,(mi+0.85)/R+0.01),PT(-0.008,(mi+0.85)/R+0.01)],null,TEAL,1.6,[5,3]);
+  var PRI={pf:1,mdd:1,tim:1};                                   // hard-coded objective priority: maximise PF · minimise MaxDD · minimise realized TIM (WR informational)
   if(STATE.labels){
     var pc=PT(0.5,-0.07);
-    qLabel({key:'oos_caption',def:'OOS results matrix · 503 assets × 5 metrics · 2024-01-02 → 2026-05-29',grp:'OOS results',
+    qLabel({key:'oos_caption',def:'OOS results matrix · 503 assets × 4 metrics · 2024-01-02 → 2026-05-29',grp:'OOS results',
       x:pc.x,y:pc.y,col:vget('--color-text-primary','#eee'),al:'center',sz:10.5,wt:'600',pr:3});
     for(r=0;r<R;r++){var pl=PT(-0.045,(r+0.55)/R);
-      qLabel({text:METRICS[r].name,x:pl.x,y:pl.y,col:r===mi?TEAL:vget('--color-text-secondary','#999'),
-        al:'right',sz:8.5,wt:r===mi?'600':'',pr:3,ax:pl.x+6,ay:pl.y});}
+      qLabel({text:METRICS[r].name,x:pl.x,y:pl.y,col:PRI[METRICS[r].id]?TEAL:vget('--color-text-secondary','#999'),
+        al:'right',sz:8.5,wt:PRI[METRICS[r].id]?'600':'',pr:3,ax:pl.x+6,ay:pl.y});}
     var pb=PT(0.5,1.12);
     qLabel({key:'oos_note',def:'columns = assets (26 of 503 in frame) · rows = metrics · color = result quality',grp:'OOS results',
       x:pb.x,y:pb.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});
@@ -1555,6 +1557,40 @@ OOSWall.prototype.draw=function(){
         qLabel({key:'asset'+c,text:anameV(c),x:ph.x,y:ph.y,col:vget('--color-text-tertiary','#777'),
           al:'left',sz:7.5,rot:-0.7,pr:3,lod:0.65,ax:pg.x,ay:pg.y});}
     }
+  }
+};
+
+// L12 — ENDPRODUCT: one self-contained deliverable FOLDER per asset (×N fan-out):
+// <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py }
+function EndproductLayer(){}
+EndproductLayer.prototype.draw=function(){
+  caption(11);
+  var tert=vget('--color-text-tertiary','#777');
+  // ghost sibling folders behind (per-asset fan-out cue), then the front folder in TP
+  GLYPHS.parquetFolder({lev:11,a:0.30,b:0.56,z0:18,col:tert});
+  GLYPHS.parquetFolder({lev:11,a:0.27,b:0.53,z0:17,col:tert});
+  var fc=GLYPHS.parquetFolder({lev:11,a:0.24,b:0.50,z0:16,col:TP});
+  if(flash>0)strokeRR(fc.x-34,fc.y-26,68,52,12,rgba(TP,flash*0.8),2);
+  HITS.addRect(fc.x-30,fc.y-24,60,48,{type:'endproduct'});                  // folder click = endproduct view (last-registered wins over parquetFolder's own hit)
+  // the 3 contained files listed to the right of the folder, with connectors
+  line2(lp(11,0.30,0.50,18),lp(11,0.50,0.32,22),tert,1.2,[]);
+  line2(lp(11,0.30,0.50,18),lp(11,0.64,0.50,22),tert,1.2,[]);
+  line2(lp(11,0.30,0.50,18),lp(11,0.78,0.68,22),tert,1.2,[]);
+  GLYPHS.parquetFile({lev:11,a:0.56,b:0.32,z0:22,col:AMB,i:0});             // <TICKER>_ohlcv_1h.parquet (L4 data, packaged here)
+  var f2=SS(11,0.70,0.50,22),f3=SS(11,0.84,0.68,22);
+  GLYPHS.pyFile(f2.x,f2.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');  // L9 tuned HPOs (long name split across the glyph's two rows)
+  HITS.addRect(f2.x-56,f2.y-20,112,40,{type:'optuna'});
+  addObstacleRect(f2.x-56,f2.y-20,112,40);
+  GLYPHS.pyFile(f3.x,f3.y,96,42,TP,'strategy_<TICKER>','.py');              // L10 b64 strategy
+  HITS.addRect(f3.x-48,f3.y-21,96,42,{type:'strategy'});
+  addObstacleRect(f3.x-48,f3.y-21,96,42);
+  GLYPHS.stackBadge(11,0.94,0.5,20,TP,'×503','endproduct');
+  if(STATE.labels){
+    var po1=SS(11,0.5,0.10,2),po2=SS(11,0.5,0.97,0);
+    qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + tuned params + strategy',grp:'Endproduct',
+      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py  (×503 folders)',grp:'Endproduct',
+      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
 
@@ -1783,7 +1819,6 @@ function drawZipCrate(g){
 }
 function drawStackBadge(lev,a,b,dz,col,label,type){
   var p=SS(lev,a,b,dz),i,payload={type:type};
-  if(type==='strategy')payload.a=STATE.asset;
   ctx.save();ctx.strokeStyle=rgba(col,0.7);ctx.lineWidth=1;ctx.setLineDash([]);
   for(i=2;i>=0;i--)rrectS(p.x-16+i*5,p.y-19+i*4,27,36,8);
   ctx.stroke();ctx.restore();
@@ -2073,7 +2108,7 @@ DataDAGView.prototype.draw=function(){
   edge(125,-55,168,-55);edge(-167,-55,-205,-55);
   var s;
   s=pill(0,-235,250,26,CAN,'Alpaca SIP API · 1h · 503 tickers',0.08);HITS.addRect(s.x-125,s.y-13,250,26,{type:'api'});
-  s=pill(0,-155,290,26,CAN,'510 × ZIP LEAN · prices ×10000 · 139 MB',0.10);HITS.addRect(s.x-145,s.y-13,290,26,{type:'zip',a:STATE.asset});
+  s=pill(0,-155,290,26,CAN,'510 × ZIP LEAN · prices ×10000 · 139 MB',0.10);HITS.addRect(s.x-145,s.y-13,290,26,{type:'zip'});
   s=pill(0,-55,250,26,TEAL,'DuckDB raw_ohlcv_1h · 8 841 820 rows',0.10);HITS.addRect(s.x-125,s.y-13,250,26,{type:'db'});
   s=pill(258,-55,176,26,TEAL,'VIEW ohlcv_1h → USD',0.05);HITS.addRect(s.x-88,s.y-13,176,26,{type:'view'});
   s=pill(-262,-55,108,26,PINK,'QC-01…QC-11',0.12);HITS.addRect(s.x-54,s.y-13,108,26,{type:'qcAll'});
@@ -2275,8 +2310,8 @@ OptunaView.prototype.draw=function(){
     txt((pi[1]*100).toFixed(0)+'%',{x:-162+pi[1]*620,y:yy+3},tert,'left',8);
   }
   txt('search space: depth 3–9 · lr 0.01–0.3 log · estimators 100–1200 · subsample/colsample 0.5–1 · λ 1e-3–10 · spw 0.5–4',{x:0,y:430},tert,'center',8);
-  pill(210,250,184,26,GREEN,'output → best_params.json',0.12);                 // L9 deliverable (no .py, no b64 here)
-  txt('best trial #'+BEST_TRIAL+' (AUC-PR '+bt.v.toFixed(3)+') → consumed by L10',{x:210,y:272},tert,'center',8);
+  pill(160,250,300,26,GREEN,'output → OPTUNAs_XGB_HPOs_best_params.json',0.12);                 // L9 deliverable (no .py, no b64 here)
+  txt('best trial #'+BEST_TRIAL+' (AUC-PR '+bt.v.toFixed(3)+') → consumed by L10',{x:160,y:272},tert,'center',8);
 };
 
 var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',rows=[],i,j;
@@ -2285,11 +2320,11 @@ var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
 function ArtifactView(){}
 ArtifactView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  var a=STATE.asset,nm=ASSETS[a],i,j;
+  var nm='<TICKER>',i,j;
   txt('L10 · XGB final training + b64 strategy artifact',{x:0,y:-262},prim,'center',14,'700');
-  txt('best_params → final XGB per asset → serialize → base64 → 1 self-contained strategy .py per asset',{x:0,y:-244},sec,'center',10);
+  txt('OPTUNAs_XGB_HPOs_best_params.json → final XGB per asset → serialize → base64 → 1 self-contained .py per asset',{x:0,y:-244},sec,'center',10);
   // input → process chain (mini-pills, left → right)
-  var CHAIN=[['best_params',GREEN],['Train X/y',CAN],['8 X schema',RED],['final XGB',TEAL],['champion',TEAL],['serialize',AMB],['base64',AMB]];
+  var CHAIN=[['HPO params',GREEN],['Train X/y',CAN],['8 X schema',RED],['final XGB',TEAL],['champion',TEAL],['serialize',AMB],['base64',AMB]];
   for(i=0;i<CHAIN.length;i++){var cx=-318+i*92;
     pillF(cx,-218,80,20,CHAIN[i][1],CHAIN[i][0],0.10,7.5);
     if(i)edge(cx-52,-218,cx-40,-218);}
@@ -2314,14 +2349,42 @@ ArtifactView.prototype.draw=function(){
     fillRR(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,6,rgba(b.col===tert?CAN:b.col,b.b64?0.14:0.07),rgba(b.col===tert?CAN:b.col,0.6),1);
     monoS(b.t,s0.x+10,s0.y+16*zScale(),b.col,'left',9.5);
     if(b.b64)for(j=0;j<B64FILL.length;j++)monoS(B64FILL[j],s0.x+10,s0.y+(33+j*14)*zScale(),rgba(AMB,0.45),'left',8);
-    HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'aband',b:i,a:a});
+    HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'aband',b:i});
     y+=b.h+11;
   }
-  // ×N per-asset fan-out: independent files, one per asset (AAPL example is the selected card above)
+  // ×N per-asset fan-out: independent files, one per asset (<TICKER> example is the card above)
   var fy=y+26,FAN=['AAPL','MSFT','NVDA','GOOGL','AMZN'];
   for(i=0;i<FAN.length;i++)pillF(-176+i*72,fy,62,22,i===0?AMB:tert,'strat_'+FAN[i],0.10,7);
   txt('… ×503 independent files — 1 model · 1 hash · 1 train window per asset',{x:0,y:fy+28},sec,'center',9);
   txt('standalone import (no training data) · debug / disable / swap / deploy each asset independently · click = full JSON manifest',{x:0,y:fy+44},tert,'center',8);
+};
+function EndproductView(){}
+EndproductView.prototype.draw=function(){
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  var nm='<TICKER>',i;
+  txt('L12 · Endproduct — per-asset deliverable folder',{x:0,y:-262},prim,'center',14,'700');
+  txt('one self-contained folder per asset: data + tuned params + strategy',{x:0,y:-244},sec,'center',10);
+  // file-tree card: <TICKER>/ then its 3 files, each tagged with its origin layer
+  var ROWS=[
+    {h:28,col:tert, t:nm+'/',head:true,note:'one folder per asset'},
+    {h:34,col:AMB,  t:'  ├─ '+nm+'_ohlcv_1h.parquet',note:'from L4 (data)'},
+    {h:34,col:GREEN,t:'  ├─ OPTUNAs_XGB_HPOs_best_params.json',note:'from L9 (params)'},
+    {h:34,col:TP,   t:'  └─ strategy_'+nm+'.py',note:'from L10 (b64 strategy)'}
+  ];
+  var xw=255,y=-150;
+  for(i=0;i<ROWS.length;i++){
+    var b=ROWS[i],s0=CAM.S({x:-xw,y:y}),s1=CAM.S({x:xw,y:y+b.h});
+    fillRR(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,6,rgba(b.col,b.head?0.12:0.07),rgba(b.col,0.6),1);
+    monoS(b.t,s0.x+12,s0.y+16*zScale(),b.col,'left',b.head?11:9.5);
+    if(b.note)txtS(b.note,s1.x-12,s0.y+16*zScale(),sec,'right',7.5);
+    HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'endproduct'});
+    y+=b.h+10;
+  }
+  // ×N per-asset fan-out (mirror ArtifactView)
+  var fy=y+28,FAN=['AAPL','MSFT','NVDA','GOOGL','AMZN'];
+  for(i=0;i<FAN.length;i++)pillF(-176+i*72,fy,62,22,i===0?TP:tert,FAN[i]+'/',0.10,7);
+  txt('… ×503 folders — one deployable bundle per asset (data · params · strategy)',{x:0,y:fy+28},sec,'center',9);
+  txt('parquet for replay · params for re-tune · strategy.py = standalone decide(x) (b64 model, no training data) · click = full manifest',{x:0,y:fy+44},tert,'center',8);
 };
 function abandTip(i){
   return [
@@ -2404,17 +2467,18 @@ DQView.prototype.draw=function(){
 
 var LAYERS={src:new AlpacaSource(),zip:new ZipStore(),db:new DuckDBLayer(),qcring:new QCGateRing(),
   tf:new TransformLayer(),split:new SplitLayer(),detector:new SetupDetectorLayer(),feat:new FeatureForest(),
-  dq:new QualityLayer(),optuna:new OptunaSearchLayer(),export:new StrategyExportLayer(),oos:new OOSWall()};
+  dq:new QualityLayer(),optuna:new OptunaSearchLayer(),export:new StrategyExportLayer(),oos:new OOSWall(),
+  endproduct:new EndproductLayer()};
 var VIEWS={dataflow:new DataDAGView(),qc:new QCView(),split:new SplitTimelineView(),setup:new SetupGeometryView(),
-  optuna:new OptunaView(),artifact:new ArtifactView(),leak:new LeakView(),dq:new DQView()};
+  optuna:new OptunaView(),artifact:new ArtifactView(),leak:new LeakView(),dq:new DQView(),endproduct:new EndproductView()};
 
 function drawScene(){
   var i,insp=STATE.inspect;
   boundaryLines();
-  for(i=0;i<10;i++){ctx.save();ctx.globalAlpha=insp?0.22:1;flowArrow(i);ctx.restore();}
-  var ord=[0,1,2,3,4,5,6,7,8,9,10].map(function(l){return {l:l,d:lp(l,0.5,0.5,30).d};})
+  for(i=0;i<11;i++){ctx.save();ctx.globalAlpha=insp?0.22:1;flowArrow(i);ctx.restore();}
+  var ord=[0,1,2,3,4,5,6,7,8,9,10,11].map(function(l){return {l:l,d:lp(l,0.5,0.5,30).d};})
     .sort(function(p,q){return q.d-p.d;});
-  for(i=0;i<11;i++){
+  for(i=0;i<12;i++){
     var l=ord[i].l;
     ctx.save();ctx.globalAlpha=(!insp||(NODE_BY_LEV[l]&&NODE_BY_LEV[l].id===insp))?1:0.16;  // Inspection: dim the unselected
     if(l===0)LAYERS.src.draw();
@@ -2427,7 +2491,8 @@ function drawScene(){
     else if(l===7)LAYERS.dq.draw();
     else if(l===8)LAYERS.optuna.draw();
     else if(l===9)LAYERS.export.draw();
-    else LAYERS.oos.draw();
+    else if(l===10)LAYERS.oos.draw();
+    else LAYERS.endproduct.draw();
     ctx.restore();
   }
   if(!insp)boundaryCards();                            // in inspection the contract is in the panel, not on the boundary cards
@@ -2452,7 +2517,7 @@ function fitView(pts,padL,padR,padT,padB,zCap){
 function homeFit(){
 
   return fitView([lp(0,0,1.1,0),lp(0,1,1.1,0),lp(0,1,0,0),lp(0,0,0,0),
-           lp(10,0,0,60),lp(10,1,0,60),lp(10,0,1,60),lp(10,0.5,0.6,226)],104,104,28,36,null);
+           lp(11,0,0,60),lp(11,1,0,60),lp(11,0,1,60),lp(11,0.5,0.6,226)],104,104,28,36,null);
 }
 
 function preset(mode){
@@ -2519,7 +2584,7 @@ function tipFor(p){
   if(!p)return null;
   if(p.type==='layercap'){var nc=NODE_BY_LEV[p.lev];return '<b>'+nc.title+'</b>\n'+(nc.subtitle||nc.summary||'')+'\n<i>click = layer inspection (contract)</i>';}
   if(p.type==='asset'){var st=setupsMock(p.a),m=oosMock(p.a);
-    return '<b>Asset: '+ASSETS[p.a]+'</b>\n~17 600 1h candles (2016 → 2026)\nsetups in Train: long '+st.long+' · short '+st.short+'\nOOS: PF '+m.pf.toFixed(2)+' · Sharpe '+m.sharpe.toFixed(2)+'\n<i>click = panel / select asset</i>';}
+    return '<b>Asset: '+ASSETS[p.a]+'</b>\n~17 600 1h candles (2016 → 2026)\nsetups in Train: long '+st.long+' · short '+st.short+'\nOOS: PF '+m.pf.toFixed(2)+' · MDD '+m.mdd+'% · TIM '+m.tim+'%\n<i>click = panel</i>';}
   if(p.type==='universe')return '<b>Universe: 503 S&P 500 tickers</b>\n7 named samples + the rest as a grid\n1h OHLCV · 2016-01-04 → today';
   if(p.type==='api')return '<b>Alpaca Market Data API</b>\nfeed=sip · auth: API key\nhourly cron :05 · ET session guard\nupsert with 5-day lookback';
   if(p.type==='zip')return '<b>'+(ASSETS[p.a]||'aapl').toLowerCase()+'.zip</b>\n1 ticker = 1 zip · headerless CSV\nYYYYMMDD HH:MM,o,h,l,c,v\nprices = deci-cents ×10000\n<i>click = sample rows</i>';
@@ -2539,8 +2604,9 @@ function tipFor(p){
   if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset (both directions)';
   if(p.type==='optuna')return '<b>Optuna</b>\n200 trials · TPE · MedianPruner\nobjective: AUC-PR (purged WF CV on Train)\n<i>click = study</i>';
   if(p.type==='trial'){var t=TRIALS[p.i];return '<b>trial #'+p.i+'</b>\nAUC-PR: '+t.v.toFixed(3)+(t.pruned?' · PRUNED':'')+'\ndepth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nn_est '+t.params.n_estimators+' · subsample '+t.params.subsample;}
-  if(p.type==='strategy')return '<b>strategy_'+ASSETS[p.a]+'.py</b>\nbase64 model + feature manifest\nthreshold 0.60 + selfcheck\n<i>click = full manifest</i>';
+  if(p.type==='strategy')return '<b>strategy_<TICKER>.py</b>\nbase64 model + feature manifest\nthreshold 0.60 + selfcheck\n<i>click = full manifest</i>';
   if(p.type==='aband')return abandTip(p.b)+'\n<i>click = full manifest</i>';
+  if(p.type==='endproduct')return '<b>&lt;TICKER&gt;/ — per-asset deliverable folder</b>\n&lt;TICKER&gt;_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_&lt;TICKER&gt;.py\n×503 folders · one deployable bundle per asset\n<i>click = view</i>';
   if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0');var m2=oosMock(p.a),M=METRICS[p.m];
     return '<b>'+nm+' × '+M.name+'</b>\nvalue: '+m2[M.id]+'\ntrades: '+m2.trades+' · PF '+m2.pf+' · MDD '+m2.mdd+'%\n<i>click = full row</i>';}
   if(p.type==='dqTile'){var q=DQ[p.q];
@@ -2565,13 +2631,12 @@ function clickFor(p){
   if(!p)return;
   if(p.type==='layercap'){setInspect(NODE_BY_LEV[p.lev].id);return;}
   if(p.type==='asset'){
-    STATE.asset=p.a;document.getElementById('selAsset').value=String(p.a);
     var st=setupsMock(p.a),m=oosMock(p.a),mf=manifest(p.a),feats=[],i;
     for(i=0;i<FEATURES.length;i++)feats.push(FEATURES[i].name+' ('+importanceMock(p.a,i).toFixed(2)+')');
     PANEL.show(ASSETS[p.a]+' — details',
       '<b>Setups (Train):</b> long '+st.long+' · short '+st.short+
       '<br><b>CV (Train):</b> AUC-PR '+mf.metrics_cv.auc_pr+' · logloss '+mf.metrics_cv.logloss+
-      '<br><b>OOS:</b> PF '+m.pf+' · Sharpe '+m.sharpe+' · MDD '+m.mdd+'% · TIM '+m.tim+'% · WR '+m.wr+'% · trades '+m.trades+
+      '<br><b>OOS:</b> PF '+m.pf+' · MDD '+m.mdd+'% · TIM '+m.tim+'% · WR '+m.wr+'% · trades '+m.trades+
       '<br><b>Artifact:</b> '+mf.strategy_file+
       '<br><b>Top features (gain):</b><br>'+feats.slice(0,5).join('<br>'));}
   else if(p.type==='qc')PANEL.show(QC[p.g].name,'<b>'+QC[p.g].desc+'</b><br>'+qcStat()+'<br><br><b>All gates:</b><br>'+QC.map(function(g){return g.id+' — '+g.desc;}).join('<br>'));
@@ -2591,9 +2656,10 @@ function clickFor(p){
   else if(p.type==='optuna'||p.type==='trial'){var bt=TRIALS[BEST_TRIAL];
     var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';
     PANEL.show('Optuna study',extra+'<b>n_trials:</b> 200 · <b>sampler:</b> TPE<br><b>pruner:</b> '+OPTUNA.pruner+'<br><b>objective:</b> '+OPTUNA.objective+'<br><b>best:</b> #'+BEST_TRIAL+' → '+bt.v.toFixed(3)+'<br><b>search space:</b><pre>'+JSON.stringify(OPTUNA.space,null,2)+'</pre>');}
-  else if(p.type==='strategy'||p.type==='aband')PANEL.show('strategy_'+ASSETS[p.a!=null?p.a:STATE.asset]+'.py','<pre>'+JSON.stringify(manifest(p.a!=null?p.a:STATE.asset),null,2)+'</pre>');
+  else if(p.type==='strategy'||p.type==='aband')PANEL.show('strategy_<TICKER>.py','<pre>'+JSON.stringify(manifest(p.a!=null?p.a:0),null,2)+'</pre>');
+  else if(p.type==='endproduct')setMode('endproduct');
   else if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0'),m2=oosMock(p.a);
-    PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+' · <b>Sharpe:</b> '+m2.sharpe+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}
+    PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}
   else if(p.type==='dqTile'){var q=DQ[p.q];
     PANEL.show('Quality: '+q.name,'<b>Status:</b> '+q.status+'<br>'+q.detail.split(' · ').join('<br>')+'<br><br>source: reports/quality/summary.json');}
   else if(p.type==='dqParity'){var dp=DQ_PARITY[p.i];
@@ -2705,6 +2771,7 @@ window.addEventListener('keydown',function(e){
   if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT')return;
   var i=['1','2','3','4','5','6','7','8','9','0'].indexOf(e.key);
   if(i>=0)setMode(MODE_KEYS[i]);
+  else if(e.key==='l'||e.key==='L')setMode('leak');     // 'leak' (Anti-leakage) moved off the digit row → key L
 });
 
 function bindSeg(id,attr,fn){
@@ -2714,7 +2781,6 @@ function bindSeg(id,attr,fn){
     fn(b.getAttribute(attr));};})(bs[i]);
 }
 bindSeg('segMode','data-m',function(v){setMode(v);});
-bindSeg('segMetric','data-s',function(v){STATE.metric=v;});
 bindSeg('segCam','data-c',function(v){
   STATE.camPreset=v;
   applyCamPreset();
@@ -2731,10 +2797,6 @@ document.getElementById('bPng').onclick=function(){
     a.href=URL.createObjectURL(b);a.download='sp500_pipeline_3d.png';a.click();});}
   catch(e){EXPORT_FONT=1;draw();}
 };
-var selAsset=document.getElementById('selAsset');
-(function(){var i;for(i=0;i<7;i++){var o=document.createElement('option');o.value=String(i);o.textContent=ASSETS[i];selAsset.appendChild(o);}})();
-selAsset.onchange=function(){STATE.asset=parseInt(this.value,10)||0;};
-
 var leEl=document.getElementById('lblEditor'),leBody=document.getElementById('leBody'),
     leTab=document.getElementById('lblTab'),leSearch=document.getElementById('leSearch'),leBuilt=false;
 var LE_GROUPS=['Levels','Layer boundaries','QC gates','Transformer features','Assets (sample)','Source / Universe',
@@ -2868,11 +2930,12 @@ fit();
 var hp=homeFit();CAM.x=hp.x;CAM.y=hp.y;CAM.z=hp.z;CAM.t=hp;
 setPanel(loadPanel());   // apply the remembered/default panel (default: Legend open) — without fit()
 try{var hm=decodeURIComponent(location.hash.slice(1));
-  if(hm==='0')hm='leak';
+  if(hm==='0')hm='endproduct';
+  else if(hm==='l'||hm==='L')hm='leak';
   else if(/^[1-9]$/.test(hm))hm=MODE_KEYS[parseInt(hm,10)-1];
   if(/^[lL]\d+$/.test(hm)&&NODE_BY_ID[hm.toUpperCase()]){            // inspection deep-link: #L6 → frame + contract
     setInspect(hm.toUpperCase());var fp=frameLevel(NODE_BY_ID[hm.toUpperCase()].lev);CAM.x=fp.x;CAM.y=fp.y;CAM.z=fp.z;}
-  else if(MODE_KEYS.indexOf(hm)>=0&&hm!=='overview'){setMode(hm);var hp2=preset(hm);CAM.x=hp2.x;CAM.y=hp2.y;CAM.z=hp2.z;}
+  else if((MODE_KEYS.indexOf(hm)>=0||hm==='leak')&&hm!=='overview'){setMode(hm);var hp2=preset(hm);CAM.x=hp2.x;CAM.y=hp2.y;CAM.z=hp2.z;}
 }catch(e){}
 requestAnimationFrame(ANIM.frame.bind(ANIM));
 })();

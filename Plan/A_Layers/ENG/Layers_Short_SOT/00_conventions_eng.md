@@ -18,15 +18,15 @@ Owned here; companion docs reference this file and restate nothing.
 |---|---|---|
 | Analytical store (cylinder badge) | `DuckDB` | "duck", "kaczka" |
 | USD price view | `VIEW ohlcv_1h` (in prose: the `ohlcv_1h` view), add "(USD)" when needed | "VIEW USD", "USD view" |
-| OOS metrics order | **PF · Sharpe · MDD · TIM · WR** (= `METRICS` array) | PF · MDD · TIM · Sharpe · WR |
+| OOS metrics order | **PF · MDD · TIM · WR** (= `METRICS` array; Sharpe dropped — see Optimization objective) | re-introducing Sharpe; reordering the four |
 | Quality gates | `QC-01…QC-11` (11 QC gates) | "QC-01…11", "11 padlocks" |
 | Database snapshot | `atomic snapshot` | "snapshot atomic" |
 | Roll-in phase (prose) | `warm-up` (code/filenames: `warmup`) | "warm up", "warmup" in prose |
-| Layer numbering | **L1–L11** (Detector = L6, Features = L7, Quality gate = L8, Optuna search = L9, XGB final + artifact = L10, OOS = L11) | L1–L10; out-of-order layers |
+| Layer numbering | **L1–L12** (Detector = L6, Features = L7, Quality gate = L8, Optuna search = L9, XGB final + artifact = L10, OOS = L11, Endproduct folder = L12) | L1–L10/L1–L11; out-of-order layers |
 | Input price view | `raw_usd_view` | — |
 | Presentation language | viz UI + `README.md` + this `ENG/` package = English | — |
 
-**Scheme reservation:** `layer` / `L1–L11` belong to **Pipeline A only**. The feature explanation
+**Scheme reservation:** `layer` / `L1–L12` belong to **Pipeline A only**. The feature explanation
 ("Plan B") uses **Stages `F0–F14`** and ids `f{stage}_…` — never `L#`.
 
 ## Global numbers (agree everywhere)
@@ -41,9 +41,18 @@ _Canonical values mirror [`../../config/data_state_numbers.json`](../../config/d
 - **×<!--na:price_scale-->10000<!--/na-->** — price storage scale in the LEAN archive / `raw_ohlcv_1h` table (deci-cents).
 - **~<!--na:candles_per_day_typical-->7<!--/na-->** — 1h candles per RTH session day (09:00–16:00 ET); candles/day ∈ <!--na:candles_per_day_range_str-->[5, 9]<!--/na-->.
 
+## Optimization objective
+
+Default for Pipeline A, hard-coded; pinned in `config/parameters.json` (`OPTUNA_OBJECTIVE`, `STRATEGY_OBJECTIVE`); applied at [L10](L10_xgboost_strategy_eng.md) (selection/acceptance) and read at [L11](L11_oos_test_eng.md).
+
+- Label scheme: **Triple-Barrier Labeling** (TP · moving-`L_opp(t)` SL · vertical barrier `H`; defined in [L7](L7_features_x_label_y_eng.md)).
+- Strategy objective, lexicographic priority: **maximize PF** → **minimize MaxDD** → **minimize realized TIM** (time-in-market / underwater time); **WR** informational; **Sharpe** not used.
+- The vertical barrier `H` is the **structural** holding cap (frozen; value in [00_parameters_eng.md](00_parameters_eng.md)); the objective minimizes **realized** TIM, not the cap.
+- L9 in-fold tuning target = **AUC-PR** over purged walk-forward CV — a classifier proxy, **not** the trading objective above ([L9](L9_optuna_tuning_eng.md)).
+
 ## Cross-cutting rules
 
-- **ML pipeline** — the whole flow from raw market data to the strategy file and the OOS test; 11 levels L1–L11.
+- **ML pipeline** — the whole flow from raw market data through the strategy file and the OOS test to the per-asset deliverable folder; 12 levels L1–L12.
 - **Asset** — any instrument with OHLCV data; the pipeline is independent of price scale and timeframe.
 - **Candle / OHLCV** — one bar with the five fields `open, high, low, close, volume` in a given timeframe.
 - **TF (timeframe)** — candle resolution; default `1h` (see [00_parameters_eng.md](00_parameters_eng.md)).
