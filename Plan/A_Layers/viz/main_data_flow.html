@@ -544,7 +544,7 @@ var PIPELINE={
     {from:'L1',to:'L2',verb:'parse',payload:'Alpaca 1h → LEAN zip',causal_scope:'per ticker',
      detail:'Alpaca SIP 1h (session 09:00–16:00 ET, ~7 candles/day) → LEAN write: 1 zip per ticker, CSV in deci-cents ×10000, hourly cron :05'},
     {from:'L2',to:'L3',verb:'load',payload:'zip → DuckDB + VIEW ohlcv_1h (QC)',causal_scope:'QC-gated load',
-     detail:'510 zip (139 MB) → DuckDB raw_ohlcv_1h: 8 841 820 rows BIGINT ×10000 + VIEW ohlcv_1h = prices/10000.0 USD; QC-01…QC-11 gate every load'},
+     detail:'510 ZIP inventory (139 MB) + universe filter → DuckDB raw_ohlcv_1h: 8 841 820 rows, 503 symbols, BIGINT ×10000 + VIEW ohlcv_1h = prices/10000.0 USD; QC-01…QC-11 gate every load'},
     {from:'L3',to:'L4',verb:'freeze',payload:'snapshot → parquet OHLCV',causal_scope:'atomic',
      detail:'atomic database snapshot + manifest JSON (rows / symbols / ts range / price_view) → COPY to parquet OHLCV per ticker — zero derived columns'},
     {from:'L4',to:'L5',verb:'split',payload:'parquet OHLCV → time windows',causal_scope:'per asset',
