@@ -235,7 +235,7 @@ body.le-open #lblEditor{transform:translateY(0)}
 </div>
 
 <ol class="tlc-msgs">
-  <li><b>Alpaca SIP · 1h</b> — 503 S&amp;P 500 tickers, session 09:00–16:00 ET (~7 candles/day), 2016 → today.</li>
+  <li><b>Alpaca SIP · 1h</b> — 510 downloaded ZIP tickers; 503 quality-filtered ML universe downstream (L3), session 09:00–16:00 ET (~7 candles/day), 2016 → today.</li>
   <li><b>LEAN ZIP</b>: 510 zips (1 per ticker), CSV with prices in deci-cents <b>×10000</b>, 139 MB.</li>
   <li><b>DuckDB</b>: raw table (BIGINT ×10000) + <b>VIEW ohlcv_1h</b> (USD, /10000.0); every load is gated by QC-01…QC-11.</li>
   <li><b>Snapshot → parquet OHLCV</b> per ticker (×503) — features are computed only by the transformer (L7).</li>
@@ -473,7 +473,7 @@ var PIPELINE={
     {id:'L3',lev:2,family:'store',role:'store',col:TEAL,
      title:'DUCKDB raw + VIEW ohlcv_1h (USD) · QC-01…QC-11',subtitle:'load into DuckDB + VIEW ohlcv_1h, QC gates',
      summary:'8 841 820 rows · 503 symbols; QC-01…QC-11 gate every load',
-     input_contract:'510 zip',transform_verb:'load',
+     input_contract:'510 ZIP inventory + universe filter → 503 loaded symbols',transform_verb:'load',
      output_contract:'raw_ohlcv_1h (BIGINT ×10000) + VIEW ohlcv_1h (USD)',
      metric:{label:'rows',value:'8.84M'},invariants:['QC-01…QC-11 PASS','VIEW = /10000.0 USD'],
      status:'ok',dataKey:'QC',hitType:'db'},
@@ -561,7 +561,7 @@ var PIPELINE={
      detail:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×503 independent files, 1 model/hash/window per asset)'},
     {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
      detail:'503 frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR'},
-    {from:'L11',to:'L12',verb:'package',payload:'OOS-validated → per-asset deliverable folders',causal_scope:'per asset',
+    {from:'L11',to:'L12',verb:'package',payload:'frozen artifacts + external OOS verdict → per-asset deliverable folders',causal_scope:'per asset',
      detail:'package all ×503 frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 tuned HPOs) + strategy_<TICKER>.py (L10 b64 model + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
   ]
 };
