@@ -17,7 +17,7 @@ The champion is base64-serialized and embedded as `MODEL_B64` inside `strategy_<
 
 Per-asset selection follows the hard-coded strategy objective ([00_conventions_eng.md](00_conventions_eng.md)).
 
-- Among Train-only candidates (champion from [L9](L9_optuna_tuning_eng.md) + the tuned `THRESHOLD_ENTRY`), accept the per-asset strategy that — under Triple-Barrier exits, evaluated on Train (no OOS access) — **maximizes PF** → **minimizes MaxDD** → **minimizes realized TIM** (time-in-market / underwater time); **WR** informational.
+- The per-asset **champion** (the XGB retrained in L10 on [L9](L9_optuna_tuning_eng.md)'s best params — see Final training) is evaluated under Triple-Barrier exits on **Train only** (no OOS access) at the frozen `THRESHOLD_ENTRY = 0.60`, and accepted per the objective: **maximize PF** → **minimize MaxDD** → **minimize realized TIM** (time-in-market / underwater time); **WR** informational.
 - Once accepted, the artifact is **frozen** (`MODEL_HASH` registered) and handed to the one-shot OOS run ([L11](L11_oos_test_eng.md)); the OOS result never returns to selection.
 
 ## Strategy artifact contract
@@ -37,7 +37,7 @@ training data. Mandatory sections:
 | `selfcheck()` | golden vectors (input → expected `p`) verified at import; any divergence → hard error |
 
 - The build is **deterministic** (same run → same file hash).
-- `THRESHOLD_ENTRY` is tuned only in Train, never on OOS.
+- `THRESHOLD_ENTRY` is a frozen constant (`0.60`), validated on Train, never fit on OOS — identical for every asset.
 - Per-asset independence: each of the `×<!--na:universe_size-->503<!--/na-->` files can be debugged, disabled, swapped or deployed on its own.
 - Parameter values (`THRESHOLD_ENTRY`, `CV_SCHEME`, …): see [00_parameters_eng.md](00_parameters_eng.md).
 - Output: strategy files → frozen and tested in the OOS run ([L11](L11_oos_test_eng.md)); each ships inside its asset's `<TICKER>/` deliverable folder ([L12](L12_endproduct_eng.md)).

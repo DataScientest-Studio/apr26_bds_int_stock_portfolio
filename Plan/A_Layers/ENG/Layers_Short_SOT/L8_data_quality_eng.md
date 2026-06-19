@@ -12,7 +12,7 @@ Each hop is a store boundary; both sides are re-counted and asserted **exactly e
 
 | Hop | Compared | v1 reference target |
 |---|---|---|
-| **P1** `zip → DuckDB` | total row count **and** symbol count | <!--na:duckdb_row_count_str-->8 841 820<!--/na--> rows · <!--na:universe_size-->503<!--/na--> symbols |
+| **P1** `zip → DuckDB` | total row count **and** symbol count, **over the <!--na:universe_size-->503<!--/na--> universe** (the `config/universe_tickers.txt` subset — **not** the full <!--na:lean_zip_count-->510<!--/na--> ZIP inventory; the 7 non-universe ZIPs are out of P1 scope by design) | <!--na:duckdb_row_count_str-->8 841 820<!--/na--> rows · <!--na:universe_size-->503<!--/na--> symbols |
 | **P2** `DuckDB → parquet` | parquet file count **and** per-ticker row count | <!--na:universe_size-->503<!--/na--> files; per-ticker row equality |
 | **P3** `parquet → Output B` | per `asset_id`: setups emitted vs detector entries surviving DET-09 (audit R4) | per-asset setup-count equality |
 

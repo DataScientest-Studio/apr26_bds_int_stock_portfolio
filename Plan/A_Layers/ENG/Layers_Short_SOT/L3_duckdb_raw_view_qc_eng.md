@@ -2,7 +2,7 @@
 
 The canonical analytical database: raw integers in the table, USD in the view, quality-gated on every load.
 
-- From the zips we load a single DuckDB database (file `*.duckdb`).
+- From the zips we load a single DuckDB database (file `*.duckdb`); the load applies the universe filter (`config/universe_tickers.txt`), so `raw_ohlcv_1h` holds the <!--na:universe_size-->503<!--/na--> ML universe — the quality-filtered subset of the <!--na:lean_zip_count-->510<!--/na--> ZIPs ([L2](L2_lean_zip_store_eng.md)); the 7 non-universe ZIPs are not loaded.
 - The database holds the table `raw_ohlcv_1h` (verbatim data).
   - key columns: `symbol VARCHAR`, `ts TIMESTAMP`
   - price columns: `open/high/low/close BIGINT ×<!--na:price_scale-->10000<!--/na-->`

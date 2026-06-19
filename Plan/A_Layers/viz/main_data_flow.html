@@ -168,7 +168,7 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for a universe of 503 tickers, a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×503 independent files, one model per asset), a wall of OOS test results for 503 assets across 4 metrics, and a per-asset deliverable folder (×503) holding the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json and the strategy_&lt;TICKER&gt;.py. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for 503 S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for the S&amp;P 500 (download → 510 ZIPs; quality-filtered to 503 downstream), a LEAN ZIP store times 510 with prices times 10000, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×503 independent files, one model per asset), a wall of OOS test results for 503 assets across 4 metrics, and a per-asset deliverable folder (×503) holding the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json and the strategy_&lt;TICKER&gt;.py. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
 <p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final + b64 strategy ×503 → OOS test 503 assets → endproduct folder ×503. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
 
@@ -372,7 +372,7 @@ var PARAM_IMPORTANCE=[['learning_rate',0.31],['max_depth',0.22],['min_child_weig
 
 function setupsMock(a){var r=rng(a*131+9);return {long:Math.round(70+130*r()),short:Math.round(60+120*r())};}
 function oosMock(a){var r=rng(a*7919+101),q=r();
-  return {pf:+(0.75+1.35*q+0.2*(r()-0.5)).toFixed(2), sharpe:+(-0.4+2.4*q+0.3*(r()-0.5)).toFixed(2),
+  return {pf:+(0.75+1.35*q+0.2*(r()-0.5)).toFixed(2),
     mdd:+(32-24*q+4*r()).toFixed(1), tim:+(5+20*r()).toFixed(1),
     wr:+(33+22*q+4*r()).toFixed(1), trades:Math.round(25+115*r())};}
 function importanceMock(a,f){return Math.round(rng(a*31+f*131)()*0.30*100)/100;}
@@ -458,11 +458,11 @@ var DATA={FEATURES:FEATURES,QC:QC,SPLIT:SPLIT,DQ:DQ,METRICS:METRICS,OPTUNA:OPTUN
 var PIPELINE={
   nodes:[
     {id:'L1',lev:0,family:'source',role:'source',col:CAN,
-     title:'SOURCE: ALPACA SIP · S&P 500 (503)',subtitle:'fetch 1h OHLCV for the S&P 500 universe',
-     summary:'SIP 1h feed, session 09:00–16:00 ET (~7 candles/day), cron :05',
+     title:'SOURCE: ALPACA SIP · S&P 500 (→510 ZIP)',subtitle:'download 1h OHLCV for the S&P 500 set (→510 ZIPs)',
+     summary:'SIP 1h feed, session 09:00–16:00 ET (~7 candles/day), cron :05; quality-filtered to 503 universe downstream (L3)',
      input_contract:'Alpaca Market Data API (feed=sip, API key)',transform_verb:'parse',
      output_contract:'raw 1h OHLCV per ticker (naive ET)',
-     metric:{label:'tickers',value:'503'},invariants:['ET session guard','upsert lookback 5 days'],
+     metric:{label:'download',value:'510'},invariants:['ET session guard','upsert lookback 5 days'],
      status:'ok',hitType:'universe'},
     {id:'L2',lev:1,family:'store',role:'source',col:CAN,
      title:'LEAN ZIP STORE (510 zip · prices ×10000)',subtitle:'write LEAN cache: 1 zip / ticker',
@@ -562,7 +562,7 @@ var PIPELINE={
     {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
      detail:'503 frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR'},
     {from:'L11',to:'L12',verb:'package',payload:'OOS-validated → per-asset deliverable folders',causal_scope:'per asset',
-     detail:'OOS results confirm each strategy → assemble ×503 deliverable folders: <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 tuned HPOs) + strategy_<TICKER>.py (L10 b64 model + manifest) — one self-contained folder per asset'}
+     detail:'package all ×503 frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 tuned HPOs) + strategy_<TICKER>.py (L10 b64 model + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
   ]
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
@@ -1952,7 +1952,7 @@ function drawModelTree(x,y,col){
   ctx.restore();
 }
 function drawTrialFunnel(lev,a,b,col){
-  var rings=[[0.33,0.86,30,'opt_funnel1','200 trials'],[0.23,0.58,24,'opt_funnel2','pruning'],[0.13,0.33,18,'opt_funnel3','champion']],i,rs,c;
+  var rings=[[0.33,0.86,30,'opt_funnel1','200 trials'],[0.23,0.58,24,'opt_funnel2','pruning'],[0.13,0.33,18,'opt_funnel3','best trial']],i,rs,c;
   for(i=0;i<rings.length;i++){
     rs=ringScr(lev,a,b,rings[i][0],rings[i][1],rings[i][2],36);
     ctx.save();pathPtsS(rs,true);ctx.strokeStyle=rgba(col,0.50+i*0.12);ctx.lineWidth=1.2;ctx.setLineDash(i===0?[5,4]:[]);ctx.stroke();ctx.restore();
@@ -2396,7 +2396,7 @@ function abandTip(i){
     'sha256 of the base64 model\nfrozen in the OOS hash register\nidentifies this exact artifact (per asset)',
     'the Train window this model saw\nOOS stays untouched\none window per asset',
     'golden vectors checked on import\nprediction mismatch → hard error',
-    'strategy decision rule\nTHRESHOLD_ENTRY=0.60 tuned on Train'][i];
+    'strategy decision rule\nTHRESHOLD_ENTRY=0.60 (frozen; validated on Train)'][i];
 }
 
 function LeakView(){}
@@ -2585,7 +2585,7 @@ function tipFor(p){
   if(p.type==='layercap'){var nc=NODE_BY_LEV[p.lev];return '<b>'+nc.title+'</b>\n'+(nc.subtitle||nc.summary||'')+'\n<i>click = layer inspection (contract)</i>';}
   if(p.type==='asset'){var st=setupsMock(p.a),m=oosMock(p.a);
     return '<b>Asset: '+ASSETS[p.a]+'</b>\n~17 600 1h candles (2016 → 2026)\nsetups in Train: long '+st.long+' · short '+st.short+'\nOOS: PF '+m.pf.toFixed(2)+' · MDD '+m.mdd+'% · TIM '+m.tim+'%\n<i>click = panel</i>';}
-  if(p.type==='universe')return '<b>Universe: 503 S&P 500 tickers</b>\n7 named samples + the rest as a grid\n1h OHLCV · 2016-01-04 → today';
+  if(p.type==='universe')return '<b>S&P 500 source</b>\ndownload → 510 ZIPs · quality-filtered to 503 universe (L3)\n1h OHLCV · 2016-01-04 → today\n7 named samples + the rest as a grid';
   if(p.type==='api')return '<b>Alpaca Market Data API</b>\nfeed=sip · auth: API key\nhourly cron :05 · ET session guard\nupsert with 5-day lookback';
   if(p.type==='zip')return '<b>'+(ASSETS[p.a]||'aapl').toLowerCase()+'.zip</b>\n1 ticker = 1 zip · headerless CSV\nYYYYMMDD HH:MM,o,h,l,c,v\nprices = deci-cents ×10000\n<i>click = sample rows</i>';
   if(p.type==='zipall')return '<b>×510 LEAN zips</b>\n1 zip = 1 ticker · the full store\nheaderless CSV · prices ×10000 · 139 MB\n<i>sample shown: 13 named</i>';

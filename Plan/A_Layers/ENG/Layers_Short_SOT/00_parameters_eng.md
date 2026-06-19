@@ -9,7 +9,7 @@ no number.
 | Parameter | Default | Description |
 |---|---|---|
 | `TF` | `1h` | candle timeframe |
-| `H` (`HORIZON_CANDLES`) | `24` | time-barrier length in candles (1h ⇒ 1 day); tuned |
+| `H` (`HORIZON_CANDLES`) | `24` | time-barrier length in candles; `H=24` ≈ 3.4 RTH sessions (~<!--na:candles_per_day_typical-->7<!--/na--> candles/session) — **not** one calendar day; frozen structural cap (24 for `TF=1h`; see [00_conventions_eng.md](00_conventions_eng.md)) |
 | `MIN_TOUCHES` | `2` | minimum touches that qualify a line |
 | `W_VOL` | `20` | rolling window for `volume_z_score` |
 | `W_ATR` | `14` | ATR window (feature normalizer) |
@@ -18,7 +18,7 @@ no number.
 | `EPS` | `1e-9` | division-by-zero guard (`ε`) |
 | `BARRIER_MODE` | `close` | `close` (recommended) / `intrabar` |
 | `DISTANCE_NORM` | `atr` | `atr` (recommended) / `pct` / `raw` |
-| `THRESHOLD_ENTRY` | `0.60` | strategy decision threshold; tuned in Train, never on OOS |
+| `THRESHOLD_ENTRY` | `0.60` | strategy decision threshold; **frozen constant**, identical for every asset; validated on Train, never fit on OOS |
 | `PURGE_CANDLES` | `H` (= 24) | purge at window boundaries |
 | `EMBARGO_SESSIONS` | `5` | embargo after the Train→OOS boundary (≈ 35 candles) |
 | `N_TRIALS` | `200` | Optuna trial budget |

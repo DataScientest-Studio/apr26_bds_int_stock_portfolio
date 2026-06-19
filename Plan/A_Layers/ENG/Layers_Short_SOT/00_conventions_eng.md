@@ -33,7 +33,7 @@ Owned here; companion docs reference this file and restate nothing.
 
 _Canonical values mirror [`../../config/data_state_numbers.json`](../../config/data_state_numbers.json); rendered here via `na:` markers — edit the registry, not these lines._
 
-- **<!--na:universe_size-->503<!--/na-->** — universe size (quality-filtered subset of the <!--na:lean_zip_count-->510<!--/na--> ZIP inventory); derivation in `config/data_state_numbers.json` → `_universe_derivation`; list pinned in `config/universe_tickers.txt`.
+- **<!--na:universe_size-->503<!--/na-->** — universe size: the quality-filtered subset of the <!--na:lean_zip_count-->510<!--/na--> ZIP inventory that meets the **data-completeness criteria** (≥ 2 y history + acceptable gap coverage; 7 excluded). Derivation in `config/data_state_numbers.json` → `_universe_derivation`; list pinned in `config/universe_tickers.txt`.
 - **<!--na:lean_zip_count-->510<!--/na-->** — full LEAN ZIP inventory (one zip per downloaded ticker). The universe is its quality-filtered subset, so a few inventory tickers (non-constituents / failing the history-gap criteria) are not in the universe. Derivation: `config/data_state_numbers.json` → `_universe_derivation`.
 - **<!--na:duckdb_row_count_str-->8 841 820<!--/na-->** — rows in `raw_ohlcv_1h` (<!--na:universe_size-->503<!--/na--> symbols).
 - **<!--na:lean_zip_size_mb-->139<!--/na--> MB** — LEAN zip store total size.
