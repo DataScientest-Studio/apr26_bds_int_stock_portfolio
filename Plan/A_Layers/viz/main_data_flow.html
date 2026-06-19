@@ -401,7 +401,7 @@ var DQ=[
 function dqCol(s){return s==='OK'?TP:(s==='WARN'?AMB:SL);}
 var DQ_PARITY=[
   {id:'P1',tag:'P1',name:'zip → DuckDB',status:'OK',value:'8 841 820 rows · 503 symbols',
-   detail:'raw zip inventory and DuckDB raw+VIEW are re-counted; row and symbol counts must match exactly'},
+   detail:'filtered 503 ZIP universe and DuckDB raw+VIEW are re-counted; row and symbol counts must match exactly (the 7 non-universe ZIPs are out of scope)'},
   {id:'P2',tag:'P2',name:'DuckDB → parquet',status:'OK',value:'503 files · per-ticker rows',
    detail:'published parquet tree must match the DuckDB snapshot: file count and per-ticker row counts'},
   {id:'P3',tag:'P3',name:'parquet → Output B',status:'OK',value:'setup count per asset',
@@ -534,7 +534,7 @@ var PIPELINE={
     {id:'L12',lev:11,family:'output',role:'output',col:TP,
      title:'ENDPRODUCT: PER-ASSET DELIVERABLE FOLDER (×503)',subtitle:'package 1 deployable folder per asset',
      summary:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet + OPTUNAs_XGB_HPOs_best_params.json + strategy_<TICKER>.py',
-     input_contract:'OOS-validated strategy artifacts + per-asset parquet + tuned params',transform_verb:'package',
+     input_contract:'frozen strategy artifacts + external OOS verdict + per-asset parquet + Optuna params',transform_verb:'package',
      output_contract:'×503 × <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py }',
      metric:{label:'folders',value:'×503'},
      invariants:['1 self-contained folder per asset','3 files: data + params + strategy','strategy .py carries the b64 model, not the training data'],
@@ -562,7 +562,7 @@ var PIPELINE={
     {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
      detail:'503 frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR'},
     {from:'L11',to:'L12',verb:'package',payload:'frozen artifacts + external OOS verdict → per-asset deliverable folders',causal_scope:'per asset',
-     detail:'package all ×503 frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 tuned HPOs) + strategy_<TICKER>.py (L10 b64 model + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
+     detail:'package all ×503 frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 Optuna best params) + strategy_<TICKER>.py (L10 b64 model + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
   ]
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
@@ -1578,7 +1578,7 @@ EndproductLayer.prototype.draw=function(){
   line2(lp(11,0.30,0.50,18),lp(11,0.78,0.68,22),tert,1.2,[]);
   GLYPHS.parquetFile({lev:11,a:0.56,b:0.32,z0:22,col:AMB,i:0});             // <TICKER>_ohlcv_1h.parquet (L4 data, packaged here)
   var f2=SS(11,0.70,0.50,22),f3=SS(11,0.84,0.68,22);
-  GLYPHS.pyFile(f2.x,f2.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');  // L9 tuned HPOs (long name split across the glyph's two rows)
+  GLYPHS.pyFile(f2.x,f2.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');  // L9 Optuna best params (long name split across the glyph's two rows)
   HITS.addRect(f2.x-56,f2.y-20,112,40,{type:'optuna'});
   addObstacleRect(f2.x-56,f2.y-20,112,40);
   GLYPHS.pyFile(f3.x,f3.y,96,42,TP,'strategy_<TICKER>','.py');              // L10 b64 strategy
@@ -1587,7 +1587,7 @@ EndproductLayer.prototype.draw=function(){
   GLYPHS.stackBadge(11,0.94,0.5,20,TP,'×503','endproduct');
   if(STATE.labels){
     var po1=SS(11,0.5,0.10,2),po2=SS(11,0.5,0.97,0);
-    qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + tuned params + strategy',grp:'Endproduct',
+    qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + Optuna params + strategy',grp:'Endproduct',
       x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
     qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py  (×503 folders)',grp:'Endproduct',
       x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
@@ -2363,7 +2363,7 @@ EndproductView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
   var nm='<TICKER>',i;
   txt('L12 · Endproduct — per-asset deliverable folder',{x:0,y:-262},prim,'center',14,'700');
-  txt('one self-contained folder per asset: data + tuned params + strategy',{x:0,y:-244},sec,'center',10);
+  txt('one self-contained folder per asset: data + Optuna params + strategy',{x:0,y:-244},sec,'center',10);
   // file-tree card: <TICKER>/ then its 3 files, each tagged with its origin layer
   var ROWS=[
     {h:28,col:tert, t:nm+'/',head:true,note:'one folder per asset'},
