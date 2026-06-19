@@ -2,7 +2,7 @@
 
 This package is split into two folders so the two logics are **physically separate**:
 
-- **[`A_Layers/`](A_Layers/) — Main_Pipeline (Pipeline A), layers `L1–L10`.** The **sole build SOT**:
+- **[`A_Layers/`](A_Layers/) — Main_Pipeline (Pipeline A), layers `L1–L11`.** The **sole build SOT**:
   the S&P 500 ML trading-strategy pipeline (Alpaca → LEAN → DuckDB → snapshot → split → detector →
   features/triple-barrier → quality → Optuna/XGBoost → OOS). Start at the canonical SOT folder
   [`A_Layers/ENG/Layers_Short_SOT/`](A_Layers/ENG/Layers_Short_SOT/) (short fact-only files that own every
@@ -15,14 +15,14 @@ This package is split into two folders so the two logics are **physically separa
   [`B_Features/feature_explanation_plan_b_eng.md`](B_Features/feature_explanation_plan_b_eng.md); viz
   [`B_Features/viz/feature_dag.html`](B_Features/viz/feature_dag.html).
 
-**Naming rule:** `layer` / `L1–L10` = **A_Layers only**; `feature-stage` / `F0–F14` / `f{stage}_…` (ids on F2–F6) = **B_Features only**. Never mix.
+**Naming rule:** `layer` / `L1–L11` = **A_Layers only**; `feature-stage` / `F0–F14` / `f{stage}_…` (ids on F2–F6) = **B_Features only**. Never mix.
 
 ## A_Layers (Main_Pipeline · SOT)
 
-- **[`A_Layers/ENG/Layers_Short_SOT/`](A_Layers/ENG/Layers_Short_SOT/)** — the canonical total SOT: short fact-only files owning every parameter/formula/schema/contract (cross-cutting `00_*` + per-layer L1–L10 + QC-01…QC-11 + 7-X manifest + Output A/B + DoD). Governance + fact-ownership map in [`A_Layers/ENG/Layers_Short_SOT/README.md`](A_Layers/ENG/Layers_Short_SOT/README.md).
+- **[`A_Layers/ENG/Layers_Short_SOT/`](A_Layers/ENG/Layers_Short_SOT/)** — the canonical total SOT: short fact-only files owning every parameter/formula/schema/contract (cross-cutting `00_*` + per-layer L1–L11 + QC-01…QC-11 + 7-X manifest + Output A/B + DoD). Governance + fact-ownership map in [`A_Layers/ENG/Layers_Short_SOT/README.md`](A_Layers/ENG/Layers_Short_SOT/README.md).
 - _Narrative companions (ENG index, build narrative, reference detector algorithm, L8 worked example, glossary, writing standard) were removed in the A_Layers minimalism cleanup and preserved outside the live project → [`A_Layers_archive/ENG_companions/`](A_Layers_archive/ENG_companions/)._
 - [`A_Layers/config/`](A_Layers/config/) — `parameters.json` (Main params + `TOUCH_TOL`), `data_state_numbers.json` (frozen observed numbers), and `universe_tickers.txt` (the S&P 500 universe).
-- [`A_Layers/viz/main_data_flow.html`](A_Layers/viz/main_data_flow.html) — interactive 3D pipeline viz (L1–L10).
+- [`A_Layers/viz/main_data_flow.html`](A_Layers/viz/main_data_flow.html) — interactive 3D pipeline viz (L1–L11).
 
 ## B_Features (Feature explanation · helper)
 
@@ -43,4 +43,4 @@ This package is split into two folders so the two logics are **physically separa
 ## Notes
 - `A_Layers/` is self-contained for the Main_Pipeline build SOT (every contract / parameter / formula inlined).
 - The visualizations are frozen snapshots; if you change a canonical value, update the SOT docs and the viz together.
-- `layer` / `L1–L10` reserved for `A_Layers`; the feature explanation uses `F0–F14` (feature ids on F2–F6) only.
+- `layer` / `L1–L11` reserved for `A_Layers`; the feature explanation uses `F0–F14` (feature ids on F2–F6) only.

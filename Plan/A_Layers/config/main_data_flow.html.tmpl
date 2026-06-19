@@ -168,9 +168,9 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Ten levels from the bottom: an Alpaca SIP 1h source for a universe of {{universe_size}} tickers, a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, quality validation of stores and transforms with a dashboard as a gate before training, Optuna tuning and XGBoost training into a strategy file with a base64-encoded model, and a wall of OOS test results for {{universe_size}} assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Eleven levels from the bottom: an Alpaca SIP 1h source for a universe of {{universe_size}} tickers, a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces best_params, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×{{universe_size}} independent files, one model per asset), and a wall of OOS test results for {{universe_size}} assets across 5 metrics. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9 and 0, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
-<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → quality validation (dashboard) → Optuna+XGB → strategy .py (base64) → OOS test {{universe_size}} assets. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9 and 0 = views.</p>
+<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (best_params) → XGB final + b64 strategy ×{{universe_size}} → OOS test {{universe_size}} assets. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9 and 0 = views.</p>
 
 <div class="tlc-ctrls">
   <span class="lbl">View:</span>
@@ -233,10 +233,10 @@ body.le-open #lblEditor{transform:translateY(0)}
 <!-- Legend by 5 families (color = role, shape = silhouette). Red reserved for errors. -->
 <div class="tlc-leg">
   <span><span style="display:inline-block;width:12px;height:12px;border:1.5px solid #8a8980"></span> Source / gate <span style="color:var(--color-text-tertiary)">(L1–L2)</span></span>
-  <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3)</span></span>
+  <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3·L10)</span></span>
   <span><span style="display:inline-block;width:9px;height:14px;background:rgba(99,153,34,.20);border:1.5px solid #639922"></span> Transform <span style="color:var(--color-text-tertiary)">(L4·L6·L7·L9)</span></span>
   <span><span style="display:inline-block;width:13px;height:11px;border:1.5px solid #BA7517;border-radius:4px"></span> Gate / control <span style="color:var(--color-text-tertiary)">(L5·L8)</span></span>
-  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / report <span style="color:var(--color-text-tertiary)">(L10)</span></span>
+  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / report <span style="color:var(--color-text-tertiary)">(L11)</span></span>
   <span><span style="display:inline-block;width:11px;height:11px;background:linear-gradient(90deg,var(--c-fail-text),#9a9890,#22C55E)"></span> Result scale: bad ↔ good (diverging)</span>
   <span style="color:var(--c-fail-text)">✕ Red = error / block / FAIL (reserved)</span>
 </div>
@@ -247,9 +247,10 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>DuckDB</b>: raw table (BIGINT ×{{price_scale}}) + <b>VIEW ohlcv_1h</b> (USD, /{{price_scale}}.0); every load is gated by QC-01…QC-11.</li>
   <li><b>Snapshot → parquet OHLCV</b> per ticker (×{{universe_size}}) — features are computed only by the transformer (L7).</li>
   <li><b>Time split</b>: warm-up → train → OOS; <b>purge H=24 + embargo</b>, because TB labels overlap the boundaries.</li>
-  <li><b>Trend-line setup</b> = 8 transformer features (7 X + closed_through_line audit) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
-  <li><b>Quality validation</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
-  <li><b>Optuna tunes XGBoost on Train</b> (200 trials, purged walk-forward); champion → <b>strategy .py with a base64 model</b> + selfcheck.</li>
+  <li><b>Trend-line setup</b> = 7 geometric X + closed_through_line audit (8 transformer columns); FEATURE_MANIFEST = 8 X (7 geom + direction) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
+  <li><b>Data-quality gate</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
+  <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>best_params.json</b>.</li>
+  <li><b>XGB final training</b> per asset on best_params; champion → base64 → <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck → <b>×{{universe_size}} independent files</b> (1 model/hash/window per asset).</li>
   <li><b>OOS single run</b>: {{universe_size}} assets × PF · Sharpe · MDD · TIM · WR.</li>
 </ol>
 </div></div>
@@ -335,13 +336,11 @@ var SPLIT={
   bands:[
     {id:'warmup',name:'WARM-UP',from:'2016-01-04',to:'2016-10-14',frac:0.075,col:CAN,
      note:'roll-in for transformer windows: max(W_ATR=14, W_VOL=20) = 20 candles 1h → features without NULL; no training or detection'},
-    {id:'train', name:'TRAIN',  from:'2016-10-17',to:'2022-12-30',frac:0.595,col:TEAL,
-     note:'fit window touched multiple times: setup detection, features, Optuna (purged walk-forward CV), XGB training'},
-    {id:'validation',name:'VALIDATION',from:'2023-01-02',to:'2023-12-29',frac:0.100,col:PINK,
-     note:'purged walk-forward hold-out fold carved from the Train tail (~last year) · model selection + early-stop · separated from OOS by purge + embargo'},
+    {id:'train', name:'TRAIN',  from:'2016-10-17',to:'2023-12-29',frac:0.695,col:TEAL,
+     note:'fit window touched multiple times: setup detection, features, Optuna scoring via purged walk-forward CV (in-Train folds), XGB training — no separate data window'},
     {id:'oos',   name:'OOS',    from:'2024-01-02',to:'2026-05-29',frac:0.230,col:AMB,
      note:'frozen to the end · single strategy test run · zero tuning after seeing results'}],
-  purge:'purge = H = 24 candles — the triple barrier window of setups at the end of validation overlaps the boundary',
+  purge:'purge = H = 24 candles — the triple barrier window of setups at the end of Train overlaps the boundary',
   embargo:'embargo ≈ 5 sessions (~35 candles) after the boundary — rolling-feature autocorrelation; covers max feature lookback (20 candles)',
   embargoCol:BLU
 };
@@ -394,7 +393,7 @@ function metricQ(val,m){var M=METRICS[m],q=clamp((val-M.lo)/(M.hiV-M.lo),0,1);re
 
 var DQ=[
   {id:'parity',name:'PARITIES',status:'OK',
-   detail:'zip → DuckDB: {{duckdb_row_count_str}} rows / {{universe_size}} symbols · DuckDB → parquet: {{universe_size}} files · parquet → Output B: setup count per {asset × direction} (R4)'},
+   detail:'zip → DuckDB: {{duckdb_row_count_str}} rows / {{universe_size}} symbols · DuckDB → parquet: {{universe_size}} files · parquet → Output B: setup count per asset (R4)'},
   {id:'gaps',name:'GAPS',status:'OK',
    detail:'in-session gaps: 0 (hard fail QC-08/09/10) · overnight/weekend gaps: counted (normal for 1h) · filled gaps: 0 — we fill nothing'},
   {id:'zeros',name:'ZERO-VALUES',status:'WARN',
@@ -412,8 +411,8 @@ var DQ_PARITY=[
    detail:'raw zip inventory and DuckDB raw+VIEW are re-counted; row and symbol counts must match exactly'},
   {id:'P2',tag:'P2',name:'DuckDB → parquet',status:'OK',value:'{{universe_size}} files · per-ticker rows',
    detail:'published parquet tree must match the DuckDB snapshot: file count and per-ticker row counts'},
-  {id:'P3',tag:'P3',name:'parquet → Output B',status:'OK',value:'setup count per asset × direction',
-   detail:'Output B rows must match detector entries surviving DET-09 in every partition'}
+  {id:'P3',tag:'P3',name:'parquet → Output B',status:'OK',value:'setup count per asset',
+   detail:'Output B rows must match detector entries surviving DET-09 per asset'}
 ];
 var DQ_CANDLES=[
   {id:'healthy',name:'healthy',kind:'normal',status:'OK',counter:'baseline',
@@ -446,16 +445,16 @@ function manifest(a){var r=rng(a*991+7);
   return {asset:ASSETS[a],strategy_file:'strategy_'+ASSETS[a]+'.py',
     estimator:'XGBoost binary:logistic (meta-labeling: trend-line setup signal filter)',
     model_b64:'QmFzZTY0LWFydGVmYWt0Li4u (truncated, ~180 kB)',
-    feature_manifest:FEATURES.filter(function(f){return f.name!=='closed_through_line';}).map(function(f){return f.name;}),
-    label_contract:'TB_v1.1 · close-based · SL=L_opp(t) moving · geometric barriers R0 · H=24',
+    feature_manifest:FEATURES.filter(function(f){return f.name!=='closed_through_line';}).map(function(f){return f.name;}).concat(['direction']),
+    label_contract:'TB_v1.1 · close-based · SL=L_opp(t) moving · R0 · H=24',
     threshold_entry:0.60,
     optuna:{n_trials:200,best_trial:BEST_TRIAL,best_value:TRIALS[BEST_TRIAL].v},
-    windows:{train:'2016-10-17 → 2022-12-30',validation:'2023-01-02 → 2023-12-29',oos:'2024-01-02 → 2026-05-29'},
+    windows:{train:'2016-10-17 → 2023-12-29',oos:'2024-01-02 → 2026-05-29'},
     metrics_cv:{auc_pr:+(0.52+0.10*r()).toFixed(3),logloss:+(0.58+0.08*r()).toFixed(3)},
     selfcheck:'golden input → output: PASS'};
 }
 
-var BND_DZ=[189,189,192,189,189,189,185,189,202];   // 9 boundaries (10 levels): inserted L6 detector boundary
+var BND_DZ=[189,189,192,189,189,189,185,189,189,202];   // 10 boundaries (11 levels): split L9 (Optuna search) / L10 (XGB final + b64 artifact); L11 = OOS
 
 // ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
 // family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
@@ -506,27 +505,34 @@ var PIPELINE={
      metric:{label:'min touch',value:'2'},invariants:['causal fits (candles ≤ t0)','MIN_TOUCHES = 2','first break close-based'],
      status:'ok',icon:'setupGeometry',hitType:'detector'},
     {id:'L7',lev:6,family:'transform',role:'transform',col:GREEN,
-     title:'FEATURES X + LABEL Y (TRIPLE BARRIER)',subtitle:'transform setups → 7 X + audit + Y',
+     title:'FEATURES X + LABEL Y (TRIPLE BARRIER)',subtitle:'transform setups → 8 X + audit + Y',
      summary:'X,Y matrix per setup (Output B), features computed at t0',
      input_contract:'setup objects (detector) in the Train window',transform_verb:'transform',
-     output_contract:'Output B: 7 X + closed_through_line(audit) + Y_outcome + w_unique',
-     metric:{label:'features',value:'7 X'},invariants:['features at t0 ⇐ candles ≤ t0','FEATURE_MANIFEST = 7 X'],
+     output_contract:'Output B: 8 X (7 geom + direction) + closed_through_line(audit) + Y_outcome + label_uniqueness_weight',
+     metric:{label:'features',value:'8 X'},invariants:['features at t0 ⇐ candles ≤ t0','FEATURE_MANIFEST = 8 X (7 geom + direction)'],
      status:'ok',dataKey:'FEATURES',hitType:'feature'},
     {id:'L8',lev:7,family:'gate',role:'control',col:AMB,
-     title:'QUALITY VALIDATION: STORES + TRANSFORMS',subtitle:'validate parities/gaps/NaN → dashboard',
+     title:'DATA QUALITY GATE: STORES + TRANSFORMS',subtitle:'gate parities/gaps/NaN → dashboard',
      summary:'parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion',
      input_contract:'Output B + store manifests',transform_verb:'validate',
      output_contract:'reports/quality/summary.json + dashboard (FAIL blocks L9)',
      metric:{label:'gate',value:'OPEN'},invariants:['any FAIL blocks training','green dashboard = start condition'],
      status:'ok',dataKey:'DQ',hitType:'dqSummary'},
     {id:'L9',lev:8,family:'transform',role:'transform',col:GREEN,
-     title:'OPTUNA → XGBOOST → STRATEGY .py',subtitle:'tune + train → pack artifact',
-     summary:'Optuna 200 trials (TPE, purged WF CV) → XGBoost → strategy .py (model b64)',
-     input_contract:'Output B (green dashboard)',transform_verb:'train',
-     output_contract:'strategy_<TICKER>.py: model b64 + FEATURE_MANIFEST + threshold + selfcheck',
-     metric:{label:'trials',value:'200'},invariants:['training only on Train','meta-labeling: setup signal filter'],
-     status:'ok',dataKey:'OPTUNA',hitType:'xgb'},
-    {id:'L10',lev:9,family:'output',role:'output',col:TP,
+     title:'OPTUNA HYPERPARAMETER SEARCH',subtitle:'tune XGB on Train (TPE + MedianPruner)',
+     summary:'200 trials · TPE · MedianPruner · purged walk-forward CV (k=4) — Train only',
+     input_contract:'Output B (green dashboard) — Train only',transform_verb:'tune',
+     output_contract:'best_params.json (+ trial_history, optuna_study)',
+     metric:{label:'trials',value:'200'},invariants:['Train only — no OOS read','TPE + MedianPruner','best trial → best_params.json'],
+     status:'ok',dataKey:'OPTUNA',hitType:'optuna'},
+    {id:'L10',lev:9,family:'store',role:'store',col:TEAL,
+     title:'XGB FINAL TRAIN → b64 STRATEGY ×{{universe_size}}',subtitle:'train champion → serialize → b64 → 1 strategy .py per asset',
+     summary:'best_params + Train X/y + FEATURE_MANIFEST → final XGB → b64 → strategy_<TICKER>.py (×{{universe_size}})',
+     input_contract:'best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',transform_verb:'pack',
+     output_contract:'×{{universe_size}} strategy_<TICKER>.py: MODEL_B64 + FEATURE_MANIFEST + THRESHOLD + selfcheck (1 model/asset)',
+     metric:{label:'artifacts',value:'×{{universe_size}}'},invariants:['1 model + 1 .py + 1 hash per asset','deterministic build (stable hash)','self-contained: no training data at import'],
+     status:'ok',dataKey:'OPTUNA',hitType:'artifact'},
+    {id:'L11',lev:10,family:'output',role:'output',col:TP,
      title:'OOS TEST: {{universe_size}} ASSETS × METRICS',subtitle:'evaluate on the frozen OOS window',
      summary:'single run on OOS 2024-01-02 → 2026-05-29',
      input_contract:'{{universe_size}} frozen strategy artifacts',transform_verb:'evaluate',
@@ -544,13 +550,15 @@ var PIPELINE={
      detail:'{{universe_size}} parquet OHLCV (1/ticker) → time split: warm-up (roll-in max(W_ATR,W_VOL)=20 candles) / train / OOS + purge H=24 and embargo at boundaries'},
     {from:'L5',to:'L6',verb:'detect',payload:'Train window → trend-line setups',causal_scope:'candles ≤ t0',
      detail:'Train only: trend-line setup detector — fits of L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead)'},
-    {from:'L6',to:'L7',verb:'transform',payload:'setup objects → 7 X + audit + Y',causal_scope:'features at t0',
-     detail:'setup objects (detector) → 8 transformer features (7 X + 1 audit) computed at t0 + label Y = triple barrier (Output B)'},
+    {from:'L6',to:'L7',verb:'transform',payload:'setup objects → 8 X + audit + Y',causal_scope:'features at t0',
+     detail:'setup objects (detector) → 7 geometric X at t0 + direction (from L6) = FEATURE_MANIFEST 8 X + closed_through_line audit + label Y triple barrier (Output B)'},
     {from:'L7',to:'L8',verb:'validate',payload:'Output B → quality dashboard',causal_scope:'checkpoint',
-     detail:'X,Y matrix per setup (Output B) + store manifests → quality validation: parities zip→DuckDB→parquet→Output B · gaps · zero-values · NaN/Inf · split assertion → summary.json + dashboard'},
-    {from:'L8',to:'L9',verb:'train',payload:'green dashboard → Optuna+XGB → .py',causal_scope:'Train only',
-     detail:'quality gate: training starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + pruning, purged walk-forward CV) → XGBoost → strategy .py with a base64 model + selfcheck'},
-    {from:'L9',to:'L10',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
+     detail:'X,Y matrix per setup (Output B) + store manifests → data-quality gate: parities zip→DuckDB→parquet→Output B · gaps · zero-values · NaN/Inf · split assertion → summary.json + dashboard'},
+    {from:'L8',to:'L9',verb:'tune',payload:'green dashboard → Optuna search',causal_scope:'Train only',
+     detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → best_params.json'},
+    {from:'L9',to:'L10',verb:'pack',payload:'best_params → final XGB → b64 strategy',causal_scope:'per asset',
+     detail:'best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×{{universe_size}} independent files, 1 model/hash/window per asset)'},
+    {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
      detail:'{{universe_size}} frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · Sharpe · MDD · TIM · WR'}
   ]
 };
@@ -564,6 +572,8 @@ var stage=document.getElementById('stage'),cv=document.getElementById('tlc'),ctx
 var tip=document.getElementById('tip'),panel=document.getElementById('panel'),
     panelTitle=document.getElementById('panelTitle'),panelBody=document.getElementById('panelBody');
 var cw=940,chh=600;
+var GUTTER_L=196;                                              // reserved LEFT gutter (px) for the screen-pinned boundary notes (card W=178 + margin)
+function gutterL(){return (STATE.labels&&!isFlatView())?Math.min(GUTTER_L,cw*0.34):0;}   // 0 in flat views / when labels are off
 
 var STATE={mode:'overview',asset:0,labels:true,flow:true,names:'sample',metric:'pf',speed:1,paused:false,camPreset:'iso',inspect:null,detFocus:'lw',splitFocus:2};
 var MODE_KEYS=['overview','dataflow','qc','split','setup','dq','optuna','artifact','oos','leak']; // keys 1-9,0 → mode (single source)
@@ -638,7 +648,8 @@ function faceVis(nx,ny,nz){var ny1=nx*ROT.sy+ny*ROT.cy;return (ny1*ROT.cp-nz*ROT
 
 function Camera2D(){this.x=0;this.y=0;this.z=1;this.t={x:0,y:0,z:1};}
 Camera2D.prototype.step=function(dt){var k=Math.min(1,dt*5);
-  this.x+=(this.t.x-this.x)*k;this.y+=(this.t.y-this.y)*k;this.z+=(this.t.z-this.z)*k;};
+  this.x+=(this.t.x-this.x)*k;this.y+=(this.t.y-this.y)*k;this.z+=(this.t.z-this.z)*k;
+  var g=gutterL();if(g>0){var maxX=-0.74*ISO.W+(cw/2-g)/this.z;if(this.x>maxX)this.x=maxX;}};   // hard clamp: scene's left edge (a≈-0.24) can never slide under the boundary notes
 Camera2D.prototype.S=function(p){return {x:(p.x-this.x)*this.z+cw/2,y:(p.y-this.y)*this.z+chh/2};};
 var CAM=new Camera2D();
 function SS(lev,a,b,dz){return CAM.S(lp(lev,a,b,dz));}
@@ -797,12 +808,12 @@ function boundaryCards(){
     var s=T('bnd'+i,BND_DEF[i],'Layer boundaries');
     var isHL=(HL.key==='bnd'+i);HL.pending=false;
     if(!s)continue;
-    var sp=CAM.S(bp(i,(i%2===0)?1.04:-0.04,0.5)),c0=CAM.S(bp(i,0.5,0.5));
+    var sp=CAM.S(bp(i,-0.04,0.5));   // all boundary notes anchored LEFT → single left column, never over right-side scene
 
     var yLo=(i>0)?BNDY[i-1]:CAM.S(P3(0,0,0)).y;
     var anch={x:sp.x,y:(BNDY[i]+yLo)/2};
     if(anch.x<-cw*0.2||anch.x>cw*1.2||anch.y<-chh*0.25||anch.y>chh*1.25)continue;
-    cards.push({i:i,s:s,hl:isHL,anch:anch,right:sp.x>=c0.x});
+    cards.push({i:i,s:s,hl:isHL,anch:anch,right:false});   // force all cards into the left column
   }
   cards.sort(function(p,q){return p.anch.y-q.anch.y;});
   var minY={l:6,r:6};
@@ -1054,7 +1065,7 @@ TransformLayer.prototype.draw=function(){
 
 function SplitLayer(){}
 // L5 · clean colored time-axis bar: each window is a colored 3D slab tiled along the time axis
-// (warm-up/train/validation/oos); a narrow purge+embargo sub-zone straddles the validation->OOS
+// (warm-up/train/oos); a narrow purge+embargo sub-zone straddles the Train->OOS
 // boundary. Colors live ON the bar — no floating brackets, no twin depth lines. Year/boundary ticks
 // hang below; segment names sit at one height just above the bar. Subtle 3D depth via the slab itself.
 SplitLayer.prototype.draw=function(){
@@ -1072,16 +1083,15 @@ SplitLayer.prototype.draw=function(){
   for(i=0;i<ord.length;i++)prism(4,ord[i].a0,BAX0,ord[i].a1,BAX1,AXZ,AXH,SPLIT.bands[ord[i].i].col,TOPA);
   line2(lp(4,AX0,BAX0,AXZ),lp(4,AX1,BAX0,AXZ),rgba(tert,0.6),1.2);      // baseline at the front edge — year scale hangs from here
 
-  // --- purge + embargo: thin slabs straddling the validation->OOS boundary, lifted to override the seam ---
+  // --- purge + embargo: thin slabs straddling the Train->OOS boundary, lifted to override the seam ---
   var eB=aOf(SPLIT.edgeF[SPLIT.edgeF.length-1]),gw=0.014;
   var peL=CAM.S(lp(4,eB-gw,axB,axTop)),peR=CAM.S(lp(4,eB+gw,axB,axTop));
   if(Math.abs(peR.x-peL.x)>=6){                                        // LOD: below a few px drop the slabs; SL boundary tick stays the marker
-    prism(4,eB-gw,BAX0,eB,BAX1,AXZ,AXH+0.6,SL,0.9);                    // purge (validation/fit side) = red
+    prism(4,eB-gw,BAX0,eB,BAX1,AXZ,AXH+0.6,SL,0.9);                    // purge (Train/fit side) = red
     prism(4,eB,BAX0,eB+gw,BAX1,AXZ,AXH+0.6,SPLIT.embargoCol,0.85);}     // embargo (OOS side) = blue (distinct from OOS amber)
 
   // --- yearly scale + emphasized window boundaries, hung just under the bar ---
   var emphF=[{f:dfrac('2016-10-14'),col:CAN,key:'split_axis_warmend',date:'2016-10-14'},
-             {f:SPLIT.edgeF[1],col:PINK,key:'split_axis_valstart',date:'2023-01-02',lo:14},
              {f:SPLIT.edgeF[SPLIT.edgeF.length-1],col:SL,key:'split_axis_trainoos',date:'2023-12-29 → 2024-01-02'},
              {f:1,col:AMB,key:'split_axis_oosend',date:'2026-05-29'}];
   var firstY=SPLIT.years[0].y,lastY=SPLIT.years[SPLIT.years.length-1].y;
@@ -1300,7 +1310,7 @@ FeatureForest.prototype.draw=function(){
   caption(6);
   var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
       bord=vget('--color-border-secondary','#555'),ai=STATE.asset;
-  var bw=0.55,base=4,HZ6=150,nf=FEATURES.length;        // nf=8 (7 X + 1 audit)
+  var bw=0.55,base=4,HZ6=150,nf=FEATURES.length;        // nf=8 transformer columns (7 geometric X + closed_through_line audit); manifest adds direction → 8 X
   var NCOL=nf+2,NROW=6,ycol=NCOL-1;                      // col 0=header t · 1..nf=features · ycol=Y;  rows 0=header x · 1..4=setups · 5=…
   var A=CAM.S(lp(6,0.08,bw,base)),B=CAM.S(lp(6,0.92,bw,base)),
       T1=CAM.S(lp(6,0.08,bw,base+HZ6)),T2=CAM.S(lp(6,0.92,bw,base+HZ6));
@@ -1351,103 +1361,155 @@ FeatureForest.prototype.draw=function(){
     qLabel({key:'feat_Y',def:'Y_outcome',grp:'Features & label',x:phY.x,y:phY.y,col:TP,
       al:'left',sz:9,wt:'600',rot:-0.62,pr:2,lod:LOD.name,ax:pgY.x,ay:pgY.y});
     var pw=PT(1.02,0.12),pwa=PT(0.99,0.12);                                              // sample weight (chip next to Y)
-    qLabel({key:'feat_w',def:'w_unique (weight)',grp:'Features & label',x:pw.x,y:pw.y,col:vget('--color-text-secondary','#999'),
+    qLabel({key:'feat_w',def:'label_uniqueness_weight (weight)',grp:'Features & label',x:pw.x,y:pw.y,col:vget('--color-text-secondary','#999'),
       al:'left',sz:8.5,rot:-0.62,pr:2,lod:LOD.name,ax:pwa.x,ay:pwa.y});
     var pcap=PT(0.5,-0.17);
     qLabel({key:'ff_causal',def:'Features computed at t0 — only candles ≤ t0 (causality)',grp:'Features & label',
       x:pcap.x,y:pcap.y,col:GREEN,al:'center',sz:10.5,wt:'600',pr:3});
     var pn=PT(0.5,1.12);
-    qLabel({key:'ff_setup',def:'row = trend-line setup · columns = 7 X features + audit (close>line) + Y_outcome + weight w_unique · partition: asset × direction',grp:'Features & label',
+    qLabel({key:'ff_setup',def:'row = trend-line setup · columns = 8 X (7 geom + direction) + audit (close>line) + Y_outcome + weight label_uniqueness_weight · partition: asset (1 model per asset)',grp:'Features & label',
       x:pn.x,y:pn.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
 
+// One titled checklist column (L3 QCGateRing style): title + per-row checkbox + status icon +
+// truncated label; the Candle column adds a mini-candle marking, and WARN rows get a count badge
+// in `detail` mode. World-space caller positions it; sizes scale with `f`.
+function dqNum(s){var m=String(s).match(/\d[\d ]*\d|\d/);return m?m[0]:'';}   // first digit run ("1 274") — read from existing fields
+function drawDQColumn(x,yTop,w,title,accent,rows,payloadType,rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,candle,f){
+  var prim=vget('--color-text-primary','#eee'),brd=vget('--color-border-secondary','#555'),i,n=rows.length;
+  if(showLbl)txtS(dqFit(title,w,titleFz,'700'),x,yTop+titleH-3,accent,'left',titleFz,'700');
+  var yBody=yTop+titleH;
+  for(i=0;i<n;i++){
+    var r=rows[i],ry=yBody+i*rowH+rowH*0.5,col=dqCol(r.status),cx=x+cbS*0.6;
+    if(showLbl){ctx.save();ctx.strokeStyle=rgba(brd,0.45);ctx.lineWidth=0.7;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(x,ry-rowH*0.5);ctx.lineTo(x+w,ry-rowH*0.5);ctx.stroke();ctx.restore();}
+    drawCheckbox(cx,ry,cbS,accent,'');
+    drawStatusIcon(cx+cbS*0.9+5*f,ry,col,r.status);
+    var tx=cx+cbS*0.9+12*f,rEdge=x+w;
+    if(candle){                                                  // candle markings — the "additional markings"
+      var gw=detail?16*f:13*f,gh=detail?18*f:15*f,gx=rEdge-gw*0.7;rEdge=gx-gw*0.6;
+      drawMiniCandle(gx,ry,gw,gh,r.kind,r.status);
+    }
+    if(detail&&r.status==='WARN'){                               // count badge for WARN rows
+      var num=dqNum(candle?r.counter:r.value);
+      if(num){var bw=Math.max(20,num.length*5.0+12)*f,bx=rEdge-bw,by=ry-7*f;
+        rEdge=bx-4*f;drawStatusBadge(bx,by,'WARN',num,{w:bw,h:14*f,sz:6.6});}
+    }
+    if(showLbl){                                                 // detail = full name only (no redundant tag, no inline value → no overlap); values via click → side panel
+      var lbl=detail?r.name:(r.tag||r.id||r.name);
+      txtS(dqFit(lbl,rEdge-tx,fz,'600'),tx,ry+fz*0.36,prim,'left',fz,'600');
+    }
+    HITS.addRect(x,ry-rowH*0.5,w,rowH,{type:payloadType,i:i});
+  }
+}
+
 function QualityLayer(){}
 QualityLayer.prototype.draw=function(){
   caption(7);
-  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
-  var base=SS(7,0.50,0.46,16),expanded=(STATE.inspect==='L8'||CAM.z>=0.95);
-  if(expanded){
-    var panelOpen=panel&&panel.style.display!=='none',sr=stage.getBoundingClientRect();
-    var rightLimit=panelOpen?(panel.getBoundingClientRect().left-sr.left-18):(cw-24);
-    var leftLimit=16,avail=Math.max(560,rightLimit-leftLimit);
-    var dashW=Math.min(panelOpen?900:980,avail),gap=dashW<720?16:22,panelH=dashW<720?154:176;
-    var frameTop=(BNDY[7]!=null)?BNDY[7]:(base.y-panelH-110),top=Math.max(frameTop+72,base.y-(panelH+72));
-    var inner=dashW-gap*2,wP=Math.round(inner*0.29),wC=Math.round(inner*0.34),wT=inner-wP-wC;
-    var left=Math.max(leftLimit,Math.min(base.x-dashW/2,rightLimit-dashW));
-    drawParityLedger(left,top,wP,false,{scale:'expanded',h:panelH});
-    drawCandleQCStrip(left+wP+gap,top,wC,false,{scale:'expanded',h:panelH});
-    drawTransformAuditTable(left+wP+gap+wC+gap,top,wT,false,{scale:'expanded',h:panelH});
-    var sw=Math.min(dashW*0.70,560),sh=46,sx=left+(dashW-sw)/2,sy=top+panelH+22;
-    drawFold(sx,sy,sw,sh,9,PINK,0.08);
-    txtS('summary.json',sx+18,sy+19,prim,'left',10,'700');
-    txtS('gate open · OK/WARN → L9 may start · FAIL blocks',sx+18,sy+37,tert,'left',8.8,'600');
-    drawStatusBadge(sx+sw-76,sy+11,'WARN','WARN',{w:62,h:23,sz:8.8});
-    HITS.addRect(sx,sy,sw,sh,{type:'dqSummary'});
-    addObstacleRect(sx,sy,sw,sh);
-  }else{
-    var topN=base.y-42,wPN=100,wCN=120,wTN=112,gapN=14,leftN=base.x-(wPN+wCN+wTN+gapN*2)/2;
-    drawParityLedger(leftN,topN,wPN,true,{h:66});
-    drawCandleQCStrip(leftN+wPN+gapN,topN,wCN,true,{h:66});
-    drawTransformAuditTable(leftN+wPN+gapN+wCN+gapN,topN,wTN,true,{h:66});
-    var sp={x:base.x,y:topN+82},wp=118,hp=30;
-    drawFold(sp.x-wp/2,sp.y-hp/2,wp,hp,9,PINK,0.10);
-    txtS('summary.json',sp.x-16,sp.y-4,prim,'center',6.8,'600');
-    drawStatusBadge(sp.x+22,sp.y-13,'WARN','WARN');
-    txtS('gate open',sp.x,sp.y+8,tert,'center',6.7,'600');
-    HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'dqSummary'});
-    addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
-  }
-  if(STATE.labels&&!expanded){
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),brd=vget('--color-border-secondary','#555');
+  var detail=(STATE.inspect==='L8'||CAM.z>=1.15),showLbl=CAM.z>=LOD.name;
+  var f=Math.min(bandFit(7),detail?1.3:1.05);
+  var rowH=(detail?18:15)*f,fz=(detail?7.8:7.2)*f,titleFz=8.4*f,titleH=15*f,cbS=Math.min(10*f,rowH-4),gap=12*f;
+  var maxRows=Math.max(DQ_PARITY.length,DQ_CANDLES.length,DQ_TRANSFORM.length),bodyH=maxRows*rowH;
+  var wP=showLbl?(detail?Math.max(120,150*f):Math.max(58,96*f)):26*f,
+      wC=showLbl?(detail?Math.max(150,180*f):Math.max(74,118*f)):30*f,
+      wT=showLbl?(detail?Math.max(140,170*f):Math.max(58,100*f)):26*f;
+  var blockW=wP+wC+wT+gap*2,totalH=titleH+bodyH+14*f+26*f;
+  // center the whole block vertically INSIDE the L8 band — between boundary 6 (L7/L8, bottom) and boundary 7 (L8/L9, top)
+  var bTop=(BNDY[7]!=null)?BNDY[7]:SS(7,0.5,0.5,189).y,bBot=(BNDY[6]!=null)?BNDY[6]:SS(7,0.5,0.5,-55).y;
+  var x0=Math.round(SS(7,0.50,0.50,67).x-blockW/2),yTop=Math.round((bTop+bBot)/2-totalH/2),yBody=yTop+titleH;
+  var xP=x0,xC=xP+wP+gap,xT=xC+wC+gap;
+  HITS.addRect(x0-6,yTop-6,blockW+12,titleH+bodyH+10,{type:'dqSummary'});
+  drawDQColumn(xP,yTop,wP,'Store Parity',TEAL,DQ_PARITY,'dqParity',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,false,f);
+  drawDQColumn(xC,yTop,wC,'Candle QC',AMB,DQ_CANDLES,'dqCandleCase',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,true,f);
+  drawDQColumn(xT,yTop,wT,'Transform QC',GREEN,DQ_TRANSFORM,'dqTransformCheck',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,false,f);
+  ctx.save();ctx.strokeStyle=rgba(brd,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+  var dv1=Math.round(xP+wP+gap*0.5),dv2=Math.round(xC+wC+gap*0.5);
+  ctx.beginPath();ctx.moveTo(dv1,yTop-2);ctx.lineTo(dv1,yBody+bodyH);ctx.moveTo(dv2,yTop-2);ctx.lineTo(dv2,yBody+bodyH);ctx.stroke();ctx.restore();
+  obstacle(x0-6,yTop-6,x0+blockW+6,yBody+bodyH+4);
+  var sw=Math.min(blockW*0.74,180*f),sh=26*f,sx=x0+(blockW-sw)/2,sy=yBody+bodyH+14*f;
+  drawFold(sx,sy,sw,sh,9,PINK,0.10);
+  if(showLbl){txtS('summary.json',sx+9*f,sy+sh*0.42,prim,'left',6.8,'700');txtS('gate open',sx+9*f,sy+sh*0.84,tert,'left',6.5,'600');}
+  drawStatusBadge(sx+sw-44*f,sy+sh*0.5-9,'WARN','WARN',{w:40,h:18,sz:7});
+  HITS.addRect(sx,sy,sw,sh,{type:'dqSummary'});addObstacleRect(sx,sy,sw,sh);
+  if(STATE.labels){
     var pq1=SS(7,0.5,0.12,4),pq2=SS(7,0.5,0.95,0);
-    qLabel({key:'dq_gate',def:'quality gate: training (L9) starts only with a green dashboard — FAIL blocks',grp:'Quality validation',
+    qLabel({key:'dq_gate',def:'quality gate: training (L9) starts only with a green dashboard — FAIL blocks',grp:'Data quality gate',
       x:pq1.x,y:pq1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'dq_scope',def:'validation of the whole flow: zip → DuckDB → parquet → split → Output B',grp:'Quality validation',
+    qLabel({key:'dq_scope',def:'data-quality gate over the whole flow: zip → DuckDB → parquet → split → Output B',grp:'Data quality gate',
       x:pq2.x,y:pq2.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
 
-function TrainingLayer(){}
-TrainingLayer.prototype.draw=function(){
+// L9 — Optuna hyperparameter search ONLY: trial funnel → best_params.json. No final training, no .py, no b64.
+function OptunaSearchLayer(){}
+OptunaSearchLayer.prototype.draw=function(){
   caption(8);
-  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
-  GLYPHS.trialFunnel(8,0.32,0.5,PINK);
-
-  var top=prism(8,0.20,0.38,0.44,0.64,2,26,GREEN,0.25),tc=ctr(top);
-  if(CAM.z>=0.75)GLYPHS.modelTree(tc.x,tc.y+2,GREEN);
-  HITS.addPts([lp(8,0.18,0.36,32),lp(8,0.46,0.66,0)],{type:'xgb'});
-  if(STATE.labels){
-    var px1=SS(8,0.32,0.5,32),px2=SS(8,0.32,0.74,0),pxa=SS(8,0.32,0.5,28);
-    qLabel({key:'xgb_title',def:'XGB',grp:'Training / Optuna',
-      x:px1.x,y:px1.y-2,col:prim,al:'center',sz:11,wt:'700',pr:3,ax:pxa.x,ay:pxa.y});
-    qLabel({key:'xgb_sub',def:'binary:logistic · meta-label',grp:'Training / Optuna',
-      x:px2.x,y:px2.y,col:tert,al:'center',sz:8,pr:1});
-  }
-  line2(lp(8,0.50,0.5,18),lp(8,0.72,0.5,18),tert,1.4,[]);
+  var tert=vget('--color-text-tertiary','#777');
+  GLYPHS.trialFunnel(8,0.30,0.5,PINK);                            // 200 trials → pruning → best (TPE tag · hit:{type:'optuna'})
+  line2(lp(8,0.52,0.5,18),lp(8,0.72,0.5,18),tert,1.4,[]);
   var ah=CAM.S(lp(8,0.72,0.5,18));
   ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
-
-  var sp=SS(8,0.82,0.5,20),wp=92,hp=42;
-  if(flash>0)strokeRR(sp.x-wp/2-3,sp.y-hp/2-3,wp+6,hp+6,13,rgba(AMB,flash*0.8),2);
-  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_'+(aname(STATE.asset)||ASSETS[STATE.asset])+'.py');
-  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy',a:STATE.asset});
-  addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
-  GLYPHS.stackBadge(8,0.94,0.5,20,AMB,'×{{universe_size}}','strategy');
+  var bp=SS(8,0.83,0.5,20);                                       // output artifact = best_params.json
+  GLYPHS.pyFile(bp.x,bp.y,84,40,GREEN,'best_params','.json');
+  HITS.addRect(bp.x-42,bp.y-20,84,40,{type:'optuna'});
+  addObstacleRect(bp.x-42,bp.y-20,84,40);
   if(STATE.labels){
     var po1=SS(8,0.5,0.10,2),po2=SS(8,0.5,0.97,0);
-    qLabel({key:'opt_caption',def:'Optuna: 200 trials (TPE + MedianPruner) · purged walk-forward CV only on Train',grp:'Training / Optuna',
+    qLabel({key:'opt_caption',def:'Optuna search: 200 trials (TPE + MedianPruner) · purged walk-forward CV (k=4) — Train only · no OOS read',grp:'Optuna search',
       x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'champ_caption',def:'champion → strategy .py = base64 model + feature manifest + threshold 0.60 + selfcheck',grp:'Training / Optuna',
+    qLabel({key:'optout_caption',def:'output: best trial → best_params.json (consumed by L10 final training)',grp:'Optuna search',
+      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+// L10 — XGB FINAL training + b64 strategy export: best_params + Train X/y + schema → champion → serialize → b64 → strategy_<TICKER>.py × N (per-asset fan-out).
+function StrategyExportLayer(){}
+StrategyExportLayer.prototype.draw=function(){
+  caption(9);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
+  var ip=SS(9,0.09,0.5,20);                                       // input artifact = best_params.json (from L9)
+  GLYPHS.pyFile(ip.x,ip.y,80,38,GREEN,'best_params','.json');
+  HITS.addRect(ip.x-40,ip.y-19,80,38,{type:'optuna'});
+  addObstacleRect(ip.x-40,ip.y-19,80,38);
+  line2(lp(9,0.17,0.5,18),lp(9,0.27,0.5,18),tert,1.4,[]);
+  var top=prism(9,0.28,0.38,0.50,0.62,2,26,TEAL,0.22),tc=ctr(top);  // final champion XGB
+  if(CAM.z>=0.75)GLYPHS.modelTree(tc.x,tc.y+2,TEAL);
+  HITS.addPts([lp(9,0.26,0.36,32),lp(9,0.52,0.64,0)],{type:'xgb'});
+  if(STATE.labels){
+    var px1=SS(9,0.39,0.5,32),px2=SS(9,0.39,0.74,0),pxa=SS(9,0.39,0.5,28);
+    qLabel({key:'xgb_title',def:'XGB FINAL',grp:'XGB final + artifact',
+      x:px1.x,y:px1.y-2,col:prim,al:'center',sz:11,wt:'700',pr:3,ax:pxa.x,ay:pxa.y});
+    qLabel({key:'xgb_sub',def:'champion · binary:logistic · 1 model/asset',grp:'XGB final + artifact',
+      x:px2.x,y:px2.y,col:tert,al:'center',sz:8,pr:1});
+  }
+  line2(lp(9,0.58,0.5,18),lp(9,0.70,0.5,18),tert,1.4,[]);
+  var ah=CAM.S(lp(9,0.70,0.5,18));
+  ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
+  var sp=SS(9,0.80,0.5,20),wp=92,hp=42;
+  GLYPHS.pyFile(sp.x+14,sp.y-14,wp,hp,tert,'strategy_NVDA');      // per-asset fan-out (ghost siblings behind)
+  GLYPHS.pyFile(sp.x+7,sp.y-7,wp,hp,tert,'strategy_MSFT');
+  if(flash>0)strokeRR(sp.x-wp/2-3,sp.y-hp/2-3,wp+6,hp+6,13,rgba(AMB,flash*0.8),2);
+  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_'+(aname(STATE.asset)||ASSETS[STATE.asset]));
+  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy',a:STATE.asset});
+  addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
+  GLYPHS.stackBadge(9,0.94,0.5,20,AMB,'×{{universe_size}}','strategy');
+  if(STATE.labels){
+    var po1=SS(9,0.5,0.10,2),po2=SS(9,0.5,0.97,0);
+    qLabel({key:'exp_input',def:'input: best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',grp:'XGB final + artifact',
+      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'champ_caption',def:'final XGB on best_params → serialize → base64 → strategy_<TICKER>.py + selfcheck · 1 model/hash/window per asset (×{{universe_size}})',grp:'XGB final + artifact',
       x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
   }
 };
 
 function OOSWall(){}
 OOSWall.prototype.draw=function(){
-  caption(9);
+  caption(10);
   var C=26,R=METRICS.length,HZ=170,bw=0.60;
-  var A=CAM.S(lp(9,0.06,bw,6)),B=CAM.S(lp(9,0.94,bw,6)),
-      T1=CAM.S(lp(9,0.06,bw,6+HZ)),T2=CAM.S(lp(9,0.94,bw,6+HZ));
+  var A=CAM.S(lp(10,0.06,bw,6)),B=CAM.S(lp(10,0.94,bw,6)),
+      T1=CAM.S(lp(10,0.06,bw,6+HZ)),T2=CAM.S(lp(10,0.94,bw,6+HZ));
   function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
   polyS([T1,T2,B,A],rgba(CAN,0.08),vget('--color-border-secondary','#555'),1,[]);
   if(CAM.z>=1.0){
@@ -1658,7 +1720,7 @@ function drawParityLedger(x,y,w,compact,opts){
 function drawTransformAuditTable(x,y,w,compact,opts){
   opts=opts||{};opts.compact=compact;
   return drawSimpleDQTable(x,y,w,'Transform QC',DQ_TRANSFORM,'dqTransformCheck',
-    Object.assign({accent:GREEN,footer:compact?'Output B ready':'L7 → Output B checks before L9 can train'},opts));
+    Object.assign({accent:GREEN,footer:compact?'Output B ready':'L7 → Output B checks before L9 search / L10 training'},opts));
 }
 function drawCandleQCStrip(x,y,w,compact,opts){
   opts=opts||{};
@@ -1836,13 +1898,13 @@ function drawParquetFolder(g){
   addObstacleRect(x,y-fh*0.5,w,h+fh*0.5);
   return c;
 }
-function drawPyFile(x,y,w,h,col,label){
+function drawPyFile(x,y,w,h,col,label,ext){
   var prim=vget('--color-text-primary','#eee'),i;
   drawFold(x-w/2,y-h/2,w,h,10,col,0.14);
   for(i=0;i<4;i++){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.beginPath();
     ctx.moveTo(x-w/2+9,y-h/2+17+i*8);ctx.lineTo(x+w/2-10-i*5,y-h/2+17+i*8);ctx.stroke();ctx.restore();}
   txtS(label,x,y+1,prim,'center',7,'700');
-  txtS('.b64',x,y+14,col,'center',8,'700');
+  txtS(ext||'.b64',x,y+14,col,'center',8,'700');
 }
 function drawModelTree(x,y,col){
   // clean tree glyph — the "XGB" label goes through the label queue (xgb_title),
@@ -2026,8 +2088,8 @@ function SplitTimelineView(){}
 // segment above it, labels above, and a note-card for the focused segment only (mirrors the 3D L5).
 SplitTimelineView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  txt('Time split per asset: warm-up → train → validation → OOS (frozen)',{x:0,y:-262},prim,'center',14,'700');
-  txt('span-brackets per segment · purge + embargo guard the validation→OOS boundary',{x:0,y:-240},sec,'center',10.5);
+  txt('Time split per asset: warm-up → train → OOS (frozen)',{x:0,y:-262},prim,'center',14,'700');
+  txt('span-brackets per segment · purge + embargo guard the Train→OOS boundary',{x:0,y:-240},sec,'center',10.5);
   var x0=-310,x1=310,axY=44,yArm=axY-12,yTop=-30,i,acc=x0,edges=[],centers=[];
 
   // --- thick time-axis bar + arrow + "time" ---
@@ -2057,7 +2119,7 @@ SplitTimelineView.prototype.draw=function(){
     if(i<SPLIT.bands.length-1)edges.push(xe);
     acc=xe;
   }
-  // --- purge + embargo two sub-brackets at the last internal boundary (validation→OOS) ---
+  // --- purge + embargo two sub-brackets at the last internal boundary (Train→OOS) ---
   var eb=edges[edges.length-1],gw=10,yPb=yArm-26;
   line2({x:eb-gw,y:yPb},{x:eb,y:yPb},SL,2,[]);line2({x:eb-gw,y:yPb},{x:eb-gw,y:yArm},SL,2,[]);line2({x:eb,y:yPb},{x:eb,y:yArm},SL,2,[]);
   line2({x:eb,y:yPb},{x:eb+gw,y:yPb},SPLIT.embargoCol,2,[]);line2({x:eb,y:yPb},{x:eb,y:yArm},SPLIT.embargoCol,2,[]);line2({x:eb+gw,y:yPb},{x:eb+gw,y:yArm},SPLIT.embargoCol,2,[]);
@@ -2172,13 +2234,13 @@ SetupGeometryView.prototype.draw=function(){
     var sp=pillF(pa.x,pa.y,168,20,RED,fname(pa.f)||FEATURES[pa.f].name,0.10,8);
     HITS.addRect(sp.x-84,sp.y-10,168,20,{type:'feature',f:pa.f});
   }
-  txt('8 transformer features computed at t0 · model X = 7 (closed_through_line: audit) · click = formula and unit',{x:0,y:300},tert,'center',8.5);
+  txt('8 transformer columns at t0 (7 geometric X + closed_through_line audit) · model X = 8 (7 geometric + direction from L6) · click = formula and unit',{x:0,y:300},tert,'center',8.5);
 };
 
 function OptunaView(){}
 OptunaView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  txt('Optuna — XGBoost tuning on Train',{x:0,y:-262},prim,'center',14,'700');
+  txt('L9 · Optuna hyperparameter search',{x:0,y:-262},prim,'center',14,'700');
   txt('objective: '+OPTUNA.objective+' · '+OPTUNA.sampler+' · '+OPTUNA.pruner,{x:0,y:-240},sec,'center',9.5);
   function X(i){return -320+i*2.7;}
   function Y(v){return 110-(v-0.30)*820;}
@@ -2213,6 +2275,8 @@ OptunaView.prototype.draw=function(){
     txt((pi[1]*100).toFixed(0)+'%',{x:-162+pi[1]*620,y:yy+3},tert,'left',8);
   }
   txt('search space: depth 3–9 · lr 0.01–0.3 log · estimators 100–1200 · subsample/colsample 0.5–1 · λ 1e-3–10 · spw 0.5–4',{x:0,y:430},tert,'center',8);
+  pill(210,250,184,26,GREEN,'output → best_params.json',0.12);                 // L9 deliverable (no .py, no b64 here)
+  txt('best trial #'+BEST_TRIAL+' (AUC-PR '+bt.v.toFixed(3)+') → consumed by L10',{x:210,y:272},tert,'center',8);
 };
 
 var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',rows=[],i,j;
@@ -2221,32 +2285,43 @@ var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
 function ArtifactView(){}
 ArtifactView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  var a=STATE.asset,nm=ASSETS[a];
-  txt('Artifact = self-contained strategy file',{x:0,y:-262},prim,'center',14,'700');
-  txt('one file per asset → {{universe_size}} artifacts in total · deterministic build (hash)',{x:0,y:-240},sec,'center',10.5);
-  // band tooltips live in abandTip() (single source — read by tipFor)
+  var a=STATE.asset,nm=ASSETS[a],i,j;
+  txt('L10 · XGB final training + b64 strategy artifact',{x:0,y:-262},prim,'center',14,'700');
+  txt('best_params → final XGB per asset → serialize → base64 → 1 self-contained strategy .py per asset',{x:0,y:-244},sec,'center',10);
+  // input → process chain (mini-pills, left → right)
+  var CHAIN=[['best_params',GREEN],['Train X/y',CAN],['8 X schema',RED],['final XGB',TEAL],['champion',TEAL],['serialize',AMB],['base64',AMB]];
+  for(i=0;i<CHAIN.length;i++){var cx=-318+i*92;
+    pillF(cx,-218,80,20,CHAIN[i][1],CHAIN[i][0],0.10,7.5);
+    if(i)edge(cx-52,-218,cx-40,-218);}
+  // self-contained strategy file (code-card) · band tooltips live in abandTip() (single source — read by tipFor)
   var BANDS=[
-    {h:26,col:tert,t:'# strategy_'+nm+'.py — generated by the pipeline'},
-    {h:30,col:prim,t:'PARAMS: TF=1h · H=24 · MIN_TOUCHES=2 · BARRIER=close'},
-    {h:30,col:RED, t:'FEATURE_MANIFEST = [7 X columns — frozen order]'},
-    {h:92,col:AMB, t:'MODEL_B64 = "QmFzZTY0…"',b64:true},
-    {h:30,col:prim,t:'LABEL_CONTRACT = TB_v1.1 · close-based · SL=L_opp(t) moving · R0 · H=24'},
-    {h:30,col:TP,  t:'def selfcheck(): golden input → output · PASS'},
-    {h:32,col:TEAL,t:'def decide(x): p = model(x) · p ≥ 0.60 → ENTRY else FLAT'}
+    {h:26,col:tert,t:'# strategy_'+nm+'.py — generated by the pipeline (1 of {{universe_size}})'},
+    {h:28,col:prim,t:'PARAMS: TF=1h · H=24 · MIN_TOUCHES=2 · BARRIER=close'},
+    {h:28,col:RED, t:'FEATURE_MANIFEST = [8 X columns (7 geom + direction) — frozen order]'},
+    {h:88,col:AMB, t:'MODEL_B64 = "QmFzZTY0…"',b64:true},
+    {h:28,col:prim,t:'LABEL_CONTRACT = TB_v1.1 · close-based · SL=L_opp(t) moving · R0 · H=24'},
+    {h:24,col:TEAL,t:'MODEL_HASH = sha256(model_b64)[:16] — artifact identity'},
+    {h:24,col:tert,t:'TRAIN_WINDOW = [train_start → train_end] · OOS untouched'},
+    {h:28,col:TP,  t:'def selfcheck(): golden input → output · PASS'},
+    {h:30,col:TEAL,t:'def decide(x): p = model(x) · p ≥ 0.60 → ENTRY else FLAT'}
   ];
-  var xw=225,y=-205,i,j;
-  var sTop=CAM.S({x:-xw,y:y-8}),sBot=CAM.S({x:xw,y:y+BANDS.reduce(function(p,q){return p+q.h+12;},0)+2});
+  var xw=225,y=-185;
+  var sTop=CAM.S({x:-xw,y:y-8}),sBot=CAM.S({x:xw,y:y+BANDS.reduce(function(p,q){return p+q.h+11;},0)+2});
   ctx.save();ctx.strokeStyle=vget('--color-border-secondary','#555');ctx.lineWidth=1.2;ctx.setLineDash([]);
   rrectS(sTop.x-8,sTop.y-6,sBot.x-sTop.x+16,sBot.y-sTop.y+10,10);ctx.stroke();ctx.restore();
   for(i=0;i<BANDS.length;i++){
     var b=BANDS[i],s0=CAM.S({x:-xw,y:y}),s1=CAM.S({x:xw,y:y+b.h});
     fillRR(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,6,rgba(b.col===tert?CAN:b.col,b.b64?0.14:0.07),rgba(b.col===tert?CAN:b.col,0.6),1);
-    monoS(b.t,s0.x+10,s0.y+17*zScale(),b.col,'left',9.5);
-    if(b.b64)for(j=0;j<B64FILL.length;j++)monoS(B64FILL[j],s0.x+10,s0.y+(34+j*15)*zScale(),rgba(AMB,0.45),'left',8);
+    monoS(b.t,s0.x+10,s0.y+16*zScale(),b.col,'left',9.5);
+    if(b.b64)for(j=0;j<B64FILL.length;j++)monoS(B64FILL[j],s0.x+10,s0.y+(33+j*14)*zScale(),rgba(AMB,0.45),'left',8);
     HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'aband',b:i,a:a});
-    y+=b.h+12;
+    y+=b.h+11;
   }
-  txt('standalone import — no access to training data · click = full JSON manifest',{x:0,y:y+22},tert,'center',8.5);
+  // ×N per-asset fan-out: independent files, one per asset (AAPL example is the selected card above)
+  var fy=y+26,FAN=['AAPL','MSFT','NVDA','GOOGL','AMZN'];
+  for(i=0;i<FAN.length;i++)pillF(-176+i*72,fy,62,22,i===0?AMB:tert,'strat_'+FAN[i],0.10,7);
+  txt('… ×{{universe_size}} independent files — 1 model · 1 hash · 1 train window per asset',{x:0,y:fy+28},sec,'center',9);
+  txt('standalone import (no training data) · debug / disable / swap / deploy each asset independently · click = full JSON manifest',{x:0,y:fy+44},tert,'center',8);
 };
 function abandTip(i){
   return [
@@ -2255,6 +2330,8 @@ function abandTip(i){
     'exactly these columns and in this order,\non which the model was trained\nwithout closed_through_line (audit)',
     'XGBoost model serialized\nand base64-encoded (~180 kB)\ndecoded on file import',
     'label contract identifier\nSL = moving L_opp(t) (decision v1.2)\nthe model answers the question of this contract',
+    'sha256 of the base64 model\nfrozen in the OOS hash register\nidentifies this exact artifact (per asset)',
+    'the Train window this model saw\nOOS stays untouched\none window per asset',
     'golden vectors checked on import\nprediction mismatch → hard error',
     'strategy decision rule\nTHRESHOLD_ENTRY=0.60 tuned on Train'][i];
 }
@@ -2305,7 +2382,7 @@ function DQView(){}
 DQView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
   txt('Data quality dashboard — from raw zip to features',{x:0,y:-262},prim,'center',14,'700');
-  txt('validation of stores and transforms · gate before training (L9) · any FAIL blocks',{x:0,y:-240},sec,'center',10.5);
+  txt('data-quality gate over stores and transforms · gate before training (L9) · any FAIL blocks',{x:0,y:-240},sec,'center',10.5);
   var st=['<ticker>.zip ×{{lean_zip_count}}','DuckDB raw+VIEW','parquet ×{{universe_size}}','Output B'],sx=[-255,-85,85,255],i;
   for(i=0;i<4;i++){
     pill(sx[i],-195,150,24,CAN,st[i],0.08);
@@ -2327,17 +2404,17 @@ DQView.prototype.draw=function(){
 
 var LAYERS={src:new AlpacaSource(),zip:new ZipStore(),db:new DuckDBLayer(),qcring:new QCGateRing(),
   tf:new TransformLayer(),split:new SplitLayer(),detector:new SetupDetectorLayer(),feat:new FeatureForest(),
-  dq:new QualityLayer(),train:new TrainingLayer(),oos:new OOSWall()};
+  dq:new QualityLayer(),optuna:new OptunaSearchLayer(),export:new StrategyExportLayer(),oos:new OOSWall()};
 var VIEWS={dataflow:new DataDAGView(),qc:new QCView(),split:new SplitTimelineView(),setup:new SetupGeometryView(),
   optuna:new OptunaView(),artifact:new ArtifactView(),leak:new LeakView(),dq:new DQView()};
 
 function drawScene(){
   var i,insp=STATE.inspect;
   boundaryLines();
-  for(i=0;i<9;i++){ctx.save();ctx.globalAlpha=insp?0.22:1;flowArrow(i);ctx.restore();}
-  var ord=[0,1,2,3,4,5,6,7,8,9].map(function(l){return {l:l,d:lp(l,0.5,0.5,30).d};})
+  for(i=0;i<10;i++){ctx.save();ctx.globalAlpha=insp?0.22:1;flowArrow(i);ctx.restore();}
+  var ord=[0,1,2,3,4,5,6,7,8,9,10].map(function(l){return {l:l,d:lp(l,0.5,0.5,30).d};})
     .sort(function(p,q){return q.d-p.d;});
-  for(i=0;i<10;i++){
+  for(i=0;i<11;i++){
     var l=ord[i].l;
     ctx.save();ctx.globalAlpha=(!insp||(NODE_BY_LEV[l]&&NODE_BY_LEV[l].id===insp))?1:0.16;  // Inspection: dim the unselected
     if(l===0)LAYERS.src.draw();
@@ -2348,7 +2425,8 @@ function drawScene(){
     else if(l===5)LAYERS.detector.draw();
     else if(l===6)LAYERS.feat.draw();
     else if(l===7)LAYERS.dq.draw();
-    else if(l===8)LAYERS.train.draw();
+    else if(l===8)LAYERS.optuna.draw();
+    else if(l===9)LAYERS.export.draw();
     else LAYERS.oos.draw();
     ctx.restore();
   }
@@ -2374,14 +2452,14 @@ function fitView(pts,padL,padR,padT,padB,zCap){
 function homeFit(){
 
   return fitView([lp(0,0,1.1,0),lp(0,1,1.1,0),lp(0,1,0,0),lp(0,0,0,0),
-           lp(9,0,0,60),lp(9,1,0,60),lp(9,0,1,60),lp(9,0.5,0.6,226)],104,104,28,36,null);
+           lp(10,0,0,60),lp(10,1,0,60),lp(10,0,1,60),lp(10,0.5,0.6,226)],104,104,28,36,null);
 }
 
 function preset(mode){
   if(mode==='overview')return homeFit();
   if(mode==='oos'){
-    return fitView([lp(9,0.06,0.60,6),lp(9,0.94,0.60,6),lp(9,0.06,0.60,176),lp(9,0.94,0.60,176),
-      lp(9,0.5,0.60,226),lp(8,0.5,0.95,0),lp(7,0.5,0.95,0),lp(4,0.5,0.95,0)],58,58,88,190,0.94);
+    return fitView([lp(10,0.06,0.60,6),lp(10,0.94,0.60,6),lp(10,0.06,0.60,176),lp(10,0.94,0.60,176),
+      lp(10,0.5,0.60,226),lp(9,0.5,0.95,0),lp(7,0.5,0.95,0),lp(4,0.5,0.95,0)],58,58,88,190,0.94);
   }
   return {x:0,y:-10,z:clamp(Math.min((chh-90)/520,(cw-60)/660),1,1.9)};
 }
@@ -2458,7 +2536,7 @@ function tipFor(p){
   if(p.type==='feature'){var f=FEATURES[p.f];
     return '<b>Feature: '+f.name+'</b>\nFamily: '+f.family+'\nSource: '+f.src+'\nFormula: '+f.formula+' ['+f.unit+']'+(f.special?'\n<span style="color:'+AMB+'">! '+f.special+'</span>':'');}
   if(p.type==='label')return '<b>Y = triple barrier (TB_v1.1)</b>\nTP=1: close reaches close[t0]+direction·R0\nSL=0: close pierces L_opp(t) (moving line)\ntime=0: nothing by t0+H (H=24)\nfirst-touch · close-based';
-  if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset × direction';
+  if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset (both directions)';
   if(p.type==='optuna')return '<b>Optuna</b>\n200 trials · TPE · MedianPruner\nobjective: AUC-PR (purged WF CV on Train)\n<i>click = study</i>';
   if(p.type==='trial'){var t=TRIALS[p.i];return '<b>trial #'+p.i+'</b>\nAUC-PR: '+t.v.toFixed(3)+(t.pruned?' · PRUNED':'')+'\ndepth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nn_est '+t.params.n_estimators+' · subsample '+t.params.subsample;}
   if(p.type==='strategy')return '<b>strategy_'+ASSETS[p.a]+'.py</b>\nbase64 model + feature manifest\nthreshold 0.60 + selfcheck\n<i>click = full manifest</i>';
@@ -2475,7 +2553,7 @@ function tipFor(p){
     return '<b>'+dt.name+' — '+dt.status+'</b>\n'+dt.value+'\n'+dt.detail+'\n<i>click = panel</i>';}
   if(p.type==='dqSummary')return '<b>summary.json + dashboard</b>\ncounters + statuses + input hashes\nany FAIL blocks training (L9)\n<i>click = details</i>';
   if(p.type==='detector'){var nd=NODE_BY_ID['L6'],vl=p.variant?('\n['+detVar(p.variant).label+']'):'';return '<b>'+nd.title+'</b>'+vl+'\n'+nd.subtitle+'\noutput: '+nd.output_contract+'\n'+nd.invariants.join(' · ')+'\n<i>click = contract · view 5 = full anatomy</i>';}
-  if(p.type==='setupEntry'){var dv=p.variant?detVar(p.variant):null;return '<b>entry_candle (t0)'+(dv?' · '+(dv.dir>0?'long':'short'):'')+'</b>\nfirst close piercing the action line\nafter line validation (≥ MIN_TOUCHES=2)\nall X features computed at t0';}
+  if(p.type==='setupEntry'){var dv=p.variant?detVar(p.variant):null;return '<b>entry_candle (t0)'+(dv?' · '+(dv.dir>0?'long':'short'):'')+'</b>\nfirst close piercing the action line\nafter line qualification (≥ MIN_TOUCHES=2)\nall X features computed at t0';}
   if(p.type==='setupTouch')return '<b>touchpoint</b>\na touch of the action line before t0\ntouch_count counts them up to candle t';
   if(p.type==='RB'||p.type==='setupR0'){var dv=p.variant?detVar(p.variant):null;return '<b>Risk Box (RB) = 1R</b>'+(dv?'\n['+dv.label+']':'')+'\n|close[t0] − safety_line(t0)|\none geometric risk unit\nTP = close[t0] + direction·R0';}
   if(p.type==='setupTP'||p.type==='setupOutcome'){var dv=p.variant?detVar(p.variant):null;if(dv&&!dv.win)return '<b>Y_outcome = 0</b>\n['+dv.label+']\nsafety line hit (close-based) or t0+H reached before TP\nloss = −1R';
@@ -2499,7 +2577,7 @@ function clickFor(p){
   else if(p.type==='qc')PANEL.show(QC[p.g].name,'<b>'+QC[p.g].desc+'</b><br>'+qcStat()+'<br><br><b>All gates:</b><br>'+QC.map(function(g){return g.id+' — '+g.desc;}).join('<br>'));
   else if(p.type==='qcAll')PANEL.show('QC gates','<pre>'+QC.map(function(g){return g.id+'  '+g.desc;}).join('\n')+'</pre>'+qcStat());
   else if(p.type==='zip')PANEL.show((ASSETS[p.a]||'aapl').toLowerCase()+'.zip','<b>CSV (LEAN, headerless):</b><pre>20240102 10:00,1851200,1853900,1849100,1852300,182345\n20240102 11:00,1852300,1856800,1851700,1855400,141280\n20240102 12:00,1855400,1857200,1853000,1854100,98430</pre>prices ×{{price_scale}} → USD only in the VIEW');
-  else if(p.type==='zipall')PANEL.show('LEAN ZIP store','<b>×{{lean_zip_count}} zip files</b> — one per ticker (the full S&P 500 universe).<br>headerless CSV · YYYYMMDD HH:MM,o,h,l,c,v · prices ×{{price_scale}} → USD only in the VIEW<br>total {{lean_zip_size_mb}} MB<br><br><i>13 named samples shown in the chain.</i>');
+  else if(p.type==='zipall')PANEL.show('LEAN ZIP store','<b>×{{lean_zip_count}} zip files</b> — one per ticker (the full LEAN ZIP inventory; the {{universe_size}} universe is the quality-filtered subset).<br>headerless CSV · YYYYMMDD HH:MM,o,h,l,c,v · prices ×{{price_scale}} → USD only in the VIEW<br>total {{lean_zip_size_mb}} MB<br><br><i>13 named samples shown in the chain.</i>');
   else if(p.type==='db')PANEL.show('DuckDB raw_ohlcv_1h','<pre>symbol  VARCHAR\nts      TIMESTAMP\nopen    BIGINT  ×{{price_scale}}\nhigh    BIGINT  ×{{price_scale}}\nlow     BIGINT  ×{{price_scale}}\nclose   BIGINT  ×{{price_scale}}\nvolume  BIGINT</pre><b>{{duckdb_row_count_str}} rows · {{universe_size}} symbols</b><br>2016-01-04 09:00 → 2026-05-29 15:00<br>QC-01…QC-11: PASS');
   else if(p.type==='view')PANEL.show('VIEW ohlcv_1h','<pre>SELECT symbol, ts,\n  open/{{price_scale}}.0  AS open,\n  high/{{price_scale}}.0  AS high,\n  low/{{price_scale}}.0   AS low,\n  close/{{price_scale}}.0 AS close,\n  volume\nFROM raw_ohlcv_1h</pre><b>canonical USD · zero duplication</b>');
   else if(p.type==='snapshot')PANEL.show('Snapshot manifest','<pre>'+JSON.stringify({rows:{{duckdb_row_count}},symbols:{{universe_size}},ts_min:'2016-01-04 09:00',ts_max:'2026-05-29 15:00',price_view:'raw_usd_view'},null,2)+'</pre>atomic copy · torn-read guard · zero derived columns');
@@ -2509,7 +2587,7 @@ function clickFor(p){
   else if(p.type==='feature'){var f=FEATURES[p.f];
     PANEL.show('Feature: '+f.name,'<b>Formula:</b> '+f.formula+'<br><b>Unit:</b> '+f.unit+'<br><b>Family:</b> '+f.family+'<br><b>Source:</b> '+f.src+(f.special?'<br><b style="color:'+AMB+'">! '+f.special+'</b>':'')+'<br><br>computed causally at t0 (candles ≤ t0)');}
   else if(p.type==='label'||p.type==='setupTP'||p.type==='setupOutcome')PANEL.show('Label Y (triple barrier)','<b>TP → Y=1:</b> first t: sign·close[t] ≥ sign·(close[t0]+direction·R0)<br><b>SL → Y=0:</b> first close pierces L_opp(t) — <b>moving line</b> (Layers_Short_SOT/L7_features_x_label_y_eng.md, decision v1.2)<br><b>time → Y=0:</b> no resolution by t0+H (H=24)<br><br>first-touch · close-based · geometric barriers from R0 (not ATR)<br>sample weights: label_uniqueness_weight (Layers_Short_SOT/L7_features_x_label_y_eng.md)');
-  else if(p.type==='xgb')PANEL.show('XGBoost estimator','<b>Objective:</b> binary:logistic — p(TP)<br><b>Role:</b> meta-labeling, trend-line setup signal filter<br><b>Training:</b> Train with uniqueness weights<br><b>Tuning:</b> Optuna 200 trials (purged WF CV)<br><b>Per:</b> asset × direction');
+  else if(p.type==='xgb')PANEL.show('XGBoost estimator','<b>Objective:</b> binary:logistic — p(TP)<br><b>Role:</b> meta-labeling, trend-line setup signal filter<br><b>Training:</b> Train with uniqueness weights<br><b>Tuning:</b> Optuna 200 trials (purged WF CV)<br><b>Per:</b> asset (long+short, 1 model)');
   else if(p.type==='optuna'||p.type==='trial'){var bt=TRIALS[BEST_TRIAL];
     var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';
     PANEL.show('Optuna study',extra+'<b>n_trials:</b> 200 · <b>sampler:</b> TPE<br><b>pruner:</b> '+OPTUNA.pruner+'<br><b>objective:</b> '+OPTUNA.objective+'<br><b>best:</b> #'+BEST_TRIAL+' → '+bt.v.toFixed(3)+'<br><b>search space:</b><pre>'+JSON.stringify(OPTUNA.space,null,2)+'</pre>');}
@@ -2523,12 +2601,12 @@ function clickFor(p){
   else if(p.type==='dqCandleCase'){var dc=DQ_CANDLES[p.i];
     PANEL.show('L8 candle QC: '+dc.name,'<b>Status:</b> '+dc.status+'<br><b>Counter:</b> '+dc.counter+'<br><br>'+dc.detail+'<br><br>L8 reports the counter; data repair belongs to the source/store layer that produced the population.');}
   else if(p.type==='dqTransformCheck'){var dt=DQ_TRANSFORM[p.i];
-    PANEL.show('L8 transform QC: '+dt.name,'<b>Status:</b> '+dt.status+'<br><b>Value:</b> '+dt.value+'<br><br>'+dt.detail+'<br><br>Scope: L7 Output B validation before L9 training.');}
-  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({schema_version:'1.0',built_at_utc:'…',inputs_hash:'…',counters:{rows:{{duckdb_row_count}},symbols:{{universe_size}},parquet_files:{{universe_size}},setups_total:0,det09_rejected:0,gaps_in_session:0,gaps_filled:0,volume_zero_bars:0,zero_range_bars:0,prices_nonpos:0,duplicates:0,nan_inf_outputB:0},parities:{zip_duckdb_rows:true,duckdb_parquet_files:true,parquet_outputB:true},checks:[{id:'QC-06',level:'WARN',value:1,threshold:0,desc:'volume=0 bars'}],overall_status:'WARN'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
+    PANEL.show('L8 transform QC: '+dt.name,'<b>Status:</b> '+dt.status+'<br><b>Value:</b> '+dt.value+'<br><br>'+dt.detail+'<br><br>Scope: L7 Output B data-quality gate before L9 training.');}
+  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({schema_version:'1.0',built_at_utc:'…',inputs_hash:'…',counters:{rows:{{duckdb_row_count}},symbols:{{universe_size}},parquet_files:{{universe_size}},setups_total:0,det09_rejected:0,gaps_in_session:0,gaps_filled:0,volume_zero_bars:0,zero_range_bars:0,prices_nonpos:0,duplicates:0,nan_inf_outputB:0},parities:{zip_duckdb_rows:true,duckdb_parquet_files:true,parquet_outputB:true},checks:[{id:'volume_zero_bars',level:'WARN',value:1,threshold:'WARN>0.5% FAIL>2%',desc:'volume=0 bars (fraction of rows)'}],overall_status:'WARN'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
   else if(p.type==='detector'){var nd=NODE_BY_ID['L6'],vl=p.variant?(' · '+detVar(p.variant).label):'';
     PANEL.show('L6 · '+nd.title+vl,'<b>'+nd.subtitle+'</b><br><b>Input:</b> '+nd.input_contract+'<br><b>Output:</b> '+nd.output_contract+'<br><b>Invariants:</b><br>• '+nd.invariants.join('<br>• ')+'<br><br>full anatomy: view <b>5 (Setup geometry)</b>');}
-  else if(p.type==='setupEntry')PANEL.show('entry_candle (t0)','first close piercing the action line in the direction,<br>after line validation (≥ MIN_TOUCHES=2 touches)<br><br>all X features computed at t0 — only candles ≤ t0');
-  else if(p.type==='setupTouch'||p.type==='setupR0'||p.type==='RB')PANEL.show('Setup geometry','<b>touchpoints:</b> touches of the action line before t0 (validate the line)<br><b>safety line:</b> opposing line — the stop loss sits on it<br><b>RB / R0:</b> |close[t0] − safety_line(t0)| — one risk unit (1R)<br><b>TP:</b> close[t0] + direction·R0 · <b>time barrier:</b> t0+H (H=24)');
+  else if(p.type==='setupEntry')PANEL.show('entry_candle (t0)','first close piercing the action line in the direction,<br>after line qualification (≥ MIN_TOUCHES=2 touches)<br><br>all X features computed at t0 — only candles ≤ t0');
+  else if(p.type==='setupTouch'||p.type==='setupR0'||p.type==='RB')PANEL.show('Setup geometry','<b>touchpoints:</b> touches of the action line before t0 (qualify the line)<br><b>safety line:</b> opposing line — the stop loss sits on it<br><b>RB / R0:</b> |close[t0] − safety_line(t0)| — one risk unit (1R)<br><b>TP:</b> close[t0] + direction·R0 · <b>time barrier:</b> t0+H (H=24)');
   else if(p.type==='bnote')leOpenFocus('bnd'+p.i);
 }
 
@@ -2660,7 +2738,7 @@ selAsset.onchange=function(){STATE.asset=parseInt(this.value,10)||0;};
 var leEl=document.getElementById('lblEditor'),leBody=document.getElementById('leBody'),
     leTab=document.getElementById('lblTab'),leSearch=document.getElementById('leSearch'),leBuilt=false;
 var LE_GROUPS=['Levels','Layer boundaries','QC gates','Transformer features','Assets (sample)','Source / Universe',
-  'Store / DuckDB','Snapshot / Parquet','Time split','Features & label','Quality validation','Training / Optuna','OOS results','Other'];
+  'Store / DuckDB','Snapshot / Parquet','Time split','Features & label','Data quality gate','Training / Optuna','OOS results','Other'];
 function leArrayItems(){var d=[],i;
   for(i=0;i<QC.length;i++)(function(i){
     d.push({key:'gate'+i,grp:'QC gates',hint:'Gate '+ORIG_LBL.gateId[i]+' — short (view 3 board)',

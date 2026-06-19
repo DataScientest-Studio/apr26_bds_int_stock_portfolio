@@ -2,7 +2,7 @@
 
 A quality gate before training: one dashboard summarizes the quality of the whole flow (L2–L7). It
 **measures and reports; it fixes nothing** (fixes belong to the source layers). Single contract with L9:
-any **FAIL** closes the gate and **training (L9) does not start**. This file owns the counters, the parity
+any **FAIL** closes the gate and **training (L9 search → L10 final) does not start**. This file owns the counters, the parity
 chain, the `summary.json` schema and the aggregation rule; the numeric WARN/FAIL bands are owned by
 [00_parameters_eng.md](00_parameters_eng.md) (the `l8` block).
 
@@ -14,7 +14,7 @@ Each hop is a store boundary; both sides are re-counted and asserted **exactly e
 |---|---|---|
 | **P1** `zip → DuckDB` | total row count **and** symbol count | <!--na:duckdb_row_count_str-->8 841 820<!--/na--> rows · <!--na:universe_size-->503<!--/na--> symbols |
 | **P2** `DuckDB → parquet` | parquet file count **and** per-ticker row count | <!--na:universe_size-->503<!--/na--> files; per-ticker row equality |
-| **P3** `parquet → Output B` | per `{asset_id}×{direction}`: setups emitted vs detector entries surviving DET-09 (audit R4) | per-partition setup-count equality |
+| **P3** `parquet → Output B` | per `asset_id`: setups emitted vs detector entries surviving DET-09 (audit R4) | per-asset setup-count equality |
 
 ## Counter catalogue (the populations L8 counts)
 
@@ -23,7 +23,7 @@ Each hop is a store boundary; both sides are re-counted and asserted **exactly e
 | `rows` | total OHLCV rows across the published parquet | P1, QC-11 |
 | `symbols` | distinct `asset_id` present | P1, QC-07 |
 | `parquet_files` | count of `parquet/<TICKER>/ohlcv.parquet` | P2 |
-| `setups_total` | setups emitted into Output B across all partitions | P3 |
+| `setups_total` | setups emitted into Output B across all assets | P3 |
 | `det09_rejected` | setups rejected by DET-09 (`R0 ≤ 0`, `ATR(t0) ≤ 0`, or missing `L_opp`) | [L6](L6_setup_detector_eng.md) DET-09 |
 | `gaps_in_session` | missing in-session 1h candles (inside RTH 09:00–16:00 ET) | QC-08/09/10 |
 | `gaps_filled` | synthetically filled candles (must be 0 — the pipeline fills nothing) | — |
@@ -89,7 +89,7 @@ elif any check.level == "WARN": overall_status = "WARN"
 else:                           overall_status = "OK"
 ```
 
-| `overall_status` | L9 (Optuna → XGBoost) |
+| `overall_status` | training start (L9 search → L10 final) |
 |---|---|
 | `FAIL` | **BLOCKED** — training does not start |
 | `WARN` | **PROCEED** — WARNs surfaced but non-blocking |

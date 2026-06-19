@@ -1,8 +1,8 @@
 # 00 · Parameters (SOT)
 
-The **only** configuration site is `config/parameters.json` (canonical file: `Plan/config/parameters.json`,
-mirror of the source `config/parameters.json`); zero thresholds are hardcoded in code. This file owns every
-parameter value; companion docs reference it and restate no number.
+The **only** configuration site is `config/parameters.json` (i.e. `A_Layers/config/parameters.json`); zero
+thresholds are hardcoded in code. This file owns every parameter value; companion docs reference it and restate
+no number.
 
 ## Contract parameters (17 keys from `parameters.json`)
 
@@ -10,7 +10,7 @@ parameter value; companion docs reference it and restate no number.
 |---|---|---|
 | `TF` | `1h` | candle timeframe |
 | `H` (`HORIZON_CANDLES`) | `24` | time-barrier length in candles (1h ⇒ 1 day); tuned |
-| `MIN_TOUCHES` | `2` | minimum touches that validate a line |
+| `MIN_TOUCHES` | `2` | minimum touches that qualify a line |
 | `W_VOL` | `20` | rolling window for `volume_z_score` |
 | `W_ATR` | `14` | ATR window (feature normalizer) |
 | `ATR_VARIANT` | `wilder` | ATR variant (Wilder); window `W_ATR`, causal, candle `t` inclusive |

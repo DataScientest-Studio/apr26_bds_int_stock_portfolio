@@ -2,7 +2,7 @@
 
 A **scaffold / data-handling Stage** (produces no `f{stage}_…` ids): run the frozen per-asset XGB once over the
 OOS window — the **only** time OOS is read. Values inlined from the Pipeline-A build SOT
-([A_Layers/L10](../../../A_Layers/ENG/Layers_Short_SOT/L10_oos_test_eng.md)).
+([A_Layers/L11](../../../A_Layers/ENG/Layers_Short_SOT/L11_oos_test_eng.md)).
 
 - Input: the per-asset calibrated XGB from [F10](F10_calibration_optuna_eng.md) + the OOS mask from
   [F1](F1_time_split_eng.md) (`2024-01-02 → 2026-05-29`).

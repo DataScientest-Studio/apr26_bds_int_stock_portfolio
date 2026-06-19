@@ -15,14 +15,14 @@ below (the 5 invariants + DET-09) is a valid realization.
 | `L_trend(t)` | traded line = linear fit `a_t·t + b_t` through the touchpoints (resistance for long, support for short) |
 | `L_opp(t)` | opposing line (the stop loss sits on it) = linear fit `a_o·t + b_o` |
 | `topo_candles` | set of touchpoint candle indices on `L_trend`; touches **strictly before `t0`** (break ≠ touch; audit reports `pre_entry_touch_count`) |
-| `entry_candle` (`t0`) | the **first** candle with `sign·(close[t] − L_trend(t)) > 0` after line validation (≥ `MIN_TOUCHES` touches), close-based break |
+| `entry_candle` (`t0`) | the **first** candle with `sign·(close[t] − L_trend(t)) > 0` after line qualification (≥ `MIN_TOUCHES` touches), close-based break |
 | `R0` | `R0 = abs(close[t0] − L_opp(t0))` — one geometric unit of risk |
 | `take_profit_level` | `take_profit_level = close[t0] + direction · R0` (fixed level) |
 | `time_barrier_candle` | `time_barrier_candle = t0 + H` (`H = 24` candles) |
 
 ## The 5 invariants the detector must satisfy
 
-1. A validated line has at least `MIN_TOUCHES` (= 2) touches **before** `t0`.
+1. A qualified line has at least `MIN_TOUCHES` (= 2) touches **before** `t0`.
 2. `entry_candle` is the **first** close that breaks `L_trend` in the `direction` (close-based, strict `>`).
 3. `L_opp` exists before `t0` (the stop has a reference at entry time).
 4. The `L_trend` and `L_opp` fits use **only** touchpoints from candles `≤ t0` (causality).

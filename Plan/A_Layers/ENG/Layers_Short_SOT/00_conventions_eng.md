@@ -7,7 +7,7 @@ Owned here; companion docs reference this file and restate nothing.
 
 - `t` = candle index = integer position after ascending sort by time, on one continuous series per asset.
 - `t0` = `entry_candle` (the position-opening candle).
-- `sign` = `direction` ∈ {`+1`, `−1`}.
+- `sign` = `direction` ∈ {`+1`, `−1`} — the setup side (L6); also the 8th `FEATURE_MANIFEST` column (L7), so one model per asset covers both directions.
 - `c / o / h / l / v` = close / open / high / low / volume of candle `t`.
 - `ε` = `EPS` = `1e-9` (division-by-zero guard).
 - All line functions (`L_trend(t)`, `L_opp(t)`), `H`, the purge and the cooldown operate on the **index**, never on the timestamp.
@@ -22,11 +22,11 @@ Owned here; companion docs reference this file and restate nothing.
 | Quality gates | `QC-01…QC-11` (11 QC gates) | "QC-01…11", "11 padlocks" |
 | Database snapshot | `atomic snapshot` | "snapshot atomic" |
 | Roll-in phase (prose) | `warm-up` (code/filenames: `warmup`) | "warm up", "warmup" in prose |
-| Layer numbering | **L1–L10** (Detector = L6, Features = L7, Validation = L8, Optuna = L9, OOS = L10) | L1–L9; out-of-order layers |
+| Layer numbering | **L1–L11** (Detector = L6, Features = L7, Quality gate = L8, Optuna search = L9, XGB final + artifact = L10, OOS = L11) | L1–L10; out-of-order layers |
 | Input price view | `raw_usd_view` | — |
 | Presentation language | viz UI + `README.md` + this `ENG/` package = English | — |
 
-**Scheme reservation:** `layer` / `L1–L10` belong to **Pipeline A only**. The feature explanation
+**Scheme reservation:** `layer` / `L1–L11` belong to **Pipeline A only**. The feature explanation
 ("Plan B") uses **Stages `F0–F14`** and ids `f{stage}_…` — never `L#`.
 
 ## Global numbers (agree everywhere)
@@ -43,7 +43,7 @@ _Canonical values mirror [`../../config/data_state_numbers.json`](../../config/d
 
 ## Cross-cutting rules
 
-- **ML pipeline** — the whole flow from raw market data to the strategy file and the OOS test; 10 levels L1–L10.
+- **ML pipeline** — the whole flow from raw market data to the strategy file and the OOS test; 11 levels L1–L11.
 - **Asset** — any instrument with OHLCV data; the pipeline is independent of price scale and timeframe.
 - **Candle / OHLCV** — one bar with the five fields `open, high, low, close, volume` in a given timeframe.
 - **TF (timeframe)** — candle resolution; default `1h` (see [00_parameters_eng.md](00_parameters_eng.md)).

@@ -1,13 +1,15 @@
 # L7 · Features X + label Y (SOT)
 
 Transformation of setup objects into a training matrix: row = setup, features computed at `t0`, target =
-outcome per triple barrier. This file owns the 8 features, the 7-X manifest, the label, Output A/B and the
-sample weight.
+outcome per triple barrier. This file owns the 8 transformer columns (7 geometric + `closed_through_line` audit),
+the **8-X manifest** (7 geometric + `direction`), the label, Output A/B and the sample weight.
 
 - Input: setup objects from the detector ([L6](L6_setup_detector_eng.md)) in the Train window.
-- At `t0` the transformer computes **exactly 8 columns** (Feature Set v1).
+- At `t0` the transformer computes **exactly 8 columns** (Feature Set v1): 7 geometric features + the
+  `closed_through_line` audit. The **model input** (`FEATURE_MANIFEST`) is **8 X** = the 7 geometric features +
+  `direction` (carried from the L6 setup); it drops the audit column and adds `direction`.
 
-## Features X (8 columns)
+## Transformer columns (8 = 7 X + closed_through_line audit)
 
 Per candle `t`: `c=close[t]`, `o=open[t]`, `h=high[t]`, `l=low[t]`, `v=volume[t]`, `sign=direction`,
 `ATR(t)` = Wilder, window `W_ATR=14`, causal, candle `t` **inclusive**. Volume `mean_W`/`std_W` window
@@ -27,7 +29,7 @@ Per candle `t`: `c=close[t]`, `o=open[t]`, `h=high[t]`, `l=low[t]`, `v=volume[t]
 `distance_*` normalization reference choice: `DISTANCE_NORM = atr` (multiples of ATR). Parameter values:
 see [00_parameters_eng.md](00_parameters_eng.md).
 
-## FEATURE_MANIFEST (the 7 X), order frozen
+## FEATURE_MANIFEST (the 8 X), order frozen
 
 ```
 1 distance_to_trend_line
@@ -37,10 +39,14 @@ see [00_parameters_eng.md](00_parameters_eng.md).
 5 body_to_range_ratio
 6 volume_z_score
 7 touch_count
+8 direction
 ```
 
-= the transformer's 8 columns **minus `closed_through_line`**. `closed_through_line` stays in Output B as an
-audit column, always `= 1` at `t0`, outside X.
+= the transformer's 7 geometric X (its 8 columns **minus `closed_through_line`**) + `direction`, the setup side
+∈ {−1, +1} carried from the L6 setup (not transformer-computed, copied through). `closed_through_line` stays in
+Output B as an audit column, always `= 1` at `t0`, outside X. The geometric features stay **sign-normalized**
+(`sign·…`, so the same geometry is comparable across sides), and `direction` is an explicit input so the single
+per-asset model can learn long/short asymmetry.
 
 ## Label Y
 
@@ -61,7 +67,7 @@ is used only for the SL evaluation in the label. `LABEL_CONTRACT` annotation: `S
 ## label_uniqueness_weight (average uniqueness)
 
 For overlapping triple-barrier windows, setups with overlapping `[t0, time_barrier]` windows must not count
-as independent. For setup `i` with window `W_i = [t0_i, tb_i]` within a `{asset_id} × {direction}` partition:
+as independent. For setup `i` with window `W_i = [t0_i, tb_i]` within an `asset_id` partition (both directions together):
 
 - `c_t = |{ j : t ∈ W_j }|` — the number of windows covering candle `t`.
 - `weight_i = mean_{t ∈ W_i} (1 / c_t)`, with `c_t ≥ 1` by construction (the window covers itself), so the denominator is **never zero**.
@@ -69,7 +75,7 @@ as independent. For setup `i` with window `W_i = [t0_i, tb_i]` within a `{asset_
 ## Outputs
 
 **Output A** (optional, inspection) — one row per candle inside the setup window: `candle_index`, the 8
-feature columns, `Y_entry`.
+transformer columns (7 geometric + `closed_through_line`), `Y_entry`. (`direction` is setup-level and is added in Output B.)
 
 **Output B** (the ML deliverable) — **one row per setup**, features computed at `t0`, target = `Y_outcome`.
 Schema **frozen** (any change = hard fail):
@@ -77,7 +83,7 @@ Schema **frozen** (any change = hard fail):
 | Column | Type | Role |
 |---|---|---|
 | `asset_id` | string | partition |
-| `direction` | int {−1, +1} | partition |
+| `direction` | int {−1, +1} | **X** (8th manifest feature; from L6 setup) |
 | `setup_id` | string/int | setup key |
 | `entry_timestamp` | datetime | `timestamp[t0]` |
 | `distance_to_trend_line` | float | X |
@@ -91,7 +97,7 @@ Schema **frozen** (any change = hard fail):
 | `Y_outcome` | int {0,1} | **target** |
 | `label_uniqueness_weight` | float | sample weight |
 
-Partitioning: a separate dataset / artifact per `{asset_id} × {direction}` pair.
+Partitioning: a separate dataset / artifact per `asset_id` (one per asset; long and short setups share the asset's dataset and model).
 
 ## Anti-leakage (hard requirements)
 

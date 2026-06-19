@@ -1,12 +1,13 @@
-# L10 · OOS test (SOT)
+# L11 · OOS test (SOT)
 
 The final verdict: a one-time run of the frozen strategies on the untouched OOS window and a results matrix.
+Input = the frozen `strategy_<TICKER>.py` artifacts from [L10](L10_xgboost_strategy_eng.md).
 
 - Before the test, the hash of each strategy file goes into the hash register.
   - from that moment the strategy files are immutable
 - We run a single run over the OOS window `2024-01-02 → 2026-05-29`.
   - the detector generates setups
-  - the strategy computes the 7 X features at `t0`
+  - the strategy assembles the 8 X manifest (7 geometric features at `t0` + `direction` from the setup)
   - the model returns `p = model(x)`
   - entry rule: `p ≥ 0.60 → ENTRY`
   - exits per triple barrier: fixed TP from `R0` · SL = moving `L_opp(t)` · time barrier 24 candles
