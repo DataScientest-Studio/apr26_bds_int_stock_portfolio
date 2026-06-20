@@ -64,7 +64,7 @@ Per layer (own that layer's contract):
 | 8 feature formulas + 8-X `FEATURE_MANIFEST` (7 geometric + `direction`) + label Y + Output A/B schema + `label_uniqueness_weight` | `L7` |
 | L8 counters + parities P1/P2/P3 + `summary.json` schema + aggregation rule | `L8` |
 | Optuna hyperparameter search (TPE/MedianPruner, purged WF CV) → `OPTUNAs_XGB_HPOs_best_params.json` | `L9` |
-| XGBoost final training (champion) + `strategy_<TICKER>.py` b64 artifact contract | `L10` |
+| XGBoost final training (champion) + `strategy_<TICKER>.py` strategy-artifact (base64-embedded model) contract | `L10` |
 | OOS one-shot + entry rule + TB exits + <!--na:universe_size-->503<!--/na-->×metrics matrix + distribution report | `L11` |
 | Per-asset deliverable folder (`<TICKER>/` : `<TICKER>_ohlcv_1h.parquet` + `OPTUNAs_XGB_HPOs_best_params.json` + `strategy_<TICKER>.py`) | `L12` |
 

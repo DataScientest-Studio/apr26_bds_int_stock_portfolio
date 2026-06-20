@@ -11,7 +11,7 @@ owns the underlying fact.
 - [ ] `volume_z_score` correct for `std = 0` (returns `0`, not NaN/Inf); `body_to_range_ratio` correct for `high == low`.
 - [ ] No NaN/Inf in Output B beyond documented cases (an Asset without volume → `volume_z_score = NaN` with an explicit flag).
 - [ ] `label_uniqueness_weight` computed for overlapping windows (formula in [L7](L7_features_x_label_y_eng.md)).
-- [ ] Partitioning per `asset_id` (one model / one `strategy_<TICKER>.py` / one b64 artifact per asset; both directions share it).
+- [ ] Partitioning per `asset_id` (one model / one `strategy_<TICKER>.py` with the model embedded as base64 `MODEL_B64` / one `MODEL_HASH` per asset; both directions share it).
 - [ ] Determinism: same input → same output (hash-testable).
 - [ ] **Splits verified by assertion:** no label window `[t0, t0+H]` crosses a Warm-up/Train/OOS boundary (purge + embargo of [L5](L5_time_split_eng.md) works).
 - [ ] Strategy artifact ([L10](L10_xgboost_strategy_eng.md)): imports standalone, `selfcheck()` PASS, deterministic build (hash).

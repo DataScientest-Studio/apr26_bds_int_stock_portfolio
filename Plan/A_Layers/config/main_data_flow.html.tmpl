@@ -65,12 +65,12 @@ body{
   display:flex;
   flex-direction:column;
   padding:14px 24px 0;
-  max-width:980px;
+  max-width:none;          /* use the full viewport width — the 3D stage/canvas fills the screen (was 980px, far too narrow on wide monitors) */
   margin:0 auto;
   box-sizing:border-box;
 }
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-.tlc-sub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 10px}
+.tlc-sub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 10px;max-width:1100px}
 .tlc-sub b{color:var(--color-text-primary);font-weight:600}
 .tlc-ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:10px 0 2px;font-size:13px;color:var(--color-text-secondary)}
 .tlc-ctrls .lbl{color:var(--color-text-primary)}
@@ -170,7 +170,7 @@ body.le-open #lblEditor{transform:translateY(0)}
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
 <h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for the S&amp;P 500 (download → {{lean_zip_count}} ZIPs; quality-filtered to {{universe_size}} downstream), a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×{{universe_size}} independent files, one model per asset), a wall of OOS test results for {{universe_size}} assets across 4 metrics, and a per-asset deliverable folder (×{{universe_size}}) holding the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json and the strategy_&lt;TICKER&gt;.py. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
-<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final + b64 strategy ×{{universe_size}} → OOS test {{universe_size}} assets → endproduct folder ×{{universe_size}}. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
+<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final → strategy_<TICKER>.py (base64 MODEL_B64 inside) ×{{universe_size}} → OOS test {{universe_size}} assets → endproduct folder ×{{universe_size}}. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
 
 <div class="tlc-ctrls">
   <span class="lbl">View:</span>
@@ -243,7 +243,7 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Trend-line setup</b> = 7 geometric X + closed_through_line audit (8 transformer columns); FEATURE_MANIFEST = 8 X (7 geom + direction) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
   <li><b>Data-quality gate</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
   <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>.</li>
-  <li><b>XGB final training</b> per asset on OPTUNAs_XGB_HPOs_best_params.json; champion → base64 → <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck → <b>×{{universe_size}} independent files</b> (1 model/hash/window per asset).</li>
+  <li><b>XGB final training</b> per asset on OPTUNAs_XGB_HPOs_best_params.json; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> (decoded via import base64 at import) + selfcheck → <b>×{{universe_size}} independent files</b> (1 model/hash/window per asset).</li>
   <li><b>OOS single run</b>: {{universe_size}} assets × PF · MDD · TIM · WR.</li>
   <li><b>Endproduct</b>: per-asset folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> (×{{universe_size}} folders).</li>
 </ol>
@@ -311,6 +311,19 @@ var FEATURES=[
     special:'in Output B (t0) always =1 — break invariant; audit column, outside FEATURE_MANIFEST'}
 ];
 
+// FEATURE_MANIFEST — the 8 X the model is trained on, in frozen order (7 geometric + direction).
+// NOTE: #8 = direction (NOT closed_through_line, which is the audit column that lives only in Output B).
+var FEATURE_MANIFEST=[
+  {n:'distance_to_trend_line',   ab:'dTrend',     fam:'trendline_geometry', u:'×ATR',  f:'sign·(c − L_trend(t)) / ATR(t)'},
+  {n:'distance_to_opposing_line',ab:'dOpp',       fam:'trendline_geometry', u:'×ATR',  f:'sign·(c − L_opp(t)) / ATR(t)'},
+  {n:'risk_if_entered_pct',      ab:'risk%',      fam:'trendline_geometry', u:'%',     f:'|c − L_opp(t)| / c · 100'},
+  {n:'bar_return_pct',           ab:'ret%',       fam:'price_action',       u:'%',     f:'(c − c[t−1]) / c[t−1] · 100'},
+  {n:'body_to_range_ratio',      ab:'body/range', fam:'price_action',       u:'[0,1]', f:'|c − o| / max(ε, h − l)'},
+  {n:'volume_z_score',           ab:'volZ',       fam:'volume',             u:'z',     f:'(v − mean_20) / std_20'},
+  {n:'touch_count',              ab:'touches',    fam:'trendline_geometry', u:'n',     f:'count(topo_candles ≤ t)'},
+  {n:'direction',                ab:'dir ±1',     fam:'direction',          u:'±1',    f:'setup side: +1 long / −1 short (the 8th X, not a partition)'}
+];
+
 var QC=[
   {id:'QC-01',name:'QC-01 INTEGRITY',    desc:'high ≥ low on every candle'},
   {id:'QC-02',name:'QC-02 OHLC CONSISTENT', desc:'high ≥ max(o,c) · low ≤ min(o,c)'},
@@ -352,9 +365,9 @@ for(var _y=+SPLIT.bands[0].from.slice(0,4);_y<=+SPLIT.bands[SPLIT.bands.length-1
 
 var OPTUNA={n_trials:200,sampler:'TPE',pruner:'MedianPruner(n_warmup_steps=2)',
   objective:'AUC-PR (mean over k=4 purged walk-forward folds on Train)',
-  space:{max_depth:'3–9',learning_rate:'0.01–0.3 (log)',n_estimators:'100–1200',
+  space:{n_estimators:'100–1200',max_depth:'3–9',learning_rate:'0.01–0.3 (log)',
     min_child_weight:'1–20',subsample:'0.5–1.0',colsample_bytree:'0.5–1.0',
-    reg_lambda:'1e-3–10 (log)',scale_pos_weight:'0.5–4'}};
+    reg_lambda:'1e-3–10 (log)',reg_alpha:'0–0.6'}};
 function buildTrials(){var r=rng(4242),out=[],best=0.382,i;
   for(i=0;i<OPTUNA.n_trials;i++){
     var explore=Math.exp(-i/60), v=0.36+0.20*(1-explore)+(r()-0.5)*0.10*(0.4+explore);
@@ -362,13 +375,29 @@ function buildTrials(){var r=rng(4242),out=[],best=0.382,i;
     v=Math.round(v*1000)/1000;
     if(!pruned&&v>best)best=v;
     out.push({i:i,v:v,pruned:pruned,best:Math.round(best*1000)/1000,
-      params:{max_depth:3+Math.floor(r()*7),learning_rate:+(0.01*Math.pow(30,r())).toFixed(3),
-        n_estimators:100+Math.floor(r()*1100),subsample:+(0.5+0.5*r()).toFixed(2)}});}
+      params:{n_estimators:100+Math.floor(r()*1100),max_depth:3+Math.floor(r()*7),
+        learning_rate:+(0.01*Math.pow(30,r())).toFixed(3),min_child_weight:1+Math.floor(r()*20),
+        subsample:+(0.5+0.5*r()).toFixed(2),colsample_bytree:+(0.5+0.5*r()).toFixed(2),
+        reg_lambda:+(0.1+r()*9.9).toFixed(1),reg_alpha:+(0.01+r()*0.6).toFixed(2)}});}
   return out;}
 var TRIALS=buildTrials();
 var BEST_TRIAL=(function(){var b=0,i;for(i=0;i<TRIALS.length;i++)if(!TRIALS[i].pruned&&TRIALS[i].v>=TRIALS[b].v)b=i;return b;})();
-var PARAM_IMPORTANCE=[['learning_rate',0.31],['max_depth',0.22],['min_child_weight',0.14],
-  ['subsample',0.12],['n_estimators',0.09],['colsample_bytree',0.07],['reg_lambda',0.05]];
+// shared matrix model (3D layer + flat view): 8 hyperparameter rows + status helper
+var OPTUNA_PARAM_ROWS=[
+  {k:'n_estimators',    fmt:function(v){return ''+v;}},
+  {k:'max_depth',       fmt:function(v){return ''+v;}},
+  {k:'learning_rate',   fmt:function(v){return v.toFixed(3);}},
+  {k:'min_child_weight',fmt:function(v){return ''+v;}},
+  {k:'subsample',       fmt:function(v){return v.toFixed(2);}},
+  {k:'colsample_bytree',fmt:function(v){return v.toFixed(2);}},
+  {k:'reg_lambda',      fmt:function(v){return v.toFixed(1);}},
+  {k:'reg_alpha',       fmt:function(v){return v.toFixed(2);}}];
+function optunaCols(){return [0,1,2,-1,BEST_TRIAL];}        // visible trial columns; -1 = "…" ellipsis
+function trialStatus(i){var t=TRIALS[i];if(t.pruned)return{t:'pruned',c:SL};
+  if(i===BEST_TRIAL)return{t:'new best',c:TP};
+  var lead=true,j;for(j=0;j<i;j++)if(!TRIALS[j].pruned&&TRIALS[j].v>=t.v){lead=false;break;}
+  return lead?{t:'leader',c:AMB}:{t:'tested',c:CAN};}
+function trialLabel(i){return 'Trial_'+(i+1<100?('0'+(i+1)).slice(-2):''+(i+1));}
 
 function setupsMock(a){var r=rng(a*131+9);return {long:Math.round(70+130*r()),short:Math.round(60+120*r())};}
 function oosMock(a){var r=rng(a*7919+101),q=r();
@@ -447,7 +476,7 @@ function manifest(a){var r=rng(a*991+7);
     selfcheck:'golden input → output: PASS'};
 }
 
-var BND_DZ=[189,189,192,189,189,189,185,189,189,202,196];   // 11 boundaries (12 levels): split L9 (Optuna search) / L10 (XGB final + b64 artifact); L11 = OOS; L11 → L12 endproduct folder
+var BND_DZ=[189,189,192,189,189,189,185,189,189,202,196];   // 11 boundaries (12 levels): split L9 (Optuna search) / L10 (XGB final → strategy .py with embedded base64 model); L11 = OOS; L11 → L12 endproduct folder
 
 // ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
 // family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
@@ -512,15 +541,15 @@ var PIPELINE={
      metric:{label:'gate',value:'OPEN'},invariants:['any FAIL blocks training','green dashboard = start condition'],
      status:'ok',dataKey:'DQ',hitType:'dqSummary'},
     {id:'L9',lev:8,family:'transform',role:'transform',col:GREEN,
-     title:'OPTUNA HYPERPARAMETER SEARCH',subtitle:'tune XGB on Train (TPE + MedianPruner)',
+     title:'OPTUNA · HYPERPARAMETER SEARCH MATRIX',subtitle:'TPE + MedianPruner · validation AUC-PR · Train only',
      summary:'200 trials · TPE · MedianPruner · purged walk-forward CV (k=4) — Train only',
      input_contract:'Output B (green dashboard) — Train only',transform_verb:'tune',
-     output_contract:'OPTUNAs_XGB_HPOs_best_params.json (+ trial_history, optuna_study)',
+     output_contract:'OPTUNAs_XGB_HPOs_best_params.json ×{{universe_size}} (one per asset; + trial_history, optuna_study)',
      metric:{label:'trials',value:'200'},invariants:['Train only — no OOS read','TPE + MedianPruner','best trial → OPTUNAs_XGB_HPOs_best_params.json'],
      status:'ok',dataKey:'OPTUNA',hitType:'optuna'},
     {id:'L10',lev:9,family:'store',role:'store',col:TEAL,
-     title:'XGB FINAL TRAIN → b64 STRATEGY ×{{universe_size}}',subtitle:'train champion → serialize → b64 → 1 strategy .py per asset',
-     summary:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → final XGB → b64 → strategy_<TICKER>.py (×{{universe_size}})',
+     title:'XGB FINAL → STRATEGY .py (base64 MODEL_B64 inside) ×{{universe_size}}',subtitle:'train champion → serialize → base64 → embed MODEL_B64 in 1 strategy .py per asset',
+     summary:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → final XGB → MODEL_B64 embedded in strategy_<TICKER>.py (×{{universe_size}})',
      input_contract:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',transform_verb:'pack',
      output_contract:'×{{universe_size}} strategy_<TICKER>.py: MODEL_B64 + FEATURE_MANIFEST + THRESHOLD + selfcheck (1 model/asset)',
      metric:{label:'artifacts',value:'×{{universe_size}}'},invariants:['1 model + 1 .py + 1 hash per asset','deterministic build (stable hash)','self-contained: no training data at import'],
@@ -556,13 +585,13 @@ var PIPELINE={
     {from:'L7',to:'L8',verb:'validate',payload:'Output B → quality dashboard',causal_scope:'checkpoint',
      detail:'X,Y matrix per setup (Output B) + store manifests → data-quality gate: parities zip→DuckDB→parquet→Output B · gaps · zero-values · NaN/Inf · split assertion → summary.json + dashboard'},
     {from:'L8',to:'L9',verb:'tune',payload:'green dashboard → Optuna search',causal_scope:'Train only',
-     detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → OPTUNAs_XGB_HPOs_best_params.json'},
-    {from:'L9',to:'L10',verb:'pack',payload:'OPTUNAs_XGB_HPOs_best_params.json → final XGB → b64',causal_scope:'per asset',
+     detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → OPTUNAs_XGB_HPOs_best_params.json (hyperparameters only — no model is built in L9)'},
+    {from:'L9',to:'L10',verb:'pack',payload:'OPTUNAs_XGB_HPOs_best_params.json → final XGB → MODEL_B64 in .py',causal_scope:'per asset',
      detail:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×{{universe_size}} independent files, 1 model/hash/window per asset)'},
     {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
-     detail:'{{universe_size}} frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR'},
+     detail:'{{universe_size}} frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR (OOS is touched here for the first time — never in L9/L10 training)'},
     {from:'L11',to:'L12',verb:'package',payload:'frozen artifacts + external OOS verdict → per-asset deliverable folders',causal_scope:'per asset',
-     detail:'package all ×{{universe_size}} frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 Optuna best params) + strategy_<TICKER>.py (L10 b64 model + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
+     detail:'package all ×{{universe_size}} frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 Optuna best params) + strategy_<TICKER>.py (L10: base64 model embedded + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
   ]
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
@@ -753,6 +782,15 @@ function drawFlowArrowHQ(p1,p2,col,dotCol){
   ctx.restore();
   if(STATE.flow&&!STATE.paused){var k=((CLK*0.5)%1),px=a.x+dx*k,py=a.y+dy*k;
     ctx.save();ctx.fillStyle=rgba(dotCol||col,0.95);ctx.beginPath();ctx.arc(px,py,2.8,0,7);ctx.fill();ctx.restore();}
+}
+function arrowHQ(a,b,col){   // SCREEN-space thick L2-style arrow (soft halo + crisp shaft + filled head); a,b = screen points
+  var dx=b.x-a.x,dy=b.y-a.y,L=Math.max(1,Math.hypot(dx,dy)),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+  var head=clamp(L*0.34,10,17),hw=head*0.62,bx=b.x-ux*head,by=b.y-uy*head;
+  ctx.save();ctx.setLineDash([]);ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle=rgba(col,0.22);ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();       // soft halo
+  ctx.strokeStyle=rgba(col,0.95);ctx.lineWidth=2.8;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();      // crisp shaft
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(bx+nx*hw,by+ny*hw);ctx.lineTo(bx-nx*hw,by-ny*hw);ctx.closePath();ctx.fill();   // filled head
+  ctx.restore();
 }
 function flowArrow(lev){
   var tert=vget('--color-text-tertiary','#777');
@@ -1029,33 +1067,16 @@ TransformLayer.prototype.draw=function(){
   line2(arrA,arrB,rgba(AMB,0.65),1.6,[]);
   var arrS=CAM.S(arrB);ctx.save();ctx.translate(arrS.x,arrS.y);ctx.rotate(Math.PI/2);triUpS(0,0,AMB);ctx.restore();
 
-  // L4 parquet serpentine: matches L2 ZIP SERP shape — 3 rows, 5-5-4 boustrophedon, same fold count
-  // & vertical distribution; a/b fitted to the band RIGHT of the snapshot cylinder/arrow (no overlap), depth-sorted
-  var SERP=[{a:0.44,b:0.30},{a:0.57,b:0.30},{a:0.70,b:0.30},{a:0.83,b:0.30},{a:0.96,b:0.30},
-            {a:0.96,b:0.54},{a:0.83,b:0.54},{a:0.70,b:0.54},{a:0.57,b:0.54},{a:0.44,b:0.54},
-            {a:0.44,b:0.78},{a:0.57,b:0.78},{a:0.70,b:0.78},{a:0.83,b:0.78}],i,k,N=SERP.length;
-  for(i=0;i<N-1;i++){
-    var p1=lp(3,SERP[i].a,SERP[i].b,13),p2=lp(3,SERP[i+1].a,SERP[i+1].b,13);
-    line2(p1,p2,rgba(AMB,0.5),1.3,[]);
-    if(STATE.flow&&!STATE.paused){var kk=((CLK*0.4+i*0.08)%1),aS=CAM.S(p1),bS=CAM.S(p2);
-      ctx.fillStyle=AMB;ctx.beginPath();ctx.arc(aS.x+(bS.x-aS.x)*kk,aS.y+(bS.y-aS.y)*kk,2.3,0,7);ctx.fill();}
-  }
-  var list=[];
-  for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,d:lp(3,SERP[i].a,SERP[i].b,16).d});
-  list=byD(list);
-  for(k=0;k<list.length;k++){
-    var t=list[k],last=(t.i===N-1),sel=false;
-    if(flash>0&&sel){var s=SS(3,t.a,t.b,16);strokeRR(s.x-18,s.y-26,36,48,9,rgba(GREEN,flash*0.8),2);}   // selection halo (parity with L2)
-    var cPq=last?GLYPHS.parquetFolder({lev:3,a:t.a,b:t.b,i:t.i,z0:16,col:AMB})                            // last node = folder the files flow into
-                :GLYPHS.parquetFile({lev:3,a:t.a,b:t.b,i:t.i,sel:sel,z0:16,col:AMB});                     // sample nodes = parquet file (document); each registers its own hit
-    if(STATE.labels){
-      if(last)qLabel({key:'parq_all',def:'×{{universe_size}}',grp:'Snapshot / Parquet',
-        x:cPq.x,y:cPq.y-26,col:vget('--color-text-secondary','#999'),al:'center',sz:9,wt:'700',pr:3,ax:cPq.x,ay:cPq.y-8});   // ×N caption ABOVE the folder
-      else if(STATE.names==='sample'&&anameV(t.i))qLabel({key:'parq'+t.i,text:(anameV(t.i)||'').toLowerCase(),
-        x:cPq.x,y:cPq.y+24,col:sel?GREEN:vget('--color-text-secondary','#999'),al:'center',sz:7.5,wt:sel?'600':'',
-        pr:sel?3:2,lod:LOD.name,ax:cPq.x,ay:cPq.y+12});
-    }
-  }
+  // L4 parquet serpentine (shared helper): matches L2 ZIP SERP shape — 3 rows, 5-5-4 boustrophedon,
+  // same fold count & vertical distribution; a/b fitted to the band RIGHT of the snapshot cylinder/arrow
+  // (no overlap), depth-sorted; last node = folder the files flow into, ×N caption above it.
+  GLYPHS.fileSerpentine({lev:3,serp:[
+    {a:0.44,b:0.30},{a:0.57,b:0.30},{a:0.70,b:0.30},{a:0.83,b:0.30},{a:0.96,b:0.30},
+    {a:0.96,b:0.54},{a:0.83,b:0.54},{a:0.70,b:0.54},{a:0.57,b:0.54},{a:0.44,b:0.54},
+    {a:0.44,b:0.78},{a:0.57,b:0.78},{a:0.70,b:0.78},{a:0.83,b:0.78}],
+    col:AMB,z0:16,lineDz:13,
+    allKey:'parq_all',allDef:'×{{universe_size}}',allGrp:'Snapshot / Parquet',
+    names:true,nameKeyPfx:'parq'});
 
   if(STATE.labels){
     var pt1=SS(3,0.5,0.16,8),pt2=SS(3,0.5,0.97,0);
@@ -1445,65 +1466,211 @@ QualityLayer.prototype.draw=function(){
   }
 };
 
-// L9 — Optuna hyperparameter search ONLY: trial funnel → OPTUNAs_XGB_HPOs_best_params.json. No final training, no .py, no b64.
+// L9 — OPTUNA HYPERPARAMETER SEARCH MATRIX (L7-style PT(u,v)): rows = 8 hyperparameters + Y(validation AUC-PR)/best/status,
+// columns = trials in time (TPE). Left = matrix; right = flow → OPTUNAs_XGB_HPOs_best_params.json ×N (one per asset). No model/.py/b64/OOS here.
+function drawOptunaMatrix8(bord,prim,tert){
+  var BW=0.5,A0=0.02,A1=0.72,base=4,HZ=165,showVal=(CAM.z>=0.9);
+  var COLS=optunaCols(),NCOL=1+COLS.length,NROW=12,SEP=9,rr,cc;     // rows: 1 header + 8 params + 3 results (Y/best/status at SEP..SEP+2)
+  var A=CAM.S(lp(8,A0,BW,base)),B=CAM.S(lp(8,A1,BW,base)),
+      T1=CAM.S(lp(8,A0,BW,base+HZ)),T2=CAM.S(lp(8,A1,BW,base+HZ));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(vget('--color-background-primary','#1e1e1c'),0.93),bord,1.2,[]);   // OPAQUE panel → inter-layer flow line + animated particles don't bleed through the table
+  polyS([T1,T2,B,A],rgba(GREEN,0.05),null,0,[]);                                              // subtle transform-role tint on top of the opaque panel
+  // non-uniform columns: col 0 (labels) sized WIDER than the longest row-label ("Y: validation AUC-PR"); trial columns split the rest equally
+  var LBLS=['Y: validation AUC-PR','best Y so far','current status'],li2;
+  for(li2=0;li2<OPTUNA_PARAM_ROWS.length;li2++)LBLS.push(OPTUNA_PARAM_ROWS[li2].k);
+  setFont((6.4*zScale()).toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  var maxLab=0;for(li2=0;li2<LBLS.length;li2++){var lw=ctx.measureText(LBLS[li2]).width;if(lw>maxLab)maxLab=lw;}
+  var matWpx=Math.max(1,Math.min(Math.abs(B.x-A.x),Math.abs(T2.x-T1.x)));
+  var W0=Math.min(0.52,Math.max(0.30,(maxLab+14)/matWpx)),tw=(1-W0)/(NCOL-1);
+  function colU(c){return c===0?{l:0,r:W0*0.985}:{l:W0+(c-1)*tw,r:W0+(c-1)*tw+tw*0.965};}
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var cu=colU(cc),u0=cu.l,u1=cu.r,v0=rr/NROW,v1=(rr+0.93)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    var ti=(cc>=1)?COLS[cc-1]:null,isEll=(ti===-1),isBest=(ti===BEST_TRIAL);
+    if(rr===0&&cc===0){                                            // corner: param \ trial
+      polyS([p00,p10,p11,p01],rgba(CAN,0.14),bord,0.8,[]);
+      ctx.save();ctx.strokeStyle=prim;ctx.lineWidth=1.2;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(p00.x,p00.y);ctx.lineTo(p11.x,p11.y);ctx.stroke();ctx.restore();
+      var ptr=lerp2(p10,pc,0.42),ppa=lerp2(p01,pc,0.42);
+      txtS('trial',ptr.x,ptr.y+3,prim,'center',7.5,'700');txtS('param',ppa.x,ppa.y+3,prim,'center',7.5,'700');
+    }else if(rr===0){                                              // trial column header
+      polyS([p00,p10,p11,p01],isBest?rgba(AMB,0.26):rgba(GREEN,0.22),bord,0.9,[]);
+      if(isEll)txtS('…',pc.x,pc.y+4,prim,'center',11,'700');
+      else txtS(trialLabel(ti)+(isBest?' ★':''),pc.x,pc.y+3,isBest?AMB:prim,'center',7,'700');
+    }else if(cc===0){                                              // row header: param name / result label
+      var isRes=(rr>=SEP),resLbl=(rr===SEP)?'Y: validation AUC-PR':(rr===SEP+1?'best Y so far':(rr===SEP+2?'current status':''));
+      polyS([p00,p10,p11,p01],isRes?rgba(TP,0.16):rgba(CAN,0.12),bord,0.9,[]);
+      if(showVal)monoS(isRes?resLbl:OPTUNA_PARAM_ROWS[rr-1].k,lerp2(p00,p10,0.03).x,pc.y+3,isRes?TP:prim,'left',6.4);
+      else txtS(isRes?'Y':String(rr),pc.x,pc.y+4,isRes?TP:prim,'center',8,'700');
+    }else if(isEll){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.05),bord,0.8,[]);if(showVal)txtS('…',pc.x,pc.y+3,tert,'center',8);
+    }else{                                                         // data cell
+      var t=TRIALS[ti];
+      if(rr<SEP){                                                  // hyperparameter value
+        polyS([p00,p10,p11,p01],isBest?rgba(AMB,0.08):rgba(CAN,0.09),bord,0.8,[]);
+        if(showVal)txtS(OPTUNA_PARAM_ROWS[rr-1].fmt(t.params[OPTUNA_PARAM_ROWS[rr-1].k]),pc.x,pc.y+3,tert,'center',6.4);
+      }else if(rr===SEP){                                          // Y: validation AUC-PR
+        var sc=Math.max(0,Math.min(1,(t.v-0.36)/0.10));
+        polyS([p00,p10,p11,p01],rgba(TP,0.10+0.42*sc),bord,0.8,[]);
+        if(showVal)txtS(t.v.toFixed(3),pc.x,pc.y+3,isBest?AMB:TP,'center',6.4,'700');
+      }else if(rr===SEP+1){                                        // best Y so far
+        polyS([p00,p10,p11,p01],rgba(AMB,0.08),bord,0.8,[]);
+        if(showVal)txtS(t.best.toFixed(3),pc.x,pc.y+3,AMB,'center',6.4);
+      }else{                                                       // current status
+        var st=trialStatus(ti);
+        polyS([p00,p10,p11,p01],rgba(st.c,0.13),bord,0.8,[]);
+        if(showVal)txtS(st.t,pc.x,pc.y+3,st.c,'center',6.4,'700');
+      }
+    }
+  }
+  var sp0=PT(0,SEP/NROW),sp1=PT(1,SEP/NROW);                       // heavier params↔results separator
+  ctx.save();ctx.strokeStyle=rgba(prim,0.5);ctx.lineWidth=1.6;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(sp0.x,sp0.y);ctx.lineTo(sp1.x,sp1.y);ctx.stroke();ctx.restore();
+  for(cc=1;cc<NCOL;cc++){var tj=COLS[cc-1];if(tj===-1)continue;var hu=colU(cc);     // per-trial-column HITS (skip ellipsis)
+    var q0=PT(hu.l,0),q1=PT(hu.r,0),q2=PT(hu.l,1),q3=PT(hu.r,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,{type:'trial',i:tj});}
+  addObstaclePts([T1,T2,B,A],2);
+  if(STATE.labels){var ptl=PT(0.5,-0.13),ptt=PT(0.5,-0.06);
+    qLabel({key:'opt_matrix_title',def:'OPTUNA · HYPERPARAMETER SEARCH MATRIX — TPE (Tree-Structured Parzen Estimator) → trials in time',grp:'Optuna search',
+      x:ptl.x,y:ptl.y,col:GREEN,al:'center',sz:9,wt:'600',pr:3});
+    qLabel({key:'opt_matrix_sub',def:'successive Optuna trials in time → · purged walk-forward CV (k=4) · Train only · no OOS',grp:'Optuna search',
+      x:ptt.x,y:ptt.y,col:tert,al:'center',sz:7.5,pr:1,lod:LOD.name});}
+  return {a1:A1,yDz:base+HZ*(1-(SEP+0.465)/NROW),cDz:base+HZ*0.5};   // a1=right edge · yDz=green "Y: validation AUC-PR" row · cDz=vertical centre
+}
 function OptunaSearchLayer(){}
 OptunaSearchLayer.prototype.draw=function(){
   caption(8);
-  var tert=vget('--color-text-tertiary','#777');
-  GLYPHS.trialFunnel(8,0.30,0.5,PINK);                            // 200 trials → pruning → best (TPE tag · hit:{type:'optuna'})
-  line2(lp(8,0.52,0.5,18),lp(8,0.72,0.5,18),tert,1.4,[]);
-  var ah=CAM.S(lp(8,0.72,0.5,18));
-  ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
-  var bp=SS(8,0.83,0.5,20);                                       // output artifact = OPTUNAs_XGB_HPOs_best_params.json
-  GLYPHS.pyFile(bp.x,bp.y,112,42,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');
-  HITS.addRect(bp.x-56,bp.y-21,112,42,{type:'optuna'});
-  addObstacleRect(bp.x-56,bp.y-21,112,42);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
+  var mx=drawOptunaMatrix8(bord,prim,tert);                        // search matrix (left); mx={a1,yDz(green Y-row),cDz(vertical centre)}
+  // OUTPUT — per-asset fan-out as an L4-style serpentine, VERTICAL: the files climb the TABLE HEIGHT to the right
+  // of the matrix, MOVED RIGHT (a≥0.98) and STRETCHED RIGHT (wide columns a 0.98/1.20/1.42 → uses the open space)
+  // so they read clearly with L4-like distance, b=0.5 (same plane, beside the table), dz 36..160. one
+  // OPTUNAs_XGB_HPOs_best_params.json per asset → folder (×{{universe_size}} + file name). Thick orange L2/L4 arrowHQ.
+  var e=CAM.S(lp(8,mx.a1,0.5,mx.yDz)),f0=CAM.S(lp(8,0.98,0.5,36));
+  arrowHQ({x:e.x+6,y:e.y},{x:f0.x-16,y:f0.y},AMB);
+  GLYPHS.fileSerpentine({lev:8,serp:[
+    {a:0.98,b:0.5,dz:36},{a:1.20,b:0.5,dz:36},{a:1.42,b:0.5,dz:36},
+    {a:1.42,b:0.5,dz:68},{a:1.20,b:0.5,dz:68},{a:0.98,b:0.5,dz:68},
+    {a:0.98,b:0.5,dz:100},{a:1.20,b:0.5,dz:100},{a:1.42,b:0.5,dz:100},
+    {a:1.42,b:0.5,dz:132},{a:1.20,b:0.5,dz:132},{a:0.98,b:0.5,dz:132},
+    {a:0.98,b:0.5,dz:160},{a:1.20,b:0.5,dz:160}],
+    col:GREEN,kind:'code',ext:'.json',hit:'optuna',
+    allKey:'optout_all',allDef:'×{{universe_size}}',allGrp:'Optuna search',
+    allName:'OPTUNAs_XGB_HPOs_best_params.json',allLabelLp:{a:1.50,b:0.5,dz:104},allLabelAl:'left',
+    names:true,nameKeyPfx:'optnm'});
   if(STATE.labels){
-    var po1=SS(8,0.5,0.10,2),po2=SS(8,0.5,0.97,0);
-    qLabel({key:'opt_caption',def:'Optuna search: 200 trials (TPE + MedianPruner) · purged walk-forward CV (k=4) — Train only · no OOS read',grp:'Optuna search',
-      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'optout_caption',def:'output: best trial → OPTUNAs_XGB_HPOs_best_params.json (consumed by L10 final training)',grp:'Optuna search',
-      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
-  }
+    var oc1=SS(8,0.55,0.96,8),oc2=SS(8,0.55,1.01,2);
+    qLabel({key:'optout_caption',def:'one OPTUNAs_XGB_HPOs_best_params.json per asset → collected (×{{universe_size}})',grp:'Optuna search',
+      x:oc1.x,y:oc1.y,col:tert,al:'center',sz:8,pr:1});
+    qLabel({key:'opt_noproof',def:'parameters only — no model, no .py, no MODEL_B64 here · Train only, no OOS',grp:'Optuna search',
+      x:oc2.x,y:oc2.y,col:tert,al:'center',sz:8,pr:1});}
 };
 
-// L10 — XGB FINAL training + b64 strategy export: OPTUNAs_XGB_HPOs_best_params.json + Train X/y + schema → champion → serialize → b64 → strategy_<TICKER>.py × N (per-asset fan-out).
+// L10 backdrop — FEATURE_MANIFEST (8 X) as an L7-style standing matrix (PT(u,v) pattern from FeatureForest).
+// rows = the 8 frozen X in order (#8 = direction, NOT closed_through_line); drawn first so the front spine paints on top.
+// L10 TOP band — FEATURE_MANIFEST as features-in-COLUMNS (L7-style): header (family glyph + X#) · abbreviation · sample input vector. Opaque panel.
+function drawManifestColumns9(bord,prim,tert){
+  var BW=0.5,A0=0.05,A1=0.95,base=92,HZ=60,showVal=(CAM.z>=0.9);
+  var NCOL=1+FEATURE_MANIFEST.length,NROW=3,rr,cc;                 // col 0 = row labels · cols 1..8 = the 8 X features · rows: header / abbr / sample
+  var A=CAM.S(lp(9,A0,BW,base)),B=CAM.S(lp(9,A1,BW,base)),
+      T1=CAM.S(lp(9,A0,BW,base+HZ)),T2=CAM.S(lp(9,A1,BW,base+HZ));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(vget('--color-background-primary','#1e1e1c'),0.93),bord,1.2,[]);   // opaque panel → inter-layer flow line doesn't bleed through
+  polyS([T1,T2,B,A],rgba(GREEN,0.05),null,0,[]);                                              // subtle schema-role tint
+  setFont((6.6*zScale()).toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  var maxLab=Math.max(ctx.measureText('FEATURE_MANIFEST').width,ctx.measureText('sample x').width);
+  var matWpx=Math.max(1,Math.min(Math.abs(B.x-A.x),Math.abs(T2.x-T1.x)));
+  var W0=Math.min(0.30,Math.max(0.14,(maxLab+12)/matWpx)),tw=(1-W0)/(NCOL-1);
+  function colU(c){return c===0?{l:0,r:W0*0.99}:{l:W0+(c-1)*tw,r:W0+(c-1)*tw+tw*0.94};}
+  var SAMPLE=['-0.8','1.2','0.6','0.3','0.45','1.1','3','+1'],ROWLBL=['','name','sample x'];
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var cu=colU(cc),u0=cu.l,u1=cu.r,v0=rr/NROW,v1=(rr+0.9)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    if(cc===0){                                                    // row-label column
+      polyS([p00,p10,p11,p01],rgba(CAN,0.12),bord,0.9,[]);
+      txtS(rr===0?'FEATURE_MANIFEST':ROWLBL[rr],lerp2(p00,p10,0.05).x,pc.y+3,rr===0?GREEN:prim,'left',rr===0?6.4:6.8,'700');
+    }else{
+      var m=FEATURE_MANIFEST[cc-1];
+      if(rr===0){                                                 // header: family glyph + X# (frozen order)
+        polyS([p00,p10,p11,p01],rgba(GREEN,0.22),bord,0.9,[]);
+        var gx=lerp2(p00,p10,0.30),txx=lerp2(p00,p10,0.70);drawFamilyMarker(gx.x,pc.y,m.fam,GREEN);
+        txtS('X'+cc,txx.x,pc.y+3,prim,'center',7,'700');
+      }else if(rr===1){                                           // abbreviation (full name on hover)
+        polyS([p00,p10,p11,p01],rgba(CAN,0.10),bord,0.8,[]);
+        if(showVal)txtS(m.ab,pc.x,pc.y+3,tert,'center',5.8);
+      }else{                                                      // sample input vector (illustrative — the 8 X the model reads, in order)
+        polyS([p00,p10,p11,p01],rgba(TP,0.10),bord,0.8,[]);
+        if(showVal)txtS(SAMPLE[cc-1],pc.x,pc.y+3,TP,'center',6.4,'700');
+      }
+    }
+  }
+  for(cc=1;cc<NCOL;cc++){var hu=colU(cc);                         // per-feature-COLUMN HITS → manifestRow tooltip/click
+    var q0=PT(hu.l,0),q1=PT(hu.r,0),q2=PT(hu.l,1),q3=PT(hu.r,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,{type:'manifestRow',r:cc-1});}
+  addObstaclePts([T1,T2,B,A],2);
+  if(STATE.labels){var pt=PT(0.5,-0.42);
+    qLabel({key:'manifest_title',def:'FEATURE_MANIFEST — 8 X · frozen order (7 geometric + direction) · embedded in every strategy_<TICKER>.py',grp:'XGB final + artifact',
+      x:pt.x,y:pt.y,col:GREEN,al:'center',sz:9,wt:'600',pr:3});}
+  return {a1:A1,bDz:base+HZ*0.5};
+}
+
+// L10 — XGB FINAL training → strategy .py with an embedded base64 MODEL_B64. TOP band = FEATURE_MANIFEST (features as columns); BOTTOM band = clean build line.
 function StrategyExportLayer(){}
 StrategyExportLayer.prototype.draw=function(){
   caption(9);
-  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
-  var ip=SS(9,0.09,0.5,20);                                       // input artifact = OPTUNAs_XGB_HPOs_best_params.json (from L9)
-  GLYPHS.pyFile(ip.x,ip.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');
-  HITS.addRect(ip.x-56,ip.y-20,112,40,{type:'optuna'});
-  addObstacleRect(ip.x-56,ip.y-20,112,40);
-  line2(lp(9,0.17,0.5,18),lp(9,0.27,0.5,18),tert,1.4,[]);
-  var top=prism(9,0.28,0.38,0.50,0.62,2,26,TEAL,0.22),tc=ctr(top);  // final champion XGB
-  if(CAM.z>=0.75)GLYPHS.modelTree(tc.x,tc.y+2,TEAL);
-  HITS.addPts([lp(9,0.26,0.36,32),lp(9,0.52,0.64,0)],{type:'xgb'});
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
+  drawManifestColumns9(bord,prim,tert);                           // TOP band: FEATURE_MANIFEST (features as columns)
+  // BOTTOM band — clean horizontal build line at dz≈28 (separated from the table at dz 92+), orange arrowHQ between stages
+  var FB=0.5,DZ=40,y0=SS(9,0.5,FB,DZ).y;                          // line height (screen); whole build line is fixed-size screen-space
+  // uniform layout: EVERY arrow is the same clean arrowHQ (ARW) in equal gaps — fixes the cramped json→XGB / XGB→MODEL_B64 arrows
+  var GAP=9,ARW=46,JW=98,JH=40,CUBEW=78,MBW=72,MBH=22;
+  var cx=SS(9,0.03,FB,DZ).x;                                      // world-anchored left start (the line tracks the scene on pan/zoom)
+  // 1. input json
+  var jcx=cx+JW/2;
+  GLYPHS.pyFile(jcx,y0,JW,JH,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');
+  HITS.addRect(jcx-JW/2,y0-JH/2,JW,JH,{type:'optuna'});addObstacleRect(jcx-JW/2,y0-JH/2,JW,JH);
+  cx+=JW;
+  // 2. arrow → XGB cube
+  arrowHQ({x:cx+GAP,y:y0},{x:cx+GAP+ARW,y:y0},AMB);cx+=2*GAP+ARW;
+  // 3. XGB FINAL — FIXED-SIZE 3D box (pure screen-space → looks IDENTICAL at every zoom) with the model-tree + bold WHITE "XGB" inside
+  var DPX=11,DPY=9,fw=CUBEW-DPX,fh=56,x0=cx,x1=cx+fw,ccx=cx+fw/2,yt=y0-fh/2,yb=y0+fh/2,bg=vget('--color-background-primary','#1e1e1c');
+  polyS([{x:x1,y:yt},{x:x1+DPX,y:yt-DPY},{x:x1+DPX,y:yb-DPY},{x:x1,y:yb}],rgba(TEAL,0.18),rgba(TEAL,0.6),1,[]);    // right face (depth)
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1+DPX,y:yt-DPY},{x:x0+DPX,y:yt-DPY}],rgba(TEAL,0.34),rgba(TEAL,0.8),1,[]);     // top face (lighter lid → reads as 3D)
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1,y:yb},{x:x0,y:yb}],rgba(bg,0.92),TEAL,1.4,[]);                               // front face: opaque dark teal panel
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1,y:yb},{x:x0,y:yb}],rgba(TEAL,0.18),null,0,[]);                               // front teal tint on top of the panel
+  GLYPHS.modelTree(ccx,y0-9,'#4FD8A8',0.62);                      // model tree centred in the upper area of the front face
+  txtS('XGB',ccx+1.3,y0+20.5,'rgba(0,0,0,0.6)','center',15,'800');   // dark shadow for contrast
+  txtS('XGB',ccx,y0+19,'#ffffff','center',15,'800');             // bold WHITE letters
+  HITS.addRect(x0-2,yt-DPY-2,fw+DPX+4,fh+DPY+4,{type:'xgb'});addObstacleRect(x0-2,yt-DPY-2,fw+DPX+4,fh+DPY+4);
+  cx+=CUBEW;
+  // 4. arrow → MODEL_B64
+  var a4=cx+GAP+ARW/2;
+  arrowHQ({x:cx+GAP,y:y0},{x:cx+GAP+ARW,y:y0},AMB);cx+=2*GAP+ARW;
+  // 5. MODEL_B64 (serialize → base64 happens on arrow 4)
+  drawTagS(cx,y0-MBH/2,MBW,MBH,TEAL,'MODEL_B64',0.16,8);HITS.addRect(cx,y0-MBH/2,MBW,MBH,{type:'aband',b:3});
+  cx+=MBW;
+  // 6+7. strategy_<TICKER>.py per asset → folder, as a SCREEN-SPACE serpentine pinned to the build line and
+  //    VERTICALLY CENTERED in the L10 band: the layer-boundary lines are BNDY[9] (top, L10/L11) and BNDY[8]
+  //    (bottom, L9/L10); band centre = midY. 3-col × 4-row boustrophedon RIGHT of MODEL_B64, rows centred on midY
+  //    (r0=midY-1.5·ROWH) → the serpentine's centre sits BETWEEN the two lines. Size SCALES DOWN only when the band
+  //    is too short to hold the full size (sc<1) — at normal/large bands sc=1 (unchanged); → never crosses a boundary, at any zoom.
+  var midY=(BNDY[8]+BNDY[9])/2,bandH=Math.abs(BNDY[8]-BNDY[9]),sc=Math.min(1,bandH/184);
+  var COLW=58*sc,ROWH=38*sc,SW2=46*sc,SH2=30*sc,sx0=cx+GAP+ARW+24+SW2/2,r0=midY-1.5*ROWH,SN=[];
+  arrowHQ({x:cx+GAP,y:y0},{x:sx0-SW2/2-2,y:midY},AMB);        // short hand-off MODEL_B64 → serpentine (block left-centre)
+  [[0,1,2],[2,1,0],[0,1,2],[2,1]].forEach(function(row,r){row.forEach(function(c){SN.push({x:sx0+c*COLW,y:r0+r*ROWH});});});
+  GLYPHS.fileSerpentineScreen({nodes:SN,col:AMB,ext:'.py',fw:SW2,fh:SH2,hit:'strategy',allSz:Math.max(6.5,8.5*sc),
+    allText:'×{{universe_size}}  strategy_<TICKER>.py',allTextAt:{x:sx0+COLW,y:r0+3*ROWH+SH2*0.55+5},allTextAl:'center'});
   if(STATE.labels){
-    var px1=SS(9,0.39,0.5,32),px2=SS(9,0.39,0.74,0),pxa=SS(9,0.39,0.5,28);
-    qLabel({key:'xgb_title',def:'XGB FINAL',grp:'XGB final + artifact',
-      x:px1.x,y:px1.y-2,col:prim,al:'center',sz:11,wt:'700',pr:3,ax:pxa.x,ay:pxa.y});
-    qLabel({key:'xgb_sub',def:'champion · binary:logistic · 1 model/asset',grp:'XGB final + artifact',
-      x:px2.x,y:px2.y,col:tert,al:'center',sz:8,pr:1});
-  }
-  line2(lp(9,0.58,0.5,18),lp(9,0.70,0.5,18),tert,1.4,[]);
-  var ah=CAM.S(lp(9,0.70,0.5,18));
-  ctx.save();ctx.translate(ah.x,ah.y);ctx.rotate(Math.PI/2);triUpS(0,0,tert);ctx.restore();
-  var sp=SS(9,0.80,0.5,20),wp=92,hp=42;
-  GLYPHS.pyFile(sp.x+14,sp.y-14,wp,hp,tert,'strategy_NVDA');      // per-asset fan-out (ghost siblings behind)
-  GLYPHS.pyFile(sp.x+7,sp.y-7,wp,hp,tert,'strategy_MSFT');
-  if(flash>0)strokeRR(sp.x-wp/2-3,sp.y-hp/2-3,wp+6,hp+6,13,rgba(AMB,flash*0.8),2);
-  GLYPHS.pyFile(sp.x,sp.y,wp,hp,AMB,'strategy_<TICKER>');
-  HITS.addRect(sp.x-wp/2,sp.y-hp/2,wp,hp,{type:'strategy'});
-  addObstacleRect(sp.x-wp/2,sp.y-hp/2,wp,hp);
-  GLYPHS.stackBadge(9,0.94,0.5,20,AMB,'×{{universe_size}}','strategy');
-  if(STATE.labels){
-    var po1=SS(9,0.5,0.10,2),po2=SS(9,0.5,0.97,0);
-    qLabel({key:'exp_input',def:'input: OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',grp:'XGB final + artifact',
-      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'champ_caption',def:'final XGB on OPTUNAs_XGB_HPOs_best_params.json → serialize → base64 → strategy_<TICKER>.py + selfcheck · 1 model/hash/window per asset (×{{universe_size}})',grp:'XGB final + artifact',
-      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'xgb_title',def:'champion · binary:logistic · 1 model/asset',grp:'XGB final + artifact',x:ccx,y:y0-48,col:prim,al:'center',sz:9,wt:'700',pr:2});
+    qLabel({key:'serb64',def:'serialize → base64',grp:'XGB final + artifact',x:a4,y:y0-24,col:AMB,al:'center',sz:7,pr:1,lod:LOD.name});
+    qLabel({key:'exp_input',def:'input: OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST (8 X)',grp:'XGB final + artifact',x:(jcx+ccx)/2,y:y0+34,col:tert,al:'center',sz:8,pr:1});
+    var cc1=SS(9,0.60,0.98,8);
+    qLabel({key:'champ_caption',def:'final XGB → base64 → MODEL_B64 inside one strategy_<TICKER>.py per asset → collected (×{{universe_size}})',grp:'XGB final + artifact',x:cc1.x,y:cc1.y,col:tert,al:'center',sz:8,pr:1});
   }
 };
 
@@ -1581,7 +1748,7 @@ EndproductLayer.prototype.draw=function(){
   GLYPHS.pyFile(f2.x,f2.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');  // L9 Optuna best params (long name split across the glyph's two rows)
   HITS.addRect(f2.x-56,f2.y-20,112,40,{type:'optuna'});
   addObstacleRect(f2.x-56,f2.y-20,112,40);
-  GLYPHS.pyFile(f3.x,f3.y,96,42,TP,'strategy_<TICKER>','.py');              // L10 b64 strategy
+  GLYPHS.pyFile(f3.x,f3.y,96,42,TP,'strategy_<TICKER>','.py');              // L10 strategy .py (base64 model inside)
   HITS.addRect(f3.x-48,f3.y-21,96,42,{type:'strategy'});
   addObstacleRect(f3.x-48,f3.y-21,96,42);
   GLYPHS.stackBadge(11,0.94,0.5,20,TP,'×{{universe_size}}','endproduct');
@@ -1896,25 +2063,35 @@ function drawParquetFile(g){
   var c=SS(g.lev,g.a,g.b,g.z0||16), e=SS(g.lev,g.a+0.027,g.b,g.z0||16);
   var w=Math.max(9,2*Math.hypot(e.x-c.x,e.y-c.y)), h=w*1.32, f=Math.min(7,w*0.24);
   var col=g.sel?GREEN:(g.col||AMB), prim=vget('--color-text-primary','#eee');
+  var kind=g.kind||'parquet', hit=g.hit||'parquet';                            // kind:'code' → json/py glyph; else parquet (default)
   drawFold(c.x-w/2,c.y-h/2,w,h,f,col,g.sel?0.20:0.13);
-  if(CAM.z>=0.85){                                                              // columnar hint lines (= parquet)
-    ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
-    for(var i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(c.x+i*w*0.18,c.y-h*0.16);ctx.lineTo(c.x+i*w*0.18,c.y+h*0.04);ctx.stroke();}
-    ctx.restore();
+  if(kind==='code'){                                                           // json/py: HORIZONTAL code-line hints (ported from drawPyFile)
+    if(CAM.z>=0.85){
+      ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+      for(var ci=0;ci<3;ci++){var ly=c.y-h*0.14+ci*h*0.16;ctx.beginPath();ctx.moveTo(c.x-w*0.26,ly);ctx.lineTo(c.x+w*0.26-ci*w*0.12,ly);ctx.stroke();}
+      ctx.restore();
+    }
+    if(CAM.z>=1.2)txtS(g.ext||'.py',c.x,c.y+h*0.34,col,'center',(w*0.16)/zScale(),'700');   // .json / .py badge, fitted
+  }else{
+    if(CAM.z>=0.85){                                                            // columnar hint lines (= parquet)
+      ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+      for(var i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(c.x+i*w*0.18,c.y-h*0.16);ctx.lineTo(c.x+i*w*0.18,c.y+h*0.04);ctx.stroke();}
+      ctx.restore();
+    }
+    if(CAM.z>=1.2)txtS('parquet',c.x,c.y+h*0.34,prim,'center',(w*0.18)/zScale(),'700');   // type badge, fitted
   }
-  if(CAM.z>=1.2)txtS('parquet',c.x,c.y+h*0.34,prim,'center',(w*0.18)/zScale(),'700');   // type badge, fitted
-  HITS.addPts([lp(g.lev,g.a-0.030,g.b-0.060,(g.z0||16)+10),lp(g.lev,g.a+0.030,g.b+0.060,(g.z0||16)-10)],{type:'parquet',k:g.i});
+  HITS.addPts([lp(g.lev,g.a-0.030,g.b-0.060,(g.z0||16)+10),lp(g.lev,g.a+0.030,g.b+0.060,(g.z0||16)-10)],{type:hit,k:g.i});
   addObstacleRect(c.x-w/2,c.y-h/2,w,h);
   return c;
 }
 // grid-proportional FOLDER (the directory that holds every per-ticker parquet) — AMB tab+body with two
 // parquet-file edges peeking out the top. The ×count label is drawn by the loop (parq_all) → no text here,
 // and NO literal count in any comment/string (the gate's data-state rule would trip). g={lev,a,b,i,z0,col}.
-function drawParquetFolder(g){
-  var c=SS(g.lev,g.a,g.b,g.z0||16), e=SS(g.lev,g.a+0.040,g.b,g.z0||16);
-  var w=Math.max(14,2*Math.hypot(e.x-c.x,e.y-c.y)), h=w*0.74, col=g.col||AMB;
-  var x=c.x-w/2, y=c.y-h/2, bt=y+h*0.24, tx=w*0.10, tw=w*0.34, sl=w*0.09;       // body-top y · tab x/width/slope
-  ctx.save();ctx.beginPath();                                                    // ONE continuous folder silhouette (single line, not separate objects)
+// SCREEN-space folder core: one continuous silhouette (tab+body) + 3 mini peeking sheets. cx,cy=centre, w=width px.
+// Shared by the world-space drawParquetFolder (L4/L9/Endproduct) and the screen-space serpentine (L10).
+function drawFolderS(cx,cy,w,col){
+  var h=w*0.74, x=cx-w/2, y=cy-h/2, bt=y+h*0.24, tx=w*0.10, tw=w*0.34, sl=w*0.09;   // body-top y · tab x/width/slope
+  ctx.save();ctx.beginPath();
   ctx.moveTo(x,y+h);                       // bottom-left
   ctx.lineTo(x,bt);                        // up the left side to body-top level
   ctx.lineTo(x+tx,bt);                     // right to the tab base
@@ -1926,50 +2103,99 @@ function drawParquetFolder(g){
   ctx.closePath();                         // bottom edge → back to start
   ctx.fillStyle=rgba(col,0.16);ctx.fill();
   ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.stroke();ctx.restore();
-  var fw=w*0.19,fh=w*0.32,mi;                                                   // a few mini parquet files tucked into the folder, peeking above the front edge
-  for(mi=0;mi<3;mi++){var mcx=c.x-w*0.24+mi*w*0.24;
+  var fw=w*0.19,fh=w*0.32,mi;              // a few mini files tucked into the folder, peeking above the front edge
+  for(mi=0;mi<3;mi++){var mcx=cx-w*0.24+mi*w*0.24;
     drawFold(mcx-fw/2,bt-fh*0.5,fw,fh,Math.min(3,fw*0.26),col,0.30);}
-  HITS.addPts([lp(g.lev,g.a-0.046,g.b-0.078,(g.z0||16)+10),lp(g.lev,g.a+0.046,g.b+0.078,(g.z0||16)-10)],{type:'parquet',k:g.i});
   addObstacleRect(x,y-fh*0.5,w,h+fh*0.5);
+}
+function drawParquetFolder(g){             // WORLD-space wrapper: project centre+width, draw via drawFolderS, register world HITS
+  var c=SS(g.lev,g.a,g.b,g.z0||16), e=SS(g.lev,g.a+0.040,g.b,g.z0||16);
+  var w=Math.max(14,2*Math.hypot(e.x-c.x,e.y-c.y)), col=g.col||AMB;
+  drawFolderS(c.x,c.y,w,col);
+  HITS.addPts([lp(g.lev,g.a-0.046,g.b-0.078,(g.z0||16)+10),lp(g.lev,g.a+0.046,g.b+0.078,(g.z0||16)-10)],{type:g.hit||'parquet',k:g.i});
   return c;
 }
 function drawPyFile(x,y,w,h,col,label,ext){
-  var prim=vget('--color-text-primary','#eee'),i;
-  drawFold(x-w/2,y-h/2,w,h,10,col,0.14);
-  for(i=0;i<4;i++){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.beginPath();
-    ctx.moveTo(x-w/2+9,y-h/2+17+i*8);ctx.lineTo(x+w/2-10-i*5,y-h/2+17+i*8);ctx.stroke();ctx.restore();}
-  txtS(label,x,y+1,prim,'center',7,'700');
-  txtS(ext||'.b64',x,y+14,col,'center',8,'700');
+  var prim=vget('--color-text-primary','#eee'),i;                                  // internals are h-proportional (ref h=40 → identical to before) so the glyph scales cleanly down for small serpentine files
+  var f=Math.min(10,h*0.25),nl=Math.max(2,Math.min(4,Math.round(h/10))),ly0=y-h/2+h*0.425,ls=h*0.2;
+  drawFold(x-w/2,y-h/2,w,h,f,col,0.14);
+  for(i=0;i<nl;i++){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(x-w/2+w*0.09,ly0+i*ls);ctx.lineTo(x+w/2-w*0.10-i*w*0.05,ly0+i*ls);ctx.stroke();ctx.restore();}
+  if(label)txtS(label,x,y+h*0.025,prim,'center',Math.min(7,h*0.18),'700');
+  txtS(ext||'.py',x,y+h*0.35,col,'center',Math.min(8,h*0.2),'700');
 }
-function drawModelTree(x,y,col){
-  // clean tree glyph — the "XGB" label goes through the label queue (xgb_title),
-  // so it's editable and decluttered; zero text here (no duplicate)
+function drawModelTree(x,y,col,sc){
+  sc=sc||1;                                                       // optional scale (centre the tree inside the XGB cube)
   var pts=[[0,-17],[-16,0],[0,0],[16,0],[-24,16],[-8,16],[8,16],[24,16]],i;
-  ctx.save();ctx.strokeStyle=rgba(col,0.8);ctx.fillStyle=rgba(col,0.20);ctx.lineWidth=1;ctx.setLineDash([]);
-  for(i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+pts[0][0],y+pts[0][1]);ctx.lineTo(x+pts[i][0],y+pts[i][1]);ctx.stroke();}
-  for(i=4;i<8;i++){ctx.beginPath();ctx.moveTo(x+pts[2+(i>5?1:0)][0],y+pts[2+(i>5?1:0)][1]);ctx.lineTo(x+pts[i][0],y+pts[i][1]);ctx.stroke();}
-  for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(x+pts[i][0],y+pts[i][1],3.2,0,7);ctx.fill();ctx.stroke();}
+  ctx.save();ctx.strokeStyle=rgba(col,0.85);ctx.fillStyle=rgba(col,0.22);ctx.lineWidth=1;ctx.setLineDash([]);
+  for(i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+pts[0][0]*sc,y+pts[0][1]*sc);ctx.lineTo(x+pts[i][0]*sc,y+pts[i][1]*sc);ctx.stroke();}
+  for(i=4;i<8;i++){ctx.beginPath();ctx.moveTo(x+pts[2+(i>5?1:0)][0]*sc,y+pts[2+(i>5?1:0)][1]*sc);ctx.lineTo(x+pts[i][0]*sc,y+pts[i][1]*sc);ctx.stroke();}
+  for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(x+pts[i][0]*sc,y+pts[i][1]*sc,3.2*sc,0,7);ctx.fill();ctx.stroke();}
   ctx.restore();
 }
-function drawTrialFunnel(lev,a,b,col){
-  var rings=[[0.33,0.86,30,'opt_funnel1','200 trials'],[0.23,0.58,24,'opt_funnel2','pruning'],[0.13,0.33,18,'opt_funnel3','best trial']],i,rs,c;
-  for(i=0;i<rings.length;i++){
-    rs=ringScr(lev,a,b,rings[i][0],rings[i][1],rings[i][2],36);
-    ctx.save();pathPtsS(rs,true);ctx.strokeStyle=rgba(col,0.50+i*0.12);ctx.lineWidth=1.2;ctx.setLineDash(i===0?[5,4]:[]);ctx.stroke();ctx.restore();
-    if(STATE.labels&&CAM.z>=0.85){c=ctr(rs);qLabel({key:rings[i][3],def:rings[i][4],grp:'Training / Optuna',
-      x:c.x,y:c.y-12-i*2,col:rgba(col,0.85),al:'center',sz:7.5,pr:1,lod:0.9});}
+// Reusable L4-style file serpentine: boustrophedon connecting line + flow dots, depth-sorted per-node file
+// glyph, a folder at the LAST node the files flow into, ×N label above it, and optional ticker names below.
+// Shared by L4 (parquet), L9 (.json), L10 (.py). o={lev, serp:[{a,b,dz?}], col, kind, ext, hit, z0, lineDz,
+// per serp node: optional dz overrides z0 → spread files vertically (climb a table's height) when a-room is tight.
+// allKey, allDef, allGrp, allName, names, nameKeyPfx}. kind/ext → drawParquetFile; hit → glyph HITS type.
+// allName (optional) = collected file's name, appended to the ×N badge as ONE label "×N  filename".
+// allLabelLp:{a,b,dz} (optional) + allLabelAl = draw that label at an explicit spot (e.g. right of the viz, inside
+// the layer band) instead of above the folder — keeps it from crossing the dashed layer-boundary line.
+function drawFileSerpentine(o){
+  var SERP=o.serp,i,k,N=SERP.length,lev=o.lev,col=o.col||AMB,
+      z0=(o.z0!=null?o.z0:16),loff=(o.lineDz!=null?o.lineDz-z0:-3);   // optional per-node SERP[i].dz → vertical spread (climb the table height)
+  function zOf(n){return n.dz!=null?n.dz:z0;}
+  for(i=0;i<N-1;i++){
+    var p1=lp(lev,SERP[i].a,SERP[i].b,zOf(SERP[i])+loff),p2=lp(lev,SERP[i+1].a,SERP[i+1].b,zOf(SERP[i+1])+loff);
+    line2(p1,p2,rgba(col,0.5),1.3,[]);
+    if(STATE.flow&&!STATE.paused){var kk=((CLK*0.4+i*0.08)%1),aS=CAM.S(p1),bS=CAM.S(p2);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(aS.x+(bS.x-aS.x)*kk,aS.y+(bS.y-aS.y)*kk,2.3,0,7);ctx.fill();}
   }
-  var sT=CAM.S(lp(lev,a,b-0.86,30));drawTagS(sT.x-18,sT.y-7,36,14,col,'TPE',0.16,7.5);
-  var pp=CAM.S(lp(lev,a+0.33*Math.cos(CLK*1.3),b+0.86*Math.sin(CLK*1.3),30));
-  ctx.fillStyle=col;ctx.beginPath();ctx.arc(pp.x,pp.y,3,0,7);ctx.fill();
-  HITS.addPts([lp(lev,a-0.36,b-0.90,34),lp(lev,a+0.36,b+0.90,14)],{type:'optuna'});
-  addObstacleRect(sT.x-18,sT.y-7,36,14);
+  var list=[];
+  for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,dz:zOf(SERP[i]),d:lp(lev,SERP[i].a,SERP[i].b,zOf(SERP[i])).d});
+  list=byD(list);
+  for(k=0;k<list.length;k++){
+    var t=list[k],last=(t.i===N-1);
+    var cPq=last?GLYPHS.parquetFolder({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,hit:o.hit})            // last node = folder the files flow into
+                :GLYPHS.parquetFile({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,kind:o.kind,ext:o.ext,hit:o.hit});
+    if(STATE.labels){
+      if(last){
+        var llx=cPq.x,lly=cPq.y-26,lal=o.allLabelAl||'center',lax=cPq.x,lay=cPq.y-8;
+        if(o.allLabelLp){var lls=SS(lev,o.allLabelLp.a,o.allLabelLp.b,o.allLabelLp.dz);llx=lls.x;lly=lls.y;lax=llx;lay=lly;}   // explicit spot (e.g. right of the viz, inside the layer band → no boundary crossing)
+        qLabel({key:o.allKey,def:o.allName?o.allDef+'  '+o.allName:o.allDef,grp:o.allGrp,
+          x:llx,y:lly,col:vget('--color-text-secondary','#999'),al:lal,sz:8.5,wt:'700',pr:3,ax:lax,ay:lay});   // single "×N  filename" label
+      }
+      else if(o.names&&STATE.names==='sample'&&anameV(t.i))qLabel({key:o.nameKeyPfx+t.i,text:(anameV(t.i)||'').toLowerCase(),
+        x:cPq.x,y:cPq.y+24,col:vget('--color-text-secondary','#999'),al:'center',sz:7.5,wt:'',pr:2,lod:LOD.name,ax:cPq.x,ay:cPq.y+12});
+    }
+  }
 }
+// SCREEN-space sibling of drawFileSerpentine — for layers whose flow is screen-space (L10 build line) so the
+// serpentine stays PINNED to it at every zoom (no world/screen drift). Nodes are PIXELS. Shares drawPyFile +
+// drawFolderS glyphs. o={nodes:[{x,y}], col, label, ext, fw, fh, hit, allText, allTextAt:{x,y}, allTextAl}.
+function drawFileSerpentineScreen(o){
+  var N=o.nodes.length,W=o.fw||44,H=o.fh||34,col=o.col||AMB,i;
+  for(i=0;i<N-1;i++){                                            // connecting line + animated flow dot (screen-space)
+    var a=o.nodes[i],b=o.nodes[i+1];
+    ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1.3;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();
+    if(STATE.flow&&!STATE.paused){var kk=((CLK*0.4+i*0.08)%1);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(a.x+(b.x-a.x)*kk,a.y+(b.y-a.y)*kk,2.3,0,7);ctx.fill();}
+  }
+  for(i=0;i<N;i++){
+    var n=o.nodes[i];
+    if(i===N-1){drawFolderS(n.x,n.y,W*0.92,col);HITS.addRect(n.x-W*0.55,n.y-H*0.55,W*1.1,H*1.1,{type:o.hit||'strategy'});}   // last node = folder
+    else{drawPyFile(n.x,n.y,W,H,col,o.label||'',o.ext||'.py');HITS.addRect(n.x-W/2,n.y-H/2,W,H,{type:o.hit||'strategy'});}   // clean small icon (code-lines + ext); identity via the ×N label
+  }
+  if(STATE.labels&&o.allText&&o.allTextAt)                       // single "×N  filename" label, screen-anchored
+    txtS(o.allText,o.allTextAt.x,o.allTextAt.y,vget('--color-text-secondary','#999'),o.allTextAl||'center',o.allSz||8.5,'700');
+}
+// drawTrialFunnel removed — L9 now renders the OPTUNA HYPERPARAMETER SEARCH MATRIX (parameter×trial), not a funnel.
 var QC_O='#F98E27';                                   // QuantConnect orange (arrow)
 var QC_IMG=new Image();QC_IMG.src='data:image/png;base64,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';   // generated QC-style mark — swap here for the exact logo
 // Glyph registry. World-space (args lev,a,b or g={lev,a,b,...}): zipCrate, parquetFile, parquetFolder, stackBadge,
 // dbCylinder, ohlcvMatrix3d (standing 3D perspective sample table, L7-style PT pattern),
-// trialFunnel. Screen-space (args x,y w px): snapshotCam, pyFile, modelTree.
+// Screen-space (args x,y w px): snapshotCam, pyFile, modelTree.
 GLYPHS.zipCrate=drawZipCrate;
 GLYPHS.parquetFile=drawParquetFile;
 GLYPHS.parquetFolder=drawParquetFolder;
@@ -1979,7 +2205,9 @@ GLYPHS.ohlcvMatrix3d=drawOhlcvMatrix3d;
 GLYPHS.snapshotCam=drawSnapshotCam;
 GLYPHS.pyFile=drawPyFile;
 GLYPHS.modelTree=drawModelTree;
-GLYPHS.trialFunnel=drawTrialFunnel;
+GLYPHS.fileSerpentine=drawFileSerpentine;
+GLYPHS.fileSerpentineScreen=drawFileSerpentineScreen;
+GLYPHS.folderS=drawFolderS;
 
 /* === LABEL PASS ===
    Deferred object labels: layers enqueue via qLabel(), drawn by
@@ -2274,44 +2502,40 @@ SetupGeometryView.prototype.draw=function(){
 
 function OptunaView(){}
 OptunaView.prototype.draw=function(){
-  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  txt('L9 · Optuna hyperparameter search',{x:0,y:-262},prim,'center',14,'700');
-  txt('objective: '+OPTUNA.objective+' · '+OPTUNA.sampler+' · '+OPTUNA.pruner,{x:0,y:-240},sec,'center',9.5);
-  function X(i){return -320+i*2.7;}
-  function Y(v){return 110-(v-0.30)*820;}
-  line2({x:-320,y:Y(0.30)},{x:230,y:Y(0.30)},tert,1,[]);
-  line2({x:-320,y:Y(0.30)},{x:-320,y:Y(0.66)},tert,1,[]);
-  var i,tk=[0,50,100,150,200];
-  for(i=0;i<tk.length;i++)txt(String(tk[i]),{x:X(tk[i]),y:Y(0.30)+16},tert,'center',8);
-  txt('trial →',{x:240,y:Y(0.30)+16},tert,'left',8);
-  var vk=[0.35,0.45,0.55,0.65];
-  for(i=0;i<vk.length;i++){txt(vk[i].toFixed(2),{x:-328,y:Y(vk[i])+3},tert,'right',8);
-    line2({x:-320,y:Y(vk[i])},{x:230,y:Y(vk[i])},rgba(CAN,0.18),1,[2,4]);}
-  ctx.save();ctx.strokeStyle=TEAL;ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.beginPath();
-  for(i=0;i<TRIALS.length;i++){var sB=CAM.S({x:X(i),y:Y(TRIALS[i].best)});if(i)ctx.lineTo(sB.x,sB.y);else ctx.moveTo(sB.x,sB.y);}
-  ctx.stroke();ctx.restore();
-  for(i=0;i<TRIALS.length;i++){
-    var t=TRIALS[i],s=CAM.S({x:X(i),y:Y(t.v)});
-    if(t.pruned){ctx.save();ctx.strokeStyle=rgba(CAN,0.55);ctx.lineWidth=1;
-      ctx.beginPath();ctx.moveTo(s.x-2.5,s.y-2.5);ctx.lineTo(s.x+2.5,s.y+2.5);
-      ctx.moveTo(s.x+2.5,s.y-2.5);ctx.lineTo(s.x-2.5,s.y+2.5);ctx.stroke();ctx.restore();}
-    else{ctx.fillStyle=rgba(GREEN,0.8);ctx.beginPath();ctx.arc(s.x,s.y,2.4,0,7);ctx.fill();}
-    HITS.addRect(s.x-4,s.y-4,8,8,{type:'trial',i:i});
+  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
+  txt('L9 · OPTUNA — HYPERPARAMETER SEARCH MATRIX',{x:0,y:-266},prim,'center',14,'700');
+  txt('TPE (Tree-Structured Parzen Estimator) · MedianPruner · objective: validation AUC-PR · purged walk-forward CV (k=4) · Train only',{x:0,y:-248},sec,'center',8.8);
+  txt('successive Optuna trials in time   ─────►',{x:-6,y:-230},tert,'center',8.5);
+  var COLS=[0,1,2,3,4,-1,BEST_TRIAL],NTC=COLS.length;
+  var x0=-330,labelW=166,colW=60,y0=-212,rowH=24,SEP=9,NROW=12,r,c;
+  function cellX(c){return x0+labelW+c*colW;}
+  function cellY(r){return y0+r*rowH;}
+  function rect(x,y,w,h,fill){poly([{x:x,y:y},{x:x+w,y:y},{x:x+w,y:y+h},{x:x,y:y+h}],fill,rgba(bord,0.8),0.8);}
+  for(r=0;r<NROW;r++){
+    var isRes=(r>=SEP),resLbl=(r===SEP)?'Y: validation AUC-PR':(r===SEP+1?'best Y so far':(r===SEP+2?'current status':''));
+    if(r===0){rect(x0,cellY(r),labelW,rowH,rgba(CAN,0.14));txt('param \\ trial',{x:x0+8,y:cellY(r)+rowH*0.64},prim,'left',9,'700');}
+    else{rect(x0,cellY(r),labelW,rowH,isRes?rgba(TP,0.12):rgba(CAN,0.10));
+      txt(isRes?resLbl:OPTUNA_PARAM_ROWS[r-1].k,{x:x0+8,y:cellY(r)+rowH*0.64},isRes?TP:prim,'left',8.5,'600');}
+    for(c=0;c<NTC;c++){var ti=COLS[c],isEll=(ti===-1),isBest=(ti===BEST_TRIAL),cx=cellX(c);
+      if(r===0){rect(cx,cellY(r),colW,rowH,isBest?rgba(AMB,0.22):rgba(GREEN,0.18));
+        txt(isEll?'…':((isBest?'★ ':'')+trialLabel(ti)),{x:cx+colW/2,y:cellY(r)+rowH*0.64},isBest?AMB:prim,'center',isEll?12:8,'700');continue;}
+      if(isEll){rect(cx,cellY(r),colW,rowH,rgba(CAN,0.05));txt('…',{x:cx+colW/2,y:cellY(r)+rowH*0.6},tert,'center',9);continue;}
+      var t=TRIALS[ti];
+      if(r<SEP){rect(cx,cellY(r),colW,rowH,isBest?rgba(AMB,0.08):rgba(CAN,0.07));
+        txt(OPTUNA_PARAM_ROWS[r-1].fmt(t.params[OPTUNA_PARAM_ROWS[r-1].k]),{x:cx+colW/2,y:cellY(r)+rowH*0.62},sec,'center',8.5);}
+      else if(r===SEP){var sc=Math.max(0,Math.min(1,(t.v-0.36)/0.10));rect(cx,cellY(r),colW,rowH,rgba(TP,0.10+0.42*sc));
+        txt(t.v.toFixed(3)+(isBest?' ★':''),{x:cx+colW/2,y:cellY(r)+rowH*0.62},isBest?AMB:TP,'center',8.5,'700');}
+      else if(r===SEP+1){rect(cx,cellY(r),colW,rowH,rgba(AMB,0.08));txt(t.best.toFixed(3),{x:cx+colW/2,y:cellY(r)+rowH*0.62},AMB,'center',8.5);}
+      else{var st=trialStatus(ti);rect(cx,cellY(r),colW,rowH,rgba(st.c,0.14));txt(st.t,{x:cx+colW/2,y:cellY(r)+rowH*0.62},st.c,'center',8,'700');}
+    }
   }
-  var bt=TRIALS[BEST_TRIAL],sBt=CAM.S({x:X(BEST_TRIAL),y:Y(bt.v)});
-  ctx.save();ctx.strokeStyle=AMB;ctx.lineWidth=2;ctx.beginPath();ctx.arc(sBt.x,sBt.y,7,0,7);ctx.stroke();ctx.restore();
-  txtS('best: trial #'+BEST_TRIAL+' · AUC-PR '+bt.v.toFixed(3),sBt.x+12,sBt.y-8,AMB,'left',9,'600');
-  txt('line = best-so-far · × = pruned (MedianPruner) · dot = completed trial',{x:-320,y:Y(0.30)+34},tert,'left',8.5);
-  txt('hyperparameter importance',{x:-320,y:168},prim,'left',10,'600');
-  for(i=0;i<PARAM_IMPORTANCE.length;i++){
-    var pi=PARAM_IMPORTANCE[i],yy=190+i*34;
-    txt(pi[0],{x:-180,y:yy+3},sec,'right',8.5);
-    poly([{x:-170,y:yy-6},{x:-170+pi[1]*620,y:yy-6},{x:-170+pi[1]*620,y:yy+6},{x:-170,y:yy+6}],rgba(RED,0.45),RED,1);
-    txt((pi[1]*100).toFixed(0)+'%',{x:-162+pi[1]*620,y:yy+3},tert,'left',8);
-  }
-  txt('search space: depth 3–9 · lr 0.01–0.3 log · estimators 100–1200 · subsample/colsample 0.5–1 · λ 1e-3–10 · spw 0.5–4',{x:0,y:430},tert,'center',8);
-  pill(160,250,300,26,GREEN,'output → OPTUNAs_XGB_HPOs_best_params.json',0.12);                 // L9 deliverable (no .py, no b64 here)
-  txt('best trial #'+BEST_TRIAL+' (AUC-PR '+bt.v.toFixed(3)+') → consumed by L10',{x:160,y:272},tert,'center',8);
+  line2({x:x0,y:cellY(SEP)},{x:cellX(NTC),y:cellY(SEP)},rgba(prim,0.5),1.8,[]);   // params↔results separator
+  for(c=0;c<NTC;c++){var tj=COLS[c];if(tj===-1)continue;var cx2=cellX(c);
+    var sA=CAM.S({x:cx2,y:y0}),sB=CAM.S({x:cx2+colW,y:cellY(NROW)});
+    HITS.addRect(Math.min(sA.x,sB.x),Math.min(sA.y,sB.y),Math.abs(sB.x-sA.x),Math.abs(sB.y-sA.y),{type:'trial',i:tj});}
+  var jy=cellY(NROW)+36;
+  txt('best trial   ─────►   OPTUNAs_XGB_HPOs_best_params.json   ×{{universe_size}} (one per asset)',{x:0,y:jy},GREEN,'center',9.5,'700');
+  txt('parameters only — no model · no MODEL_B64 · no strategy_<TICKER>.py · Train only, no OOS',{x:0,y:jy+18},tert,'center',8);
 };
 
 var B64FILL=(function(){var r=rng(99),cset='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',rows=[],i,j;
@@ -2321,24 +2545,24 @@ function ArtifactView(){}
 ArtifactView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
   var nm='<TICKER>',i,j;
-  txt('L10 · XGB final training + b64 strategy artifact',{x:0,y:-262},prim,'center',14,'700');
+  txt('L10 · XGB final training → strategy .py with a base64-embedded model',{x:0,y:-262},prim,'center',14,'700');
   txt('OPTUNAs_XGB_HPOs_best_params.json → final XGB per asset → serialize → base64 → 1 self-contained .py per asset',{x:0,y:-244},sec,'center',10);
   // input → process chain (mini-pills, left → right)
-  var CHAIN=[['HPO params',GREEN],['Train X/y',CAN],['8 X schema',RED],['final XGB',TEAL],['champion',TEAL],['serialize',AMB],['base64',AMB]];
-  for(i=0;i<CHAIN.length;i++){var cx=-318+i*92;
-    pillF(cx,-218,80,20,CHAIN[i][1],CHAIN[i][0],0.10,7.5);
-    if(i)edge(cx-52,-218,cx-40,-218);}
+  var CHAIN=[['HPO params',GREEN],['Train X/y',CAN],['8 X manifest',RED],['final XGB',TEAL],['champion',TEAL],['serialize',AMB],['base64',AMB],['MODEL_B64',TEAL]];
+  for(i=0;i<CHAIN.length;i++){var cx=-330+i*90;
+    pillF(cx,-218,76,20,CHAIN[i][1],CHAIN[i][0],0.10,7.5);
+    if(i)edge(cx-52,-218,cx-38,-218);}
   // self-contained strategy file (code-card) · band tooltips live in abandTip() (single source — read by tipFor)
   var BANDS=[
-    {h:26,col:tert,t:'# strategy_'+nm+'.py — generated by the pipeline (1 of {{universe_size}})'},
+    {h:26,col:tert,t:'# strategy_'+nm+'.py — Python strategy (import base64) · generated (1 of {{universe_size}})'},
     {h:28,col:prim,t:'PARAMS: TF=1h · H=24 · MIN_TOUCHES=2 · BARRIER=close'},
     {h:28,col:RED, t:'FEATURE_MANIFEST = [8 X columns (7 geom + direction) — frozen order]'},
-    {h:88,col:AMB, t:'MODEL_B64 = "QmFzZTY0…"',b64:true},
+    {h:88,col:AMB, t:'MODEL_B64 = "QmFzZTY0…"  # base64 model string → b64decode at import',b64:true},
     {h:28,col:prim,t:'LABEL_CONTRACT = TB_v1.1 · close-based · SL=L_opp(t) moving · R0 · H=24'},
     {h:24,col:TEAL,t:'MODEL_HASH = sha256(model_b64)[:16] — artifact identity'},
     {h:24,col:tert,t:'TRAIN_WINDOW = [train_start → train_end] · OOS untouched'},
     {h:28,col:TP,  t:'def selfcheck(): golden input → output · PASS'},
-    {h:30,col:TEAL,t:'def decide(x): p = model(x) · p ≥ 0.60 → ENTRY else FLAT'}
+    {h:30,col:TEAL,t:'def decide(x): p = model(x) · p ≥ THRESHOLD_ENTRY (0.60) → ENTRY else FLAT'}
   ];
   var xw=225,y=-185;
   var sTop=CAM.S({x:-xw,y:y-8}),sBot=CAM.S({x:xw,y:y+BANDS.reduce(function(p,q){return p+q.h+11;},0)+2});
@@ -2352,6 +2576,10 @@ ArtifactView.prototype.draw=function(){
     HITS.addRect(s0.x,s0.y,s1.x-s0.x,s1.y-s0.y,{type:'aband',b:i});
     y+=b.h+11;
   }
+  // artifact-identity badges: import-time selfcheck + frozen hash
+  var sb1=CAM.S({x:-92,y:y+4}),sb2=CAM.S({x:14,y:y+4});
+  drawStatusBadge(sb1.x,sb1.y,'OK','selfcheck',{w:80,h:16,sz:7});
+  drawStatusBadge(sb2.x,sb2.y,'OK','hash frozen',{w:84,h:16,sz:7});
   // ×N per-asset fan-out: independent files, one per asset (<TICKER> example is the card above)
   var fy=y+26,FAN=['AAPL','MSFT','NVDA','GOOGL','AMZN'];
   for(i=0;i<FAN.length;i++)pillF(-176+i*72,fy,62,22,i===0?AMB:tert,'strat_'+FAN[i],0.10,7);
@@ -2369,7 +2597,7 @@ EndproductView.prototype.draw=function(){
     {h:28,col:tert, t:nm+'/',head:true,note:'one folder per asset'},
     {h:34,col:AMB,  t:'  ├─ '+nm+'_ohlcv_1h.parquet',note:'from L4 (data)'},
     {h:34,col:GREEN,t:'  ├─ OPTUNAs_XGB_HPOs_best_params.json',note:'from L9 (params)'},
-    {h:34,col:TP,   t:'  └─ strategy_'+nm+'.py',note:'from L10 (b64 strategy)'}
+    {h:34,col:TP,   t:'  └─ strategy_'+nm+'.py',note:'from L10 (strategy .py + base64 model)'}
   ];
   var xw=255,y=-150;
   for(i=0;i<ROWS.length;i++){
@@ -2571,6 +2799,8 @@ function frameLevel(lev){                               // frame on a single lev
   if(lev===5){aLo=-0.10;aHi=1.10;bLo=-0.50;bHi=1.50;zCap=1.0;}   // L6 = exploded square of 4 trendline-break walls
   else if(lev===1)aLo=-0.24;                                     // L2 = include the QC logo at the left
   else if(lev===2){aLo=-0.06;aHi=1.04;}                          // L3 = margins for table (left) + QC checklist (right)
+  else if(lev===8){aHi=1.30;}                                    // L9 = leave room on the right for the json output (matrix + arrow + json + ×N)
+  else if(lev===9){aHi=1.30;}                                    // L10 = leave room on the right for the screen-anchored strategy output (build line + strategy.py + ×N)
   return fitView([lp(lev,aLo,bLo,0),lp(lev,aHi,bLo,0),lp(lev,aLo,bHi,0),lp(lev,aHi,bHi,0),
                   lp(lev,(aLo+aHi)/2,(bLo+bHi)/2,170)],64,64,84,150,zCap);
 }
@@ -2601,11 +2831,12 @@ function tipFor(p){
   if(p.type==='feature'){var f=FEATURES[p.f];
     return '<b>Feature: '+f.name+'</b>\nFamily: '+f.family+'\nSource: '+f.src+'\nFormula: '+f.formula+' ['+f.unit+']'+(f.special?'\n<span style="color:'+AMB+'">! '+f.special+'</span>':'');}
   if(p.type==='label')return '<b>Y = triple barrier (TB_v1.1)</b>\nTP=1: close reaches close[t0]+direction·R0\nSL=0: close pierces L_opp(t) (moving line)\ntime=0: nothing by t0+H (H=24)\nfirst-touch · close-based';
-  if(p.type==='xgb')return '<b>XGBoost · binary:logistic</b>\nmeta-labeling: setup signal filter\nsample weights: label_uniqueness_weight\n1 model per asset (both directions)';
-  if(p.type==='optuna')return '<b>Optuna</b>\n200 trials · TPE · MedianPruner\nobjective: AUC-PR (purged WF CV on Train)\n<i>click = study</i>';
-  if(p.type==='trial'){var t=TRIALS[p.i];return '<b>trial #'+p.i+'</b>\nAUC-PR: '+t.v.toFixed(3)+(t.pruned?' · PRUNED':'')+'\ndepth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nn_est '+t.params.n_estimators+' · subsample '+t.params.subsample;}
-  if(p.type==='strategy')return '<b>strategy_<TICKER>.py</b>\nbase64 model + feature manifest\nthreshold 0.60 + selfcheck\n<i>click = full manifest</i>';
+  if(p.type==='xgb')return '<b>XGB FINAL — champion (L10)</b>\nbinary:logistic · 1 model per asset (long+short)\nretrained on Train X/y using OPTUNAs_XGB_HPOs_best_params.json (from L9)\nsample weights: label_uniqueness_weight';
+  if(p.type==='optuna')return '<b>Optuna — hyperparameter search (L9)</b>\n200 trials · TPE (Tree-Structured Parzen Estimator) · MedianPruner(n_warmup_steps=2)\nobjective: validation AUC-PR · purged walk-forward CV (k=4) · Train only\noutputs OPTUNAs_XGB_HPOs_best_params.json ×{{universe_size}} (one per asset, parameters only)\nNo MODEL_B64 and no strategy_<TICKER>.py are created here.\n<i>click = study</i>';
+  if(p.type==='trial'){var t=TRIALS[p.i];return '<b>'+trialLabel(p.i)+' — '+trialStatus(p.i).t+'</b>\nvalidation AUC-PR: '+t.v.toFixed(3)+' · best-so-far '+t.best.toFixed(3)+(t.pruned?' · PRUNED (MedianPruner)':'')+'\nn_est '+t.params.n_estimators+' · depth '+t.params.max_depth+' · lr '+t.params.learning_rate+'\nmcw '+t.params.min_child_weight+' · subsample '+t.params.subsample+' · colsample '+t.params.colsample_bytree+'\nλ '+t.params.reg_lambda+' · α '+t.params.reg_alpha+'\nscored by purged WF CV (Train only)';}
+  if(p.type==='strategy')return '<b>strategy_<TICKER>.py — final artifact (L10)</b>\nL10 consumes OPTUNAs_XGB_HPOs_best_params.json, Train X/y and FEATURE_MANIFEST,\nretrains the final XGB champion per asset, serializes it, encodes it as MODEL_B64\nand embeds it into strategy_<TICKER>.py.\nEach asset receives one independent strategy file (×{{universe_size}}).\n<i>click = full manifest</i>';
   if(p.type==='aband')return abandTip(p.b)+'\n<i>click = full manifest</i>';
+  if(p.type==='manifestRow'){var fm=FEATURE_MANIFEST[p.r];return '<b>X'+(p.r+1)+' · '+fm.n+'</b>\nFEATURE_MANIFEST (8 X · frozen order)\nfamily: '+fm.fam+' · unit: '+fm.u+'\nformula: '+fm.f+'\n<i>click = feature detail</i>';}
   if(p.type==='endproduct')return '<b>&lt;TICKER&gt;/ — per-asset deliverable folder</b>\n&lt;TICKER&gt;_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_&lt;TICKER&gt;.py\n×{{universe_size}} folders · one deployable bundle per asset\n<i>click = view</i>';
   if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0');var m2=oosMock(p.a),M=METRICS[p.m];
     return '<b>'+nm+' × '+M.name+'</b>\nvalue: '+m2[M.id]+'\ntrades: '+m2.trades+' · PF '+m2.pf+' · MDD '+m2.mdd+'%\n<i>click = full row</i>';}
@@ -2657,6 +2888,7 @@ function clickFor(p){
     var extra=(p.type==='trial')?('<b>trial #'+p.i+':</b><pre>'+JSON.stringify(TRIALS[p.i].params,null,2)+'</pre>'):'';
     PANEL.show('Optuna study',extra+'<b>n_trials:</b> 200 · <b>sampler:</b> TPE<br><b>pruner:</b> '+OPTUNA.pruner+'<br><b>objective:</b> '+OPTUNA.objective+'<br><b>best:</b> #'+BEST_TRIAL+' → '+bt.v.toFixed(3)+'<br><b>search space:</b><pre>'+JSON.stringify(OPTUNA.space,null,2)+'</pre>');}
   else if(p.type==='strategy'||p.type==='aband')PANEL.show('strategy_<TICKER>.py','<pre>'+JSON.stringify(manifest(p.a!=null?p.a:0),null,2)+'</pre>');
+  else if(p.type==='manifestRow'){var fm=FEATURE_MANIFEST[p.r];PANEL.show('FEATURE_MANIFEST · X'+(p.r+1)+' '+fm.n,'<b>Formula:</b> '+fm.f+'<br><b>Unit:</b> '+fm.u+'<br><b>Family:</b> '+fm.fam+'<br><br>one of the <b>8 X</b> the model is trained on, in frozen order (7 geometric + direction).<br>computed causally at t0 · embedded in every strategy_&lt;TICKER&gt;.py');}
   else if(p.type==='endproduct')setMode('endproduct');
   else if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0'),m2=oosMock(p.a);
     PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}

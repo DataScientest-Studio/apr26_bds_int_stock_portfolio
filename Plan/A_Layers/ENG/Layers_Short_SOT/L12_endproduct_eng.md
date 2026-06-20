@@ -16,7 +16,7 @@ and validated by the OOS run ([L11](L11_oos_test_eng.md)). `×<!--na:universe_si
 |---|---|---|
 | `<TICKER>_ohlcv_1h.parquet` | clean 1h OHLCV (zero derived columns) — OHLCV lineage, **not** the X/y training matrix | [L4](L4_snapshot_parquet_eng.md) snapshot (`parquet/<TICKER>/ohlcv.parquet`), packaged here under the per-asset name for data lineage / OOS replay |
 | `OPTUNAs_XGB_HPOs_best_params.json` | best-trial XGB hyperparameters for this asset | [L9](L9_optuna_tuning_eng.md) Optuna HPO |
-| `strategy_<TICKER>.py` | `MODEL_B64` + `FEATURE_MANIFEST` + `LABEL_CONTRACT` + `THRESHOLD_ENTRY` + `MODEL_HASH` + `TRAIN_WINDOW` + `selfcheck()` | [L10](L10_xgboost_strategy_eng.md) final XGB → b64 |
+| `strategy_<TICKER>.py` | `MODEL_B64` + `FEATURE_MANIFEST` + `LABEL_CONTRACT` + `THRESHOLD_ENTRY` + `MODEL_HASH` + `TRAIN_WINDOW` + `selfcheck()` | [L10](L10_xgboost_strategy_eng.md) final XGB → base64 model (`MODEL_B64`) embedded in the `.py` |
 
 - **Self-containment:** `strategy_<TICKER>.py` imports standalone — the model lives in `MODEL_B64`, it does **not** read the parquet at import. The parquet is bundled alongside for reproducibility / audit / OOS replay, not consumed by the `.py`.
 - **One folder per asset:** `×<!--na:universe_size-->503<!--/na-->` independent folders; each can be debugged, disabled, swapped or deployed on its own (per-asset independence, [L10](L10_xgboost_strategy_eng.md)).

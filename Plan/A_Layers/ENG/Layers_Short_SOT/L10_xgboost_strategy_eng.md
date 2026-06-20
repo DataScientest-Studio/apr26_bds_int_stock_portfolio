@@ -1,4 +1,4 @@
-# L10 · XGBoost final training + b64 strategy artifact (SOT)
+# L10 · XGBoost final training + strategy artifact with a base64-embedded model (SOT)
 
 The final model and a self-contained strategy file **per asset**, with the model in base64.
 Input = `OPTUNAs_XGB_HPOs_best_params.json` ([L9](L9_optuna_tuning_eng.md)) + Train `X/y` (derived from the asset's `<TICKER>_ohlcv_1h.parquet` via [L4](L4_snapshot_parquet_eng.md)→[L6](L6_setup_detector_eng.md)→[L7](L7_features_x_label_y_eng.md)) + `FEATURE_MANIFEST`.
