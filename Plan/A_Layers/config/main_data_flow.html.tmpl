@@ -168,9 +168,9 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p='legend';
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for the S&amp;P 500 (download → {{lean_zip_count}} ZIPs; quality-filtered to {{universe_size}} downstream), a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to parquet OHLCV per ticker, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×{{universe_size}} independent files, one model per asset), a wall of OOS test results for {{universe_size}} assets across 4 metrics, and a per-asset deliverable folder (×{{universe_size}}) holding the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json and the strategy_&lt;TICKER&gt;.py. Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A truly rotatable three-dimensional visualization of the ML pipeline for {{universe_size}} S&amp;P 500 companies in HTML Canvas, yaw and pitch orbit by mouse drag, gentle perspective, depth-sorted painting. Twelve levels from the bottom: an Alpaca SIP 1h source for the S&amp;P 500 (download → {{lean_zip_count}} ZIPs; quality-filtered to {{universe_size}} downstream), a LEAN ZIP store times {{lean_zip_count}} with prices times {{price_scale}}, DuckDB with a raw table and an ohlcv_1h (USD) view plus a discreet row of quality-gate dots QC-01…QC-11, an atomic snapshot to a per-asset folder holding the OHLCV parquet and a run notebook (&lt;TICKER&gt;__L4_to_L12.ipynb) that drives the asset through L5 to L12, a warm-up train OOS time split with purge and embargo, a trend-line setup detector that finds L_trend, L_opp, entry_candle and R0 using only candles up to t0, trendline features X with a triple barrier label Y, a data-quality gate over stores and transforms with a dashboard before training, an Optuna hyperparameter search that produces OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that serializes each champion model as a base64-encoded artifact into a per-asset strategy file (×{{universe_size}} independent files, one model per asset), a SQLite asset-metrics database (l11_asset_metrics.sqlite) holding a {{universe_size}}-asset metric matrix and a distribution report, and a per-asset deliverable folder (×{{universe_size}}) holding four files — the OHLCV parquet, the OPTUNAs_XGB_HPOs_best_params.json, the strategy_&lt;TICKER&gt;.py and a human-readable &lt;TICKER&gt;_README.md report (this asset's params, OOS verdict summary and data info). Horizontal dashed separators between layers and editable note-cards for L-to-L transitions. View modes 1 to 9, 0 and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
-<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final → strategy_<TICKER>.py (base64 MODEL_B64 inside) ×{{universe_size}} → OOS test {{universe_size}} assets → endproduct folder ×{{universe_size}}. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
+<p class="tlc-sub"><b>S&amp;P 500 ML Pipeline — rotatable 3D</b> · Alpaca 1h → LEAN ZIP → DuckDB+QC → snapshot → parquet OHLCV → split → setup detector → trendline features X+Y → data-quality gate (dashboard) → Optuna search (OPTUNAs_XGB_HPOs_best_params.json) → XGB final → strategy_<TICKER>.py (base64 MODEL_B64 inside) ×{{universe_size}} → SQLite metrics DB {{universe_size}} assets → endproduct folder ×{{universe_size}}. Drag = rotate 3D · Shift+drag / right button = pan · scroll = zoom · dblclick = reset · click = details · keys 1–9, 0 and L = views.</p>
 
 <div class="tlc-ctrls">
   <span class="lbl">View:</span>
@@ -183,7 +183,7 @@ body.le-open #lblEditor{transform:translateY(0)}
     <button data-m="dq">6 Data quality</button>
     <button data-m="optuna">7 Optuna</button>
     <button data-m="artifact">8 Artifact</button>
-    <button data-m="oos">9 OOS results</button>
+    <button data-m="oos">9 SQLite metrics</button>
     <button data-m="endproduct">0 Endproduct</button>
     <button data-m="leak">L Anti-leakage</button>
   </span>
@@ -226,10 +226,10 @@ body.le-open #lblEditor{transform:translateY(0)}
 <!-- Legend by 5 families (color = role, shape = silhouette). Red reserved for errors. -->
 <div class="tlc-leg">
   <span><span style="display:inline-block;width:12px;height:12px;border:1.5px solid #8a8980"></span> Source / gate <span style="color:var(--color-text-tertiary)">(L1–L2)</span></span>
-  <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3·L10)</span></span>
+  <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3·L10·L11)</span></span>
   <span><span style="display:inline-block;width:9px;height:14px;background:rgba(99,153,34,.20);border:1.5px solid #639922"></span> Transform <span style="color:var(--color-text-tertiary)">(L4·L6·L7·L9)</span></span>
   <span><span style="display:inline-block;width:13px;height:11px;border:1.5px solid #BA7517;border-radius:4px"></span> Gate / control <span style="color:var(--color-text-tertiary)">(L5·L8)</span></span>
-  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / endproduct <span style="color:var(--color-text-tertiary)">(L11·L12)</span></span>
+  <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / endproduct <span style="color:var(--color-text-tertiary)">(L12)</span></span>
   <span><span style="display:inline-block;width:11px;height:11px;background:linear-gradient(90deg,var(--c-fail-text),#9a9890,#22C55E)"></span> Result scale: bad ↔ good (diverging)</span>
   <span style="color:var(--c-fail-text)">✕ Red = error / block / FAIL (reserved)</span>
 </div>
@@ -244,8 +244,8 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Data-quality gate</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
   <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>.</li>
   <li><b>XGB final training</b> per asset on OPTUNAs_XGB_HPOs_best_params.json; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> (decoded via import base64 at import) + selfcheck → <b>×{{universe_size}} independent files</b> (1 model/hash/window per asset).</li>
-  <li><b>OOS single run</b>: {{universe_size}} assets × PF · MDD · TIM · WR.</li>
-  <li><b>Endproduct</b>: per-asset folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> (×{{universe_size}} folders).</li>
+  <li><b>OOS single run → <code>l11_asset_metrics.sqlite</code></b>: {{universe_size}}-asset metric matrix (PF · MDD · TIM · WR) + distribution report.</li>
+  <li><b>Endproduct</b>: per-asset folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> + <b>&lt;TICKER&gt;_README.md</b> (×{{universe_size}} folders).</li>
 </ol>
 </div></div>
 
@@ -409,9 +409,8 @@ function importanceMock(a,f){return Math.round(rng(a*31+f*131)()*0.30*100)/100;}
 var METRICS=[
   {id:'pf',name:'PF',hi:true,lo:0.7,hiV:2.1},
   {id:'mdd',name:'MDD %',hi:false,lo:5,hiV:35},
-  {id:'tim',name:'TIM %',hi:true,lo:4,hiV:28},
+  {id:'tim',name:'TIM %',hi:false,lo:4,hiV:28},
   {id:'wr',name:'WR %',hi:true,lo:32,hiV:58}];
-function metricQ(val,m){var M=METRICS[m],q=clamp((val-M.lo)/(M.hiV-M.lo),0,1);return M.hi?q:1-q;}
 
 var DQ=[
   {id:'parity',name:'PARITIES',status:'OK',
@@ -476,7 +475,7 @@ function manifest(a){var r=rng(a*991+7);
     selfcheck:'golden input → output: PASS'};
 }
 
-var BND_DZ=[189,189,192,189,189,189,185,189,189,202,196];   // 11 boundaries (12 levels): split L9 (Optuna search) / L10 (XGB final → strategy .py with embedded base64 model); L11 = OOS; L11 → L12 endproduct folder
+var BND_DZ=[189,189,192,189,189,189,185,189,189,202,196];   // 11 boundaries (12 levels): split L9 (Optuna search) / L10 (XGB final → strategy .py with embedded base64 model); L11 = SQLite asset-metrics DB; L11 → L12 endproduct folder
 
 // ===== SINGLE SOURCE OF TRUTH: scene graph (spec v1.2) =====
 // family = one of 5 silhouettes (PR-5), role = palette key by role (PR-5),
@@ -508,10 +507,10 @@ var PIPELINE={
      status:'ok',dataKey:'QC',hitType:'db'},
     {id:'L4',lev:3,family:'transform',role:'transform',col:GREEN,
      title:'SNAPSHOT → PARQUET OHLCV (×{{universe_size}})',subtitle:'freeze snapshot → serialize parquet',
-     summary:'atomic snapshot + manifest → parquet per ticker, zero derived columns',
+     summary:'atomic snapshot + manifest → per-asset folder: ohlcv.parquet (zero derived columns) + <TICKER>__L4_to_L12.ipynb run notebook',
      input_contract:'DuckDB raw + VIEW ohlcv_1h (USD, after QC)',transform_verb:'freeze',
-     output_contract:'{{universe_size}} × <TICKER>/ohlcv.parquet (clean OHLCV)',metric:{label:'files',value:'×{{universe_size}}'},
-     invariants:['zero derived columns','atomic snapshot / torn-read guard'],status:'ok',hitType:'parquet'},
+     output_contract:'{{universe_size}} × parquet/<TICKER>/ { ohlcv.parquet (clean OHLCV) + <TICKER>__L4_to_L12.ipynb }',metric:{label:'files',value:'×{{universe_size}}'},
+     invariants:['zero derived columns','atomic snapshot / torn-read guard','notebook input = local ohlcv.parquet only (no copy, no extra columns)'],status:'ok',hitType:'parquet'},
     {id:'L5',lev:4,family:'gate',role:'control',col:AMB,
      title:'SPLIT: WARM-UP / TRAIN / OOS',subtitle:'split by time + purge/embargo',
      summary:'warm-up → train → OOS · purge H=24 + embargo ~5 sessions',
@@ -554,19 +553,19 @@ var PIPELINE={
      output_contract:'×{{universe_size}} strategy_<TICKER>.py: MODEL_B64 + FEATURE_MANIFEST + THRESHOLD + selfcheck (1 model/asset)',
      metric:{label:'artifacts',value:'×{{universe_size}}'},invariants:['1 model + 1 .py + 1 hash per asset','deterministic build (stable hash)','self-contained: no training data at import'],
      status:'ok',dataKey:'OPTUNA',hitType:'artifact'},
-    {id:'L11',lev:10,family:'output',role:'output',col:TP,
-     title:'OOS TEST: {{universe_size}} ASSETS × METRICS',subtitle:'evaluate on the frozen OOS window',
-     summary:'single run on OOS 2024-01-02 → 2026-05-29',
-     input_contract:'{{universe_size}} frozen strategy artifacts',transform_verb:'evaluate',
-     output_contract:'results matrix: PF · MDD · TIM · WR',metric:{label:'assets',value:'{{universe_size}}'},
-     invariants:['single run','zero tuning after seeing results'],status:'ok',dataKey:'METRICS',hitType:'oos'},
+    {id:'L11',lev:10,family:'store',role:'store',col:TEAL,
+     title:'SQLITE ASSET-METRICS DB ({{universe_size}} ASSETS × METRICS)',subtitle:'one-shot OOS run → l11_asset_metrics.sqlite',
+     summary:'single OOS run 2024-01-02 → 2026-05-29 → wide {{universe_size}}-asset metric matrix + distribution report (SQLite)',
+     input_contract:'×{{universe_size}} frozen strategy artifacts',transform_verb:'evaluate',
+     output_contract:'l11_asset_metrics.sqlite: asset-metrics matrix (PF · MDD · TIM · WR) + distribution report',metric:{label:'assets',value:'×{{universe_size}}'},
+     invariants:['single run','zero tuning after seeing results','DB is an external report (does not modify strategies)'],status:'ok',dataKey:'METRICS',hitType:'sqliteDb'},
     {id:'L12',lev:11,family:'output',role:'output',col:TP,
      title:'ENDPRODUCT: PER-ASSET DELIVERABLE FOLDER (×{{universe_size}})',subtitle:'package 1 deployable folder per asset',
-     summary:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet + OPTUNAs_XGB_HPOs_best_params.json + strategy_<TICKER>.py',
-     input_contract:'frozen strategy artifacts + external OOS verdict + per-asset parquet + Optuna params',transform_verb:'package',
-     output_contract:'×{{universe_size}} × <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py }',
+     summary:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet + OPTUNAs_XGB_HPOs_best_params.json + strategy_<TICKER>.py + <TICKER>_README.md',
+     input_contract:'frozen strategy artifacts + external l11_asset_metrics.sqlite verdict + per-asset parquet + Optuna params',transform_verb:'package',
+     output_contract:'×{{universe_size}} × <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py · <TICKER>_README.md }',
      metric:{label:'folders',value:'×{{universe_size}}'},
-     invariants:['1 self-contained folder per asset','3 files: data + params + strategy','strategy .py carries the b64 model, not the training data'],
+     invariants:['1 self-contained folder per asset','4 files: data + params + strategy + README','strategy .py carries the b64 model, not the training data'],
      status:'ok',hitType:'endproduct'}
   ],
   edges:[
@@ -577,7 +576,7 @@ var PIPELINE={
     {from:'L3',to:'L4',verb:'freeze',payload:'snapshot → parquet OHLCV',causal_scope:'atomic',
      detail:'atomic database snapshot + manifest JSON (rows / symbols / ts range / price_view) → COPY to parquet OHLCV per ticker — zero derived columns'},
     {from:'L4',to:'L5',verb:'split',payload:'parquet OHLCV → time windows',causal_scope:'per asset',
-     detail:'{{universe_size}} parquet OHLCV (1/ticker) → time split: warm-up (roll-in max(W_ATR,W_VOL)=20 candles) / train / OOS + purge H=24 and embargo at boundaries'},
+     detail:'{{universe_size}} parquet OHLCV (1/ticker) → time split: warm-up (roll-in max(W_ATR,W_VOL)=20 candles) / train / OOS + purge H=24 and embargo at boundaries; the per-asset <TICKER>__L4_to_L12.ipynb companion (created in L4) travels alongside through L5→L12'},
     {from:'L5',to:'L6',verb:'detect',payload:'Train window → trend-line setups',causal_scope:'candles ≤ t0',
      detail:'Train only: trend-line setup detector — fits of L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead)'},
     {from:'L6',to:'L7',verb:'transform',payload:'setup objects → 8 X + audit + Y',causal_scope:'features at t0',
@@ -588,10 +587,10 @@ var PIPELINE={
      detail:'quality gate: search starts only with a green dashboard (FAIL blocks) → Optuna 200 trials (TPE + MedianPruner, purged walk-forward CV k=4) on Train → best trial → OPTUNAs_XGB_HPOs_best_params.json (hyperparameters only — no model is built in L9)'},
     {from:'L9',to:'L10',verb:'pack',payload:'OPTUNAs_XGB_HPOs_best_params.json → final XGB → MODEL_B64 in .py',causal_scope:'per asset',
      detail:'OPTUNAs_XGB_HPOs_best_params.json + Train X/y + FEATURE_MANIFEST → retrain champion XGB per asset → serialize → base64 → strategy_<TICKER>.py + selfcheck (×{{universe_size}} independent files, 1 model/hash/window per asset)'},
-    {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS results matrix',causal_scope:'single run',
-     detail:'{{universe_size}} frozen strategy artifacts → single run on the OOS window 2024-01-02 → 2026-05-29 → results matrix: PF · MDD · TIM · WR (OOS is touched here for the first time — never in L9/L10 training)'},
-    {from:'L11',to:'L12',verb:'package',payload:'frozen artifacts + external OOS verdict → per-asset deliverable folders',causal_scope:'per asset',
-     detail:'package all ×{{universe_size}} frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 Optuna best params) + strategy_<TICKER>.py (L10: base64 model embedded + manifest); the L11 OOS verdict is an external report and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
+    {from:'L10',to:'L11',verb:'evaluate',payload:'artifacts → OOS metric DB (l11_asset_metrics.sqlite)',causal_scope:'single run',
+     detail:'×{{universe_size}} frozen strategy artifacts → single OOS run 2024-01-02 → 2026-05-29 → l11_asset_metrics.sqlite: wide {{universe_size}}-asset metric matrix (PF · MDD · TIM · WR) + distribution report (OOS is touched here for the first time — never in L9/L10 training)'},
+    {from:'L11',to:'L12',verb:'package',payload:'frozen artifacts + external l11_asset_metrics.sqlite verdict → per-asset deliverable folders',causal_scope:'per asset',
+     detail:'package all ×{{universe_size}} frozen per-asset folders (one per asset, not only OOS winners): <TICKER>_ohlcv_1h.parquet (L4 data) + OPTUNAs_XGB_HPOs_best_params.json (L9 Optuna best params) + strategy_<TICKER>.py (L10: base64 model embedded + manifest) + <TICKER>_README.md (human report: this asset\'s params + OOS verdict summary + data info); the L11 verdict lives in the external l11_asset_metrics.sqlite DB (authoritative) and does not change any strategy_<TICKER>.py content or MODEL_HASH'}
   ]
 };
 var NODE_BY_ID={},NODE_BY_LEV=[];
@@ -1050,40 +1049,55 @@ TransformLayer.prototype.draw=function(){
   caption(3);
   var sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
 
-  // L4 = snapshot DB (gray cylinder, atomic manifest) + serpentine of 14 parquet files (13 samples + ×{{universe_size}}) analogous to L2 ZipStore
-  // snapshot DB cylinder (FAR left, pulled away from the file viz so the arrow ends in open space)
-  GLYPHS.dbCylinder({lev:3,a:0.10,b:0.52,ra:0.12,rb:0.28,dz:2,h:28,col:GRAY});
+  // L4 = snapshot DB (gray cylinder) → Y-FORK into TWO serpentines (parquet + run-notebook) that
+  // converge into ONE shared folder. Everything is centred on Z (vertical mid of the L4 band, between
+  // the two boundary lines) and the two trails sit in SEPARATE dz bands (Z±32) so they never overlap.
+  var Z=70;                                                  // vertical centre between the L4 boundary lines (single knob — tune here)
+  GLYPHS.dbCylinder({lev:3,a:0.10,b:0.52,ra:0.12,rb:0.28,dz:Z-14,h:28,col:GRAY});
   if(STATE.labels){
-    var pd1=SS(3,0.10,0.52,34),pd2=SS(3,0.10,0.80,0);
+    var pd1=SS(3,0.10,0.52,Z+40),pd2=SS(3,0.10,0.52,Z-34);
     qLabel({key:'tf_snapdb',def:'snapshot DB · manifest JSON',grp:'Snapshot / Parquet',
       x:pd1.x,y:pd1.y-2,col:vget('--color-text-primary','#eee'),al:'center',sz:9,wt:'600',pr:2,ax:pd1.x,ay:pd1.y});
     qLabel({key:'tf_manifest',def:'atomic copy + price_view',grp:'Snapshot / Parquet',
       x:pd2.x,y:pd2.y,col:tert,al:'center',sz:7.5,pr:1});
   }
-  HITS.addPts([lp(3,0.10-0.13,0.52-0.30,32),lp(3,0.10+0.13,0.52+0.30,0)],{type:'snapshot'});
+  HITS.addPts([lp(3,-0.03,0.22,Z+34),lp(3,0.23,0.82,Z-24)],{type:'snapshot'});
 
-  // arrow from snapshot DB cylinder toward the serpentine — tip ENDS IN OPEN SPACE (never on a file), wide gap to the files
-  var arrA=lp(3,0.22,0.52,18),arrB=lp(3,0.32,0.52,18);
-  line2(arrA,arrB,rgba(AMB,0.65),1.6,[]);
-  var arrS=CAM.S(arrB);ctx.save();ctx.translate(arrS.x,arrS.y);ctx.rotate(Math.PI/2);triUpS(0,0,AMB);ctx.restore();
+  // arrow from the cylinder, then a Y-FORK up to the parquet row and down to the notebook row
+  var arrA=lp(3,0.20,0.52,Z),arrF=lp(3,0.30,0.52,Z);
+  line2(arrA,arrF,rgba(AMB,0.65),1.6,[]);
+  line2(arrF,lp(3,0.41,0.50,Z+40),rgba(AMB,0.5),1.3,[]);    // branch UP → parquet trail (upper dz band)
+  line2(arrF,lp(3,0.41,0.50,Z-40),rgba(PINK,0.5),1.3,[]);   // branch DOWN → run-notebook trail (lower dz band)
+  var arrS=CAM.S(arrF);ctx.save();ctx.translate(arrS.x,arrS.y);ctx.rotate(Math.PI/2);triUpS(0,0,AMB);ctx.restore();
 
-  // L4 parquet serpentine (shared helper): matches L2 ZIP SERP shape — 3 rows, 5-5-4 boustrophedon,
-  // same fold count & vertical distribution; a/b fitted to the band RIGHT of the snapshot cylinder/arrow
-  // (no overlap), depth-sorted; last node = folder the files flow into, ×N caption above it.
+  // ONE shared per-asset folder both trails converge into — parquet/<TICKER>/ (drawn once, at the band centre)
+  GLYPHS.parquetFolder({lev:3,a:0.95,b:0.50,z0:Z,col:AMB,hit:'parquet'});
+
+  // L4 branches into TWO serpentines (shared helper, tail:'file' so neither draws its own folder).
+  // FLAT rows at b=0.50; the two rows live in well-separated dz bands (Z+40 vs Z-40) → wide vertical gap, no overlap.
   GLYPHS.fileSerpentine({lev:3,serp:[
-    {a:0.44,b:0.30},{a:0.57,b:0.30},{a:0.70,b:0.30},{a:0.83,b:0.30},{a:0.96,b:0.30},
-    {a:0.96,b:0.54},{a:0.83,b:0.54},{a:0.70,b:0.54},{a:0.57,b:0.54},{a:0.44,b:0.54},
-    {a:0.44,b:0.78},{a:0.57,b:0.78},{a:0.70,b:0.78},{a:0.83,b:0.78}],
-    col:AMB,z0:16,lineDz:13,
-    allKey:'parq_all',allDef:'×{{universe_size}}',allGrp:'Snapshot / Parquet',
-    names:true,nameKeyPfx:'parq'});
+    {a:0.42,b:0.50,dz:Z+40},{a:0.53,b:0.50,dz:Z+40},{a:0.64,b:0.50,dz:Z+40},{a:0.75,b:0.50,dz:Z+40},{a:0.83,b:0.50,dz:Z+38}],
+    col:AMB,z0:16,lineDz:13,tail:'file',hit:'parquet',
+    allKey:'parq_all',allDef:'×{{universe_size}}',allName:'ohlcv.parquet',allGrp:'Snapshot / Parquet',
+    allLabelLp:{a:0.55,b:0.50,dz:Z+68},allLabelAl:'center',names:true,nameKeyPfx:'parq'});
+  GLYPHS.fileSerpentine({lev:3,serp:[
+    {a:0.42,b:0.50,dz:Z-40},{a:0.53,b:0.50,dz:Z-40},{a:0.64,b:0.50,dz:Z-40},{a:0.75,b:0.50,dz:Z-40},{a:0.83,b:0.50,dz:Z-38}],
+    col:PINK,z0:16,lineDz:13,tail:'file',kind:'code',ext:'.ipynb',hit:'notebook',
+    allKey:'ipynb_all',allDef:'×{{universe_size}}',allName:'<TICKER>__L4_to_L12.ipynb',allGrp:'Snapshot / Parquet',
+    allLabelLp:{a:0.55,b:0.50,dz:Z-68},allLabelAl:'center',names:false});
+
+  // connectors: each trail's last file flows into the single shared folder at the band centre
+  line2(lp(3,0.83,0.50,Z+38),lp(3,0.95,0.50,Z),rgba(AMB,0.5),1.3,[]);
+  line2(lp(3,0.83,0.50,Z-38),lp(3,0.95,0.50,Z),rgba(PINK,0.5),1.3,[]);
 
   if(STATE.labels){
-    var pt1=SS(3,0.5,0.16,8),pt2=SS(3,0.5,0.97,0);
+    var pt1=SS(3,0.5,0.50,Z+92),pf=SS(3,0.95,0.50,Z+30),pi=SS(3,0.5,0.50,Z-92);
     qLabel({key:'tf_zero',def:'zero derived columns — features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md)',grp:'Snapshot / Parquet',
       x:pt1.x,y:pt1.y,col:sec,al:'center',sz:8.5,pr:1});
-    qLabel({key:'tf_caption',def:'{{universe_size}} files · zstd · <TICKER>/ohlcv.parquet',grp:'Snapshot / Parquet',
-      x:pt2.x,y:pt2.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'tf_folder',def:'parquet/<TICKER>/ · zstd · holds both files',grp:'Snapshot / Parquet',
+      x:pf.x,y:pf.y,col:tert,al:'center',sz:8,pr:2});
+    qLabel({key:'tf_ipynb',def:'<TICKER>__L4_to_L12.ipynb — drives L5→L12 · input = local ohlcv.parquet only (no copy, no extra columns)',grp:'Snapshot / Parquet',
+      x:pi.x,y:pi.y,col:tert,al:'center',sz:8,pr:1});
   }
 };
 
@@ -1096,7 +1110,7 @@ SplitLayer.prototype.draw=function(){
   caption(4);
   var tert=vget('--color-text-tertiary','#777');
   var i,nb=SPLIT.bands.length;
-  var AX0=aOf(0),AX1=aOf(1),BAX0=0.45,BAX1=0.55,axB=0.5,AXZ=6,AXH=10,axTop=AXZ+AXH;
+  var AX0=aOf(0),AX1=aOf(1),BAX0=0.45,BAX1=0.55,axB=0.5,AXZ=86,AXH=10,axTop=AXZ+AXH;   // AXZ = bar dz, raised to centre the whole timeline (bar + hanging scale + names) between the L5 boundary lines
   var TOPA=0.85,NAME_DZ=axTop+14;        // solid colored top; single name height (scale hangs BELOW via dz)
 
   // --- colored bar: one 3D slab per window, painted far->near so seams occlude correctly while orbiting ---
@@ -1158,11 +1172,14 @@ SplitLayer.prototype.draw=function(){
     for(i=0;i<nb;i++){var lb=SPLIT.bands[i],
         la0=aOf(i===0?0:SPLIT.edgeF[i-1]),la1=aOf(i===nb-1?1:SPLIT.edgeF[i]),ps=SS(4,(la0+la1)/2,axB,NAME_DZ);
       qLabel({key:'split_'+lb.id,def:lb.name,grp:'Time split',x:ps.x,y:ps.y,col:lb.col,al:'center',sz:9.5,wt:'600',pr:3});}
-    var spg=SS(4,eB-gw/2,axB,NAME_DZ-4),seg=SS(4,eB+gw/2,axB,NAME_DZ-4);
-    line2(lp(4,eB-gw/2,axB,NAME_DZ-7),lp(4,eB-gw/2,axB,axTop),rgba(SL,0.7),1.1,[]);
-    line2(lp(4,eB+gw/2,axB,NAME_DZ-7),lp(4,eB+gw/2,axB,axTop),rgba(SPLIT.embargoCol,0.7),1.1,[]);
-    qLabel({key:'split_purge_lbl',def:'purge',grp:'Time split',x:spg.x,y:spg.y,col:SL,al:'center',sz:7.5,wt:'600',pr:1,lod:0.7});
-    qLabel({key:'split_embargo_lbl',def:'embargo',grp:'Time split',x:seg.x,y:seg.y,col:SPLIT.embargoCol,al:'center',sz:7.5,wt:'600',pr:1,lod:0.7});
+    // purge (Train side, red) + embargo (OOS side, blue) are two tiny adjacent slabs → fan the labels OUT to
+    // the LEFT with longer angled leaders (kept clear of the OOS name on the right); embargo higher, purge lower.
+    var pRoot=lp(4,eB-gw/2,axB,axTop+1),eRoot=lp(4,eB+gw/2,axB,axTop+1);     // leader roots, one on each sub-slab
+    line2(eRoot,lp(4,eB-0.06,axB,NAME_DZ+22),rgba(SPLIT.embargoCol,0.85),1.3,[]);  // long blue leader → embargo (upper)
+    line2(pRoot,lp(4,eB-0.165,axB,NAME_DZ+2),rgba(SL,0.85),1.3,[]);                // long red  leader → purge (further lower-left, clear of OOS)
+    var seg=SS(4,eB-0.06,axB,NAME_DZ+26),spg=SS(4,eB-0.165,axB,NAME_DZ+6);
+    qLabel({key:'split_embargo_lbl',def:'embargo',grp:'Time split',x:seg.x,y:seg.y,col:SPLIT.embargoCol,al:'center',sz:8.5,wt:'700',pr:3,lod:0.7});
+    qLabel({key:'split_purge_lbl',def:'purge',grp:'Time split',x:spg.x,y:spg.y,col:SL,al:'center',sz:8.5,wt:'700',pr:3,lod:0.7});
   }
 };
 
@@ -1674,90 +1691,114 @@ StrategyExportLayer.prototype.draw=function(){
   }
 };
 
-function OOSWall(){}
+function OOSWall(){}                                              // L11 — l11_asset_metrics.sqlite: DB cylinder + metric matrix + distribution_report
 OOSWall.prototype.draw=function(){
   caption(10);
-  var C=26,R=METRICS.length,HZ=170,bw=0.60;
-  var A=CAM.S(lp(10,0.06,bw,6)),B=CAM.S(lp(10,0.94,bw,6)),
-      T1=CAM.S(lp(10,0.06,bw,6+HZ)),T2=CAM.S(lp(10,0.94,bw,6+HZ));
-  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
-  polyS([T1,T2,B,A],rgba(CAN,0.08),vget('--color-border-secondary','#555'),1,[]);
-  if(CAM.z>=1.0){
-    for(c=0;c<7;c++){
-      var ms=PT((c+0.45)/C,-0.105);
-      drawMicroSheet(ms.x-7,ms.y-9,14,18,AMB);
+  var i,r,c,bw=0.60;
+  var bgc=vget('--color-background-primary','#1e1e1c'),bord=vget('--color-border-secondary','#555');
+
+  // 1) SQLite DB cylinder (LEFT) — the concrete l11_asset_metrics.sqlite artifact (store/teal, like the L3 DuckDB cylinder)
+  var cyc=GLYPHS.dbCylinder({lev:10,a:0.05,b:0.55,ra:0.10,rb:0.23,dz:50,h:30,col:TEAL,   // size matched to the L3/L4 DuckDB cylinders
+    badge:'SQLite',badgeKey:'sqlite_badge',badgeGrp:'SQLite metrics DB',hit:'sqliteDb'});
+  if(STATE.labels){
+    qLabel({key:'sqlite_file',def:'l11_asset_metrics.sqlite',grp:'SQLite metrics DB',
+      x:cyc.x,y:cyc.y+46,col:vget('--color-text-secondary','#999'),al:'center',sz:8.5,wt:'700',pr:3,ax:cyc.x,ay:cyc.y+30});
+    if(CAM.z>=0.85){                                             // schema / logical layout = the 5 tables (+ helper view)
+      var TBL=['run_manifest','asset_registry','metric_registry','asset_metrics_503','distribution_report','asset_metric_long ·view'];
+      for(i=0;i<TBL.length;i++)
+        qLabel({key:'sqlite_tbl'+i,text:TBL[i],x:cyc.x,y:cyc.y+60+i*10.5,col:vget('--color-text-tertiary','#777'),al:'center',sz:6.8,pr:1,lod:0.82});
     }
   }
-  // wall obstacle in 6 strips (the AABB of the whole tilted quad would cover
-  // the empty triangle above the wall and push name labels away)
-  for(r=0;r<6;r++){
-    var su0=r/6,su1=(r+1)/6,
-        q00=PT(su0,0),q10=PT(su1,0),q01=PT(su0,1),q11=PT(su1,1);
-    obstacle(Math.min(q00.x,q10.x,q01.x,q11.x),Math.min(q00.y,q10.y,q01.y,q11.y),
-             Math.max(q00.x,q10.x,q01.x,q11.x),Math.max(q00.y,q10.y,q01.y,q11.y));
-  }
-  var r,c,omc=[];
-  for(c=0;c<C;c++)omc[c]=oosMock(c);   // oosMock depends only on c → compute once per column (not 5×)
-  for(r=0;r<R;r++)for(c=0;c<C;c++){
-    var u0=c/C,u1=(c+0.82)/C,v0=r/R,v1=(r+0.78)/R;
-    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1);
-    var val=omc[c][METRICS[r].id],q=metricQ(val,r);
-    var colq=q>=0.5?rgba(TP,0.10+0.80*(q-0.5)*2):rgba(SL,0.10+0.72*(0.5-q)*2);
-    polyS([p00,p10,p11,p01],colq,null);
-    var bx0=Math.min(p00.x,p01.x,p10.x,p11.x),bx1=Math.max(p00.x,p01.x,p10.x,p11.x);
-    var by0=Math.min(p00.y,p01.y,p10.y,p11.y),by1=Math.max(p00.y,p01.y,p10.y,p11.y);
-    HITS.addRect(bx0,by0,bx1-bx0,by1-by0,{type:'oosCell',a:c,m:r});
-  }
-  var PRI={pf:1,mdd:1,tim:1};                                   // hard-coded objective priority: maximise PF · minimise MaxDD · minimise realized TIM (WR informational)
+
+  // arrow: SQLite cylinder → metric matrix (analogous to the L10 XGB → MODEL_B64 arrow)
+  arrowHQ(SS(10,0.17,0.57,62),SS(10,0.31,0.57,62),AMB);
+
+  // 2) asset_metrics_503 as a plain GRAY table (L3-style): metric rows × sample asset columns, simulated OOS data
+  var zb=6,HZ=118,s,k;                                           // base depth + height (the distribution to the right reuses zb/HZ)
+  var samp=[];for(s=0;s<6;s++)samp.push(oosMock(s));             // 6 sample assets · simulated OOS metrics via oosMock
+  var mcols=['metric'];for(s=0;s<6;s++)mcols.push(anameV(s)||ASSETS[s]||('a'+(s+1)));mcols.push('×{{universe_size}} …');
+  function mfmt(M,v){return M.id==='pf'?v.toFixed(2):v.toFixed(1);}
+  var mrows=METRICS.map(function(M){var row=[M.name];for(k=0;k<6;k++)row.push(mfmt(M,samp[k][M.id]));row.push('…');return row;});
+  var trow=['trades'];for(s=0;s<6;s++)trow.push(''+samp[s].trades);trow.push('…');mrows.push(trow);
+  GLYPHS.ohlcvMatrix3d({lev:10,a0:0.34,a1:0.98,b:bw,base:zb,h:HZ,col:GRAY,         // gray L3-style table (no result-quality colouring)
+    bg:rgba(bgc,0.93),hitType:'sqliteDb',cwd:[22,13,13,13,13,13,13,22],   // last col widened to fit the universe-total label
+    cols:mcols,rows:mrows,title:'OOS results · 2024-01-02 → 2026-05-29 (one-shot)',showValZ:0.4});  // 0.4 (not 0 — `||2.0` treats 0 as falsy): values show at L11 inspect/oos, hidden only at tiny overview
   if(STATE.labels){
-    var pc=PT(0.5,-0.07);
-    qLabel({key:'oos_caption',def:'OOS results matrix · {{universe_size}} assets × 4 metrics · 2024-01-02 → 2026-05-29',grp:'OOS results',
-      x:pc.x,y:pc.y,col:vget('--color-text-primary','#eee'),al:'center',sz:10.5,wt:'600',pr:3});
-    for(r=0;r<R;r++){var pl=PT(-0.045,(r+0.55)/R);
-      qLabel({text:METRICS[r].name,x:pl.x,y:pl.y,col:PRI[METRICS[r].id]?TEAL:vget('--color-text-secondary','#999'),
-        al:'right',sz:8.5,wt:PRI[METRICS[r].id]?'600':'',pr:3,ax:pl.x+6,ay:pl.y});}
-    var pb=PT(0.5,1.12);
-    qLabel({key:'oos_note',def:'columns = assets (26 of {{universe_size}} in frame) · rows = metrics · color = result quality',grp:'OOS results',
-      x:pb.x,y:pb.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});
-    if(STATE.names==='sample'){
-      for(c=0;c<7;c++){var ph=PT((c+0.45)/C,-0.155),pg=PT((c+0.45)/C,0.02);
-        qLabel({key:'asset'+c,text:anameV(c),x:ph.x,y:ph.y,col:vget('--color-text-tertiary','#777'),
-          al:'left',sz:7.5,rot:-0.7,pr:3,lod:0.65,ax:pg.x,ay:pg.y});}
+    var pcap=SS(10,0.66,bw,zb+HZ+12);
+    qLabel({key:'oos_caption',def:'asset_metrics_503 · metric rows × {{universe_size}} asset columns (sample shown)',grp:'SQLite metrics DB',
+      x:pcap.x,y:pcap.y,col:vget('--color-text-primary','#eee'),al:'center',sz:9.5,wt:'600',pr:3});
+  }
+
+  // 3) distribution_report (RIGHT of the matrix, with a gap) — PF distribution + share PF>1 + top/bottom assets
+  var dA0=1.06,dA1=1.42;                                         // own a-range to the right of the matrix (gap a∈[0.98,1.06]); height aligned with the matrix
+  var DA=CAM.S(lp(10,dA0,bw,zb)),DB=CAM.S(lp(10,dA1,bw,zb)),
+      DT1=CAM.S(lp(10,dA0,bw,zb+HZ)),DT2=CAM.S(lp(10,dA1,bw,zb+HZ));
+  function DPT(u,v){return lerp2(lerp2(DT1,DT2,u),lerp2(DA,DB,u),v);}
+  polyS([DT1,DT2,DB,DA],rgba(bgc,0.93),bord,1.0,[]);
+  polyS([DT1,DT2,DB,DA],rgba(TEAL,0.04),null,0,[]);
+  obstacle(Math.min(DA.x,DB.x,DT1.x,DT2.x),Math.min(DA.y,DB.y,DT1.y,DT2.y),Math.max(DA.x,DB.x,DT1.x,DT2.x),Math.max(DA.y,DB.y,DT1.y,DT2.y));
+  var NB=8,BWD=0.375,hist=[],maxh=1,NA=120,pfGt1=0,bestA=0,worstA=0,bestPF=-1,worstPF=1e9;
+  for(i=0;i<NB;i++)hist[i]=0;
+  for(i=0;i<NA;i++){var pf=oosMock(i).pf;if(pf>1)pfGt1++;
+    if(pf>bestPF){bestPF=pf;bestA=i;}if(pf<worstPF){worstPF=pf;worstA=i;}
+    var bk=Math.max(0,Math.min(NB-1,Math.floor(pf/BWD)));hist[bk]++;if(hist[bk]>maxh)maxh=hist[bk];}
+  for(i=0;i<NB;i++){var hu0=i/NB,hu1=(i+0.82)/NB,vTop=1-0.86*(hist[i]/maxh),pfMid=(i+0.5)*BWD;
+    var h00=DPT(hu0,vTop),h10=DPT(hu1,vTop),h11=DPT(hu1,0.97),h01=DPT(hu0,0.97);
+    polyS([h00,h10,h11,h01],pfMid>=1?rgba(TP,0.5):rgba(SL,0.46),null);
+    var dbx0=Math.min(h00.x,h01.x),dbx1=Math.max(h10.x,h11.x),dby0=Math.min(h00.y,h10.y),dby1=Math.max(h01.y,h11.y);
+    HITS.addRect(dbx0,dby0,dbx1-dbx0,dby1-dby0,{type:'distBand',b:i,lo:+(i*BWD).toFixed(2),hi:+((i+1)*BWD).toFixed(2),n:hist[i]});}
+  var m1a=DPT(1/(NB*BWD),0.04),m1b=DPT(1/(NB*BWD),0.97);        // PF = 1 reference line
+  polyS([m1a,m1b],null,rgba(vget('--color-text-tertiary','#777'),0.85),1,[3,3]);
+  if(STATE.labels){
+    var dc=DPT(0.5,-0.13);
+    qLabel({key:'dist_caption',def:'distribution_report · PF distribution',grp:'SQLite metrics DB',
+      x:dc.x,y:dc.y,col:vget('--color-text-secondary','#bbb'),al:'center',sz:8,wt:'600',pr:2});
+    if(CAM.z>=0.8){
+      var ds=DPT(0.5,-0.28),dt=DPT(0.5,-0.40),db2=DPT(0.5,-0.52);
+      qLabel({key:'dist_share',text:'share PF>1 ≈ '+Math.round(100*pfGt1/NA)+'%',x:ds.x,y:ds.y,col:TP,al:'center',sz:7.5,wt:'600',pr:1,lod:0.8});
+      qLabel({key:'dist_top',text:'top: '+(anameV(bestA)||('asset_'+String(bestA+1).padStart(3,'0')))+' · PF '+bestPF.toFixed(2),x:dt.x,y:dt.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:7,pr:1,lod:0.8});
+      qLabel({key:'dist_bot',text:'bottom: '+(anameV(worstA)||('asset_'+String(worstA+1).padStart(3,'0')))+' · PF '+worstPF.toFixed(2),x:db2.x,y:db2.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:7,pr:1,lod:0.8});
     }
   }
 };
 
 // L12 — ENDPRODUCT: one self-contained deliverable FOLDER per asset (×N fan-out):
-// <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py }
+// <TICKER>/ { <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py · <TICKER>_README.md }
 function EndproductLayer(){}
 EndproductLayer.prototype.draw=function(){
   caption(11);
-  var tert=vget('--color-text-tertiary','#777');
-  // ghost sibling folders behind (per-asset fan-out cue), then the front folder in TP
-  GLYPHS.parquetFolder({lev:11,a:0.30,b:0.56,z0:18,col:tert});
-  GLYPHS.parquetFolder({lev:11,a:0.27,b:0.53,z0:17,col:tert});
-  var fc=GLYPHS.parquetFolder({lev:11,a:0.24,b:0.50,z0:16,col:TP});
-  if(flash>0)strokeRR(fc.x-34,fc.y-26,68,52,12,rgba(TP,flash*0.8),2);
-  HITS.addRect(fc.x-30,fc.y-24,60,48,{type:'endproduct'});                  // folder click = endproduct view (last-registered wins over parquetFolder's own hit)
-  // the 3 contained files listed to the right of the folder, with connectors
-  line2(lp(11,0.30,0.50,18),lp(11,0.50,0.32,22),tert,1.2,[]);
-  line2(lp(11,0.30,0.50,18),lp(11,0.64,0.50,22),tert,1.2,[]);
-  line2(lp(11,0.30,0.50,18),lp(11,0.78,0.68,22),tert,1.2,[]);
-  GLYPHS.parquetFile({lev:11,a:0.56,b:0.32,z0:22,col:AMB,i:0});             // <TICKER>_ohlcv_1h.parquet (L4 data, packaged here)
-  var f2=SS(11,0.70,0.50,22),f3=SS(11,0.84,0.68,22);
-  GLYPHS.pyFile(f2.x,f2.y,112,40,GREEN,'OPTUNAs_XGB_HPOs','.best_params.json');  // L9 Optuna best params (long name split across the glyph's two rows)
-  HITS.addRect(f2.x-56,f2.y-20,112,40,{type:'optuna'});
-  addObstacleRect(f2.x-56,f2.y-20,112,40);
-  GLYPHS.pyFile(f3.x,f3.y,96,42,TP,'strategy_<TICKER>','.py');              // L10 strategy .py (base64 model inside)
-  HITS.addRect(f3.x-48,f3.y-21,96,42,{type:'strategy'});
-  addObstacleRect(f3.x-48,f3.y-21,96,42);
-  GLYPHS.stackBadge(11,0.94,0.5,20,TP,'×{{universe_size}}','endproduct');
+  var tert=vget('--color-text-tertiary','#777'),sec=vget('--color-text-secondary','#999');
+  // one big, centered deliverable FOLDER (replaces the old ghost-stack + external files + right badge):
+  // <TICKER>/ holding 4 origin-colored files; the per-asset fan-out is carried by the "×N" prefix to its left
+  var c=SS(11,0.5,0.5,16),e=SS(11,0.575,0.5,16);
+  var W=Math.max(120,2*Math.hypot(e.x-c.x,e.y-c.y));                       // ~2.5–3× a normal parquetFolder
+  var FILES=[
+    {col:AMB,  ext:'.parquet'},   // <TICKER>_ohlcv_1h.parquet            (L4 data)
+    {col:GREEN,ext:'.json'},      // OPTUNAs_XGB_HPOs_best_params.json    (L9 Optuna params)
+    {col:TP,   ext:'.py'},        // strategy_<TICKER>.py                 (L10 strategy + base64 model)
+    {col:BLU,  ext:'.md'}         // <TICKER>_README.md (human report: params + OOS summary + data info)
+  ];
+  var fc=GLYPHS.endproductFolder(c.x,c.y,W,TP,FILES);
+  if(flash>0)strokeRR(fc.x-6,fc.y-6,fc.w+12,fc.h+12,14,rgba(TP,flash*0.8),2);
+  HITS.addRect(fc.x,fc.y,fc.w,fc.h,{type:'endproduct'});                   // whole-folder click = endproduct view
+  addObstacleRect(fc.x,fc.y-14,fc.w,fc.h+14);                             // +top margin for the <TICKER>/ name
+  txtS('{{universe_size}} ×',fc.x-14,fc.y+fc.h*0.52,TP,'right',13,'800');  // the ×N multiplier text, rendered BEFORE (left of) the folder
+  if(CAM.z>=0.7)monoS('<TICKER>/',fc.x+fc.w*0.5,fc.y-7,sec,'center',11);   // conventional per-asset folder NAME above
+  // companion run-notebook (created in L4, travels WITH the asset; NOT part of the 4-file deliverable)
+  var nbx=fc.x+fc.w+50,nby=fc.y+fc.h*0.5;
+  ctx.save();ctx.strokeStyle=rgba(PINK,0.45);ctx.lineWidth=1.2;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(fc.x+fc.w,nby);ctx.lineTo(nbx-48,nby);ctx.stroke();ctx.restore();
+  GLYPHS.pyFile(nbx,nby,96,40,PINK,'<TICKER>__L4_to_L12','.ipynb');
+  HITS.addRect(nbx-48,nby-20,96,40,{type:'notebook'});
+  addObstacleRect(nbx-48,nby-20,96,40);
   if(STATE.labels){
-    var po1=SS(11,0.5,0.10,2),po2=SS(11,0.5,0.97,0);
-    qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + Optuna params + strategy',grp:'Endproduct',
+    var po1=SS(11,0.5,0.05,2),po2=SS(11,0.5,0.99,0);
+    qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + Optuna params + strategy + README',grp:'Endproduct',
       x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py  (×{{universe_size}} folders)',grp:'Endproduct',
+    qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py · <TICKER>_README.md  (×{{universe_size}} folders)',grp:'Endproduct',
       x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
+    qLabel({key:'end_ipynb',def:'<TICKER>__L4_to_L12.ipynb — companion from L4 (travels with the asset; not part of the deliverable)',grp:'Endproduct',
+      x:nbx,y:nby-26,col:tert,al:'center',sz:7.5,pr:1});
   }
 };
 
@@ -2001,11 +2042,17 @@ function drawDbCylinder(g){
   pathPtsS(top,true);ctx.fillStyle=rgba(g.col,0.18);ctx.fill();ctx.strokeStyle=g.col;ctx.lineWidth=1.3;ctx.stroke();
   if(CAM.z>=0.7){for(i=1;i<=4;i++){var mid=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz+g.h*i/5,28);pathPtsS(mid,true);ctx.strokeStyle=rgba(g.col,0.28);ctx.stroke();}} // faint grid lines (latitude)
   ctx.restore();
-  var c=ctr(top);
-  if(CAM.z>=0.9){
-    txtS(T('db_badge','DuckDB','Store / DuckDB')||'',c.x,c.y-14,g.col,'center',7.5,'700');
+  var c=ctr(top),cb=ctr(bot),cMid={x:(c.x+cb.x)/2,y:(c.y+cb.y)/2};   // body centre (between the two rings)
+  // engine name ON the cylinder body (analogous to "XGB" on the L10 cube): bold WHITE + dark shadow, fitted to the cylinder width
+  var nm=T(g.badgeKey||'db_badge',g.badge||'DuckDB',g.badgeGrp||'Store / DuckDB')||'';
+  if(nm){
+    var minx=1e9,maxx=-1e9;for(i=0;i<top.length;i++){if(top[i].x<minx)minx=top[i].x;if(top[i].x>maxx)maxx=top[i].x;}
+    setFont(uiFont('800',10));var wpp=Math.max(1,ctx.measureText(nm).width)/10;     // width-per-px at a reference size
+    var fpx=clamp((maxx-minx)*0.82/wpp,6,15),fsz=fpx/zScale();                       // fit across the cylinder width
+    txtS(nm,cMid.x+1.1,cMid.y+fpx*0.35+1,'rgba(0,0,0,0.6)','center',fsz,'800');      // dark shadow for contrast
+    txtS(nm,cMid.x,cMid.y+fpx*0.35,'#ffffff','center',fsz,'800');                    // bold white letters
   }
-  HITS.addPts([lp(g.lev,g.a-g.ra*1.15,g.b-g.rb*1.15,g.dz+g.h+4),lp(g.lev,g.a+g.ra*1.15,g.b+g.rb*1.15,g.dz)],{type:'db'});
+  HITS.addPts([lp(g.lev,g.a-g.ra*1.15,g.b-g.rb*1.15,g.dz+g.h+4),lp(g.lev,g.a+g.ra*1.15,g.b+g.rb*1.15,g.dz)],{type:g.hit||'db'});
   addObstaclePts(top.concat(bot),4);
   return c;
 }
@@ -2115,6 +2162,30 @@ function drawParquetFolder(g){             // WORLD-space wrapper: project centr
   HITS.addPts([lp(g.lev,g.a-0.046,g.b-0.078,(g.z0||16)+10),lp(g.lev,g.a+0.046,g.b+0.078,(g.z0||16)-10)],{type:g.hit||'parquet',k:g.i});
   return c;
 }
+// Big centered ENDPRODUCT folder (L12): enlarged tab+body silhouette + 4 labeled file icons in a
+// 2x2 grid INSIDE the body face. files=[{col,ext},…] length 4 (origin-colored). Returns the body
+// rect {x,y,w,h,bt} for the caller's flash + single hit. No literal count in any string (gate-safe).
+function drawEndproductFolder(cx,cy,w,col,files){
+  var h=w*0.78,x=cx-w/2,y=cy-h/2,bt=y+h*0.22,tx=w*0.08,tw=w*0.30,sl=w*0.07;     // body-top y · tab x/width/slope (≈drawFolderS ratios)
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(x,y+h);ctx.lineTo(x,bt);ctx.lineTo(x+tx,bt);                        // bottom-left → up → tab base
+  ctx.lineTo(x+tx+sl,y);ctx.lineTo(x+tx+tw,y);ctx.lineTo(x+tx+tw+sl,bt);         // tab up-slope · top · down-slope
+  ctx.lineTo(x+w,bt);ctx.lineTo(x+w,y+h);ctx.closePath();                        // body top → right → down → close
+  ctx.fillStyle=rgba(col,0.13);ctx.fill();
+  ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.stroke();ctx.restore();
+  var inX=x+w*0.10,inY=bt+h*0.10,inW=w*0.80,inH=(y+h)-inY-h*0.08,               // inner field, below the tab line
+      fw=inW*0.34,fh=inH*0.42,f=Math.min(6,fw*0.24),
+      colX=[inX+inW*0.16,inX+inW*0.62],rowY=[inY+inH*0.22,inY+inH*0.72],mi,li,ly;// 2 cols × 2 rows (icon centres)
+  for(mi=0;mi<4;mi++){
+    var fk=files[mi]||{},icx=colX[mi%2],icy=rowY[mi<2?0:1],fcol=fk.col||col;
+    drawFold(icx-fw/2,icy-fh/2,fw,fh,f,fcol,0.16);                              // reuse the folded-sheet primitive
+    if(CAM.z>=0.85){ctx.save();ctx.strokeStyle=rgba(fcol,0.5);ctx.lineWidth=1;ctx.setLineDash([]); // faint code/columnar hint lines
+      for(li=0;li<2;li++){ly=icy-fh*0.10+li*fh*0.24;ctx.beginPath();ctx.moveTo(icx-fw*0.26,ly);ctx.lineTo(icx+fw*0.22-li*fw*0.12,ly);ctx.stroke();}
+      ctx.restore();}
+    if(CAM.z>=1.15&&fk.ext)txtS(fk.ext,icx,icy+fh*0.44,fcol,'center',(fw*0.22)/zScale(),'700'); // .ext badge, fitted, zoomed-in only
+  }
+  return {x:x,y:y,w:w,h:h,bt:bt};
+}
 function drawPyFile(x,y,w,h,col,label,ext){
   var prim=vget('--color-text-primary','#eee'),i;                                  // internals are h-proportional (ref h=40 → identical to before) so the glyph scales cleanly down for small serpentine files
   var f=Math.min(10,h*0.25),nl=Math.max(2,Math.min(4,Math.round(h/10))),ly0=y-h/2+h*0.425,ls=h*0.2;
@@ -2155,8 +2226,8 @@ function drawFileSerpentine(o){
   for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,dz:zOf(SERP[i]),d:lp(lev,SERP[i].a,SERP[i].b,zOf(SERP[i])).d});
   list=byD(list);
   for(k=0;k<list.length;k++){
-    var t=list[k],last=(t.i===N-1);
-    var cPq=last?GLYPHS.parquetFolder({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,hit:o.hit})            // last node = folder the files flow into
+    var t=list[k],last=(t.i===N-1),useFolder=last&&(o.tail!=='file');       // o.tail:'file' → trail ends in a FILE (convergence: the shared folder is drawn once by the caller)
+    var cPq=useFolder?GLYPHS.parquetFolder({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,hit:o.hit})            // last node = folder the files flow into
                 :GLYPHS.parquetFile({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,kind:o.kind,ext:o.ext,hit:o.hit});
     if(STATE.labels){
       if(last){
@@ -2208,6 +2279,7 @@ GLYPHS.modelTree=drawModelTree;
 GLYPHS.fileSerpentine=drawFileSerpentine;
 GLYPHS.fileSerpentineScreen=drawFileSerpentineScreen;
 GLYPHS.folderS=drawFolderS;
+GLYPHS.endproductFolder=drawEndproductFolder;
 
 /* === LABEL PASS ===
    Deferred object labels: layers enqueue via qLabel(), drawn by
@@ -2331,7 +2403,7 @@ function drawLabels(){
 function DataDAGView(){}
 DataDAGView.prototype.draw=function(){
   var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999');
-  txt('Data flow: from API to parquet per ticker',{x:0,y:-262},prim,'center',14,'700');
+  txt('Data flow: from API to the per-asset folder (parquet + run notebook)',{x:0,y:-262},prim,'center',14,'700');
   edge(0,-222,0,-168);edge(0,-142,0,-68);edge(0,-42,0,32);edge(0,58,0,132);
   edge(125,-55,168,-55);edge(-167,-55,-205,-55);
   var s;
@@ -2341,9 +2413,10 @@ DataDAGView.prototype.draw=function(){
   s=pill(258,-55,176,26,TEAL,'VIEW ohlcv_1h → USD',0.05);HITS.addRect(s.x-88,s.y-13,176,26,{type:'view'});
   s=pill(-262,-55,108,26,PINK,'QC-01…QC-11',0.12);HITS.addRect(s.x-54,s.y-13,108,26,{type:'qcAll'});
   s=pill(0,45,290,26,CAN,'atomic snapshot + manifest JSON (price_view)',0.08);HITS.addRect(s.x-145,s.y-13,290,26,{type:'snapshot'});
-  s=pill(0,145,310,28,AMB,'parquet/<TICKER>/ohlcv.parquet · ×{{universe_size}}',0.10);HITS.addRect(s.x-155,s.y-14,310,28,{type:'parquet'});
-  txt('zero duplication: USD exists only in the VIEW · raw stays in BIGINT ×{{price_scale}}',{x:0,y:200},sec,'center',10);
-  txt('features computed only by the transformer (L7, Layers_Short_SOT/L7_features_x_label_y_eng.md) · snapshot isolates transforms from the live store',{x:0,y:218},sec,'center',10);
+  s=pill(0,138,310,26,AMB,'parquet/<TICKER>/ohlcv.parquet · ×{{universe_size}}',0.10);HITS.addRect(s.x-155,s.y-13,310,26,{type:'parquet'});
+  s=pill(0,172,340,26,PINK,'parquet/<TICKER>/<TICKER>__L4_to_L12.ipynb · ×{{universe_size}}',0.10);HITS.addRect(s.x-170,s.y-13,340,26,{type:'notebook'});
+  txt('one per-asset folder = clean OHLCV parquet + a run notebook that drives L5→L12 (input = the local parquet only)',{x:0,y:200},sec,'center',9);
+  txt('zero duplication: USD exists only in the VIEW · raw stays in BIGINT ×{{price_scale}} · features computed only by the transformer (L7)',{x:0,y:218},sec,'center',9);
 };
 
 function SplitTimelineView(){}
@@ -2592,12 +2665,13 @@ EndproductView.prototype.draw=function(){
   var nm='<TICKER>',i;
   txt('L12 · Endproduct — per-asset deliverable folder',{x:0,y:-262},prim,'center',14,'700');
   txt('one self-contained folder per asset: data + Optuna params + strategy',{x:0,y:-244},sec,'center',10);
-  // file-tree card: <TICKER>/ then its 3 files, each tagged with its origin layer
+  // file-tree card: <TICKER>/ then its 4 files, each tagged with its origin layer
   var ROWS=[
     {h:28,col:tert, t:nm+'/',head:true,note:'one folder per asset'},
     {h:34,col:AMB,  t:'  ├─ '+nm+'_ohlcv_1h.parquet',note:'from L4 (data)'},
     {h:34,col:GREEN,t:'  ├─ OPTUNAs_XGB_HPOs_best_params.json',note:'from L9 (params)'},
-    {h:34,col:TP,   t:'  └─ strategy_'+nm+'.py',note:'from L10 (strategy .py + base64 model)'}
+    {h:34,col:TP,   t:'  ├─ strategy_'+nm+'.py',note:'from L10 (strategy .py + base64 model)'},
+    {h:34,col:BLU,  t:'  └─ '+nm+'_README.md',note:'human report: params · OOS summary · data'}
   ];
   var xw=255,y=-150;
   for(i=0;i<ROWS.length;i++){
@@ -2611,8 +2685,8 @@ EndproductView.prototype.draw=function(){
   // ×N per-asset fan-out (mirror ArtifactView)
   var fy=y+28,FAN=['AAPL','MSFT','NVDA','GOOGL','AMZN'];
   for(i=0;i<FAN.length;i++)pillF(-176+i*72,fy,62,22,i===0?TP:tert,FAN[i]+'/',0.10,7);
-  txt('… ×{{universe_size}} folders — one deployable bundle per asset (data · params · strategy)',{x:0,y:fy+28},sec,'center',9);
-  txt('parquet for replay · params for re-tune · strategy.py = standalone decide(x) (b64 model, no training data) · click = full manifest',{x:0,y:fy+44},tert,'center',8);
+  txt('… ×{{universe_size}} folders — one deployable bundle per asset (data · params · strategy · README)',{x:0,y:fy+28},sec,'center',9);
+  txt('parquet for replay · params for re-tune · strategy.py = standalone decide(x) (b64 model, no training data) · README = per-asset report card (params · OOS summary · data) · click = full manifest',{x:0,y:fy+44},tert,'center',8);
 };
 function abandTip(i){
   return [
@@ -2751,8 +2825,8 @@ function homeFit(){
 function preset(mode){
   if(mode==='overview')return homeFit();
   if(mode==='oos'){
-    return fitView([lp(10,0.06,0.60,6),lp(10,0.94,0.60,6),lp(10,0.06,0.60,176),lp(10,0.94,0.60,176),
-      lp(10,0.5,0.60,226),lp(9,0.5,0.95,0),lp(7,0.5,0.95,0),lp(4,0.5,0.95,0)],58,58,88,190,0.94);
+    return fitView([lp(10,-0.04,0.60,6),lp(10,1.46,0.60,6),lp(10,-0.04,0.60,176),lp(10,1.46,0.60,176),
+      lp(10,0.65,0.60,226),lp(9,0.5,0.95,0),lp(7,0.5,0.95,0),lp(4,0.5,0.95,0)],58,58,88,190,0.94);
   }
   return {x:0,y:-10,z:clamp(Math.min((chh-90)/520,(cw-60)/660),1,1.9)};
 }
@@ -2799,8 +2873,10 @@ function frameLevel(lev){                               // frame on a single lev
   if(lev===5){aLo=-0.10;aHi=1.10;bLo=-0.50;bHi=1.50;zCap=1.0;}   // L6 = exploded square of 4 trendline-break walls
   else if(lev===1)aLo=-0.24;                                     // L2 = include the QC logo at the left
   else if(lev===2){aLo=-0.06;aHi=1.04;}                          // L3 = margins for table (left) + QC checklist (right)
+  else if(lev===3){aHi=1.08;}                                    // L4 = room on the right for the shared parquet/<TICKER>/ folder (2 trails converge)
   else if(lev===8){aHi=1.30;}                                    // L9 = leave room on the right for the json output (matrix + arrow + json + ×N)
   else if(lev===9){aHi=1.30;}                                    // L10 = leave room on the right for the screen-anchored strategy output (build line + strategy.py + ×N)
+  else if(lev===10){aLo=-0.06;aHi=1.50;}                         // L11 = cylinder (left) + matrix (centre) + distribution (right)
   return fitView([lp(lev,aLo,bLo,0),lp(lev,aHi,bLo,0),lp(lev,aLo,bHi,0),lp(lev,aHi,bHi,0),
                   lp(lev,(aLo+aHi)/2,(bLo+bHi)/2,170)],64,64,84,150,zCap);
 }
@@ -2824,7 +2900,8 @@ function tipFor(p){
   if(p.type==='qc')return QC[p.g].name+'\n'+QC[p.g].desc+'\n'+qcStat();
   if(p.type==='qcAll')return '<b>Quality gates QC-01…QC-11</b>\ngate every load into DuckDB\n<i>click = full list</i>';
   if(p.type==='snapshot')return '<b>atomic snapshot</b>\ndatabase copy + torn-read guard\nmanifest: rows / symbols / ts range / price_view\n<i>click = JSON manifest</i>';
-  if(p.type==='parquet')return '<b>parquet per ticker</b>\n<TICKER>/ohlcv.parquet\n{{universe_size}} files · zstd · clean OHLCV\n(features: transformer L7)';
+  if(p.type==='parquet')return '<b>per-asset folder · parquet/&lt;TICKER&gt;/</b>\nohlcv.parquet — {{universe_size}} files · zstd · clean OHLCV (features: transformer L7)\n+ &lt;TICKER&gt;__L4_to_L12.ipynb run notebook';
+  if(p.type==='notebook')return '<b>&lt;TICKER&gt;__L4_to_L12.ipynb</b>\nper-asset run notebook (created in L4)\ndrives the asset through L5 → L12\ninput = local ohlcv.parquet only · no copy, no extra columns';
   if(p.type==='split'){var b=SPLIT.bands[p.k];return '<b>'+b.name+'</b>\n'+b.from+' → '+b.to+'\n'+b.note;}
   if(p.type==='purge')return '<b>purge</b>\n'+SPLIT.purge;
   if(p.type==='embargo')return '<b>embargo</b>\n'+SPLIT.embargo;
@@ -2837,9 +2914,9 @@ function tipFor(p){
   if(p.type==='strategy')return '<b>strategy_<TICKER>.py — final artifact (L10)</b>\nL10 consumes OPTUNAs_XGB_HPOs_best_params.json, Train X/y and FEATURE_MANIFEST,\nretrains the final XGB champion per asset, serializes it, encodes it as MODEL_B64\nand embeds it into strategy_<TICKER>.py.\nEach asset receives one independent strategy file (×{{universe_size}}).\n<i>click = full manifest</i>';
   if(p.type==='aband')return abandTip(p.b)+'\n<i>click = full manifest</i>';
   if(p.type==='manifestRow'){var fm=FEATURE_MANIFEST[p.r];return '<b>X'+(p.r+1)+' · '+fm.n+'</b>\nFEATURE_MANIFEST (8 X · frozen order)\nfamily: '+fm.fam+' · unit: '+fm.u+'\nformula: '+fm.f+'\n<i>click = feature detail</i>';}
-  if(p.type==='endproduct')return '<b>&lt;TICKER&gt;/ — per-asset deliverable folder</b>\n&lt;TICKER&gt;_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_&lt;TICKER&gt;.py\n×{{universe_size}} folders · one deployable bundle per asset\n<i>click = view</i>';
-  if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0');var m2=oosMock(p.a),M=METRICS[p.m];
-    return '<b>'+nm+' × '+M.name+'</b>\nvalue: '+m2[M.id]+'\ntrades: '+m2.trades+' · PF '+m2.pf+' · MDD '+m2.mdd+'%\n<i>click = full row</i>';}
+  if(p.type==='endproduct')return '<b>&lt;TICKER&gt;/ — per-asset deliverable folder</b>\n&lt;TICKER&gt;_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_&lt;TICKER&gt;.py · &lt;TICKER&gt;_README.md\n×{{universe_size}} folders · one deployable bundle per asset\n<i>click = view</i>';
+  if(p.type==='sqliteDb')return '<b>l11_asset_metrics.sqlite</b>\none-shot OOS metric DB · {{universe_size}} assets\ntables: run_manifest · asset_registry · metric_registry · asset_metrics_503 · distribution_report\n<i>click = schema</i>';
+  if(p.type==='distBand')return '<b>PF bucket ['+p.lo+', '+p.hi+')</b>\nassets in bucket: '+p.n+'\ndistribution_report · share PF>1 highlighted\n<i>click = distribution panel</i>';
   if(p.type==='dqTile'){var q=DQ[p.q];
     return '<b>'+q.name+' — '+q.status+'</b>\n'+q.detail.split(' · ').join('\n')+'\n<i>click = panel</i>';}
   if(p.type==='dqParity'){var dp=DQ_PARITY[p.i];
@@ -2890,8 +2967,8 @@ function clickFor(p){
   else if(p.type==='strategy'||p.type==='aband')PANEL.show('strategy_<TICKER>.py','<pre>'+JSON.stringify(manifest(p.a!=null?p.a:0),null,2)+'</pre>');
   else if(p.type==='manifestRow'){var fm=FEATURE_MANIFEST[p.r];PANEL.show('FEATURE_MANIFEST · X'+(p.r+1)+' '+fm.n,'<b>Formula:</b> '+fm.f+'<br><b>Unit:</b> '+fm.u+'<br><b>Family:</b> '+fm.fam+'<br><br>one of the <b>8 X</b> the model is trained on, in frozen order (7 geometric + direction).<br>computed causally at t0 · embedded in every strategy_&lt;TICKER&gt;.py');}
   else if(p.type==='endproduct')setMode('endproduct');
-  else if(p.type==='oosCell'){var nm=p.a<7?ASSETS[p.a]:'asset_'+String(p.a+1).padStart(3,'0'),m2=oosMock(p.a);
-    PANEL.show('OOS: '+nm,'<b>PF:</b> '+m2.pf+'<br><b>MDD:</b> '+m2.mdd+'% · <b>TIM:</b> '+m2.tim+'% · <b>WR:</b> '+m2.wr+'%<br><b>trades:</b> '+m2.trades+'<br><b>window:</b> 2024-01-02 → 2026-05-29 (frozen)<br><b>artifact:</b> strategy_'+nm+'.py');}
+  else if(p.type==='sqliteDb')PANEL.show('l11_asset_metrics.sqlite','<pre>run_manifest         run_id · oos_window · created_at · strategy_hash_register · metric_order\nasset_registry       asset_id · ticker · column_order      (×{{universe_size}})\nmetric_registry      metric_id ∈ {PF, MDD, TIM, WR, trades} · unit · objective_role\nasset_metrics_503    metric rows × {{universe_size}} asset columns   (the wide matrix)\ndistribution_report  metric_id · min/median/max · top/bottom · share_pf_gt_1\nasset_metric_long    VIEW — (asset_id, metric_id, value) unpivot</pre><b>one-shot OOS</b> · 2024-01-02 → 2026-05-29 (frozen)<br>metric order: PF · MDD · TIM · WR · trades (aux)<br>external report — does not modify any strategy_&lt;TICKER&gt;.py or MODEL_HASH');
+  else if(p.type==='distBand')PANEL.show('distribution_report','<b>PF distribution</b> across the {{universe_size}}-asset universe.<br>bucket ['+p.lo+', '+p.hi+'): '+p.n+' assets<br><br>also reported: MDD/TIM bands · top/bottom assets · share PF>1<br><br>source: l11_asset_metrics.sqlite · table distribution_report');
   else if(p.type==='dqTile'){var q=DQ[p.q];
     PANEL.show('Quality: '+q.name,'<b>Status:</b> '+q.status+'<br>'+q.detail.split(' · ').join('<br>')+'<br><br>source: reports/quality/summary.json');}
   else if(p.type==='dqParity'){var dp=DQ_PARITY[p.i];
@@ -3032,7 +3109,7 @@ document.getElementById('bPng').onclick=function(){
 var leEl=document.getElementById('lblEditor'),leBody=document.getElementById('leBody'),
     leTab=document.getElementById('lblTab'),leSearch=document.getElementById('leSearch'),leBuilt=false;
 var LE_GROUPS=['Levels','Layer boundaries','QC gates','Transformer features','Assets (sample)','Source / Universe',
-  'Store / DuckDB','Snapshot / Parquet','Time split','Features & label','Data quality gate','Training / Optuna','OOS results','Other'];
+  'Store / DuckDB','Snapshot / Parquet','Time split','Features & label','Data quality gate','Training / Optuna','SQLite metrics DB','Other'];
 function leArrayItems(){var d=[],i;
   for(i=0;i<QC.length;i++)(function(i){
     d.push({key:'gate'+i,grp:'QC gates',hint:'Gate '+ORIG_LBL.gateId[i]+' — short (view 3 board)',

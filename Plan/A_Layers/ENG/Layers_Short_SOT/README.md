@@ -65,8 +65,8 @@ Per layer (own that layer's contract):
 | L8 counters + parities P1/P2/P3 + `summary.json` schema + aggregation rule | `L8` |
 | Optuna hyperparameter search (TPE/MedianPruner, purged WF CV) → `OPTUNAs_XGB_HPOs_best_params.json` | `L9` |
 | XGBoost final training (champion) + `strategy_<TICKER>.py` strategy-artifact (base64-embedded model) contract | `L10` |
-| OOS one-shot + entry rule + TB exits + <!--na:universe_size-->503<!--/na-->×metrics matrix + distribution report | `L11` |
-| Per-asset deliverable folder (`<TICKER>/` : `<TICKER>_ohlcv_1h.parquet` + `OPTUNAs_XGB_HPOs_best_params.json` + `strategy_<TICKER>.py`) | `L12` |
+| OOS one-shot → `l11_asset_metrics.sqlite` (SQLite asset-metrics DB: <!--na:universe_size-->503<!--/na-->×metrics matrix + distribution report) + entry rule + TB exits | `L11` |
+| Per-asset deliverable folder (`<TICKER>/` : `<TICKER>_ohlcv_1h.parquet` + `OPTUNAs_XGB_HPOs_best_params.json` + `strategy_<TICKER>.py` + `<TICKER>_README.md`) | `L12` |
 
 Feature explanation ("Plan B", Stages F0–F14) is a separate, subordinate helper in
 [`../../../B_Features/`](../../../B_Features/) — not part of this SOT.

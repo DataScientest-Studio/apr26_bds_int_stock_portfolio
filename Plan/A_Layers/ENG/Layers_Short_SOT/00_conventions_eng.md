@@ -17,12 +17,13 @@ Owned here; companion docs reference this file and restate nothing.
 | Concept | Canonical form | Avoid |
 |---|---|---|
 | Analytical store (cylinder badge) | `DuckDB` | "duck", "kaczka" |
+| OOS metrics store (cylinder badge) | `SQLite` (`l11_asset_metrics.sqlite`) | "sqllite", "Sqlite", "sql lite" |
 | USD price view | `VIEW ohlcv_1h` (in prose: the `ohlcv_1h` view), add "(USD)" when needed | "VIEW USD", "USD view" |
 | OOS metrics order | **PF · MDD · TIM · WR** (= `METRICS` array; Sharpe dropped — see Optimization objective) | re-introducing Sharpe; reordering the four |
 | Quality gates | `QC-01…QC-11` (11 QC gates) | "QC-01…11", "11 padlocks" |
 | Database snapshot | `atomic snapshot` | "snapshot atomic" |
 | Roll-in phase (prose) | `warm-up` (code/filenames: `warmup`) | "warm up", "warmup" in prose |
-| Layer numbering | **L1–L12** (Detector = L6, Features = L7, Quality gate = L8, Optuna search = L9, XGB final + artifact = L10, OOS = L11, Endproduct folder = L12) | L1–L10/L1–L11; out-of-order layers |
+| Layer numbering | **L1–L12** (Detector = L6, Features = L7, Quality gate = L8, Optuna search = L9, XGB final + artifact = L10, OOS SQLite metrics DB = L11, Endproduct folder = L12) | L1–L10/L1–L11; out-of-order layers |
 | Input price view | `raw_usd_view` | — |
 | Presentation language | viz UI + `README.md` + this `ENG/` package = English | — |
 
