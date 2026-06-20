@@ -1770,7 +1770,8 @@ EndproductLayer.prototype.draw=function(){
   var tert=vget('--color-text-tertiary','#777'),sec=vget('--color-text-secondary','#999');
   // one big, centered deliverable FOLDER (replaces the old ghost-stack + external files + right badge):
   // <TICKER>/ holding 4 origin-colored files; the per-asset fan-out is carried by the "×N" prefix to its left
-  var c=SS(11,0.5,0.5,16),e=SS(11,0.575,0.5,16);
+  var Z=120;                                                              // folder dz — raised UP: L12 is the LAST layer (open space above, no L13), so lift it well clear of the L11/L12 boundary instead of dipping into L11
+  var c=SS(11,0.5,0.5,Z),e=SS(11,0.575,0.5,Z);
   var W=Math.max(120,2*Math.hypot(e.x-c.x,e.y-c.y));                       // ~2.5–3× a normal parquetFolder
   var FILES=[
     {col:AMB,  ext:'.parquet'},   // <TICKER>_ohlcv_1h.parquet            (L4 data)
@@ -1792,11 +1793,10 @@ EndproductLayer.prototype.draw=function(){
   HITS.addRect(nbx-48,nby-20,96,40,{type:'notebook'});
   addObstacleRect(nbx-48,nby-20,96,40);
   if(STATE.labels){
-    var po1=SS(11,0.5,0.05,2),po2=SS(11,0.5,0.99,0);
     qLabel({key:'end_caption',def:'Endproduct: 1 deployable folder per asset — data + Optuna params + strategy + README',grp:'Endproduct',
-      x:po1.x,y:po1.y,col:tert,al:'center',sz:8.5,pr:1});
+      x:fc.x,y:fc.y-30,col:tert,al:'center',sz:8.5,pr:1});                  // caption above the folder (follows it up)
     qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py · <TICKER>_README.md  (×503 folders)',grp:'Endproduct',
-      x:po2.x,y:po2.y,col:tert,al:'center',sz:8.5,pr:1});
+      x:fc.x,y:fc.y+fc.h+16,col:tert,al:'center',sz:8.5,pr:1});             // file list below the folder (follows it up)
     qLabel({key:'end_ipynb',def:'<TICKER>__L4_to_L12.ipynb — companion from L4 (travels with the asset; not part of the deliverable)',grp:'Endproduct',
       x:nbx,y:nby-26,col:tert,al:'center',sz:7.5,pr:1});
   }
