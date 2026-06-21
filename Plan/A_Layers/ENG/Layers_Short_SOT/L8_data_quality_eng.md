@@ -22,7 +22,7 @@ Each hop is a store boundary; both sides are re-counted and asserted **exactly e
 |---|---|---|
 | `rows` | total OHLCV rows across the published parquet | P1, QC-11 |
 | `symbols` | distinct `asset_id` present | P1, QC-07 |
-| `parquet_files` | count of `parquet/<TICKER>/ohlcv.parquet` | P2 |
+| `parquet_files` | count of `<TICKER>/<TICKER>_ohlcv_1h.parquet` | P2 |
 | `setups_total` | setups emitted into Output B across all assets | P3 |
 | `det09_rejected` | setups rejected by DET-09 (`R0 ≤ 0`, `ATR(t0) ≤ 0`, or missing `L_opp`) | [L6](L6_setup_detector_eng.md) DET-09 |
 | `gaps_in_session` | missing in-session 1h candles (inside RTH 09:00–16:00 ET) | QC-08/09/10 |

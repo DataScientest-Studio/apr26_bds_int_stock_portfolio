@@ -4,7 +4,7 @@ The bridge between raw candles and feature rows. This file owns the **detector o
 setup must provide), not the geometric algorithm: any geometry that produces setups satisfying the contract
 below (the 5 invariants + DET-09) is a valid realization.
 
-- Input: files `parquet/<TICKER>/ohlcv.parquet` in the Train window from [L5](L5_time_split_eng.md).
+- Input: files `<TICKER>/<TICKER>_ohlcv_1h.parquet` in the Train window from [L5](L5_time_split_eng.md).
 - The detector evaluates both directions and returns setup objects **causally** (fits use only candles `≤ t0`).
 
 ## Output objects (per setup)
