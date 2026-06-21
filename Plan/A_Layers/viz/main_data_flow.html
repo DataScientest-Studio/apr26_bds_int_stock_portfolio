@@ -225,12 +225,11 @@ body.le-open #lblEditor{transform:translateY(0)}
 
 <!-- Legend by 5 families (color = role, shape = silhouette). Red reserved for errors. -->
 <div class="tlc-leg">
-  <span><span style="display:inline-block;width:12px;height:12px;border:1.5px solid #8a8980"></span> Source / gate <span style="color:var(--color-text-tertiary)">(L1–L2)</span></span>
+  <span><span style="display:inline-block;width:12px;height:12px;border:1.5px solid #8a8980"></span> Source / cache <span style="color:var(--color-text-tertiary)">(L1·L2)</span></span>
   <span><span style="display:inline-block;width:14px;height:11px;background:rgba(29,158,117,.18);border:1.5px solid #1D9E75;border-radius:5px"></span> Store / artifact <span style="color:var(--color-text-tertiary)">(L3·L10·L11)</span></span>
   <span><span style="display:inline-block;width:9px;height:14px;background:rgba(99,153,34,.20);border:1.5px solid #639922"></span> Transform <span style="color:var(--color-text-tertiary)">(L4·L6·L7·L9)</span></span>
   <span><span style="display:inline-block;width:13px;height:11px;border:1.5px solid #BA7517;border-radius:4px"></span> Gate / control <span style="color:var(--color-text-tertiary)">(L5·L8)</span></span>
   <span><span style="display:inline-block;width:12px;height:11px;background:#22C55E"></span> Result / endproduct <span style="color:var(--color-text-tertiary)">(L12)</span></span>
-  <span><span style="display:inline-block;width:11px;height:11px;background:linear-gradient(90deg,var(--c-fail-text),#9a9890,#22C55E)"></span> Result scale: bad ↔ good (diverging)</span>
   <span style="color:var(--c-fail-text)">✕ Red = error / block / FAIL (reserved)</span>
 </div>
 
@@ -238,14 +237,15 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Alpaca SIP · 1h</b> — 510 downloaded ZIP tickers; 503 quality-filtered ML universe downstream (L3), session 09:00–16:00 ET (~7 candles/day), 2016 → today.</li>
   <li><b>LEAN ZIP</b>: 510 zips (1 per ticker), CSV with prices in deci-cents <b>×10000</b>, 139 MB.</li>
   <li><b>DuckDB</b>: raw table (BIGINT ×10000) + <b>VIEW ohlcv_1h</b> (USD, /10000.0); every load is gated by QC-01…QC-11.</li>
-  <li><b>Snapshot → parquet OHLCV</b> per ticker (×503) — features are computed only by the transformer (L7).</li>
+  <li><b>Snapshot → parquet OHLCV</b> per ticker (×503), written by the per-asset <b>&lt;TICKER&gt;__L4_to_L12.ipynb</b> runner from the DuckDB snapshot — features are computed only by the transformer (L7).</li>
   <li><b>Time split</b>: warm-up → train → OOS; <b>purge H=24 + embargo</b>, because TB labels overlap the boundaries.</li>
-  <li><b>Trend-line setup</b> = 7 geometric X + closed_through_line audit (8 transformer columns); FEATURE_MANIFEST = 8 X (7 geom + direction) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
+  <li><b>Trend-line setup detector</b> — fits L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead).</li>
+  <li><b>Trendline features</b> = 7 geometric X + closed_through_line audit (8 transformer columns); FEATURE_MANIFEST = 8 X (7 geom + direction) + label Y (triple barrier: TP=1 · SL=0 · time=0, close-based, SL=L_opp(t) moving, barriers from R0).</li>
   <li><b>Data-quality gate</b> (dashboard): parities zip→DuckDB→parquet→Output B, gaps, zero-values, NaN/Inf, split assertion — <b>FAIL blocks training</b>.</li>
   <li><b>Optuna hyperparameter search</b> on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>.</li>
   <li><b>XGB final training</b> per asset on OPTUNAs_XGB_HPOs_best_params.json; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> (decoded via import base64 at import) + selfcheck → <b>×503 independent files</b> (1 model/hash/window per asset).</li>
   <li><b>OOS single run → <code>l11_asset_metrics.sqlite</code></b>: 503-asset metric matrix (PF · MDD · TIM · WR) + distribution report.</li>
-  <li><b>Endproduct</b>: per-asset folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> + <b>&lt;TICKER&gt;_README.md</b> (×503 folders).</li>
+  <li><b>Endproduct</b>: per-asset ticker folder <b>&lt;TICKER&gt;/</b> = <b>&lt;TICKER&gt;__L4_to_L12.ipynb</b> (runner) + <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + <b>OPTUNAs_XGB_HPOs_best_params.json</b> + <b>strategy_&lt;TICKER&gt;.py</b> + <b>&lt;TICKER&gt;_README.md</b> (×503 folders).</li>
 </ol>
 </div></div>
 
@@ -1785,14 +1785,31 @@ EndproductLayer.prototype.draw=function(){
   var fc=GLYPHS.endproductFolder(c.x,c.y,W,TP,FILES);
   if(flash>0)strokeRR(fc.x-6,fc.y-6,fc.w+12,fc.h+12,14,rgba(TP,flash*0.8),2);
   HITS.addRect(fc.x,fc.y,fc.w,fc.h,{type:'endproduct'});                   // whole-folder click = endproduct view
-  addObstacleRect(fc.x,fc.y-14,fc.w,fc.h+14);                             // +top margin for the <TICKER>/ name
+  addObstacleRect(fc.x,fc.y,fc.w,fc.h+28);                                // +bottom margin for the <TICKER>/ name (moved below)
   txtS('503 ×',fc.x-14,fc.y+fc.h*0.52,TP,'right',13,'800');  // the ×N multiplier text, rendered BEFORE (left of) the folder
-  if(CAM.z>=0.7)monoS('<TICKER>/',fc.x+fc.w*0.5,fc.y-7,sec,'center',11);   // conventional per-asset folder NAME above
+  if(CAM.z>=0.7)monoS('<TICKER>/',fc.x+fc.w*0.5,fc.y+fc.h+18,sec,'center',11); // conventional per-asset folder NAME BELOW (clear of the leader fan above)
   if(STATE.labels){
     qLabel({key:'end_caption',def:'Endproduct: 1 ticker folder per asset — runner notebook + data + Optuna params + strategy + README',grp:'Endproduct',
-      x:fc.x,y:fc.y-30,col:tert,al:'center',sz:8.5,pr:1});                  // caption above the folder (follows it up)
-    qLabel({key:'end_files',def:'<TICKER>/ : <TICKER>__L4_to_L12.ipynb · <TICKER>_ohlcv_1h.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_<TICKER>.py · <TICKER>_README.md  (×503 folders)',grp:'Endproduct',
-      x:fc.x,y:fc.y+fc.h+16,col:tert,al:'center',sz:8.5,pr:1});             // file list below the folder (follows it up)
+      x:fc.x+fc.w*0.5,y:fc.y+fc.h+36,col:tert,al:'center',sz:8.5,pr:1});     // role overview BELOW the folder (under the <TICKER>/ name, clear of the leader fan above)
+    if(CAM.z>=0.9){                                                         // per-file leader CALLOUTS (analogous to L5 purge/embargo): each icon → its conventional filename + short SOT role, fanned out
+      var CALL=[
+        {nm:'<TICKER>__L4_to_L12.ipynb',         role:'the L4→L12 runner',                col:PINK, ax:fc.x-22,         ay:fc.y+fc.h*0.30, al:'right'},
+        {nm:'<TICKER>_ohlcv_1h.parquet',         role:'clean OHLCV · L4 snapshot',        col:AMB,  ax:fc.x+fc.w*0.16,  ay:fc.y-78,        al:'right'},
+        {nm:'OPTUNAs_XGB_HPOs_best_params.json', role:'Optuna best XGB params · L9',       col:GREEN,ax:fc.x+fc.w*0.5,   ay:fc.y-140,       al:'center'},
+        {nm:'strategy_<TICKER>.py',              role:'strategy + base64 MODEL_B64 · L10', col:TP,   ax:fc.x+fc.w*0.84,  ay:fc.y-78,        al:'left'},
+        {nm:'<TICKER>_README.md',                role:'per-asset report card · L12',       col:BLU,  ax:fc.x+fc.w+22,    ay:fc.y+fc.h*0.30, al:'left'}
+      ];
+      var ci,cb,ic,tw,ox;
+      for(ci=0;ci<CALL.length;ci++){
+        cb=CALL[ci];ic=fc.icons[ci];
+        ctx.save();ctx.strokeStyle=rgba(cb.col,0.8);ctx.lineWidth=1.2;ctx.setLineDash([]);   // file-coloured leader from the icon to its callout
+        ctx.beginPath();ctx.moveTo(ic.x,ic.y-fc.ifh);ctx.lineTo(cb.ax,cb.ay-3);ctx.stroke();ctx.restore();
+        txtS(cb.nm,cb.ax,cb.ay,cb.col,cb.al,8.5,'700');                                       // conventional filename (bold, file colour)
+        txtS(cb.role,cb.ax,cb.ay+11,sec,cb.al,7.5);                                           // short SOT role
+        tw=cb.nm.length*4.9;ox=cb.al==='right'?cb.ax-tw:(cb.al==='center'?cb.ax-tw/2:cb.ax);
+        addObstacleRect(ox,cb.ay-9,tw,23);
+      }
+    }
   }
 };
 
@@ -2169,16 +2186,16 @@ function drawEndproductFolder(cx,cy,w,col,files){
   ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.stroke();ctx.restore();
   var N=files.length,inX=x+w*0.06,inY=bt+h*0.08,inW=w*0.88,inH=(y+h)-inY-h*0.10, // inner field, below the tab line
       fw=Math.min(inW*0.17,inW/N*0.82),fh=inH*0.80,f=Math.min(5,fw*0.24),
-      icy=inY+inH*0.46,mi,li,ly;                                                 // SINGLE row of N icons, vertically centred
+      icy=inY+inH*0.46,mi,li,ly,icons=[];                                        // SINGLE row of N icons, vertically centred
   for(mi=0;mi<N;mi++){
-    var fk=files[mi]||{},icx=inX+inW*((mi+0.5)/N),fcol=fk.col||col;
+    var fk=files[mi]||{},icx=inX+inW*((mi+0.5)/N),fcol=fk.col||col;icons.push({x:icx,y:icy});
     drawFold(icx-fw/2,icy-fh/2,fw,fh,f,fcol,0.16);                              // reuse the folded-sheet primitive
     if(CAM.z>=0.85){ctx.save();ctx.strokeStyle=rgba(fcol,0.5);ctx.lineWidth=1;ctx.setLineDash([]); // faint code/columnar hint lines
       for(li=0;li<2;li++){ly=icy-fh*0.12+li*fh*0.22;ctx.beginPath();ctx.moveTo(icx-fw*0.26,ly);ctx.lineTo(icx+fw*0.22-li*fw*0.12,ly);ctx.stroke();}
       ctx.restore();}
     if(CAM.z>=1.2&&fk.ext)txtS(fk.ext,icx,icy+fh*0.5+6,fcol,'center',(fw*0.30)/zScale(),'700'); // .ext badge below the icon, zoomed-in only
   }
-  return {x:x,y:y,w:w,h:h,bt:bt};
+  return {x:x,y:y,w:w,h:h,bt:bt,icons:icons,ifh:fh/2};
 }
 function drawPyFile(x,y,w,h,col,label,ext){
   var prim=vget('--color-text-primary','#eee'),i;                                  // internals are h-proportional (ref h=40 → identical to before) so the glyph scales cleanly down for small serpentine files
