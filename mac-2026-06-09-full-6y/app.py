@@ -30,12 +30,19 @@ st.title("Stocks Recommender Based on User Profile")
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "models"
+REPORT_ASSET_DIR = BASE_DIR / "report_assets"
 BEST_MODEL_NAME = "Random Forest without history_days"
 BEST_MODEL_KEY = "random_forest_no_history"
 BEST_MODEL_RANKINGS_FILE = MODEL_DIR / "random_forest_no_history_latest_rankings.csv"
 BEST_MODEL_METRICS_FILE = MODEL_DIR / "random_forest_no_history_metrics.csv"
 WALK_FORWARD_SUMMARY_FILE = MODEL_DIR / "walk_forward_rf_no_history_summary.csv"
 FEATURE_IMPORTANCE_FILE = MODEL_DIR / "random_forest_no_history_feature_importance.csv"
+REPORT_SCREENSHOTS = {
+    "recommendation": REPORT_ASSET_DIR / "01_recommendation.png",
+    "model_comparison": REPORT_ASSET_DIR / "02_model_comparison.png",
+    "exploration": REPORT_ASSET_DIR / "03_exploration.png",
+    "dataviz": REPORT_ASSET_DIR / "04_dataviz.png",
+}
 MODEL_METRIC_FILES = {
     "Ridge baseline": MODEL_DIR / "model_metrics.csv",
     "Random Forest": MODEL_DIR / "random_forest_metrics.csv",
@@ -300,7 +307,7 @@ def summarize_selection(selected: pd.DataFrame) -> dict[str, float]:
 
 tickers, prices = get_data()
 
-page = st.sidebar.radio("Page", ["Recommendation", "Model Comparison", "Exploration", "DataViz"])
+page = st.sidebar.radio("Page", ["Project Report", "Recommendation", "Model Comparison", "Exploration", "DataViz"])
 
 if page == "Recommendation":
     rankings, metrics, walk_forward, feature_importance = load_best_model_outputs()
@@ -580,6 +587,333 @@ if page == "Recommendation":
             mime="text/csv",
             help="Exports the currently displayed recommendations and their key metrics.",
         )
+
+elif page == "Project Report":
+    comparison, walk_forward = load_model_comparison_outputs()
+    rankings, metrics, _, _ = load_best_model_outputs()
+    metric_row = metrics.iloc[0]
+    walk_row = walk_forward.iloc[0]
+    latest_date = rankings["date"].max().date().isoformat()
+
+    st.subheader("Project Report")
+    st.write(
+        "This report summarizes the stock portfolio recommender end to end: the business goal, the dataset, "
+        "the exploratory analysis, the modeling experiment, the selected model, and how the final app turns "
+        "model rankings into user-specific stock recommendations."
+    )
+    st.info(
+        "Audience note: this page is written for project stakeholders and beginners. It avoids assuming finance "
+        "or machine-learning background and explains why each technical step matters for the final user experience."
+    )
+
+    st.markdown("### 1. Project Goal")
+    st.write(
+        "The project helps a retail investor narrow a large stock universe into a small, diversified list of "
+        "recommended stocks. The app does not try to predict tomorrow's exact price. It ranks stocks by their "
+        "expected 63-trading-day return, then applies user preferences such as risk tolerance, sector exclusions, "
+        "and portfolio size."
+    )
+    st.markdown(
+        """
+**Stakeholder value:** the app turns a complex screening problem into a guided workflow. A user can express
+preferences in plain terms, and the system translates those preferences into transparent model and portfolio rules.
+
+**Business question:** which stocks should be shown first for a user with a given risk tolerance?
+
+**Product answer:** rank stocks with a validated model, then filter and diversify the result before showing it.
+        """
+    )
+
+    st.markdown("### 2. Data Foundation")
+    st.write(
+        "The full six-year experiment uses Alpaca IEX price data for the S&P 500 universe. Each row represents "
+        "one stock on one trading day, with open, high, low, close, adjusted close, and volume. The modeling scripts "
+        "turn raw prices into return, volatility, drawdown, volume, and sector features."
+    )
+    data_points = {
+        "Stock universe": "S&P 500",
+        "Tickers": f"{tickers['ticker'].nunique():,}",
+        "Price rows": f"{len(prices):,}",
+        "Date range": f"{prices['date'].min().date()} to {prices['date'].max().date()}",
+        "Latest model ranking date": latest_date,
+    }
+    st.dataframe(pd.DataFrame(data_points.items(), columns=["Item", "Value"]), width="stretch", hide_index=True)
+    st.markdown(
+        """
+**Why this matters:** recommendations are only as useful as the data behind them. The app uses adjusted close
+prices so splits and dividends are already reflected in the historical price path. Sector metadata is also important
+because the final portfolio should not accidentally concentrate too heavily in one part of the market.
+
+**Target variable:** the models were trained to estimate `target_63d_return`, which means the stock's return roughly
+three trading months into the future. This target fits the project better than a one-day forecast because daily stock
+returns are very noisy.
+        """
+    )
+
+    if REPORT_SCREENSHOTS["exploration"].exists():
+        st.image(
+            REPORT_SCREENSHOTS["exploration"],
+            caption="Exploration page: metadata, price-table shape, descriptive statistics, and missing-value checks.",
+            width="stretch",
+        )
+
+    st.markdown("### 3. Exploratory Analysis")
+    st.write(
+        "The exploratory visualizations explain the stock universe before modeling. Sector counts show diversification "
+        "risk, volume distributions show liquidity differences, return histograms show market noise and outliers, "
+        "price lines show individual stock paths, correlation helps reason about diversification, and risk/return "
+        "scatter plots show why risk constraints matter."
+    )
+    st.markdown(
+        """
+**What we learned from exploration:**
+- The S&P 500 is not evenly distributed across sectors, so sector controls are needed.
+- Daily returns cluster near zero but have large outliers, so risk cannot be ignored.
+- Stocks can have similar expected returns but very different volatility.
+- Highly correlated stocks may reduce diversification benefits if selected together.
+
+**How this affected the app:** the final recommender includes a maximum sector weight, a volatility cap, and risk
+profiles so the output is more than a simple "top predicted return" list.
+        """
+    )
+    if REPORT_SCREENSHOTS["dataviz"].exists():
+        st.image(
+            REPORT_SCREENSHOTS["dataviz"],
+            caption="DataViz page: visual checks used to understand sectors, liquidity, returns, correlation, and risk.",
+            width="stretch",
+        )
+
+    st.markdown("### 4. Model Experiment")
+    st.write(
+        "The project tested multiple approaches: a Ridge baseline, Random Forest, Random Forest without the "
+        "`history_days` feature, XGBoost without `history_days`, and a ROCm PyTorch MLP deep-learning model. "
+        "The target was the forward 63-trading-day return."
+    )
+    st.dataframe(format_model_comparison(comparison), width="stretch", hide_index=True)
+    st.markdown(
+        """
+**Beginner explanation of the models:**
+- **Ridge baseline:** a simple linear model. It is useful because it sets a strong, easy-to-understand benchmark.
+- **Random Forest:** many decision trees voting together. It can learn non-linear patterns and is still explainable.
+- **Random Forest without `history_days`:** the same tree model, but with a risky shortcut feature removed.
+- **XGBoost:** a more advanced tree-boosting model. It can be powerful, but it did not win in this experiment.
+- **ROCm PyTorch MLP:** a deep-learning neural network. It was tested, but it performed worse than simpler models here.
+
+**Important lesson:** a more complex model is not automatically a better project model. In financial prediction,
+signal is noisy, and over-flexible models can learn noise instead of useful patterns.
+        """
+    )
+    if REPORT_SCREENSHOTS["model_comparison"].exists():
+        st.image(
+            REPORT_SCREENSHOTS["model_comparison"],
+            caption="Model Comparison page: fixed-split metrics, top-5 return, rank correlation, and deep-learning result.",
+            width="stretch",
+        )
+
+    st.markdown("### 5. Model Selection")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Selected app model", BEST_MODEL_NAME)
+    c2.metric("Fixed top-5 return", fmt_pct(metric_row["top5_avg_actual_return"]))
+    c3.metric("Walk-forward top-5 return", fmt_pct(walk_row["mean_top5_avg_actual_return"]))
+    c4.metric("Top-5 beat universe", f"{int(walk_row['positive_top5_folds'])}/{int(walk_row['folds'])} folds")
+    st.write(
+        "Ridge was the strongest fixed-split benchmark, but the final recommender uses Random Forest without "
+        "`history_days`. That model avoids a suspicious shortcut feature, remains explainable through feature "
+        "importance, and has walk-forward validation across repeated time windows. This is a practical model-selection "
+        "choice rather than a claim that it wins every metric."
+    )
+    st.markdown(
+        """
+**Why not simply pick the fixed-split winner?** Ridge had the best fixed-split metric results, but the final app needs
+a production-style recommender that is explainable, flexible, and less dependent on fragile signals. The no-history
+Random Forest was chosen because it avoids the `history_days` shortcut and still produces useful top-pick performance.
+
+**Why walk-forward validation matters:** instead of testing one historical period only, walk-forward validation repeats
+the train-then-test process through time. That is closer to how a real recommender would be used: train on past data,
+then recommend for the next future window.
+        """
+    )
+
+    st.markdown("### 6. Recommendation Workflow")
+    st.write(
+        "The Recommendation page starts with the selected model's latest ranking file. A user then chooses a risk "
+        "profile, maximum volatility, number of stocks, selection objective, sector cap, sector exclusions, and return "
+        "filters. The app returns an equal-weight portfolio while limiting sector concentration."
+    )
+    st.markdown(
+        """
+**Step-by-step logic:**
+1. Load the latest rankings from the selected model.
+2. Apply user filters such as excluded sectors and minimum predicted return.
+3. Apply the risk profile through a maximum volatility cap.
+4. Rank remaining candidates using the selected objective.
+5. Pick the requested number of stocks while enforcing the sector cap.
+6. Assign equal weights so the output is easy to understand.
+
+**Why equal weights:** equal weighting keeps the first version transparent. Every selected stock has the same portfolio
+importance, so users can focus on the recommendation logic rather than a complex allocation algorithm.
+        """
+    )
+    if REPORT_SCREENSHOTS["recommendation"].exists():
+        st.image(
+            REPORT_SCREENSHOTS["recommendation"],
+            caption="Recommendation page: best-model summary, feature importance, preference controls, and portfolio output.",
+            width="stretch",
+        )
+
+    st.markdown("### 7. Interpretation And Limits")
+    st.write(
+        "The outputs are educational model recommendations, not financial advice. Predicted returns are uncertain, "
+        "the stock universe changes over time, and past validation cannot guarantee future performance. The app is "
+        "most useful as a transparent decision-support tool: it shows which model was selected, why it was selected, "
+        "which constraints are applied, and which metrics support each recommendation."
+    )
+    st.markdown(
+        """
+**Known limitations:**
+- The app uses historical market data; future market regimes may behave differently.
+- The model predicts expected return, not certainty.
+- Transaction costs, taxes, user holdings, and personal financial constraints are not modeled.
+- The current recommender focuses on S&P 500 data from this experiment folder.
+- The recommendation layer is intentionally simple and transparent rather than fully optimized.
+        """
+    )
+
+    st.markdown("### 8. Glossary")
+    glossary = pd.DataFrame(
+        [
+            {
+                "Term": "Adjusted close",
+                "Beginner meaning": "A stock closing price corrected for splits and dividends.",
+                "Why it matters": "Makes historical price comparisons more reliable.",
+            },
+            {
+                "Term": "Annualized volatility",
+                "Beginner meaning": "A measure of how much a stock price has been swinging, scaled to a yearly view.",
+                "Why it matters": "Used as the app's main risk signal.",
+            },
+            {
+                "Term": "Drawdown",
+                "Beginner meaning": "How far a stock has fallen from a recent high.",
+                "Why it matters": "Helps the model understand recent weakness or stress.",
+            },
+            {
+                "Term": "Feature",
+                "Beginner meaning": "An input column used by a model, such as recent return or volatility.",
+                "Why it matters": "Features are the evidence the model learns from.",
+            },
+            {
+                "Term": "Feature importance",
+                "Beginner meaning": "A score showing which inputs the Random Forest used most.",
+                "Why it matters": "Helps stakeholders understand model behavior.",
+            },
+            {
+                "Term": "Fixed split",
+                "Beginner meaning": "One train period followed by one later test period.",
+                "Why it matters": "Useful benchmark, but can depend on one specific market window.",
+            },
+            {
+                "Term": "Forward 63-day return",
+                "Beginner meaning": "The stock return about three trading months after a given date.",
+                "Why it matters": "This is what the models try to predict.",
+            },
+            {
+                "Term": "MAE",
+                "Beginner meaning": "Average size of the model's prediction error.",
+                "Why it matters": "Lower MAE means smaller average mistakes.",
+            },
+            {
+                "Term": "RMSE",
+                "Beginner meaning": "An error metric that penalizes large mistakes more heavily.",
+                "Why it matters": "Useful for spotting models with big misses.",
+            },
+            {
+                "Term": "Rank correlation",
+                "Beginner meaning": "How well the model orders stocks from better to worse.",
+                "Why it matters": "The app needs good ranking more than exact price prediction.",
+            },
+            {
+                "Term": "Risk profile",
+                "Beginner meaning": "A user-friendly setting such as Conservative, Balanced, or Aggressive.",
+                "Why it matters": "Controls how much volatility the recommendations may include.",
+            },
+            {
+                "Term": "Sector cap",
+                "Beginner meaning": "A maximum allowed share of the portfolio in one sector.",
+                "Why it matters": "Prevents the portfolio from becoming too concentrated.",
+            },
+            {
+                "Term": "Top-5 actual return",
+                "Beginner meaning": "The actual historical return of the model's five highest-ranked picks.",
+                "Why it matters": "Shows whether the model's top recommendations worked in the test data.",
+            },
+            {
+                "Term": "Walk-forward validation",
+                "Beginner meaning": "Repeatedly training on the past and testing on the next future window.",
+                "Why it matters": "Closer to how the model would be used over time.",
+            },
+        ]
+    )
+    st.dataframe(glossary, width="stretch", hide_index=True)
+
+    st.download_button(
+        "Download report summary as Markdown",
+        data=f"""# Stock Portfolio Recommender Project Report
+
+## Goal
+Build a Streamlit stock recommender that ranks S&P 500 stocks by expected 63-trading-day return and converts rankings into a diversified portfolio using user preferences.
+
+The business value is to turn a complex stock-screening task into a guided, transparent recommendation workflow.
+
+## Data
+- Universe: S&P 500
+- Tickers: {tickers['ticker'].nunique():,}
+- Price rows: {len(prices):,}
+- Date range: {prices['date'].min().date()} to {prices['date'].max().date()}
+
+The project uses adjusted close prices, volume, sector metadata, and engineered features such as recent returns, volatility, drawdown, and volume signals.
+
+## Exploratory Analysis
+Exploration showed why the recommender needs risk and diversification controls:
+- The stock universe is not evenly distributed across sectors.
+- Daily returns are noisy and include outliers.
+- Stocks with similar expected returns can have very different volatility.
+- Correlation and sector concentration can reduce diversification.
+
+## Models Tested
+Ridge baseline, Random Forest, Random Forest without history_days, XGBoost without history_days, and ROCm PyTorch MLP.
+
+## Selected App Model
+{BEST_MODEL_NAME}
+
+## Why It Was Selected
+It balances performance, explainability, and cleaner feature design by avoiding the history_days shortcut while retaining useful top-pick performance and walk-forward validation.
+
+Ridge had the strongest fixed-split benchmark, but the no-history Random Forest is the practical app model because it is explainable, flexible, avoids the suspicious history_days shortcut, and has walk-forward validation.
+
+## Recommendation Layer
+The app applies risk profile, volatility cap, sector cap, sector exclusions, portfolio size, and return filters to the selected model ranking.
+
+The app then creates an equal-weight portfolio so the recommendation is easy to understand and discuss with stakeholders.
+
+## Limitation
+This is an educational project and not financial advice.
+
+## Glossary
+- Adjusted close: price corrected for splits and dividends.
+- Annualized volatility: recent price swing level scaled to a yearly view.
+- Feature: input used by the model.
+- Forward 63-day return: the roughly three-trading-month future return the model predicts.
+- MAE: average prediction error size.
+- RMSE: error metric that punishes large misses.
+- Rank correlation: how well predicted stock order matches actual future order.
+- Sector cap: maximum allowed portfolio share in one sector.
+- Walk-forward validation: repeated train-on-past, test-on-future evaluation.
+""",
+        file_name="stock_recommender_project_report.md",
+        mime="text/markdown",
+        help="Exports a concise text version of the report.",
+    )
 
 elif page == "Model Comparison":
     comparison, walk_forward = load_model_comparison_outputs()
