@@ -21,6 +21,7 @@ LOOP_TICKERS := $(strip $(if $(TICKERS),$(TICKERS),$(filter-out loop,$(MAKECMDGO
 ifeq ($(strip $(LOOP_TICKERS)),)
 LOOP_TICKERS := AAPL TSLA XOM
 endif
+LOOP_TICKERS := $(shell printf '%s' "$(LOOP_TICKERS)" | tr '[:lower:]' '[:upper:]')   # tickers are case-insensitive
 ifeq (loop,$(firstword $(MAKECMDGOALS)))
 $(eval $(filter-out loop,$(MAKECMDGOALS)):;@:)   # ticker args become no-op goals (no "No rule to make target" error)
 endif
