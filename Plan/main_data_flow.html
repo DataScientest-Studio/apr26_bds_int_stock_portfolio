@@ -362,7 +362,6 @@ var QC=[
   {id:'QC-10',name:'QC-10 MONOTONIC',    desc:'ts increasing per symbol'},
   {id:'QC-11',name:'QC-11 MANIFEST',     desc:'date range and counters match _meta'}
 ];
-function qcStat(){return '8 841 820 rows · violations: 0 · PASS';}
 
 var SPLIT={
   bands:[
@@ -438,55 +437,7 @@ var METRICS=[
   {id:'tim',name:'TIM %',hi:false,lo:4,hiV:28},
   {id:'wr',name:'WR %',hi:true,lo:32,hiV:58}];
 
-var DQ=[
-  {id:'parity',name:'PARITIES',status:'OK',
-   detail:'zip → DuckDB: 8 841 820 rows / 503 symbols · DuckDB → parquet: 503 files · parquet → Output B: setup count per asset (R4)'},
-  {id:'gaps',name:'GAPS',status:'OK',
-   detail:'in-session gaps: 0 (hard fail QC-08/09/10) · overnight/weekend gaps: counted (normal for 1h) · filled gaps: 0 — we fill nothing'},
-  {id:'zeros',name:'ZERO-VALUES',status:'WARN',
-   detail:'volume=0 bars: 1 274 · high==low candles (zero-range): 312 · prices ≤ 0: 0 · WARN: zero-volume above the informational threshold'},
-  {id:'features',name:'FEATURES',status:'OK',
-   detail:'NaN/Inf in Output B: 0 · warm-up NULLs: cut off (gating) · DET-09 rejections: 1 982 (audit) · touch_count distribution: report R3'},
-  {id:'split',name:'SPLIT',status:'OK',
-   detail:'boundary assertion: no window [t0, t0+24] crosses a window boundary · embargo 35 candles ≥ lookback 20 candles'},
-  {id:'alarms',name:'ALARMS',status:'OK',
-   detail:'FAIL: 0 · WARN: 1 (zero-values) · gate: CLOSED — strict gate: overall_status WARN blocks training (3.1)'}
-];
 function dqCol(s){return s==='OK'?TP:(s==='WARN'?AMB:SL);}
-var DQ_PARITY=[
-  {id:'P1',tag:'P1',name:'zip → DuckDB',status:'OK',value:'8 841 820 rows · 503 symbols',
-   detail:'filtered 503 ZIP universe and DuckDB raw+VIEW are re-counted; row and symbol counts must match exactly (the 7 non-universe ZIPs are out of scope)'},
-  {id:'P2',tag:'P2',name:'DuckDB → parquet',status:'OK',value:'503 files · per-ticker rows',
-   detail:'published parquet tree must match the DuckDB snapshot: file count and per-ticker row counts'},
-  {id:'P3',tag:'P3',name:'parquet → Output B',status:'OK',value:'setup count per asset',
-   detail:'Output B rows must match detector entries surviving DET-09 per asset'}
-];
-var DQ_CANDLES=[
-  {id:'healthy',name:'healthy',kind:'normal',status:'OK',counter:'baseline',
-   detail:'OHLC consistent: high ≥ max(open, close), low ≤ min(open, close), price > 0, volume ≥ 0'},
-  {id:'gap',name:'session gap',kind:'gap',status:'OK',counter:'gaps_in_session = 0',
-   detail:'missing in-session 1h candles are zero-tolerance FAIL; this run reports none'},
-  {id:'zero_range',name:'zero range',kind:'zeroRange',status:'WARN',counter:'zero_range_bars = 312',
-   detail:'high == low candles are counted; threshold bands come from the 2.4 parameters block'},
-  {id:'zero_volume',name:'zero volume',kind:'zeroVolume',status:'WARN',counter:'volume_zero_bars = 1 274',
-   detail:'volume == 0 bars are counted and may warn/fail by fraction of rows'},
-  {id:'nonpos',name:'price ≤ 0',kind:'nonpos',status:'OK',counter:'prices_nonpos = 0',
-   detail:'any non-positive OHLC price is zero-tolerance FAIL; this run reports none'}
-];
-var DQ_TRANSFORM=[
-  {id:'nan_inf',tag:'NaN',name:'NaN/Inf Output B',status:'OK',value:'0',
-   detail:'no undocumented NaN/Inf is allowed in Output B after 2.2 transformation'},
-  {id:'warmup',tag:'warm',name:'warm-up cut',status:'OK',value:'20 candles',
-   detail:'warm-up rows are cut before training so rolling features start with valid values'},
-  {id:'det09',tag:'D09',name:'DET-09 rejected',status:'WARN',value:'1 982 audit',
-   detail:'DET-09 rejection rate has a WARN severity ceiling (never FAIL); under the strict gate a WARN still blocks 3.1'},
-  {id:'split',tag:'split',name:'split boundary',status:'OK',value:'no crossings',
-   detail:'no setup window [t0, t0+24] may cross a split boundary after purge/embargo'},
-  {id:'closed',tag:'audit',name:'closed_through_line',status:'OK',value:'audit = 1',
-   detail:'the audit column verifies that every Output B row is a real close-through-line setup'},
-  {id:'label_weight',tag:'Y+w',name:'Y_outcome + weight',status:'OK',value:'target + sample weight',
-   detail:'Y_outcome is the binary triple-barrier target; label_uniqueness_weight is sample weight, not a second label'}
-];
 
 function manifest(a){var r=rng(a*991+7);
   return {asset:ASSETS[a],strategy_file:'strategy_'+ASSETS[a]+'.py',
@@ -510,7 +461,6 @@ function manifest(a){var r=rng(a*991+7);
 // col = current color (now used by caption; PR-5 will switch to roleColor(role)).
 // title WITHOUT the 'Lx · ' prefix — caption() appends the number from lev, so renumbering is free.
 // dataKey points to existing arrays (we don't copy content) → caption/legend/inspect read from them.
-var DATA={FEATURES:FEATURES,QC:QC,SPLIT:SPLIT,DQ:DQ,METRICS:METRICS,OPTUNA:OPTUNA};
 var PIPELINE={
   nodes:[
     {id:'Layer1_3',num:'1.3',family:'source',role:'source',col:CAN,
@@ -1067,24 +1017,6 @@ DuckDBLayer.prototype.draw=function(){
       x:pd2.x,y:pd2.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8,pr:1});
   }
 };
-function QCGateRing(){}
-QCGateRing.prototype.draw=function(){
-  // QC gates as a 2-column CHECKLIST right of the DB, scaled to fit within the 1.3 band
-  var k,n=QC.length,sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  var f=Math.min(bandFit(2),1.05),nCol=2,perCol=Math.ceil(n/nCol),rowH=14*f,fz=7.4*f,colW=Math.max(56,108*f);
-  var anc=SS(2,0.64,0.52,52),x0=Math.round(anc.x),y0=Math.round(anc.y-perCol*rowH/2);
-  HITS.addRect(x0-6,y0-8,nCol*colW+8,perCol*rowH+12,{type:'qcAll'});
-  setFont(uiFont('',fz));ctx.fillStyle=sec;ctx.textAlign='left';ctx.textBaseline='alphabetic';
-  for(k=0;k<n;k++){
-    var col=Math.floor(k/perCol),row=k%perCol,cx=x0+col*colW,ry=y0+row*rowH+rowH*0.5;
-    drawCheckbox(cx+rowH*0.45,ry,Math.min(10*f,rowH-3),PINK,'');
-    ctx.fillText(QC[k].name,cx+rowH*0.45+9*f,ry+fz*0.36);
-    HITS.addRect(cx,ry-rowH*0.5,colW,rowH,{type:'qc',g:k});
-  }
-  obstacle(x0-6,y0-8,x0+nCol*colW,y0+perCol*rowH);
-  if(STATE.labels)qLabel({key:'qc_badge',def:'QC-01…QC-11 · every load (view 3)',grp:'QC gates',
-    x:x0+nCol*colW/2,y:y0-9,col:tert,al:'center',sz:7.5,pr:1});
-};
 
 function TransformLayer(){}
 TransformLayer.prototype.draw=function(){
@@ -1518,76 +1450,6 @@ FeatureSelectionLayer.prototype.draw=function(){
   HITS.addRect(x0,y0,x1-x0,y1-y0,{type:'layercap',lev:lev});   // band click = layer inspection (like the caption)
 };
 
-// One titled checklist column (1.3 QCGateRing style): title + per-row checkbox + status icon +
-// truncated label; the Candle column adds a mini-candle marking, and WARN rows get a count badge
-// in `detail` mode. World-space caller positions it; sizes scale with `f`.
-function dqNum(s){var m=String(s).match(/\d[\d ]*\d|\d/);return m?m[0]:'';}   // first digit run ("1 274") — read from existing fields
-function drawDQColumn(x,yTop,w,title,accent,rows,payloadType,rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,candle,f){
-  var prim=vget('--color-text-primary','#eee'),brd=vget('--color-border-secondary','#555'),i,n=rows.length;
-  if(showLbl)txtS(dqFit(title,w,titleFz,'700'),x,yTop+titleH-3,accent,'left',titleFz,'700');
-  var yBody=yTop+titleH;
-  for(i=0;i<n;i++){
-    var r=rows[i],ry=yBody+i*rowH+rowH*0.5,col=dqCol(r.status),cx=x+cbS*0.6;
-    if(showLbl){ctx.save();ctx.strokeStyle=rgba(brd,0.45);ctx.lineWidth=0.7;ctx.setLineDash([]);
-      ctx.beginPath();ctx.moveTo(x,ry-rowH*0.5);ctx.lineTo(x+w,ry-rowH*0.5);ctx.stroke();ctx.restore();}
-    drawCheckbox(cx,ry,cbS,accent,'');
-    drawStatusIcon(cx+cbS*0.9+5*f,ry,col,r.status);
-    var tx=cx+cbS*0.9+12*f,rEdge=x+w;
-    if(candle){                                                  // candle markings — the "additional markings"
-      var gw=detail?16*f:13*f,gh=detail?18*f:15*f,gx=rEdge-gw*0.7;rEdge=gx-gw*0.6;
-      drawMiniCandle(gx,ry,gw,gh,r.kind,r.status);
-    }
-    if(detail&&r.status==='WARN'){                               // count badge for WARN rows
-      var num=dqNum(candle?r.counter:r.value);
-      if(num){var bw=Math.max(20,num.length*5.0+12)*f,bx=rEdge-bw,by=ry-7*f;
-        rEdge=bx-4*f;drawStatusBadge(bx,by,'WARN',num,{w:bw,h:14*f,sz:6.6});}
-    }
-    if(showLbl){                                                 // detail = full name only (no redundant tag, no inline value → no overlap); values via click → side panel
-      var lbl=detail?r.name:(r.tag||r.id||r.name);
-      txtS(dqFit(lbl,rEdge-tx,fz,'600'),tx,ry+fz*0.36,prim,'left',fz,'600');
-    }
-    HITS.addRect(x,ry-rowH*0.5,w,rowH,{type:payloadType,i:i});
-  }
-}
-
-function QualityLayer(){}
-QualityLayer.prototype.draw=function(){
-  caption(this.lev);
-  var lev=this.lev,prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),brd=vget('--color-border-secondary','#555');
-  var detail=(STATE.inspect==='Layer2_4'||CAM.z>=1.15),showLbl=CAM.z>=LOD.name;
-  var f=Math.min(bandFit(lev),detail?1.3:1.05);
-  var rowH=(detail?18:15)*f,fz=(detail?7.8:7.2)*f,titleFz=8.4*f,titleH=15*f,cbS=Math.min(10*f,rowH-4),gap=12*f;
-  var maxRows=Math.max(DQ_PARITY.length,DQ_CANDLES.length,DQ_TRANSFORM.length),bodyH=maxRows*rowH;
-  var wP=showLbl?(detail?Math.max(120,150*f):Math.max(58,96*f)):26*f,
-      wC=showLbl?(detail?Math.max(150,180*f):Math.max(74,118*f)):30*f,
-      wT=showLbl?(detail?Math.max(140,170*f):Math.max(58,100*f)):26*f;
-  var blockW=wP+wC+wT+gap*2,totalH=titleH+bodyH+14*f+26*f;
-  // center the whole block vertically INSIDE the 2.4 band — between boundary lev-1 (2.3/2.4, bottom) and boundary lev (2.4/3.1, top)
-  var bTop=(BNDY[lev]!=null)?BNDY[lev]:SS(lev,0.5,0.5,189).y,bBot=(BNDY[lev-1]!=null)?BNDY[lev-1]:SS(lev,0.5,0.5,-55).y;
-  var x0=Math.round(SS(lev,0.50,0.50,67).x-blockW/2),yTop=Math.round((bTop+bBot)/2-totalH/2),yBody=yTop+titleH;
-  var xP=x0,xC=xP+wP+gap,xT=xC+wC+gap;
-  HITS.addRect(x0-6,yTop-6,blockW+12,titleH+bodyH+10,{type:'dqSummary'});
-  drawDQColumn(xP,yTop,wP,'Store Parity',TEAL,DQ_PARITY,'dqParity',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,false,f);
-  drawDQColumn(xC,yTop,wC,'Candle QC',AMB,DQ_CANDLES,'dqCandleCase',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,true,f);
-  drawDQColumn(xT,yTop,wT,'Transform QC',GREEN,DQ_TRANSFORM,'dqTransformCheck',rowH,bodyH,titleH,cbS,fz,titleFz,showLbl,detail,false,f);
-  ctx.save();ctx.strokeStyle=rgba(brd,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
-  var dv1=Math.round(xP+wP+gap*0.5),dv2=Math.round(xC+wC+gap*0.5);
-  ctx.beginPath();ctx.moveTo(dv1,yTop-2);ctx.lineTo(dv1,yBody+bodyH);ctx.moveTo(dv2,yTop-2);ctx.lineTo(dv2,yBody+bodyH);ctx.stroke();ctx.restore();
-  obstacle(x0-6,yTop-6,x0+blockW+6,yBody+bodyH+4);
-  var sw=Math.min(blockW*0.74,180*f),sh=26*f,sx=x0+(blockW-sw)/2,sy=yBody+bodyH+14*f;
-  drawFold(sx,sy,sw,sh,9,PINK,0.10);
-  if(showLbl){txtS('summary.json',sx+9*f,sy+sh*0.42,prim,'left',6.8,'700');txtS('gate closed (WARN)',sx+9*f,sy+sh*0.84,tert,'left',6.5,'600');}
-  drawStatusBadge(sx+sw-44*f,sy+sh*0.5-9,'WARN','WARN',{w:40,h:18,sz:7});
-  HITS.addRect(sx,sy,sw,sh,{type:'dqSummary'});addObstacleRect(sx,sy,sw,sh);
-  if(STATE.labels){
-    var pq1=SS(lev,0.5,0.12,4),pq2=SS(lev,0.5,0.95,0);
-    qLabel({key:'dq_gate',def:'quality gate: training (3.1) starts only when overall_status == OK — any WARN or FAIL blocks',grp:'Data quality gate',
-      x:pq1.x,y:pq1.y,col:tert,al:'center',sz:8.5,pr:1});
-    qLabel({key:'dq_scope',def:'data-quality gate over the whole flow: zip → DuckDB → parquet → split → Output B',grp:'Data quality gate',
-      x:pq2.x,y:pq2.y,col:tert,al:'center',sz:8.5,pr:1});
-  }
-};
-
 // 3.1 — OPTUNA HYPERPARAMETER SEARCH MATRIX (2.2-style PT(u,v)): rows = 8 hyperparameters + Y(validation AUC-PR)/best/status,
 // columns = trials in time (TPE). Left = matrix; right = flow → OPTUNAs_XGB_HPOs_best_params.json ×N (one per asset). No model/.py/b64/OOS here.
 function drawOptunaMatrix8(lev,bord,prim,tert){
@@ -2013,99 +1875,12 @@ function drawStatusIcon(x,y,col,status){
   else{ctx.moveTo(x-4,y-4);ctx.lineTo(x+4,y+4);ctx.moveTo(x+4,y-4);ctx.lineTo(x-4,y+4);}
   ctx.stroke();ctx.restore();
 }
-function dqFit(s,maxW,sz,wt){
-  var t=String(s),fz=(sz||8)*zScale();
-  setFont(uiFont(wt||'400',fz));
-  if(ctx.measureText(t).width<=maxW)return t;
-  while(t.length>1&&ctx.measureText(t+'…').width>maxW)t=t.slice(0,-1);
-  return t+'…';
-}
 function drawStatusBadge(x,y,status,label,opts){
   opts=opts||{};
   var col=dqCol(status),txt=label||status,w=opts.w||((txt.length>4)?42:34),h=opts.h||16,sz=opts.sz||7;
   fillRR(x,y,w,h,5,rgba(col,0.13),col,1);
   drawStatusIcon(x+8,y+h/2,col,status);
   txtS(txt,x+w-6,y+h/2+sz*0.42,col,'right',sz,'700');
-  return {x:x,y:y,w:w,h:h};
-}
-function drawMiniCandle(x,y,w,h,kind,status){
-  var col=dqCol(status),sec=vget('--color-text-secondary','#999'),body=vget('--color-text-primary','#eee');
-  function one(cx,oy,up){
-    var top=y-h*0.36+oy,bot=y+h*0.36+oy,o=y+(up?0.08:-0.18)*h+oy,c=y+(up?-0.20:0.12)*h+oy;
-    ctx.save();ctx.strokeStyle=sec;ctx.lineWidth=1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(cx,top);ctx.lineTo(cx,bot);ctx.stroke();
-    ctx.fillStyle=rgba(body,0.72);ctx.fillRect(cx-w*0.11,Math.min(o,c),w*0.22,Math.max(3,Math.abs(o-c)));ctx.restore();
-  }
-  if(kind==='gap'){
-    one(x-w*0.18,h*0.13,true);one(x+w*0.18,-h*0.13,true);
-    ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,y-h*0.38);ctx.lineTo(x,y+h*0.38);ctx.stroke();ctx.restore();
-    return;
-  }
-  if(kind==='zeroRange'){
-    ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x-w*0.22,y);ctx.lineTo(x+w*0.22,y);ctx.stroke();
-    ctx.strokeStyle=sec;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y-h*0.34);ctx.lineTo(x,y+h*0.34);ctx.stroke();ctx.restore();
-    return;
-  }
-  one(x,0,kind!=='nonpos');
-  if(kind==='zeroVolume'){
-    ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x-w*0.24,y+h*0.43);ctx.lineTo(x+w*0.24,y+h*0.43);ctx.stroke();
-    txtS('v=0',x,y+h*0.62,col,'center',6.2,'700');ctx.restore();
-  }else if(kind==='nonpos'){
-    ctx.save();ctx.strokeStyle=SL;ctx.lineWidth=1.1;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x-w*0.22,y+h*0.43);ctx.lineTo(x+w*0.22,y+h*0.43);ctx.stroke();
-    txtS('≤0',x,y+h*0.62,SL,'center',6.2,'700');ctx.restore();
-  }
-}
-function drawSimpleDQTable(x,y,w,title,rows,payloadType,opts){
-  opts=opts||{};
-  var scale=opts.scale||(opts.compact?'compact':'normal'),compact=scale==='compact',expanded=scale==='expanded';
-  var rowH=opts.rowH||(expanded?18:(compact?9:18)),titleH=expanded?28:(compact?16:24),pad=expanded?10:(compact?5:9);
-  var titleSz=expanded?9.6:(compact?6.8:9),leftSz=expanded?8.6:(compact?5.8:8.1),rightSz=expanded?8.2:(compact?5.6:7.8),footSz=expanded?7.8:(compact?6.4:7.6);
-  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
-  var h=opts.h||(titleH+rows.length*rowH+pad+3),brd=opts.border||vget('--color-border-secondary','#555');
-  fillRR(x,y,w,h,7,rgba(opts.accent||TEAL,opts.fillA==null?0.055:opts.fillA),brd,1.05);
-  txtS(title,x+pad,y+titleH-8,opts.accent||TEAL,'left',titleSz,'700');
-  for(var i=0;i<rows.length;i++){
-    var r=rows[i],ry=y+titleH+i*rowH,col=dqCol(r.status),lx=x+pad,rx=x+w-pad;
-    ctx.save();ctx.strokeStyle=rgba(vget('--color-border-secondary','#555'),0.55);ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(x+pad,ry-2);ctx.lineTo(x+w-pad,ry-2);ctx.stroke();ctx.restore();
-    drawStatusIcon(lx+5,ry+rowH*0.45,col,r.status);
-    var left=compact?(r.tag||r.id||r.name):r.name,right=compact?r.status:r.value;
-    txtS(dqFit(left,w*(compact?0.42:(expanded?0.48:0.50)),leftSz,'600'),lx+(expanded?18:14),ry+rowH*0.66,prim,'left',leftSz,'600');
-    txtS(dqFit(right,w*(compact?0.34:(expanded?0.39:0.36)),rightSz,'600'),rx,ry+rowH*0.66,(compact?col:sec),'right',rightSz,'600');
-    if(payloadType)HITS.addRect(x,ry-1,w,rowH,{type:payloadType,i:i});
-  }
-  if(opts.footer)txtS(dqFit(opts.footer,w-pad*2,footSz),x+pad,y+h-7,tert,'left',footSz);
-  addObstacleRect(x,y,w,h);
-  return {x:x,y:y,w:w,h:h};
-}
-function drawParityLedger(x,y,w,compact,opts){
-  opts=opts||{};opts.compact=compact;
-  return drawSimpleDQTable(x,y,w,'Store Parity',DQ_PARITY,'dqParity',
-    Object.assign({accent:TEAL,footer:compact?'exact equality':'P1/P2/P3 assert exact equality at each store boundary'},opts));
-}
-function drawTransformAuditTable(x,y,w,compact,opts){
-  opts=opts||{};opts.compact=compact;
-  return drawSimpleDQTable(x,y,w,'Transform QC',DQ_TRANSFORM,'dqTransformCheck',
-    Object.assign({accent:GREEN,footer:compact?'Output B ready':'2.2 → Output B checks before 3.1 search / 3.2 training'},opts));
-}
-function drawCandleQCStrip(x,y,w,compact,opts){
-  opts=opts||{};
-  var scale=opts.scale||(compact?'compact':'normal'),expanded=scale==='expanded';
-  var h=opts.h||(compact?58:154),pad=expanded?11:(compact?6:12),titleH=expanded?28:(compact?16:24);
-  var titleSz=expanded?9.6:(compact?6.8:9),labelSz=expanded?8.2:(compact?5.2:7.3),counterSz=expanded?7.2:6.8;
-  var prim=vget('--color-text-primary','#eee'),sec=vget('--color-text-secondary','#999'),brd=vget('--color-border-secondary','#555');
-  fillRR(x,y,w,h,7,rgba(AMB,0.055),brd,1.05);
-  txtS('Candle QC',x+pad,y+titleH-8,AMB,'left',titleSz,'700');
-  var n=DQ_CANDLES.length,slot=(w-pad*2)/n;
-  for(var i=0;i<n;i++){
-    var c=DQ_CANDLES[i],cx=x+pad+slot*(i+0.5),cy=y+(expanded?61:(compact?31:58)),col=dqCol(c.status);
-    drawMiniCandle(cx,cy,expanded?45:(compact?24:42),expanded?52:(compact?27:48),c.kind,c.status);
-    if(compact){ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,y+18,2.1,0,7);ctx.fill();ctx.restore();}
-    var label=expanded?({healthy:'healthy',gap:'gap',zero_range:'zero-range',zero_volume:'v=0',nonpos:'price≤0'}[c.id]||c.name):(compact?c.id:c.name);
-    txtS(dqFit(label,slot-4,labelSz,'600'),cx,y+(expanded?101:(compact?52:94)),prim,'center',labelSz,'600');
-    if(!compact)txtS(dqFit(c.counter,slot-4,counterSz),cx,y+(expanded?119:112),sec,'center',counterSz);
-    if(!compact)drawStatusBadge(cx-(expanded?23:17),y+(expanded?121:124),c.status,c.status,expanded?{w:46,h:18,sz:7.4}:null);
-    HITS.addRect(x+pad+slot*i,y+titleH,slot,h-titleH,{type:'dqCandleCase',i:i});
-  }
-  addObstacleRect(x,y,w,h);
   return {x:x,y:y,w:w,h:h};
 }
 function drawFamilyMarker(x,y,fam,col){
@@ -2945,10 +2720,10 @@ FeaturesView.prototype.draw=function(){
   if(PIPELINE.manifest_errors&&PIPELINE.manifest_errors.length)txt(PIPELINE.manifest_errors.join(' · '),{x:0,y:2},tert,'center',8);
 };
 
-var LAYERS={src:new AlpacaSource(),zip:new ZipStore(),db:new DuckDBLayer(),qcring:new QCGateRing(),
+var LAYERS={src:new AlpacaSource(),zip:new ZipStore(),db:new DuckDBLayer(),
   tf:new TransformLayer(),split:new SplitLayer(),detector:new SetupDetectorLayer(),feat:new FeatureForest(),
   featsel:new FeatureSelectionLayer(),
-  dq:new QualityLayer(),optuna:new OptunaSearchLayer(),export:new StrategyExportLayer(),oos:new OOSWall(),
+  optuna:new OptunaSearchLayer(),export:new StrategyExportLayer(),oos:new OOSWall(),
   endproduct:new EndproductLayer()};
 var VIEWS={split:new SplitTimelineView(),setup:new SetupGeometryView(),
   features:new FeaturesView(),optuna:new OptunaView(),artifact:new ArtifactView(),leak:new LeakView(),endproduct:new EndproductView()};
@@ -2957,7 +2732,7 @@ var VIEWS={split:new SplitTimelineView(),setup:new SetupGeometryView(),
 // is stamped onto the drawer (this.lev). Adding a layer = a node + a drawer class + a DRAWERS
 // entry — no per-band renumbering. 2.3 is a regular item; 1.3 maps to two drawers (db + qc ring).
 var DRAWERS={Layer1_3:[LAYERS.src],Layer1_4:[LAYERS.zip],Layer1_5:[LAYERS.db],Layer1_6:[LAYERS.tf],Layer1_7:[LAYERS.split],
-  Layer2_1:[LAYERS.detector],Layer2_2:[LAYERS.feat],Layer2_3:[LAYERS.featsel],Layer2_4:[LAYERS.dq],Layer3_1:[LAYERS.optuna],
+  Layer2_1:[LAYERS.detector],Layer2_2:[LAYERS.feat],Layer2_3:[LAYERS.featsel],Layer3_1:[LAYERS.optuna],
   Layer3_2:[LAYERS.export],Layer4_1:[LAYERS.oos],Layer4_2:[LAYERS.endproduct]};
 PIPELINE.nodes.forEach(function(n){(DRAWERS[n.id]||[]).forEach(function(d){d.lev=n.lev;d.node=n;});});
 var NLEV=PIPELINE.primaryPath.length;                            // 15 items (4 sections, 1.1–4.2)
@@ -3068,18 +2843,11 @@ function tipFor(p){
   if(p.type==='layercap'){var nc=NODE_BY_LEV[p.lev];return '<b>'+nc.title+'</b>\n'+(nc.subtitle||nc.summary||'')+'\n<i>click = layer inspection (contract)</i>';}
   if(p.type==='asset'){var st=setupsMock(p.a),m=oosMock(p.a);
     return '<b>Asset: '+ASSETS[p.a]+'</b>\n~17 600 1h candles (2016 → 2026)\nsetups in Train: long '+st.long+' · short '+st.short+'\nOOS (illustrative): PF '+m.pf.toFixed(2)+' · MDD '+m.mdd+'% · TIM '+m.tim+'%\nreal OOS → per-asset OOS metrics\n<i>click = panel</i>';}
-  if(p.type==='universe')return '<b>S&P 500 source</b>\ndownload → 510 ZIPs · quality-filtered to 503 universe (1.3)\n1h OHLCV · 2016-01-04 → today\n7 named samples + the rest as a grid';
   if(p.type==='api')return '<b>Alpaca Market Data API</b>\nfeed=sip · 1h OHLCV bars\ndownloaded upstream / offline → exported to data/seed/*.parquet\n<i>this repo ships the parquets — no live API call</i>';
   if(p.type==='zip')return '<b>'+(ASSETS[p.a]||'aapl').toLowerCase()+'.zip</b>\nQuantConnect / LEAN · 1 ticker = 1 zip\nexported to data/seed/&lt;TICKER&gt;_ohlcv_1h.parquet\n<i>click = sample rows</i>';
   if(p.type==='zipall')return '<b>LEAN / QuantConnect zip archive</b>\n1 zip = 1 ticker · the original archive format\nexported offline to data/seed/*_ohlcv_1h.parquet\n<i>upstream provenance</i>';
   if(p.type==='qclogo')return '<b>QuantConnect / LEAN</b>\nthe original archive format (one zip per ticker)\nexported to data/seed parquet for this repo';
-  if(p.type==='db')return '<b>raw_ohlcv_1h</b>\n8 841 820 rows · 166 MB\nsymbol · ts · o/h/l/c BIGINT ×10000 · volume\n<i>click = schema + QC</i>';
-  if(p.type==='view')return '<b>VIEW ohlcv_1h</b>\nprices /10000.0 → USD (canonical)\nzero storage duplication';
-  if(p.type==='qc')return QC[p.g].name+'\n'+QC[p.g].desc+'\n'+qcStat();
-  if(p.type==='qcAll')return '<b>Quality gates QC-01…QC-11</b>\ngate every load into DuckDB\n<i>click = full list</i>';
   if(p.type==='snapshot')return '<b>snapshot → parquet (1.6)</b>\nread bars_1h from liora.duckdb\nfail-closed clean-OHLCV contract → &lt;TICKER&gt;_ohlcv_1h.parquet\n<i>click = details</i>';
-  if(p.type==='parquet')return '<b>per-asset ticker folder · &lt;TICKER&gt;/</b>\n&lt;TICKER&gt;_ohlcv_1h.parquet (source/execution) · _ohlcv_1d.parquet (daily ctx) · _ohlcv_1w.parquet (weekly ctx) — 503 each · zstd · clean OHLCV; 1d/1w rolled up from 1h (features: transformer 2.2)\n+ &lt;TICKER&gt;__Layer1_6_to_Layer4_2.ipynb runner';
-  if(p.type==='notebook')return '<b>&lt;TICKER&gt;__Layer1_6_to_Layer4_2.ipynb</b>\nper-asset 1.6→4.2 runner · a file in the &lt;TICKER&gt;/ folder\ncreates &lt;TICKER&gt;_ohlcv_1h.parquet from the DuckDB snapshot, then rolls up 1d/1w\nthen drives the asset through to 4.2 (clean OHLCV, no extra columns)';
   if(p.type==='split'){var b=SPLIT.bands[p.k];return '<b>'+b.name+'</b>\n'+b.from+' → '+b.to+'\n'+b.note;}
   if(p.type==='purge')return '<b>purge</b>\n'+SPLIT.purge;
   if(p.type==='embargo')return '<b>embargo</b>\n'+SPLIT.embargo;
@@ -3095,15 +2863,6 @@ function tipFor(p){
   if(p.type==='endproduct')return '<b>Assets/&lt;TICKER&gt;/ — per-asset ticker folder</b>\n&lt;TICKER&gt;__Layer1_6_to_Layer4_2.ipynb · &lt;TICKER&gt;_ohlcv_1h.parquet · &lt;TICKER&gt;_ohlcv_1d.parquet · &lt;TICKER&gt;_ohlcv_1w.parquet · OPTUNAs_XGB_HPOs_best_params.json · strategy_&lt;TICKER&gt;.py · &lt;TICKER&gt;_README.md\nper asset folders · 7 files · one deployable bundle per asset\n<i>click = view</i>';
   if(p.type==='sqliteDb')return '<b>OOS verdict → oos_metrics.db</b>\none-shot OOS run · per-asset metrics\nPF · MDD · TIM · WR · trades → oos_metrics.db (feeds the Dashboard) + the asset README\n<i>click = details</i>';
   if(p.type==='distBand')return '<b>PF bucket ['+p.lo+', '+p.hi+')</b>\nassets in bucket: '+p.n+'\ndistribution_report · share PF>1 highlighted\n<i>click = distribution panel</i>';
-  if(p.type==='dqTile'){var q=DQ[p.q];
-    return '<b>'+q.name+' — '+q.status+'</b>\n'+q.detail.split(' · ').join('\n')+'\n<i>click = panel</i>';}
-  if(p.type==='dqParity'){var dp=DQ_PARITY[p.i];
-    return '<b>'+dp.id+' · '+dp.name+' — '+dp.status+'</b>\n'+dp.value+'\n'+dp.detail+'\n<i>click = panel</i>';}
-  if(p.type==='dqCandleCase'){var dc=DQ_CANDLES[p.i];
-    return '<b>'+dc.name+' — '+dc.status+'</b>\n'+dc.counter+'\n'+dc.detail+'\n<i>click = panel</i>';}
-  if(p.type==='dqTransformCheck'){var dt=DQ_TRANSFORM[p.i];
-    return '<b>'+dt.name+' — '+dt.status+'</b>\n'+dt.value+'\n'+dt.detail+'\n<i>click = panel</i>';}
-  if(p.type==='dqSummary')return '<b>summary.json + dashboard</b>\ncounters + statuses + input hashes\nonly overall_status OK starts 3.1; any WARN or FAIL blocks\n<i>click = details</i>';
   if(p.type==='detector'){var nd=NODE_BY_ID['Layer2_1'],vl=p.variant?('\n['+detVar(p.variant).label+']'):'';return '<b>'+nd.title+'</b>'+vl+'\n'+nd.subtitle+'\noutput: '+nd.output_contract+'\n'+nd.invariants.join(' · ')+'\n<i>click = contract · view 5 = full anatomy</i>';}
   if(p.type==='setupEntry'){var dv=p.variant?detVar(p.variant):null;return '<b>entry_candle (t0)'+(dv?' · '+(dv.dir>0?'long':'short'):'')+'</b>\nfirst close piercing the action line\nafter line qualification (≥ MIN_TOUCHES=2)\nall X features computed at t0';}
   if(p.type==='setupTouch')return '<b>touchpoint</b>\na touch of the action line before t0\ntouch_count counts them up to candle t';
@@ -3126,12 +2885,8 @@ function clickFor(p){
       '<br><i>illustrative figures — real OOS values live in per-asset OOS metrics (dashboard)</i>'+
       '<br><b>Artifact:</b> '+mf.strategy_file+
       '<br><b>Top features (gain):</b><br>'+feats.slice(0,5).join('<br>'));}
-  else if(p.type==='qc')PANEL.show(QC[p.g].name,'<b>'+QC[p.g].desc+'</b><br>'+qcStat()+'<br><br><b>All gates:</b><br>'+QC.map(function(g){return g.id+' — '+g.desc;}).join('<br>'));
-  else if(p.type==='qcAll')PANEL.show('QC gates','<pre>'+QC.map(function(g){return g.id+'  '+g.desc;}).join('\n')+'</pre>'+qcStat());
   else if(p.type==='zip')PANEL.show((ASSETS[p.a]||'aapl').toLowerCase()+'.zip','<b>LEAN / QuantConnect zip → exported to parquet</b><br>one zip per ticker (the original archive format); exported once to <b>data/seed/&lt;TICKER&gt;_ohlcv_1h.parquet</b> (1h OHLCV, UTC).<br><br><i>this repo ships the parquet, not the zip.</i>');
   else if(p.type==='zipall')PANEL.show('LEAN / QuantConnect zip archive','<b>one zip per ticker</b> — the original QuantConnect/LEAN archive format the OHLCV was held in upstream.<br>exported offline to <b>data/seed/*_ohlcv_1h.parquet</b>; this self-contained repo ships the parquets.<br><br><i>upstream provenance — not executed here.</i>');
-  else if(p.type==='db')PANEL.show('DuckDB raw_ohlcv_1h','<pre>symbol  VARCHAR\nts      TIMESTAMP\nopen    BIGINT  ×10000\nhigh    BIGINT  ×10000\nlow     BIGINT  ×10000\nclose   BIGINT  ×10000\nvolume  BIGINT</pre><b>8 841 820 rows · 503 symbols</b><br>2016-01-04 09:00 → 2026-05-29 15:00<br>QC-01…QC-11: PASS');
-  else if(p.type==='view')PANEL.show('VIEW ohlcv_1h','<pre>SELECT symbol, ts,\n  open/10000.0  AS open,\n  high/10000.0  AS high,\n  low/10000.0   AS low,\n  close/10000.0 AS close,\n  volume\nFROM raw_ohlcv_1h</pre><b>canonical USD · zero duplication</b>');
   else if(p.type==='snapshot')PANEL.show('Layer 1.6 · snapshot → parquet','<pre>SELECT timestamp, open, high, low, close, volume\nFROM bars_1h WHERE ticker = ?\nORDER BY timestamp</pre>fail-closed clean-OHLCV contract (no NaN / duplicates / non-monotonic; candle invariants)<br>→ &lt;TICKER&gt;_ohlcv_1h.parquet, then deterministic 1d / 1w roll-ups<br>zero derived columns');
   else if(p.type==='split'||p.type==='purge'||p.type==='embargo'){var html='',k;
     for(k=0;k<SPLIT.bands.length;k++){var b=SPLIT.bands[k];html+='<b>'+b.name+'</b> '+b.from+' → '+b.to+'<br>'+b.note+'<br><br>';}
@@ -3148,15 +2903,6 @@ function clickFor(p){
   else if(p.type==='endproduct')setMode('endproduct');
   else if(p.type==='sqliteDb')PANEL.show('OOS verdict → oos_metrics.db','<b>one-shot OOS</b> · 2024-01-02 → 2026-05-29 (frozen)<br>per-asset metrics persisted to <b>oos_metrics.db</b> (the Dashboard reads them): PF · MDD · TIM · WR · trades<br>also written into <b>&lt;TICKER&gt;_README.md</b> (capital path + Risk-Box trade ledger)<br>does not modify any strategy_&lt;TICKER&gt;.py or MODEL_HASH');
   else if(p.type==='distBand')PANEL.show('distribution_report','<b>PF distribution</b> across the per-asset universe.<br>bucket ['+p.lo+', '+p.hi+'): '+p.n+' assets<br><br>also reported: MDD/TIM bands · top/bottom assets · share PF>1<br><br>source: per-asset OOS metrics · table distribution_report');
-  else if(p.type==='dqTile'){var q=DQ[p.q];
-    PANEL.show('Quality: '+q.name,'<b>Status:</b> '+q.status+'<br>'+q.detail.split(' · ').join('<br>')+'<br><br>source: reports/quality/summary.json');}
-  else if(p.type==='dqParity'){var dp=DQ_PARITY[p.i];
-    PANEL.show('2.4 parity '+dp.id,'<b>'+dp.name+'</b><br><b>Status:</b> '+dp.status+'<br><b>Measured:</b> '+dp.value+'<br><br>'+dp.detail+'<br><br><b>Rule:</b> store-boundary counts must match exactly; any mismatch is FAIL.');}
-  else if(p.type==='dqCandleCase'){var dc=DQ_CANDLES[p.i];
-    PANEL.show('2.4 candle QC: '+dc.name,'<b>Status:</b> '+dc.status+'<br><b>Counter:</b> '+dc.counter+'<br><br>'+dc.detail+'<br><br>2.4 reports the counter; data repair belongs to the source/store layer that produced the population.');}
-  else if(p.type==='dqTransformCheck'){var dt=DQ_TRANSFORM[p.i];
-    PANEL.show('2.4 transform QC: '+dt.name,'<b>Status:</b> '+dt.status+'<br><b>Value:</b> '+dt.value+'<br><br>'+dt.detail+'<br><br>Scope: 2.2 Output B data-quality gate before 3.1 training.');}
-  else if(p.type==='dqSummary')PANEL.show('summary.json','<pre>'+JSON.stringify({schema_version:'1.0',built_at_utc:'…',inputs_hash:'…',counters:{rows:8841820,symbols:503,parquet_files:503,setups_total:0,det09_rejected:0,gaps_in_session:0,gaps_filled:0,volume_zero_bars:0,zero_range_bars:0,prices_nonpos:0,duplicates:0,nan_inf_outputB:0},parities:{zip_duckdb_rows:true,duckdb_parquet_files:true,parquet_outputB:true},checks:[{id:'volume_zero_bars',level:'WARN',value:1,threshold:'WARN>0.5% FAIL>2%',desc:'volume=0 bars (fraction of rows)'}],overall_status:'WARN'},null,2)+'</pre>generated per run · the HTML dashboard reads only this file');
   else if(p.type==='detector'){var nd=NODE_BY_ID['Layer2_1'],vl=p.variant?(' · '+detVar(p.variant).label):'';
     PANEL.show('2.1 · '+nd.title+vl,'<b>'+nd.subtitle+'</b><br><b>Input:</b> '+nd.input_contract+'<br><b>Output:</b> '+nd.output_contract+'<br><b>Invariants:</b><br>• '+nd.invariants.join('<br>• ')+'<br><br>full anatomy: view <b>5 (Setup geometry)</b>');}
   else if(p.type==='setupEntry')PANEL.show('entry_candle (t0)','first close piercing the action line in the direction,<br>after line qualification (≥ MIN_TOUCHES=2 touches)<br><br>all X features computed at t0 — only candles ≤ t0');
