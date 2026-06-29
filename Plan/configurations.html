@@ -36,7 +36,10 @@
       <tr><td><code>THRESHOLD_ENTRY</code></td><td><code>0.6</code></td><td>model probability needed to enter</td></tr>
       <tr><td><code>N_TRIALS</code></td><td><code>200</code></td><td>Optuna trial budget</td></tr>
       <tr><td><code>RANDOM_SEED</code> / <code>XGBOOST_N_JOBS</code></td><td><code>42</code> / <code>1</code></td><td>determinism (reproducible OOS)</td></tr>
-      <tr><td><code>INITIAL_CAPITAL_USD</code></td><td><code>1000</code></td><td>all-in compounding, one position per asset</td></tr>
+      <tr><td><code>INITIAL_CAPITAL_USD</code></td><td><code>1000</code></td><td>one position per asset, compounding</td></tr>
+      <tr><td><code>CAPITAL_MODE</code></td><td><code>kelly_fractional_compounding</code></td><td>position sizing (or <code>all_in_compounding_per_asset</code>)</td></tr>
+      <tr><td><code>KELLY_CAP</code></td><td><code>1.0</code></td><td>max per-trade fraction (no leverage)</td></tr>
+      <tr><td><code>KELLY_CALIBRATION</code></td><td><code>λ∈[0.05,1.0], 20-pt grid</code></td><td>Train out-of-fold log-growth study → <code>kelly_fraction</code></td></tr>
       <tr><td><code>COMMISSION_BPS</code> / <code>SLIPPAGE_BPS</code></td><td><code>1</code> / <code>2</code></td><td>cost model</td></tr>
       <tr><td><code>ENTRY_FILL</code> / <code>EXIT_FILL</code></td><td><code>next_bar_open</code> / <code>trigger_next_open</code></td><td>fill convention</td></tr>
     </table>

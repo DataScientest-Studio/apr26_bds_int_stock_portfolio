@@ -12,21 +12,85 @@
     "1d": "Features/features_1d/feature_registry.json",
     "1w": "Features/features_1w/feature_registry.json"
   },
-  "timeframe_order": ["1h", "1d", "1w"],
+  "timeframe_order": [
+    "1h",
+    "1d",
+    "1w"
+  ],
   "cross_timeframe": {
     "feature_registry_source": "Features/features_between_timeframes/feature_registry.json",
-    "source_timeframes": ["1h", "1d", "1w"],
-    "max_source_age_hours": {"1d": 720, "1w": 2160}
+    "source_timeframes": [
+      "1h",
+      "1d",
+      "1w"
+    ],
+    "max_source_age_hours": {
+      "1d": 720,
+      "1w": 2160
+    }
   },
   "defaults": {
-    "1h": {"enabled": true, "additional_feature_ids": [9]},
-    "1d": {"enabled": false, "additional_feature_ids": []},
-    "1w": {"enabled": false, "additional_feature_ids": []},
-    "between_timeframes": {"enabled": false, "additional_feature_ids": []}
+    "1h": {
+      "enabled": true,
+      "additional_feature_ids": [
+        9
+      ]
+    },
+    "1d": {
+      "enabled": false,
+      "additional_feature_ids": []
+    },
+    "1w": {
+      "enabled": false,
+      "additional_feature_ids": []
+    },
+    "between_timeframes": {
+      "enabled": false,
+      "additional_feature_ids": []
+    }
   },
   "asset_overrides": {
     "AAPL": {
-      "1d": {"enabled": true, "additional_feature_ids": [109]}
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9
+        ]
+      },
+      "1w": {
+        "enabled": true,
+        "additional_feature_ids": [
+          209
+        ]
+      }
+    },
+    "TSLA": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9
+        ]
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": [
+          109
+        ]
+      }
+    },
+    "XOM": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9
+        ]
+      },
+      "1w": {
+        "enabled": true,
+        "additional_feature_ids": [
+          209
+        ]
+      }
     }
   }
 }

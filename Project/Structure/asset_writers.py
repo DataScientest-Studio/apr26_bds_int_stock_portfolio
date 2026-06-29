@@ -99,11 +99,13 @@ def write_readme(path, s, ledger, manifest):
     sp = P.PIPELINE_PARAMETERS["splits"]                                   # the OOS window return_pct is earned over
     oos_days = (date.fromisoformat(sp["oos_end"]) - date.fromisoformat(sp["oos_start"])).days
     roi_per_365 = s["return_pct"] * 365.0 / oos_days if oos_days else 0.0  # return_pct annualized to 365 days
+    cap_mode = s.get("capital_mode", P.PIPELINE_PARAMETERS["CAPITAL_MODE"])
+    lam = s.get("kelly_fraction")
     L = [f"# {s['ticker']} — OOS report (current cycle)", "",
          "- EXECUTION_SCOPE: SYNTHETIC_SYMMETRIC_OHLCV_RISK_BOX",
-         "- RESULT_INTERPRETATION: historical behaviour under this fill / cost / Risk-Box / compounding model; "
-         "not broker-specific execution proof.", "",
-         "## Capital path (all-in compounding per asset)", "",
+         "- RESULT_INTERPRETATION: historical behaviour under this fill / cost / Risk-Box / position-sizing / "
+         "compounding model; not broker-specific execution proof.", "",
+         f"## Capital path ({cap_mode})", "",
          f"- ROI/365: {roi_per_365:.2f}%",
          f"- data range: {sp['oos_start']} → {sp['oos_end']} ({oos_days} days)",
          f"- start_capital: {s['start_capital']}", f"- end_capital: {s['end_capital']:.2f}",
@@ -112,7 +114,11 @@ def write_readme(path, s, ledger, manifest):
          f"- trades: {s['trades']} (wins {s['wins']} / losses {s['losses']})",
          f"- time_in_market_pct: {s['time_in_market_pct']}",
          f"- uncovered_loss_total_usd: {s['uncovered_loss_total_usd']:.2f} (max {s['max_uncovered_loss_usd']:.2f})",
-         f"- capital_depleted: {s['capital_depleted']}", ""]
+         f"- capital_depleted: {s['capital_depleted']}"]
+    if lam is not None:
+        L.append(f"- kelly_fraction (λ): {lam:.4f} — per-trade f = clip(λ·(2p−1), 0, "
+                 f"{P.PIPELINE_PARAMETERS['KELLY_CAP']}); b=1 symmetric Risk-Box, Train-OOF calibrated")
+    L.append("")
     L += features_table_lines(manifest)
     L += ["",
           "## Risk-Box trade ledger (ORDER BY trade_id ASC)", "",

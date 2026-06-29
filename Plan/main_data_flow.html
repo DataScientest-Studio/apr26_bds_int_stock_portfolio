@@ -229,9 +229,9 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Trend-line setup detector</b> (2.1) — fits L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead).</li>
   <li><b>Trendline features X + label Y</b> (2.2) = FT1–FT8 (8 X) + Triple-Barrier TB_v1.2 (signal close[t0], entry open[t0+1], TP/SL close[t] fill open[t+1], Time Barrier MOC at H=24; SL=L_opp(t) moving, barriers from R0).</li>
   <li><b>Feature selection</b> (2.3): resolve per-asset effective manifest — default 9 X (FT1–FT8 + F9 log_return_5), optional causal 1d/1w context.</li>
-  <li><b>Optuna search</b> (3.1) on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>.</li>
-  <li><b>XGB final training</b> (3.2) per asset; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck.</li>
-  <li><b>OOS verdict</b> (4.1): one-shot out-of-sample run through the Risk-Box engine → <b>oos_metrics.db</b> (PF · MDD · WR · trades) — the store the Dashboard reads.</li>
+  <li><b>Optuna search</b> (3.1) on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>; then <b>Kelly λ calibration</b> (3.1b) — a 1-D Optuna study maximizing Train out-of-fold log-growth → <code>kelly_fraction</code> (stored in best_params, OOS never read).</li>
+  <li><b>XGB final training</b> (3.2) per asset; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck (carries the calibrated <code>kelly_fraction</code> + EXECUTION_CONTRACT).</li>
+  <li><b>OOS verdict</b> (4.1): one-shot out-of-sample run through the Risk-Box engine with <b>per-trade fractional-Kelly sizing</b> (f = clip(λ·(2p−1), 0, KELLY_CAP)) → <b>oos_metrics.db</b> (PF · MDD · WR · trades) — the store the Dashboard reads.</li>
   <li><b>Endproduct</b> (4.2): per-asset folder <b>Assets/&lt;TICKER&gt;/</b> = runner notebook + 3 OHLCV parquets (1h/1d/1w) + OPTUNAs json + <b>strategy_&lt;TICKER&gt;.py</b> + <b>&lt;TICKER&gt;_README.md</b> (exactly 7 files).</li>
 </ol>
 </div></div>

@@ -97,7 +97,8 @@ def embargo_candles():
 def validate_parameters(p=PIPELINE_PARAMETERS):
     """Fail-closed schema validation before 1.4/3.1/4.1 (00_parameters 'Schema validation (fail-closed)')."""
     errs = []
-    enums = {"BARRIER_MODE": {"close"}, "CAPITAL_MODE": {"all_in_compounding_per_asset"},
+    enums = {"BARRIER_MODE": {"close"},
+             "CAPITAL_MODE": {"all_in_compounding_per_asset", "kelly_fractional_compounding"},
              "ENTRY_FILL": {"next_bar_open"}, "EXIT_FILL": {"trigger_next_open"},
              "SCHEDULED_EXIT_FILL": {"scheduled_moc_close"}, "POSITION_POLICY": {"one_open_position_per_asset"},
              "CORP_ACTIONS_POLICY": {"deferred", "A_adjusted", "B_raw_exclude"},
@@ -117,6 +118,12 @@ def validate_parameters(p=PIPELINE_PARAMETERS):
             errs.append(f"{k} must be >= 0")
     if not (p["INITIAL_CAPITAL_USD"] > 0):
         errs.append("INITIAL_CAPITAL_USD must be > 0")
+    if not (isinstance(p.get("KELLY_CAP"), (int, float)) and 0 < p["KELLY_CAP"] <= 1):
+        errs.append("KELLY_CAP must be a number in (0, 1] (no leverage)")
+    kc = p.get("KELLY_CALIBRATION", {})
+    if not (isinstance(kc, dict) and 0 < kc.get("low", -1) <= kc.get("high", -1) <= 1
+            and isinstance(kc.get("grid_points"), int) and kc["grid_points"] >= 2):
+        errs.append("KELLY_CALIBRATION must be {0<low<=high<=1, grid_points int>=2}")
     for k in ("MIN_TRAIN_ACCEPTANCE_TRADES", "MIN_OOS_TRADES_FOR_INTERPRETATION"):
         if not (p[k] is None or (isinstance(p[k], int) and p[k] >= 1)):
             errs.append(f"{k} must be null or an integer >= 1")
@@ -1132,6 +1139,59 @@ def layer3_1_optuna(df_b, bounds, seed, manifest=None, trials=None):
     return best, float(study.best_value), len(folds)
 
 
+def calibrate_kelly(df, df_b, train_setups, bounds, best_params, seed, manifest=None):
+    """Layer 3.1b — per-asset fractional-Kelly calibration (Train only; OOS is NEVER read). Picks lambda (the
+    fractional-Kelly multiplier) by MAXIMIZING Train OUT-OF-FOLD geometric log-growth: for each purged walk-forward
+    fold a fold model (the SAME best XGB params, seeded) scores that fold's validation setups out-of-fold, then the
+    SAME run_engine is run over the fold's validation candle span with per-trade Kelly(lambda); the objective is
+    sum_folds log(end_capital / E0). A dedicated 1-D Optuna study with a deterministic GridSampler over
+    KELLY_CALIBRATION returns the best lambda (ties -> smallest, most conservative). The caller stores it in
+    best_params['kelly_fraction'] (rides into the OPTUNAs json + strategy file; inert in _xgb_train)."""
+    import optuna
+    import xgboost as xgb
+    kc = PIPELINE_PARAMETERS["KELLY_CALIBRATION"]
+    E0, thr = PIPELINE_PARAMETERS["INITIAL_CAPITAL_USD"], PIPELINE_PARAMETERS["THRESHOLD_ENTRY"]
+    grid = [float(x) for x in np.linspace(kc["low"], kc["high"], int(kc["grid_points"]))]
+    names = feature_names_of(manifest)
+    X = df_b[names].to_numpy(float)
+    y = df_b["Y_outcome"].to_numpy(int)
+    w = df_b["label_uniqueness_weight"].to_numpy(float)
+    t0s = [int(sid.split(":")[1]) for sid in df_b["setup_id"]]
+    folds = purged_wf_folds(t0s, bounds["train_start_idx"], bounds["train_end_idx"])
+    if not folds:
+        return float(kc["low"])                            # no folds -> defined conservative default (mirrors 3.1 fallback)
+    ticker = str(df_b["asset_id"].iloc[0])
+    by_sid = {f"{ticker}:{s['t0']}:{s['direction']}": s for s in train_setups}   # df_b is a FILTERED subsequence -> map by id
+    fold_data = []                                         # (scored_oof, val_lo, val_hi) built ONCE; lambda sweep reuses it
+    for tr, va in folds:
+        if len(np.unique(y[tr])) < 2:
+            continue
+        bst = _xgb_train(X[tr], y[tr], w[tr], best_params, seed, feature_names=names)
+        oof = bst.predict(xgb.DMatrix(X[va], feature_names=names))
+        scored = [(by_sid[df_b["setup_id"].iloc[j]], float(oof[k])) for k, j in enumerate(va)]
+        vt0 = [t0s[j] for j in va]
+        fold_data.append((scored, min(vt0), max(vt0)))     # run_engine filters start<=t0<=end -> only the OOF val setups
+    if not fold_data:
+        return float(kc["low"])
+    assert all(hi < bounds["oos_start_idx"] for _, _, hi in fold_data), "Kelly calibration must not reach OOS"
+
+    def objective(trial):
+        lam = trial.suggest_float("kelly_fraction", kc["low"], kc["high"])   # GridSampler snaps to the grid
+        g = 0.0
+        for scored, lo, hi in fold_data:
+            summ, _, _ = run_engine(df, scored, lo, hi, thr, kelly_fraction=lam)
+            g += math.log(max(summ["end_capital"], EPS) / E0)               # guard depleted folds (end_capital<=0)
+        return g
+
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    study = optuna.create_study(direction="maximize",
+                                sampler=optuna.samplers.GridSampler({"kelly_fraction": grid}))
+    study.optimize(objective, n_trials=len(grid), show_progress_bar=False)
+    bv = study.best_value
+    tied = [t.params["kelly_fraction"] for t in study.trials if t.value is not None and t.value >= bv - 1e-12]
+    return float(min(tied)) if tied else float(study.best_params["kelly_fraction"])
+
+
 # ============================ 3.2 — final model + base64 strategy + acceptance ============================
 
 def layer3_2_train(df_b, best_params, seed, manifest=None):
@@ -1158,7 +1218,9 @@ def strategy_meta(booster, df_b, ticker, best_params, lineage, train_window, man
             "EXECUTION_CONTRACT": {"entry_fill": PIPELINE_PARAMETERS["ENTRY_FILL"], "exit_fill": PIPELINE_PARAMETERS["EXIT_FILL"],
                                    "scheduled_exit_fill": PIPELINE_PARAMETERS["SCHEDULED_EXIT_FILL"],
                                    "commission_bps": PIPELINE_PARAMETERS["COMMISSION_BPS"], "slippage_bps": PIPELINE_PARAMETERS["SLIPPAGE_BPS"],
-                                   "capital_mode": PIPELINE_PARAMETERS["CAPITAL_MODE"], "barrier_mode": PIPELINE_PARAMETERS["BARRIER_MODE"]},
+                                   "capital_mode": PIPELINE_PARAMETERS["CAPITAL_MODE"], "barrier_mode": PIPELINE_PARAMETERS["BARRIER_MODE"],
+                                   "kelly_cap": PIPELINE_PARAMETERS["KELLY_CAP"],
+                                   "kelly_basis": "per_trade_fractional_kelly_symmetric_b1: f=clip(kelly_fraction*(2p-1),0,kelly_cap)"},
             "golden_vectors": gv.tolist() if len(gv) else [], "golden_pred": gp, **lineage}
 
 
@@ -1186,12 +1248,19 @@ def accept_strategy(train_summary):
 
 # ============================ shared sequential event engine (3.2 Train + 4.1 OOS) ============================
 
-def run_engine(df, scored, start_idx, end_idx, threshold):
-    """ONE sequential all-in compounding engine used for both Train acceptance and the OOS verdict.
+def run_engine(df, scored, start_idx, end_idx, threshold, kelly_fraction=None):
+    """ONE sequential compounding engine used for both Train acceptance and the OOS verdict.
     scored: list of (setup, p). Implements the state machine (FLAT/PENDING/OPEN/HALTED), one open position,
     max-p selection with tie-skip, event-path mark-to-market MDD, inclusive TIM, and the full Risk-Box ledger.
+
+    Position sizing — `kelly_fraction` selects the CAPITAL_MODE:
+      * None  -> all-in compounding: q = E / (entry_fill*(1+fee))  (the legacy path; bit-for-bit unchanged).
+      * float -> per-trade fractional Kelly: f = clip(kelly_fraction*(2p-1), 0, KELLY_CAP); q = f*E/(entry_fill*(1+fee)).
+        The Risk-Box is symmetric (reward:risk b=1) so full per-trade Kelly = 2p-1 (p = the chosen setup's model
+        probability); `kelly_fraction` (lambda) is the calibrated fractional-Kelly multiplier; KELLY_CAP forbids leverage.
     """
     E0, fee, slip = PIPELINE_PARAMETERS["INITIAL_CAPITAL_USD"], PIPELINE_PARAMETERS["COMMISSION_BPS"] * 1e-4, PIPELINE_PARAMETERS["SLIPPAGE_BPS"] * 1e-4
+    kelly_cap = PIPELINE_PARAMETERS["KELLY_CAP"]
     tie_eps = PIPELINE_PARAMETERS["SIMULTANEOUS_SETUP_TIE_EPS"]
     c = df["close"].to_numpy()
     groups = {}
@@ -1219,7 +1288,7 @@ def run_engine(df, scored, start_idx, end_idx, threshold):
         if len(passing) >= 2 and abs(passing[0][1] - passing[1][1]) <= tie_eps:
             counters["simultaneous_tie_skip"] += len(passing)
             continue
-        chosen, _ = passing[0]
+        chosen, chosen_p = passing[0]
         counters["not_selected"] += len(passing) - 1
         sim = simulate_trade(df, chosen, end_idx)
         if sim["skip"] == "GAP_INVALIDATED_SKIP":
@@ -1230,7 +1299,12 @@ def run_engine(df, scored, start_idx, end_idx, threshold):
             continue
         s = chosen["direction"]
         entry_fill, exit_fill, exit_idx = sim["entry_fill"], sim["exit_fill"], sim["exit_idx"]
-        q = E / (entry_fill * (1 + fee))
+        # position fraction: all-in (f=1) when kelly_fraction is None; else per-trade fractional Kelly (b=1 Risk-Box).
+        f_size = 1.0 if kelly_fraction is None else min(max(kelly_fraction * (2.0 * chosen_p - 1.0), 0.0), kelly_cap)
+        if f_size <= 0.0:                                   # no positive Kelly edge -> do not enter (kept out of PF/count)
+            counters["not_selected"] += 1
+            continue
+        q = f_size * E / (entry_fill * (1 + fee))
         entry_fee, exit_fee = q * entry_fill * fee, q * exit_fill * fee
         raw_net = s * q * (exit_fill - entry_fill) - entry_fee - exit_fee
         account_net = max(raw_net, -E)
@@ -1274,6 +1348,7 @@ def run_engine(df, scored, start_idx, end_idx, threshold):
                        "safety_line_at_trigger": sim["safety_at_trigger"], "target_level": chosen["take_profit_level"],
                        "entry_fill": entry_fill, "exit_fill": exit_fill,
                        "risk_box_pct_at_fill": 100.0 * chosen["R0"] / max(EPS, abs(chosen["L_trend_t0"])),
+                       "model_prob": float(chosen_p), "kelly_fraction_applied": float(f_size),
                        "quantity": q, "market_exit_reason": sim["market_exit_reason"], "capital_state": cap_state,
                        "capital_before": E_before, "raw_net_pnl_usd": raw_net, "account_net_pnl_usd": account_net,
                        "uncovered_loss_usd": uncovered, "capital_after": E})
