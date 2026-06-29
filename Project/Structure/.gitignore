@@ -1,0 +1,13 @@
+# Generated input (regenerable from data/seed/ via `make build-db`)
+liora.duckdb
+# OOS results store (Layer 4.1, regenerable by re-running assets) — feeds the Dashboard
+oos_metrics.db
+# Per-asset deliverables are created by `make run-asset` (Assets/ ships empty)
+Assets/*/
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+# Background viz server (make on / make off)
+.viz.pid
+.viz.log

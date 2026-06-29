@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S&amp;P 500 per-asset ML pipeline — Plan</title>
+<style>
+  body{ margin:0; min-height:100vh; background:#0e1116; color:#e6edf3;
+        font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+        display:flex; flex-direction:column; align-items:center; }
+  header{ text-align:center; padding:48px 20px 10px; max-width:760px; }
+  header h1{ margin:0 0 8px; font-size:26px; }
+  header p{ margin:0; color:#8b949e; }
+  .tiles{ display:flex; gap:20px; flex-wrap:wrap; justify-content:center; padding:28px 20px 50px; max-width:920px; }
+  a.tile{ width:260px; text-decoration:none; color:inherit; background:#161b22; border:1px solid #30363d;
+          border-radius:14px; padding:22px; transition:transform .1s, border-color .12s; }
+  a.tile:hover{ transform:translateY(-3px); border-color:#58a6ff; }
+  a.tile .ico{ font-size:26px; } a.tile h2{ margin:10px 0 6px; font-size:17px; }
+  a.tile p{ margin:0; color:#8b949e; font-size:13.5px; }
+  footer{ color:#8b949e; font-size:12.5px; padding:0 20px 36px; text-align:center; max-width:680px; }
+  code{ color:#e6edf3; }
+</style>
+</head>
+<body>
+<header>
+  <h1>S&amp;P 500 per-asset ML pipeline</h1>
+  <p>A minimal, self-contained trendline → triple-barrier → XGBoost/Optuna → OOS pipeline.
+     Each ticker that passes the notebook leaves seven deliverable files.</p>
+</header>
+<div class="tiles">
+  <a class="tile" href="main_data_flow.html">
+    <div class="ico">🧭</div><h2>Visualization</h2>
+    <p>The data acquisition (1.3 Alpaca → QuantConnect/LEAN) → Layers 1.6 → 4.2 data flow and the 7 files each asset produces.</p>
+  </a>
+  <a class="tile" href="configurations.html">
+    <div class="ico">⚙️</div><h2>Configurations</h2>
+    <p>The parameters, split windows, and the XGBoost / Optuna search space the pipeline runs on.</p>
+  </a>
+  <a class="tile" href="glossary.html">
+    <div class="ico">📖</div><h2>Glossary</h2>
+    <p>The vocabulary: layers, Output-B, Risk-Box, triple-barrier, OOS, and friends.</p>
+  </a>
+  <a class="tile" href="dashboard.html">
+    <div class="ico">📊</div><h2>Dashboard</h2>
+    <p>Per-asset OOS results from the 4.1 <code>oos_metrics.db</code> store: end capital, return, Profit Factor, drawdown, trades.</p>
+  </a>
+</div>
+<footer>
+  Run it: <code>cd Project/Structure &amp;&amp; make build-db &amp;&amp; make run-asset TICKER=AAPL</code>.
+  The visualization shows only the layers the code implements — no SHA, no contracts, no extra QC gates.
+</footer>
+</body>
+</html>

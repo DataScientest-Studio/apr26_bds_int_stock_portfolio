@@ -1,0 +1,28 @@
+# Liora ML Engineering — single consolidated requirements for the whole pipeline
+# (fetch + DuckDB + XGBoost/Optuna training + Streamlit app + PDF report).
+# The old split (root + Archive modeling reqs with sklearn/torch/ROCm) is gone:
+# the production model uses XGBoost's native API, so scikit-learn and the
+# torch/ROCm stack are NOT dependencies.
+
+# data layer
+duckdb>=1.0
+alpaca-py>=0.28          # fetch S&P 500 OHLCV
+python-dotenv>=1.0       # .env.local credentials
+requests>=2.31           # Alpaca REST + Wikipedia constituents
+lxml>=4.9                # pandas.read_html (S&P 500 list)
+html5lib>=1.1            # pandas.read_html parser
+pandas>=2.0              # DataFrames (DuckDB .df(), app, plots)
+numpy>=1.26
+
+# model: one production pipeline
+xgboost>=2.0             # native train/DMatrix API (no sklearn)
+optuna>=3.0              # hyperparameter tuning
+
+# visualization (dual): EDA in matplotlib/seaborn, model/portfolio in plotly
+matplotlib>=3.8
+seaborn>=0.13
+plotly>=5.20
+scipy>=1.11              # EDA statistics in reports/make_figures.py
+
+# app
+streamlit>=1.32

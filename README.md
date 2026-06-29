@@ -1,44 +1,45 @@
-# Stocks Recommender Based on User Profile
+# liora-project-ml-engineering — minimalny pipeline ML (S&P 500, per-asset)
 
-Beginner-friendly stock portfolio recommender — Liora *Data Scientist* capstone.
-Turns an investor profile into a diversified 10-stock portfolio from the S&P 500.
-**Decision support — not financial advice.**
+Minimalistyczny, samodzielny i reprodukowalny pipeline tradingowy ML: dla wybranego tickera
+liczy warstwy **1.6 → 4.2** w jednym notebooku i zostawia w `Assets/<TICKER>/` dokładnie
+**7 plików** deliverable. Bez SHA / sum kontrolnych / nadmiernych bramek QC / kontraktów /
+testów — wszystko ma być czytelne i łatwe do wytłumaczenia.
 
-## Repository layout (3 pillars)
+## 3 filary
 
-- **`Formalities/`** — course deliverables and admin: `Timeline.md` (deadlines, steps,
-  actions), `DATA_AUDIT.md`, `rocm.md`, `meeting_notes/`, `Rendering1/` (REPORT.md + PDF +
-  `figures/`), `Rendering2/`.
-- **`Project/`** — the working project:
-  - `Structure/` — live, minimal code: `app.py`, `fetch_data.py`, `train_xgb_optuna.py`,
-    `schema.sql` / `src/features.sql` / `audit.sql` / `build_portfolios.sql`, `walk_forward.sh`,
-    `src/`, `reports/`, `Makefile`, `config/paths.yaml`.
-  - `endproduct/` — symlinks to the active run's `data` (holds `liora.duckdb`) / `models`
-    and the report `figures`.
-  - `.venv/` — local environment (created by `make setup`).
-- **`Archive/`** — frozen material: `runs/2026-06-08/` (the active Alpaca S&P 500 run, plus
-  the CSV-era reference app and `models/legacy_scripts/` for the retired Ridge/RF/ROCm models)
-  and `experiments/` (yfinance dataset, source-comparison dashboards, scraped lists).
+- **`Plan/`** — **wizualizacja**: statyczna historia pipeline'u (`index.html` → `main_data_flow.html`,
+  `configurations.html`, `glossary.html`). Pokazuje wyłącznie warstwy, które kod naprawdę liczy
+  (1.6 → 4.2).
+- **`Project/`** — projekt roboczy:
+  - `Structure/` — operacyjny root: `pipeline.py` (warstwy 1.6–4.2), `notebook_template.ipynb`
+    (per-asset runner), `build_db.py`, `run_asset.py`, `config/`, `Features/`, `data/seed/`,
+    `Assets/` (na starcie pusty), `Makefile`, `requirements.txt`.
+  - `endproduct/` — mirror SOT (`Layers_Short_SOT/` dla zaimplementowanych warstw) + symlink do `Assets/`.
+- **`Archive/`** — zamrożony materiał: `old-capstone-2026-06-29/` (poprzedni projekt DuckDB/Streamlit
+  „Stocks Recommender” + jego Plan SOT), plus wcześniejsze `runs/` i `experiments/`.
+- **`Formalities/`** — sprawy kursowe (Timeline, audyt danych, rendery) — bez zmian.
 
-## Minimal stack
+## 7 plików per asset (`Project/Structure/Assets/<TICKER>/`)
 
-Bash (Makefile) + **DuckDB/SQL** + **XGBoost/Optuna** + **Streamlit**. One analytical
-database (`liora.duckdb`) per run, one production model, one `requirements.txt`. Feature
-engineering and portfolio construction are SQL; the only Python "glue" is fetch, training,
-and the app. See [`Project/Structure/MINIMIZATION.md`](Project/Structure/MINIMIZATION.md).
+1. `<TICKER>__Layer1_6_to_Layer4_2.ipynb` — wykonana kopia notebooka-runnera
+2. `<TICKER>_ohlcv_1h.parquet` — czyste 1h OHLCV (Layer 1.6)
+3. `<TICKER>_ohlcv_1d.parquet` — zmaterializowane 1d
+4. `<TICKER>_ohlcv_1w.parquet` — zmaterializowane 1w
+5. `OPTUNAs_XGB_HPOs_best_params.json` — najlepsze hiperparametry (Layer 3.1)
+6. `strategy_<TICKER>.py` — samodzielny artefakt strategii (model base64 + selfcheck)
+7. `<TICKER>_README.md` — podsumowanie OOS + ścieżka kapitału + ledger transakcji
 
 ## Quickstart
 
 ```bash
 cd Project/Structure
-make setup        # create ../.venv and install requirements.txt
-make build-db     # build liora.duckdb from the run's frozen CSVs
-make pipeline     # train (XGBoost+Optuna) → walk-forward → portfolios
-make app          # run the Streamlit defense demo
-make help         # list all targets
+make deps          # instalacja requirements.txt do ../.venv
+make build-db      # data/seed/*.parquet -> liora.duckdb
+make run-asset TICKER=AAPL   # uruchamia notebook -> Assets/AAPL/ (7 plików)
+make serve         # statyczna wizualizacja: http://localhost:8000/index.html
 ```
 
-The active data/model run is **`Archive/runs/2026-06-08`** (Alpaca S&P 500, 503 tickers),
-wired in through `Project/Structure/config/paths.yaml` → `Project/endproduct/` symlinks.
-Everything is read from `liora.duckdb`; no models are trained inside the app. Deadlines and
-deliverables live in [`Formalities/Timeline.md`](Formalities/Timeline.md).
+Uniwersum rozszerzasz przez dorzucenie kolejnego `data/seed/<TICKER>_ohlcv_1h.parquet`
+i `make build-db`. `Assets/` startuje pusty — to użytkownik decyduje, ile assetów utworzy.
+Pipeline jest deterministyczny (`seed_everything`, `XGBOOST_N_JOBS=1`), więc wyniki OOS są
+reprodukowalne.

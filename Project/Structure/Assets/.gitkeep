@@ -1,0 +1,1 @@
+# Assets start empty; each `make run-asset TICKER=<T>` creates Assets/<T>/ with 7 files.

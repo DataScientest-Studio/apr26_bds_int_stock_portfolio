@@ -1,0 +1,32 @@
+{
+  "schema_version": "layer2_3.v3",
+  "_meta": {
+    "purpose": "2.3 per-Asset, per-timeframe feature selection. Three timeframe namespaces, each with its own machine registry (feature_registry_sources): 1h (Feature IDs 1..99, source/execution), 1d (101..199, daily context), 1w (201..299, weekly context). For each enabled timeframe the manifest takes all 8 standard trendline features (FT) + the selected additional features (F, implemented=true only). 2.3.4 between_timeframes (cross_timeframe block, Feature IDs 900..999) is the final stage: cross-timeframe alignment features (FT900..FT908 standard + F909..F999 optional) computed from the already-resolved setup row (1h base + causal as-of 1d/1w context) AFTER the per-timeframe blocks; it adds NO fourth OHLCV parquet. Model-input X order = timeframe_order (then Feature-ID within a timeframe), then the cross_timeframe block. The resolved effective_feature_manifest_v3 is threaded 2.2->4.1, hashed into lineage, and snapshotted into OPTUNAs_XGB_HPOs_best_params.json.",
+    "defaults_note": "1h is always enabled with additional [9] (log_return_5) -> the default manifest is exactly [FT1..FT8, F9], byte-identical to the pre-MTF baseline. 1d, 1w and between_timeframes are disabled by default; enabling any of them adds its columns and forces a new lineage. between_timeframes requires at least one coarse timeframe (1d/1w) enabled in the same resolved selection (else its features are all-NaN dead weight).",
+    "human_catalog": "Features/README.md",
+    "sot": "Layers_Short_SOT/ENG/Layer2_3_add_features_to_standard_trendlines_features_eng.md",
+    "rules": "1h must always be enabled. A timeframe's 8 standard features are active only when that timeframe is enabled. An F may be selected only when implemented=true in its registry. A disabled timeframe (or a disabled between_timeframes) must carry an empty additional_feature_ids. Feature IDs are globally unique across registries (1h 1..99, 1d 101..199, 1w 201..299, between_timeframes 900..999). Model-input order follows timeframe_order then Feature ID, then the cross_timeframe block, never JSON order. between_timeframes alignment is computed only when >= each feature's min_available_sources source timeframes are causally present AND fresh (context age <= cross_timeframe.max_source_age_hours); otherwise its features are NaN (no imputation, the setup is never dropped)."
+  },
+  "feature_registry_sources": {
+    "1h": "Features/features_1h/feature_registry.json",
+    "1d": "Features/features_1d/feature_registry.json",
+    "1w": "Features/features_1w/feature_registry.json"
+  },
+  "timeframe_order": ["1h", "1d", "1w"],
+  "cross_timeframe": {
+    "feature_registry_source": "Features/features_between_timeframes/feature_registry.json",
+    "source_timeframes": ["1h", "1d", "1w"],
+    "max_source_age_hours": {"1d": 720, "1w": 2160}
+  },
+  "defaults": {
+    "1h": {"enabled": true, "additional_feature_ids": [9]},
+    "1d": {"enabled": false, "additional_feature_ids": []},
+    "1w": {"enabled": false, "additional_feature_ids": []},
+    "between_timeframes": {"enabled": false, "additional_feature_ids": []}
+  },
+  "asset_overrides": {
+    "AAPL": {
+      "1d": {"enabled": true, "additional_feature_ids": [109]}
+    }
+  }
+}
