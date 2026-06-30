@@ -71,7 +71,7 @@ each Liora milestone:
 | Milestone     | Deadline      | Sections covered             | Status        |
 | ------------- | ------------- | ---------------------------- | ------------- |
 | Rendering 1   | 2026-06-03    | §2 – §7                      | **Delivered** |
-| Rendering 2   | 2026-07-01    | §8 – §9                      | Not started   |
+| Rendering 2   | 2026-07-01    | §8 – §9                      | **Delivered** — [modeling report](MODELING_REPORT_010726.md) |
 | Final report  | 2026-07-08    | §1, §10 + revisions of all   | Not started   |
 
 This first rendering documents how we acquired the dataset, what it
@@ -521,9 +521,13 @@ table is materialised.
 
 \newpage
 
-# 8. Modeling [PLACEHOLDER — Rendering 2, due 2026-07-01]
+# 8. Modeling [Rendering 2 — delivered as a standalone report]
 
-> *This section will be filled in for the Rendering 2 submission.*
+> The Rendering-2 modeling deliverable is [`reports/MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md)
+> (per-asset XGBoost triple-barrier classifier; **boosting vs RandomForest** comparison;
+> interpretability menu; deep learning not implemented). The implementing code is on the
+> **`ml-modeling-part`** branch, to be merged to `main` after approval. It will be folded
+> into this section for the final report.
 
 <!--
   Internal outline (NOT rendered to PDF — drives Sprint 2 work):
