@@ -86,9 +86,9 @@ leakage-controlled, negative-leaning result.
 | Rendering 2  | 2026-07-01 | Modeling §1 – §9 (this doc) | **Delivered** |
 | Final report | 2026-07-08 | Revisions + opening/closing | Not started   |
 
-> **Disclaimer:** This project is decision support for a beginner investor, **not**
-> financial advice. Every number below is **out-of-sample on past data** and is not a
-> forecast.
+> **Disclaimer:** This project is an exemplary decision path as support for a beginner
+> investor, **not** financial advice. Every number below is **out-of-sample on past data**
+> and is not a forecast.
 
 \newpage
 
