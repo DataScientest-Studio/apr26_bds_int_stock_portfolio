@@ -1,81 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Configurations</title>
-<style>
-  body{ margin:0; background:#0e1116; color:#e6edf3;
-        font:14px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
-  header{ padding:22px 28px 4px; } header h1{ margin:0; font-size:20px; }
-  header p{ margin:4px 0 0; color:#8b949e; } header a{ color:#58a6ff; }
-  main{ padding:14px 28px 50px; max-width:900px; }
-  section{ margin:22px 0; } h2{ font-size:15px; margin:0 0 10px; color:#e6edf3; }
-  table{ border-collapse:collapse; width:100%; background:#161b22; border:1px solid #30363d; border-radius:8px; overflow:hidden; }
-  th,td{ text-align:left; padding:8px 12px; border-bottom:1px solid #21262d; font-variant-numeric:tabular-nums; }
-  th{ color:#8b949e; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
-  td code{ color:#e6edf3; } tr:last-child td{ border-bottom:none; }
-  .src{ color:#8b949e; font-size:12.5px; margin:4px 0 0; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurations</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:1080px;margin:0 auto;padding:36px 20px}
+    a{color:#0b5cab;text-decoration:none;font-weight:650}
+    table{width:100%;border-collapse:collapse;background:white;border:1px solid #dfe5ec;margin:18px 0}
+    th,td{text-align:left;border-bottom:1px solid #e8edf3;padding:10px;vertical-align:top}
+    th{background:#eef2f6}
+    code{background:#eef2f6;border-radius:5px;padding:2px 5px}
+  </style>
 </head>
 <body>
-<header>
-  <h1>Configurations</h1>
-  <p>The values the pipeline runs on — a mirror of <code>Project/Structure/config/</code>. <a href="index.html">← back</a></p>
-</header>
 <main>
-  <section>
-    <h2>Core parameters &middot; <code>pipeline_parameters.json</code></h2>
-    <table>
-      <tr><th>Key</th><th>Value</th><th>Meaning</th></tr>
-      <tr><td><code>TF</code></td><td><code>1h</code></td><td>execution / source timeframe</td></tr>
-      <tr><td><code>H</code></td><td><code>24</code></td><td>triple-barrier horizon (bars) — also the purge length</td></tr>
-      <tr><td><code>EMBARGO_BARS</code></td><td><code>35</code></td><td>embargo after Train before OOS</td></tr>
-      <tr><td><code>MIN_TOUCHES</code> / <code>TOUCH_TOL</code></td><td><code>2</code> / <code>0.25</code></td><td>trend-line touch count + tolerance</td></tr>
-      <tr><td><code>W_ATR</code> / <code>W_VOL</code></td><td><code>14</code> / <code>20</code></td><td>Wilder ATR + volume z-score windows</td></tr>
-      <tr><td><code>THRESHOLD_ENTRY</code></td><td><code>0.6</code></td><td>model probability needed to enter</td></tr>
-      <tr><td><code>N_TRIALS</code></td><td><code>200</code></td><td>Optuna trial budget</td></tr>
-      <tr><td><code>RANDOM_SEED</code> / <code>XGBOOST_N_JOBS</code></td><td><code>42</code> / <code>1</code></td><td>determinism (reproducible OOS)</td></tr>
-      <tr><td><code>INITIAL_CAPITAL_USD</code></td><td><code>1000</code></td><td>one position per asset, compounding</td></tr>
-      <tr><td><code>CAPITAL_MODE</code></td><td><code>kelly_fractional_compounding</code></td><td>position sizing (or <code>all_in_compounding_per_asset</code>)</td></tr>
-      <tr><td><code>KELLY_CAP</code></td><td><code>1.0</code></td><td>max per-trade fraction (no leverage)</td></tr>
-      <tr><td><code>KELLY_CALIBRATION</code></td><td><code>λ∈[0.05,1.0], 20-pt grid</code></td><td>Train out-of-fold log-growth study → <code>kelly_fraction</code></td></tr>
-      <tr><td><code>COMMISSION_BPS</code> / <code>SLIPPAGE_BPS</code></td><td><code>1</code> / <code>2</code></td><td>cost model</td></tr>
-      <tr><td><code>ENTRY_FILL</code> / <code>EXIT_FILL</code></td><td><code>next_bar_open</code> / <code>trigger_next_open</code></td><td>fill convention</td></tr>
-    </table>
-  </section>
-  <section>
-    <h2>Split windows &middot; <code>splits</code></h2>
-    <table>
-      <tr><th>Window</th><th>Start</th><th>End</th></tr>
-      <tr><td>Warmup</td><td><code>2016-01-04</code></td><td><code>2016-10-14</code></td></tr>
-      <tr><td>Train</td><td><code>2016-10-17</code></td><td><code>2023-12-29</code></td></tr>
-      <tr><td>OOS</td><td><code>2024-01-02</code></td><td><code>2026-05-29</code></td></tr>
-    </table>
-  </section>
-  <section>
-    <h2>XGBoost / Optuna search space &middot; <code>xgboost_optuna_search_space.json</code></h2>
-    <table>
-      <tr><th>Parameter</th><th>Suggest</th><th>Range</th></tr>
-      <tr><td><code>max_depth</code></td><td>int</td><td>2 … 5</td></tr>
-      <tr><td><code>eta</code></td><td>float (log)</td><td>0.02 … 0.3</td></tr>
-      <tr><td><code>subsample</code></td><td>float</td><td>0.6 … 1.0</td></tr>
-      <tr><td><code>colsample_bytree</code></td><td>float</td><td>0.6 … 1.0</td></tr>
-      <tr><td><code>min_child_weight</code></td><td>float</td><td>1.0 … 10.0</td></tr>
-      <tr><td><code>reg_lambda</code></td><td>float</td><td>0.5 … 5.0</td></tr>
-      <tr><td><code>n_estimators</code></td><td>int</td><td>40 … 300</td></tr>
-    </table>
-    <p class="src">Objective: maximize <code>auc_pr</code> · TPE sampler + MedianPruner (warmup 2) · purged walk-forward CV, 4 folds · Train only.</p>
-  </section>
-  <section>
-    <h2>Per-asset feature selection &middot; <code>per_asset_feature_selection.json</code></h2>
-    <table>
-      <tr><th>Scope</th><th>Timeframes</th><th>X columns</th></tr>
-      <tr><td>Default</td><td>1h (5 core FT + <code>log_return_5</code> + 2 means)</td><td>8</td></tr>
-      <tr><td>Per-asset override</td><td>+ optional 1d / 1w causal context</td><td>e.g. AAPL: 18 (1h + 1d)</td></tr>
-    </table>
-    <p class="src">Feature definitions live in <code>Project/Structure/Features/features_{1h,1d,1w,between_timeframes}/feature_registry.json</code>.</p>
-  </section>
+  <p><a href="index.html">Back</a></p>
+  <h1>Configurations</h1>
+  <table>
+    <tr><th>Area</th><th>Value</th><th>Source</th></tr>
+    <tr><td>Horizon</td><td><code>H=24</code>, purge equals H, embargo <code>35</code> bars</td><td><code>pipeline_parameters.json</code></td></tr>
+    <tr><td>Candidate side</td><td><code>direction = sign(log_return_5)</code>, zero skipped</td><td><code>pipeline_parameters.json</code></td></tr>
+    <tr><td>Barrier width</td><td><code>ATR14 * 1.0</code>, symmetric target/stop</td><td><code>pipeline_parameters.json</code></td></tr>
+    <tr><td>Indicators</td><td>Returns, SMA/MA, volume z-score, ATR percent, realized volatility, RSI, Bollinger Bands, MACD</td><td><code>Features/features_*/feature_registry.json</code></td></tr>
+    <tr><td>HPO</td><td>Optuna TPE + MedianPruner, XGB binary logistic, AUC-PR objective</td><td><code>xgboost_optuna_search_space.json</code></td></tr>
+  </table>
+  <table>
+    <tr><th>Namespace</th><th>ID range</th><th>Registry</th></tr>
+    <tr><td>1h</td><td><code>01-99</code></td><td><code>Features/features_1h/feature_registry.json</code></td></tr>
+    <tr><td>1d</td><td><code>101-199</code></td><td><code>Features/features_1d/feature_registry.json</code></td></tr>
+    <tr><td>1w</td><td><code>201-299</code></td><td><code>Features/features_1w/feature_registry.json</code></td></tr>
+    <tr><td>multi_tf</td><td><code>901-999</code></td><td><code>Features/features_between_timeframes/feature_registry.json</code></td></tr>
+  </table>
 </main>
 </body>
 </html>

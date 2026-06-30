@@ -1,9 +1,8 @@
 {
   "schema_version": "xgb_optuna_space.v1",
   "_meta": {
-    "purpose": "Single source of truth for the 3.1 XGBoost Optuna search space + objective. pipeline.py builds trial.suggest_* from `parameters` (ORDER preserved -> deterministic TPE sequence at a fixed seed); the viz (viz/main_data_flow.html.tmpl) renders the SAME registry, injected by the generator (config/data_state_numbers_gate.py load_viz_context). N_TRIALS / H / embargo / global runtime knobs live in pipeline_parameters.json, NOT here.",
-    "xgb_param_name_map": "reg_lambda -> XGBoost 'lambda' (mapped only inside pipeline._xgb_train); eta stays 'eta'. All other names pass through unchanged.",
-    "lineage": "xgb_optuna_space_sha256 enters run_manifest / cycle_manifest.per_asset / asset_registry / OPTUNAs_XGB_HPOs_best_params.json / strategy_<TICKER>.py / run_asset cache — a search-space change ⇒ a new model lineage."
+    "purpose": "Single source of truth for the L7 XGBoost Optuna search space + objective. pipeline.py builds trial.suggest_* from `parameters` (order preserved -> deterministic TPE sequence at a fixed seed). N_TRIALS / H / embargo and other runtime knobs live in pipeline_parameters.json, not here.",
+    "xgb_param_name_map": "reg_lambda -> XGBoost 'lambda' (mapped only inside pipeline._xgb_train); eta stays 'eta'. All other names pass through unchanged."
   },
   "parameters": [
     {"name": "max_depth", "suggest": "int", "low": 2, "high": 5},

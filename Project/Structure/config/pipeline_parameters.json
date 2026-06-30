@@ -1,14 +1,21 @@
 {
   "TF": "1h",
   "H": 24,
-  "MIN_TOUCHES": 2,
   "W_VOL": 20,
   "W_ATR": 14,
-  "ATR_VARIANT": "wilder",
-  "PRICE_VIEW": "raw_usd_view",
+  "W_RSI": 14,
+  "W_BB": 20,
+  "BB_K": 2.0,
+  "W_SMA_FAST": 20,
+  "W_SMA_SLOW": 50,
+  "MACD_FAST": 12,
+  "MACD_SLOW": 26,
+  "MACD_SIGNAL": 9,
   "EPS": 1e-9,
   "BARRIER_MODE": "close",
-  "DISTANCE_NORM": "atr",
+  "TB_ATR_MULTIPLIER": 1.0,
+  "SIGNAL_MOMENTUM_FEATURE": "log_return_5",
+  "SIGNAL_ZERO_POLICY": "skip",
   "THRESHOLD_ENTRY": 0.6,
   "PURGE_CANDLES": 24,
   "EMBARGO_BARS": 35,
@@ -22,7 +29,6 @@
     "then": ["max_drawdown_min", "time_in_market_min"],
     "informational": ["win_rate"]
   },
-  "TOUCH_TOL": 0.25,
   "RANDOM_SEED": 42,
   "XGBOOST_N_JOBS": 1,
   "COMMISSION_BPS": 1,
@@ -53,10 +59,5 @@
     "train_end": "2023-12-29",
     "oos_start": "2024-01-02",
     "oos_end": "2026-05-29"
-  },
-  "detector": {
-    "pivot_k": 3,
-    "lookback_candles": 120,
-    "cooldown_candles": 24
   }
 }

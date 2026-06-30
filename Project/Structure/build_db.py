@@ -2,11 +2,11 @@
 """Minimal, self-contained DuckDB builder for the pipeline input.
 
 Loads every raw 1h OHLCV parquet in data/seed/ into a single table `bars_1h(ticker, timestamp, open, high, low,
-close, volume)` inside liora.duckdb. That DuckDB is the only input Layer 1.6 reads. To add a ticker: drop its
+close, volume)` inside liora.duckdb. That DuckDB is the only input L4 reads. To add a ticker: drop its
 `<TICKER>_ohlcv_1h.parquet` into data/seed/ and re-run `make build-db`.
 
 The seed parquets already carry a UTC `timestamp` column (datetime64[us, UTC]) + the 5 OHLCV columns, so this is a
-plain load — no cleaning, no calendar, no QC here (Layer 1.6 asserts the clean-OHLCV contract when it reads).
+plain load — no cleaning, no calendar, no QC here (L4 asserts the clean-OHLCV contract when it reads).
 """
 from pathlib import Path
 

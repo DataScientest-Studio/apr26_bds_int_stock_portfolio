@@ -1,194 +1,28 @@
 {
-  "schema_version": "feature_registry.v2",
-  "timeframe": "1d",
-  "id_base": 100,
-  "column_suffix": "_1d",
-  "role": "daily completed-bar context (no trade engine, no Y, no entry gate)",
+  "schema_version": "feature_registry.simple.v1",
+  "namespace": "1d",
+  "id_range": "101-199",
   "_meta": {
-    "purpose": "Machine registry + KNOWLEDGE BASE for the 1d daily-context namespace (Feature IDs 101..199). standard_trendline_features = FT101..FT108: the SAME eight standard trendline features computed on completed 1d bars (column names carry the _1d suffix). additional_features = F109..F199. Disabled by default; selectable per Asset. Causal as-of: only completed 1d bars with available_at <= decision_timestamp may enter X (the latest such coarse SETUP state).",
-    "doc": "Features/features_1d/README.md",
-    "sot": "Layers_Short_SOT/ENG/Layer2_3_add_features_to_standard_trendlines_features_eng.md"
+    "purpose": "Simple 1d OHLCV feature registry. Values are computed on completed 1d roll-up bars and projected as-of to the 1h decision timestamp.",
+    "causal_clock": "latest completed 1d bar with available_at <= 1h decision timestamp"
   },
-  "standard_trendline_features": [
-    {
-      "id": 101,
-      "name": "distance_to_trend_line_1d",
-      "implemented": true,
-      "formula": "direction * (close[T] - L_trend(T)) / ATR(W_ATR)[T] on the latest completed 1d setup state available as-of decision_timestamp",
-      "units": "atr_normalised",
-      "expected_range": [
-        null,
-        null
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [
-          "high",
-          "low",
-          "close"
-        ],
-        "source_feature_requirements": []
-      }
-    },
-    {
-      "id": 103,
-      "name": "risk_box_height_pct_1d",
-      "implemented": true,
-      "formula": "100 * R0 / max(EPS, abs(L_trend(T))) on the latest completed 1d setup state available as-of decision_timestamp",
-      "units": "percentage",
-      "expected_range": [
-        0,
-        null
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [],
-        "source_feature_requirements": []
-      }
-    },
-    {
-      "id": 104,
-      "name": "bar_return_pct_1d",
-      "implemented": true,
-      "formula": "(close[T] - close[T-1]) / close[T-1] * 100 on completed 1d bars (T>=1 else NaN), latest as-of decision_timestamp",
-      "units": "percentage",
-      "expected_range": [
-        null,
-        null
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [
-          "close"
-        ],
-        "source_feature_requirements": []
-      }
-    },
-    {
-      "id": 106,
-      "name": "volume_z_score_1d",
-      "implemented": true,
-      "formula": "(volume[T] - rolling_mean(volume,W_VOL)[T]) / rolling_std(volume,W_VOL)[T] on completed 1d bars (std==0 -> 0.0; pre-window -> NaN), latest as-of decision_timestamp",
-      "units": "z_score",
-      "expected_range": [
-        null,
-        null
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [
-          "volume"
-        ],
-        "source_feature_requirements": []
-      }
-    },
-    {
-      "id": 108,
-      "name": "direction_1d",
-      "implemented": true,
-      "formula": "setup side in {-1,+1} of the latest completed 1d setup state available as-of decision_timestamp",
-      "units": "signed_direction",
-      "expected_range": [
-        -1,
-        1
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [],
-        "source_feature_requirements": []
-      }
-    }
-  ],
-  "additional_features": [
-    {
-      "id": 109,
-      "name": "log_return_5_1d",
-      "implemented": true,
-      "formula": "ln(close[T] / close[T-5]) on completed 1d bars (T>=5 else NaN), latest as-of decision_timestamp",
-      "units": "ratio",
-      "expected_range": [
-        null,
-        null
-      ],
-      "causal_clock": "decision_timestamp",
-      "non_finite_policy": "nan",
-      "materialization": "model",
-      "reducer": "primitive",
-      "reducer_params": {},
-      "source_state_semantics": "latest_completed_coarse_setup_asof",
-      "dependencies": {
-        "requires_layers_all": [
-          "1.6.MTF",
-          "2.3.2"
-        ],
-        "requires_timeframes_all": [
-          "1d"
-        ],
-        "primitive_inputs": [
-          "close"
-        ],
-        "source_feature_requirements": []
-      }
-    }
+  "features": [
+    {"id": 101, "name": "direction_1d", "implemented": true, "formula": "sign(log_return_5_1d)", "unit": "{-1,+1}"},
+    {"id": 102, "name": "log_return_1_1d", "implemented": true, "formula": "ln(close[D] / close[D-1])", "unit": "ln"},
+    {"id": 103, "name": "log_return_5_1d", "implemented": true, "formula": "ln(close[D] / close[D-5])", "unit": "ln"},
+    {"id": 104, "name": "log_return_20_1d", "implemented": true, "formula": "ln(close[D] / close[D-20])", "unit": "ln"},
+    {"id": 105, "name": "close_z_score_20_1d", "implemented": true, "formula": "(close[D] - SMA20[D]) / std20[D]", "unit": "z"},
+    {"id": 106, "name": "dist_to_sma_20_1d", "implemented": true, "formula": "close[D] / SMA20[D] - 1", "unit": "ratio"},
+    {"id": 107, "name": "dist_to_sma_50_1d", "implemented": true, "formula": "close[D] / SMA50[D] - 1", "unit": "ratio"},
+    {"id": 108, "name": "sma_20_sma_50_ratio_1d", "implemented": true, "formula": "SMA20[D] / SMA50[D] - 1", "unit": "ratio"},
+    {"id": 109, "name": "volume_z_score_20_1d", "implemented": true, "formula": "(volume[D] - mean20(volume)[D]) / std20(volume)[D]", "unit": "z"},
+    {"id": 110, "name": "atr_pct_14_1d", "implemented": true, "formula": "100 * WilderATR14[D] / close[D]", "unit": "%"},
+    {"id": 111, "name": "realized_volatility_20_1d", "implemented": true, "formula": "std20(log_return_1_1d) * sqrt(20)", "unit": "ln"},
+    {"id": 112, "name": "rsi_14_1d", "implemented": true, "formula": "Wilder RSI14[D]", "unit": "0-100"},
+    {"id": 113, "name": "bollinger_percent_b_20_2_1d", "implemented": true, "formula": "(close[D] - lower_band20_2[D]) / (upper_band20_2[D] - lower_band20_2[D])", "unit": "ratio"},
+    {"id": 114, "name": "bollinger_bandwidth_20_2_1d", "implemented": true, "formula": "(upper_band20_2[D] - lower_band20_2[D]) / SMA20[D]", "unit": "ratio"},
+    {"id": 115, "name": "macd_line_12_26_9_1d", "implemented": true, "formula": "EMA12(close)[D] - EMA26(close)[D]", "unit": "price"},
+    {"id": 116, "name": "macd_signal_12_26_9_1d", "implemented": true, "formula": "EMA9(MACD line)[D]", "unit": "price"},
+    {"id": 117, "name": "macd_hist_12_26_9_1d", "implemented": true, "formula": "MACD line[D] - MACD signal[D]", "unit": "price"}
   ]
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""make dashboard: export the Layer 4.1 OOS results store (oos_metrics.db) to Plan/data/dashboard.json, which the
+"""make dashboard: export the L9 OOS results store (oos_metrics.db) to Plan/data/dashboard.json, which the
 static Dashboard page (Plan/dashboard.html) fetches. stdlib only — runs without the .venv. Empty/absent DB -> []."""
 import json
 import sqlite3

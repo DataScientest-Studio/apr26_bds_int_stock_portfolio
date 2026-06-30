@@ -1,60 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Glossary</title>
-<style>
-  body{ margin:0; background:#0e1116; color:#e6edf3;
-        font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
-  header{ padding:22px 28px 4px; } header h1{ margin:0; font-size:20px; } header a{ color:#58a6ff; }
-  header p{ margin:4px 0 0; color:#8b949e; }
-  main{ padding:14px 28px 50px; max-width:820px; }
-  dl{ margin:0; } dt{ font-weight:600; margin:18px 0 2px; }
-  dd{ margin:0; color:#c9d1d9; } dd code, dt code{ color:#e6edf3; }
-  .g{ color:#8b949e; font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; margin:26px 0 2px; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glossary</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:980px;margin:0 auto;padding:36px 20px}
+    a{color:#0b5cab;text-decoration:none;font-weight:650}
+    dt{font-weight:750;margin-top:18px}
+    dd{margin:6px 0 0 0;line-height:1.55}
+    code{background:#eef2f6;border-radius:5px;padding:2px 5px}
+  </style>
 </head>
 <body>
-<header>
-  <h1>Glossary</h1>
-  <p>The vocabulary of the minimal pipeline. <a href="index.html">← back</a></p>
-</header>
 <main>
-<div class="g">Structure</div>
-<dl>
-  <dt>Layer (1.6 … 4.2)</dt><dd>A single stage of the pipeline. Before them: the OHLCV was acquired upstream from Alpaca and held in QuantConnect/LEAN zip (1.3–1.4, provenance only), exported to <code>data/seed</code>, which <code>build_db.py</code> (1.5) loads into the shared <code>liora.duckdb</code> input. The runner notebook then executes layers 1.6 … 4.2 in order; together they take one ticker from clean OHLCV to an out-of-sample report.</dd>
-  <dt>Asset / the 7 files</dt><dd>One ticker’s deliverable folder <code>Assets/&lt;T&gt;/</code>: the executed notebook, three OHLCV parquets (1h/1d/1w), the Optuna best-params JSON, the standalone strategy <code>.py</code>, and the OOS README.</dd>
-  <dt>Data acquisition (1.3–1.4) — Alpaca · QuantConnect/LEAN</dt><dd><i>Upstream provenance — not code in this repo.</i> The raw 1h OHLCV was downloaded from the Alpaca Market Data API (<code>feed=sip</code>), held in QuantConnect/LEAN one-zip-per-ticker archive format, then exported once to <code>data/seed/*_ohlcv_1h.parquet</code>. This self-contained repo ships those parquets and never calls the API live; the visualization shows this at the very bottom.</dd>
-  <dt>Data source / input store (1.5) / <code>liora.duckdb</code></dt><dd>The single input store: a DuckDB table <code>bars_1h(ticker, timestamp, open, high, low, close, volume)</code>, built from the exported <code>data/seed/*_ohlcv_1h.parquet</code> by <code>build_db.py</code> (<code>make build-db</code>). This is the build_db step (1.5), just above the upstream acquisition (1.3–1.4).</dd>
-</dl>
-<div class="g">Data &amp; timeframes</div>
-<dl>
-  <dt>OHLCV</dt><dd>Open / High / Low / Close / Volume — the raw candle. Timestamps are interval-open, UTC.</dd>
-  <dt>1h / 1d / 1w</dt><dd>The source 1-hour bars, plus deterministic roll-ups to ET calendar day (1d) and ISO week (1w). 1d/1w are pure-OHLCV, used only as causal context.</dd>
-  <dt>Warmup / Train / OOS</dt><dd>The three time windows. Warmup primes indicators; the model is tuned and trained on Train; OOS is a single untouched out-of-sample test.</dd>
-  <dt>Purge &amp; embargo</dt><dd>Gaps that stop a label’s outcome window from overlapping the Train→OOS boundary, so there is no look-ahead leakage.</dd>
-</dl>
-<div class="g">Signal &amp; features</div>
-<dl>
-  <dt>Setup (trend-line detector)</dt><dd>A causal pattern: a fitted trend line touched <code>MIN_TOUCHES</code> times, yielding a candidate long/short entry. DET-09 rejects degenerate / zero-ATR setups.</dd>
-  <dt>Standard features (core 5) + means</dt><dd>The always-on standard trendline features were reduced from 8 to a core 5 (distance to trend line, Risk-Box height, bar return, volume z-score, direction; dropped: opposing-line distance, body/range, touch count). The default selection adds three Feature-F columns: <code>log_return_5</code> (F9) and two mean / moving-average features — <code>close_z_score_20</code> (F11, price z-score vs its 20-bar SMA) and <code>dist_to_sma_20</code> (F19, distance from the 20-bar SMA).</dd>
-  <dt>Output-B</dt><dd>The per-setup feature matrix X plus the label Y and audit columns — the table the model trains on.</dd>
-  <dt>Triple-barrier (TB_v1.2) / label Y</dt><dd>The outcome label: over the next <code>H</code> bars, did price hit the target, the safety line, or neither? Defines win/loss.</dd>
-  <dt>Feature manifest</dt><dd>The resolved, per-asset list of X columns (the 1h set by default; some assets add 1d/1w context).</dd>
-</dl>
-<div class="g">Training &amp; OOS</div>
-<dl>
-  <dt>Optuna / TPE / MedianPruner</dt><dd>The hyperparameter optimizer: Tree-structured Parzen Estimator sampling with median pruning, 200 trials, maximizing AUC-PR.</dd>
-  <dt>Purged walk-forward CV</dt><dd>Cross-validation in time order with purged folds, so each fold’s validation never overlaps its training labels.</dd>
-  <dt>AUC-PR</dt><dd>Area under the precision–recall curve — the tuning metric (robust to class imbalance).</dd>
-  <dt>XGBoost meta-label model</dt><dd>The gradient-boosted classifier that scores each setup’s probability of being a winner; embedded (base64) in the strategy file.</dd>
-  <dt>Risk-Box engine</dt><dd>The sequential trade simulator: per-trade fractional-Kelly sizing (default; all-in compounding selectable), one position per asset, a symmetric target/safety “box”, and scheduled exits. The same engine scores Train acceptance and OOS.</dd>
-  <dt>Kelly position sizing</dt><dd>Per-trade position fraction <code>f = clip(λ·(2p−1), 0, KELLY_CAP)</code>, where <code>p</code> is the model’s win probability for that setup and the symmetric Risk-Box gives reward:risk <code>b=1</code> (so full Kelly = <code>2p−1</code>). The multiplier <code>λ</code> (<code>kelly_fraction</code>) is calibrated per asset on <b>Train out-of-fold log-growth</b> (a dedicated 1-D Optuna study, OOS never read) and stored in <code>best_params</code>. <code>KELLY_CAP=1.0</code> forbids leverage; <code>CAPITAL_MODE</code> switches Kelly ↔ all-in.</dd>
-  <dt>Profit factor (PF)</dt><dd>Gross profit ÷ gross loss over OOS trades. The primary strategy objective (then min drawdown, then min time-in-market).</dd>
-  <dt>Selfcheck</dt><dd>The strategy file reloads its embedded model and reproduces its golden predictions — a built-in integrity check, not a security gate.</dd>
-  <dt>Dashboard / <code>oos_metrics.db</code></dt><dd>The per-asset OOS results list. Each run (4.1) UPSERTs its verdict — end capital, return, PF, drawdown, win rate, trades, TIM, CV AUC-PR — into <code>oos_metrics.db</code> (a minimal, results-only SQLite store). <code>make dashboard</code> exports it to <code>data/dashboard.json</code>, which <code>dashboard.html</code> renders as a sortable table. The DB lives in <code>Project/Structure/</code>, outside the 7-file deliverable.</dd>
-</dl>
+  <p><a href="index.html">Back</a></p>
+  <h1>Glossary</h1>
+  <dl>
+    <dt>Asset / the 7 files</dt>
+    <dd>One ticker folder under <code>Assets/&lt;T&gt;/</code>: executed notebook, three OHLCV parquets, Optuna best params JSON, standalone strategy, and OOS README.</dd>
+    <dt>Feature namespaces</dt>
+    <dd>ID ranges define the model input lanes: <code>01-99</code> for 1h, <code>101-199</code> for 1d, <code>201-299</code> for 1w, and <code>901-999</code> for multi-timeframe features.</dd>
+    <dt>Candidate bar</dt>
+    <dd>A 1h bar with sufficient history and nonzero <code>log_return_5</code>. Its side is the sign of that momentum value.</dd>
+    <dt>Triple Barrier Y</dt>
+    <dd>The binary label from a symmetric ATR barrier around the next-open entry, with target, stop, and time-barrier outcomes.</dd>
+    <dt>Optuna / XGB</dt>
+    <dd>Optuna tunes the XGBoost binary classifier on Train-only purged walk-forward CV. XGB predicts <code>p(Y=1)</code>.</dd>
+    <dt>Kelly sizing</dt>
+    <dd>Per-trade fraction <code>f = clip(lambda * (2p - 1), 0, KELLY_CAP)</code>, calibrated on Train out-of-fold growth.</dd>
+    <dt>Dashboard</dt>
+    <dd>Static page reading <code>Plan/data/dashboard.json</code>, exported from <code>Project/Structure/oos_metrics.db</code>.</dd>
+  </dl>
 </main>
 </body>
 </html>

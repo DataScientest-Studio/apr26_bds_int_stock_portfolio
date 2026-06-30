@@ -38,10 +38,12 @@ def main():
             break
     ep = ExecutePreprocessor(timeout=3600, kernel_name="python3")
     ep.preprocess(nb, {"metadata": {"path": str(ROOT)}})   # run with cwd = Structure/
-    out = ROOT / "Assets" / ticker / f"{ticker}__Layer1_6_to_Layer4_2.ipynb"
+    out = ROOT / "Assets" / ticker / f"{ticker}__L4_to_L9.ipynb"
     out.parent.mkdir(parents=True, exist_ok=True)
     nbformat.write(nb, out)                                 # file #1 = the executed notebook
-    expected = {f"{ticker}__Layer1_6_to_Layer4_2.ipynb", f"{ticker}_ohlcv_1h.parquet",
+    for legacy in out.parent.glob(f"{ticker}__Layer*_to_Layer*.ipynb"):
+        legacy.unlink()
+    expected = {f"{ticker}__L4_to_L9.ipynb", f"{ticker}_ohlcv_1h.parquet",
                 f"{ticker}_ohlcv_1d.parquet", f"{ticker}_ohlcv_1w.parquet",
                 "OPTUNAs_XGB_HPOs_best_params.json", f"strategy_{ticker}.py", f"{ticker}_README.md"}
     present = {p.name for p in out.parent.iterdir() if p.is_file()}
