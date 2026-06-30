@@ -33,7 +33,9 @@
     "1h": {
       "enabled": true,
       "additional_feature_ids": [
-        9
+        9,
+        11,
+        19
       ]
     },
     "1d": {
@@ -54,7 +56,9 @@
       "1h": {
         "enabled": true,
         "additional_feature_ids": [
-          9
+          9,
+          11,
+          19
         ]
       },
       "1w": {
@@ -67,8 +71,20 @@
     "TSLA": {
       "1h": {
         "enabled": true,
+        "additional_feature_ids": []
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "XOM": {
+      "1h": {
+        "enabled": true,
         "additional_feature_ids": [
-          9
+          9,
+          11,
+          19
         ]
       },
       "1d": {
@@ -76,20 +92,102 @@
         "additional_feature_ids": [
           109
         ]
-      }
-    },
-    "XOM": {
-      "1h": {
-        "enabled": true,
-        "additional_feature_ids": [
-          9
-        ]
       },
       "1w": {
         "enabled": true,
         "additional_feature_ids": [
           209
         ]
+      }
+    },
+    "AMZN": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "GOOGL": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "JNJ": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9,
+          11,
+          19
+        ]
+      }
+    },
+    "JPM": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9,
+          11,
+          19
+        ]
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": []
+      },
+      "between_timeframes": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "META": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9,
+          11,
+          19
+        ]
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": []
+      },
+      "1w": {
+        "enabled": true,
+        "additional_feature_ids": []
+      },
+      "between_timeframes": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "MSFT": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": [
+          9,
+          11,
+          19
+        ]
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": []
+      },
+      "between_timeframes": {
+        "enabled": true,
+        "additional_feature_ids": []
+      }
+    },
+    "NVDA": {
+      "1h": {
+        "enabled": true,
+        "additional_feature_ids": []
+      },
+      "1d": {
+        "enabled": true,
+        "additional_feature_ids": []
       }
     }
   }

@@ -71,7 +71,7 @@
     <h2>Per-asset feature selection &middot; <code>per_asset_feature_selection.json</code></h2>
     <table>
       <tr><th>Scope</th><th>Timeframes</th><th>X columns</th></tr>
-      <tr><td>Default</td><td>1h (FT1–FT8 + <code>log_return_5</code>)</td><td>9</td></tr>
+      <tr><td>Default</td><td>1h (5 core FT + <code>log_return_5</code> + 2 means)</td><td>8</td></tr>
       <tr><td>Per-asset override</td><td>+ optional 1d / 1w causal context</td><td>e.g. AAPL: 18 (1h + 1d)</td></tr>
     </table>
     <p class="src">Feature definitions live in <code>Project/Structure/Features/features_{1h,1d,1w,between_timeframes}/feature_registry.json</code>.</p>

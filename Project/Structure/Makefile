@@ -23,7 +23,11 @@ LOOP_TICKERS := AAPL TSLA XOM
 endif
 LOOP_TICKERS := $(shell printf '%s' "$(LOOP_TICKERS)" | tr '[:lower:]' '[:upper:]')   # tickers are case-insensitive
 ifeq (loop,$(firstword $(MAKECMDGOALS)))
-$(eval $(filter-out loop,$(MAKECMDGOALS)):;@:)   # ticker args become no-op goals (no "No rule to make target" error)
+# The ticker args are extra goals: separate words when unquoted (`make loop AAPL TSLA`), or ONE spaced goal when
+# quoted (`make loop "AAPL TSLA"`). A catch-all pattern rule swallows them all as no-ops so make exits 0; scoped to a
+# `loop` invocation (firstword == loop) so other targets still fail loudly on a typo.
+%:
+	@:
 endif
 
 .PHONY: deps build-db run-asset feature-search loop dashboard serve on off restart logs clean help
@@ -56,19 +60,20 @@ TICKERS = os.environ.get("LOOP_TICKERS", "AAPL TSLA XOM").split()
 APPLY = bool(os.environ.get("LOOP_APPLY"))
 ENSURE = bool(os.environ.get("LOOP_ENSURE_SEED"))
 SP500_DUCKDB = os.environ.get("SP500_DUCKDB", "")
+EXTRAS = [9, 11, 19]   # 1h additionals: F9 log_return_5 + F11 close_z_score_20 + F19 dist_to_sma_20 (means)
 COMBOS = [
-  ("1h", [], None, None, None),
-  ("1h+F9 (default)", [9], None, None, None),
-  ("1h+F9 +1d", [9], [], None, None),
-  ("1h+F9 +1d+F109", [9], [109], None, None),
-  ("1h+F9 +1w", [9], None, [], None),
-  ("1h+F9 +1w+F209", [9], None, [209], None),
-  ("1h+F9 +1d +1w", [9], [], [], None),
-  ("1h+F9 +1d+F109 +1w+F209", [9], [109], [209], None),
-  ("1h+1d (no F9)", [], [], None, None),
-  ("1h+F9 +1d +cross", [9], [], None, []),
-  ("1h+F9 +1d+1w +cross", [9], [], [], []),
-  ("1h+F9 +1d+1w +cross+F909+F910", [9], [], [], [909, 910]),
+  ("5core only", [], None, None, None),
+  ("5core+F9+means (default)", EXTRAS, None, None, None),
+  ("+1d", EXTRAS, [], None, None),
+  ("+1d+F109", EXTRAS, [109], None, None),
+  ("+1w", EXTRAS, None, [], None),
+  ("+1w+F209", EXTRAS, None, [209], None),
+  ("+1d +1w", EXTRAS, [], [], None),
+  ("+1d+F109 +1w+F209", EXTRAS, [109], [209], None),
+  ("5core +1d (no extras)", [], [], None, None),
+  ("+1d +cross", EXTRAS, [], None, []),
+  ("+1d+1w +cross", EXTRAS, [], [], []),
+  ("+1d+1w +cross+F909+F910", EXTRAS, [], [], [909, 910]),
 ]
 def ensure_seed(T):
   p = "data/seed/%s_ohlcv_1h.parquet" % T
@@ -115,7 +120,7 @@ winners = {}
 for T in TICKERS:
   ensure_seed(T)
   df = pd.read_parquet("data/seed/%s_ohlcv_1h.parquet" % T)
-  sup = P.derive_output_b(df, T, manifest([9], [109], [209], None))   # superset 1h+1d+1w (no cross), once
+  sup = P.derive_output_b(df, T, manifest(EXTRAS, [109], [209], None))   # superset 1h(+means)+1d+1w (no cross), once
   rows = []
   for label, a1h, a1d, a1w, abt in COMBOS:
     m = manifest(a1h, a1d, a1w, abt)

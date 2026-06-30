@@ -472,8 +472,10 @@ def simulate_trade(df, setup, end_idx):
 
 # ============================ 2.2 — features + TB_v1.2 label -> Output B ============================
 
-FEATURE_MANIFEST = ["distance_to_trend_line", "distance_to_opposing_line", "risk_box_height_pct",
-                    "bar_return_pct", "body_to_range_ratio", "volume_z_score", "touch_count", "direction"]
+# Core 5 standard trendline features (reduced from 8: dropped distance_to_opposing_line, body_to_range_ratio,
+# touch_count). BASE_FEATURE_NAMES + the coarse-context cascade derive from this; the model X is registry-driven.
+FEATURE_MANIFEST = ["distance_to_trend_line", "risk_box_height_pct", "bar_return_pct",
+                    "volume_z_score", "direction"]
 
 
 # ===================== 2.3 — per-Asset feature selection (FT1–FT8 + F) =====================
@@ -689,6 +691,9 @@ def _features_at(df, setup, atr, vmean, vstd):
     Lt, Lo = setup["L_trend_t0"], setup["L_opp_t0"]
     atr_t = atr[t]
     sd = vstd[t]
+    # 20-bar causal close window (ends at the decision bar t) for the mean features F11 / F19.
+    m20 = float(np.mean(c[t - 19:t + 1])) if t >= 19 else float("nan")
+    sd20 = float(np.std(c[t - 19:t + 1])) if t >= 19 else float("nan")
     return {"distance_to_trend_line": s * (c[t] - Lt) / atr_t,
             "distance_to_opposing_line": s * (c[t] - Lo) / atr_t,
             "risk_box_height_pct": 100.0 * setup["R0"] / max(EPS, abs(Lt)),
@@ -703,6 +708,10 @@ def _features_at(df, setup, atr, vmean, vstd):
             # F9 log_return_5: causal 5-bar log-return; t<5 = insufficient history -> NaN (a mandatory 1h
             # feature, so the row is excluded by 2.2 eligibility, never imputed to 0.0). Prices are > 0.
             "log_return_5": float(np.log(c[t] / c[t - 5])) if t >= 5 else float("nan"),
+            # mean features (causal 20-bar): F11 close z-score vs its 20-bar SMA (flat window -> 0.0 convention);
+            # F19 distance of close from its 20-bar SMA. t<19 = insufficient history -> NaN (2.2 gate excludes).
+            "close_z_score_20": (float("nan") if t < 19 else (0.0 if sd20 == 0 else (c[t] - m20) / sd20)),
+            "dist_to_sma_20": (float("nan") if t < 19 else c[t] / m20 - 1.0),
             "closed_through_line": 1 if s * (c[t] - Lt) > 0 else 0}
 
 

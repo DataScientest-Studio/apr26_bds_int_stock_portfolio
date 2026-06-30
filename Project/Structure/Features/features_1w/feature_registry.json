@@ -10,52 +10,185 @@
     "sot": "Layers_Short_SOT/ENG/Layer2_3_add_features_to_standard_trendlines_features_eng.md"
   },
   "standard_trendline_features": [
-    {"id": 201, "name": "distance_to_trend_line_1w", "implemented": true,
-     "formula": "direction * (close[T] - L_trend(T)) / ATR(W_ATR)[T] on the latest completed 1w setup state available as-of decision_timestamp", "units": "atr_normalised",
-     "expected_range": [null, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["high", "low", "close"], "source_feature_requirements": []}},
-    {"id": 202, "name": "distance_to_opposing_line_1w", "implemented": true,
-     "formula": "direction * (close[T] - L_opp(T)) / ATR(W_ATR)[T] on the latest completed 1w setup state available as-of decision_timestamp", "units": "atr_normalised",
-     "expected_range": [null, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["high", "low", "close"], "source_feature_requirements": []}},
-    {"id": 203, "name": "risk_box_height_pct_1w", "implemented": true,
-     "formula": "100 * R0 / max(EPS, abs(L_trend(T))) on the latest completed 1w setup state available as-of decision_timestamp", "units": "percentage",
-     "expected_range": [0, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": [], "source_feature_requirements": []}},
-    {"id": 204, "name": "bar_return_pct_1w", "implemented": true,
-     "formula": "(close[T] - close[T-1]) / close[T-1] * 100 on completed 1w bars (T>=1 else NaN), latest as-of decision_timestamp", "units": "percentage",
-     "expected_range": [null, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["close"], "source_feature_requirements": []}},
-    {"id": 205, "name": "body_to_range_ratio_1w", "implemented": true,
-     "formula": "abs(close[T]-open[T]) / (high[T]-low[T]) on completed 1w bars (high==low -> 0.0), latest as-of decision_timestamp", "units": "ratio",
-     "expected_range": [0, 1], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["open", "high", "low", "close"], "source_feature_requirements": []}},
-    {"id": 206, "name": "volume_z_score_1w", "implemented": true,
-     "formula": "(volume[T] - rolling_mean(volume,W_VOL)[T]) / rolling_std(volume,W_VOL)[T] on completed 1w bars (std==0 -> 0.0; pre-window -> NaN), latest as-of decision_timestamp", "units": "z_score",
-     "expected_range": [null, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["volume"], "source_feature_requirements": []}},
-    {"id": 207, "name": "touch_count_1w", "implemented": true,
-     "formula": "number of trendline touchpoints (>= MIN_TOUCHES) within the detector lookback on completed 1w bars, latest as-of decision_timestamp", "units": "count",
-     "expected_range": [0, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": [], "source_feature_requirements": []}},
-    {"id": 208, "name": "direction_1w", "implemented": true,
-     "formula": "setup side in {-1,+1} of the latest completed 1w setup state available as-of decision_timestamp", "units": "signed_direction",
-     "expected_range": [-1, 1], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": [], "source_feature_requirements": []}}
+    {
+      "id": 201,
+      "name": "distance_to_trend_line_1w",
+      "implemented": true,
+      "formula": "direction * (close[T] - L_trend(T)) / ATR(W_ATR)[T] on the latest completed 1w setup state available as-of decision_timestamp",
+      "units": "atr_normalised",
+      "expected_range": [
+        null,
+        null
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [
+          "high",
+          "low",
+          "close"
+        ],
+        "source_feature_requirements": []
+      }
+    },
+    {
+      "id": 203,
+      "name": "risk_box_height_pct_1w",
+      "implemented": true,
+      "formula": "100 * R0 / max(EPS, abs(L_trend(T))) on the latest completed 1w setup state available as-of decision_timestamp",
+      "units": "percentage",
+      "expected_range": [
+        0,
+        null
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [],
+        "source_feature_requirements": []
+      }
+    },
+    {
+      "id": 204,
+      "name": "bar_return_pct_1w",
+      "implemented": true,
+      "formula": "(close[T] - close[T-1]) / close[T-1] * 100 on completed 1w bars (T>=1 else NaN), latest as-of decision_timestamp",
+      "units": "percentage",
+      "expected_range": [
+        null,
+        null
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [
+          "close"
+        ],
+        "source_feature_requirements": []
+      }
+    },
+    {
+      "id": 206,
+      "name": "volume_z_score_1w",
+      "implemented": true,
+      "formula": "(volume[T] - rolling_mean(volume,W_VOL)[T]) / rolling_std(volume,W_VOL)[T] on completed 1w bars (std==0 -> 0.0; pre-window -> NaN), latest as-of decision_timestamp",
+      "units": "z_score",
+      "expected_range": [
+        null,
+        null
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [
+          "volume"
+        ],
+        "source_feature_requirements": []
+      }
+    },
+    {
+      "id": 208,
+      "name": "direction_1w",
+      "implemented": true,
+      "formula": "setup side in {-1,+1} of the latest completed 1w setup state available as-of decision_timestamp",
+      "units": "signed_direction",
+      "expected_range": [
+        -1,
+        1
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [],
+        "source_feature_requirements": []
+      }
+    }
   ],
   "additional_features": [
-    {"id": 209, "name": "log_return_5_1w", "implemented": true,
-     "formula": "ln(close[T] / close[T-5]) on completed 1w bars (T>=5 else NaN), latest as-of decision_timestamp", "units": "ratio",
-     "expected_range": [null, null], "causal_clock": "decision_timestamp", "non_finite_policy": "nan",
-     "materialization": "model", "reducer": "primitive", "reducer_params": {}, "source_state_semantics": "latest_completed_coarse_setup_asof",
-     "dependencies": {"requires_layers_all": ["1.6.MTF", "2.3.3"], "requires_timeframes_all": ["1w"], "primitive_inputs": ["close"], "source_feature_requirements": []}}
+    {
+      "id": 209,
+      "name": "log_return_5_1w",
+      "implemented": true,
+      "formula": "ln(close[T] / close[T-5]) on completed 1w bars (T>=5 else NaN), latest as-of decision_timestamp",
+      "units": "ratio",
+      "expected_range": [
+        null,
+        null
+      ],
+      "causal_clock": "decision_timestamp",
+      "non_finite_policy": "nan",
+      "materialization": "model",
+      "reducer": "primitive",
+      "reducer_params": {},
+      "source_state_semantics": "latest_completed_coarse_setup_asof",
+      "dependencies": {
+        "requires_layers_all": [
+          "1.6.MTF",
+          "2.3.3"
+        ],
+        "requires_timeframes_all": [
+          "1w"
+        ],
+        "primitive_inputs": [
+          "close"
+        ],
+        "source_feature_requirements": []
+      }
+    }
   ]
 }

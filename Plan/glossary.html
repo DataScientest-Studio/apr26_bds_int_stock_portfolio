@@ -38,7 +38,7 @@
 <div class="g">Signal &amp; features</div>
 <dl>
   <dt>Setup (trend-line detector)</dt><dd>A causal pattern: a fitted trend line touched <code>MIN_TOUCHES</code> times, yielding a candidate long/short entry. DET-09 rejects degenerate / zero-ATR setups.</dd>
-  <dt>FT1–FT8</dt><dd>The eight standard trendline features (distance to line, Risk-Box height, bar return, body/range, volume z-score, touch count, direction, …) computed per setup.</dd>
+  <dt>Standard features (core 5) + means</dt><dd>The always-on standard trendline features were reduced from 8 to a core 5 (distance to trend line, Risk-Box height, bar return, volume z-score, direction; dropped: opposing-line distance, body/range, touch count). The default selection adds three Feature-F columns: <code>log_return_5</code> (F9) and two mean / moving-average features — <code>close_z_score_20</code> (F11, price z-score vs its 20-bar SMA) and <code>dist_to_sma_20</code> (F19, distance from the 20-bar SMA).</dd>
   <dt>Output-B</dt><dd>The per-setup feature matrix X plus the label Y and audit columns — the table the model trains on.</dd>
   <dt>Triple-barrier (TB_v1.2) / label Y</dt><dd>The outcome label: over the next <code>H</code> bars, did price hit the target, the safety line, or neither? Defines win/loss.</dd>
   <dt>Feature manifest</dt><dd>The resolved, per-asset list of X columns (the 1h set by default; some assets add 1d/1w context).</dd>

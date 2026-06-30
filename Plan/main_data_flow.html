@@ -168,7 +168,7 @@ body.le-open #lblEditor{transform:translateY(0)}
 <script>try{var _p=localStorage.getItem('sp500_pipeline_panel');if(_p==null)_p=(window.innerWidth<700?null:'legend');
   if(_p==='legend')document.body.classList.add('leg-open');
   else if(_p==='editor')document.body.classList.add('le-open');}catch(e){}</script>
-<h2 class="sr-only">A flat front visualization of a minimal per-asset S&amp;P 500 ML pipeline in HTML Canvas, depth-sorted painting, flowing bottom to top (raw OHLCV at the bottom, the seven-file deliverable folder at the top). Twelve layers (1.3&ndash;4.2): the raw 1h OHLCV was downloaded upstream from the Alpaca Market Data API (feed=sip), held in QuantConnect/LEAN one-zip-per-ticker archive format and exported offline to data/seed parquet (this self-contained repo ships those parquets and never calls the API live); then build_db.py loads them into liora.duckdb, then a DuckDB snapshot materialized to a clean 1h OHLCV parquet plus deterministic 1d and 1w context roll-ups (group by ET day / ISO week), a warm-up / train / OOS time split with purge and embargo, a trend-line setup detector using only candles up to t0, trendline FT1&ndash;FT8 features X with a triple-barrier label Y, a per-asset feature-selection layer resolving the effective manifest (default 9 X), an Optuna hyperparameter search producing OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that embeds each base64 model in a per-asset strategy_&lt;TICKER&gt;.py, a one-shot OOS verdict through the Risk-Box engine, and a per-asset ticker folder under Assets/ holding seven files. Bottom-to-top flow with dashed layer separators and editable note-cards. View modes 1&ndash;6, F and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
+<h2 class="sr-only">A flat front visualization of a minimal per-asset S&amp;P 500 ML pipeline in HTML Canvas, depth-sorted painting, flowing bottom to top (raw OHLCV at the bottom, the seven-file deliverable folder at the top). Twelve layers (1.3&ndash;4.2): the raw 1h OHLCV was downloaded upstream from the Alpaca Market Data API (feed=sip), held in QuantConnect/LEAN one-zip-per-ticker archive format and exported offline to data/seed parquet (this self-contained repo ships those parquets and never calls the API live); then build_db.py loads them into liora.duckdb, then a DuckDB snapshot materialized to a clean 1h OHLCV parquet plus deterministic 1d and 1w context roll-ups (group by ET day / ISO week), a warm-up / train / OOS time split with purge and embargo, a trend-line setup detector using only candles up to t0, 5 core trendline features plus mean features X with a triple-barrier label Y, a per-asset feature-selection layer resolving the effective manifest (default 8 X), an Optuna hyperparameter search producing OPTUNAs_XGB_HPOs_best_params.json, a final XGBoost training that embeds each base64 model in a per-asset strategy_&lt;TICKER&gt;.py, a one-shot OOS verdict through the Risk-Box engine, and a per-asset ticker folder under Assets/ holding seven files. Bottom-to-top flow with dashed layer separators and editable note-cards. View modes 1&ndash;6, F and L, pan, zoom, tooltips, side panel, label editor, PNG export.</h2>
 
 <p class="tlc-sub"><b>S&amp;P 500 per-asset ML pipeline</b> · Alpaca SIP (1h OHLCV) → QuantConnect/LEAN zip → data/seed → build_db → liora.duckdb → snapshot → parquet OHLCV (1h/1d/1w) → split → setup detector → trendline features X + triple-barrier Y → feature selection → Optuna (OPTUNAs_XGB_HPOs_best_params.json) → XGB final → strategy_&lt;TICKER&gt;.py (base64 MODEL_B64 inside) → OOS verdict → endproduct folder (7 files / asset). <b>Raw → endproduct (bottom → top)</b> · drag = pan · scroll = zoom · click = details · keys 1–6, F and L = views.</p>
 
@@ -227,8 +227,8 @@ body.le-open #lblEditor{transform:translateY(0)}
   <li><b>Snapshot → parquet OHLCV</b> (1.6) — reads <code>liora.duckdb</code> (<code>bars_1h</code>), asserts the clean-OHLCV contract, writes per asset <b>&lt;TICKER&gt;_ohlcv_1h.parquet</b> + deterministic 1d/1w roll-ups (group by ET day / ISO week).</li>
   <li><b>Time split</b> (1.7): warm-up → train → OOS; <b>purge H=24 + embargo 35</b>, because TB labels overlap the boundaries.</li>
   <li><b>Trend-line setup detector</b> (2.1) — fits L_trend, L_opp, touchpoints, t0, R0, direction using only candles ≤ t0 (zero look-ahead).</li>
-  <li><b>Trendline features X + label Y</b> (2.2) = FT1–FT8 (8 X) + Triple-Barrier TB_v1.2 (signal close[t0], entry open[t0+1], TP/SL close[t] fill open[t+1], Time Barrier MOC at H=24; SL=L_opp(t) moving, barriers from R0).</li>
-  <li><b>Feature selection</b> (2.3): resolve per-asset effective manifest — default 9 X (FT1–FT8 + F9 log_return_5), optional causal 1d/1w context.</li>
+  <li><b>Trendline features X + label Y</b> (2.2) = 5 core FT (reduced from 8: distance-to-trend, Risk-Box height, bar return, volume z, direction) + Triple-Barrier TB_v1.2 (signal close[t0], entry open[t0+1], TP/SL close[t] fill open[t+1], Time Barrier MOC at H=24; SL=L_opp(t) moving, barriers from R0).</li>
+  <li><b>Feature selection</b> (2.3): resolve per-asset effective manifest — default 8 X (5 core FT + F9 log_return_5 + F11 close_z_score_20 + F19 dist_to_sma_20 means), optional causal 1d/1w context.</li>
   <li><b>Optuna search</b> (3.1) on Train (200 trials, TPE + MedianPruner, purged walk-forward CV) → <b>OPTUNAs_XGB_HPOs_best_params.json</b>; then <b>Kelly λ calibration</b> (3.1b) — a 1-D Optuna study maximizing Train out-of-fold log-growth → <code>kelly_fraction</code> (stored in best_params, OOS never read).</li>
   <li><b>XGB final training</b> (3.2) per asset; champion → base64 <b>MODEL_B64</b> embedded inside <b>strategy_&lt;TICKER&gt;.py</b> + selfcheck (carries the calibrated <code>kelly_fraction</code> + EXECUTION_CONTRACT).</li>
   <li><b>OOS verdict</b> (4.1): one-shot out-of-sample run through the Risk-Box engine with <b>per-trade fractional-Kelly sizing</b> (f = clip(λ·(2p−1), 0, KELLY_CAP)) → <b>oos_metrics.db</b> (PF · MDD · WR · trades) — the store the Dashboard reads.</li>
@@ -288,14 +288,13 @@ var PIPELINE_VIZ_MANIFEST={"schema_version":"pipeline_viz_manifest.v1","authorit
 
 var FEATURES=[
   {name:'distance_to_trend_line',  family:'trendline_geometry', src:'detector + Wilder ATR(14)', unit:'×ATR',  formula:'sign·(c − L_trend(t)) / ATR(t)'},
-  {name:'distance_to_opposing_line',family:'trendline_geometry',src:'detector + Wilder ATR(14)', unit:'×ATR',  formula:'sign·(c − L_opp(t)) / ATR(t)'},
   {name:'risk_box_height_pct',     family:'trendline_geometry', src:'detector',           unit:'%',     formula:'100 · R0 / max(EPS, |L_trend(t0)|)',
     special:'Risk Box height (Action↔Safety) as % of the Action line; anchor B R0 = dir·(L_trend(t0) − L_opp(t0))'},
   {name:'bar_return_pct',          family:'price_action',       src:'OHLCV',              unit:'%',     formula:'(c − c[t−1]) / c[t−1] · 100'},
-  {name:'body_to_range_ratio',     family:'price_action',       src:'OHLCV',              unit:'[0,1]', formula:'|c − o| / max(ε, h − l)'},
   {name:'volume_z_score',          family:'volume',             src:'OHLCV · W=20',       unit:'z',     formula:'(v − mean_20) / std_20  (std=0 → 0)'},
-  {name:'touch_count',             family:'trendline_geometry', src:'detector',           unit:'n',     formula:'count(topo_candles ≤ t)'},
-  {name:'direction',               family:'direction',          src:'detector (2.1 side)', unit:'±1',    formula:'+1 long / −1 short — setup side (FT8, the 8th X, not a partition)'}
+  {name:'direction',               family:'direction',          src:'detector (2.1 side)', unit:'±1',    formula:'+1 long / −1 short — setup side (the 5th core X, not a partition)'},
+  {name:'close_z_score_20',        family:'price_action',       src:'OHLCV · SMA(20)',    unit:'z',     formula:'(c − mean_20) / std_20  (std=0 → 0) — F11 mean'},
+  {name:'dist_to_sma_20',          family:'price_action',       src:'OHLCV · SMA(20)',    unit:'ratio', formula:'c / mean_20 − 1 — F19 mean'}
 ];
 // AUDIT sidecar — NOT an X column, never into XGBoost.DMatrix. closed_through_line lives only in Output B (=1 at t0
 // by the break invariant); it is neither FT nor F. Kept beside the 2.2 matrix so the X-vs-audit boundary is explicit.
@@ -304,25 +303,24 @@ var AUDIT_FEATURES=[
     special:'Output B audit at t0 always =1 (break invariant); outside FEATURE_MANIFEST, never a model X'}
 ];
 
-// FEATURE_MANIFEST — the effective 9 X the model is trained on, in Feature-ID order (FT1–FT8 + F9).
-// NOTE: FT8 = direction (NOT closed_through_line, the audit column that lives only in Output B); F9 = log_return_5
-// (Feature, default ON; the per-Asset selection is resolved in 2.3 → effective manifest).
+// FEATURE_MANIFEST — the effective default 8 X the model is trained on, in Feature-ID order (5 core FT + F9 + 2 means).
+// NOTE: the 5th core FT = direction (NOT closed_through_line, the audit column that lives only in Output B);
+// F9 = log_return_5, F11 = close_z_score_20, F19 = dist_to_sma_20 (default ON; per-Asset selection resolved in 2.3).
 var FEATURE_MANIFEST=[
   {n:'distance_to_trend_line',   ab:'dTrend',     fam:'trendline_geometry', u:'×ATR',  f:'sign·(c − L_trend(t)) / ATR(t)'},
-  {n:'distance_to_opposing_line',ab:'dOpp',       fam:'trendline_geometry', u:'×ATR',  f:'sign·(c − L_opp(t)) / ATR(t)'},
   {n:'risk_box_height_pct',      ab:'boxH%',      fam:'trendline_geometry', u:'%',     f:'100 · R0 / max(EPS, |L_trend(t0)|)'},
   {n:'bar_return_pct',           ab:'ret%',       fam:'price_action',       u:'%',     f:'(c − c[t−1]) / c[t−1] · 100'},
-  {n:'body_to_range_ratio',      ab:'body/range', fam:'price_action',       u:'[0,1]', f:'|c − o| / max(ε, h − l)'},
   {n:'volume_z_score',           ab:'volZ',       fam:'volume',             u:'z',     f:'(v − mean_20) / std_20'},
-  {n:'touch_count',              ab:'touches',    fam:'trendline_geometry', u:'n',     f:'count(topo_candles ≤ t)'},
-  {n:'direction',                ab:'dir ±1',     fam:'direction',          u:'±1',    f:'setup side: +1 long / −1 short (the 8th X, not a partition)'},
-  {n:'log_return_5',             ab:'logRet5',    fam:'price_action',       u:'ln',    f:'ln(C[t] / C[t−5]) — F9 (2.3), causal at t0'}
+  {n:'direction',                ab:'dir ±1',     fam:'direction',          u:'±1',    f:'setup side: +1 long / −1 short (5th core X, not a partition)'},
+  {n:'log_return_5',             ab:'logRet5',    fam:'price_action',       u:'ln',    f:'ln(C[t] / C[t−5]) — F9 (2.3), causal at t0'},
+  {n:'close_z_score_20',         ab:'closeZ20',   fam:'price_action',       u:'z',     f:'(c − SMA20) / std20 — F11 mean (2.3)'},
+  {n:'dist_to_sma_20',           ab:'distSMA20',  fam:'price_action',       u:'ratio', f:'c / SMA20 − 1 — F19 mean (2.3)'}
 ];
-// FT/F feature taxonomy (human-facing vocabulary). FT1–FT8 = "Feature Trendline" = the 8 trendline X (7 geometric
-// + direction=FT8). F9–F18 = "Feature" (F9 = log_return_5). closed_through_line = audit-only (neither FT nor F).
-// Feature IDs, runtime column names + JSON wire keys (standard_a_features / added_features_b_catalog, schema layer2_3.v1)
-// are UNCHANGED on disk — FT/F is naming only. Model order = FT1…FT8 → selected F ascending.
-var FT_FEATURES=FEATURE_MANIFEST.slice(0,8);                          // FT1–FT8 (FT8 = direction) = the 8 model X
+// FT/F taxonomy. Standard trendline features (always-ON) = the core 5 (4 geometric + direction); reduced from 8 by
+// dropping distance_to_opposing_line, body_to_range_ratio, touch_count. F9..F99 = selected additional Features
+// (F9 log_return_5, F11 close_z_score_20, F19 dist_to_sma_20 = means). closed_through_line = audit-only.
+// Model order = core standard → selected F ascending.
+var FT_FEATURES=FEATURE_MANIFEST.slice(0,5);                          // the 5 core standard trendline X
 var AUDIT_COLUMNS=AUDIT_FEATURES.map(function(a){return a.name;});    // ['closed_through_line'] — audit sidecar, not X
 var GLOBAL_DEFAULT_F_FEATURES=['log_return_5'];                       // F9 default ON (2.3 may apply a per-Asset override)
 var GLOBAL_DEFAULT_EFFECTIVE_MANIFEST=FEATURE_MANIFEST.map(function(f){return f.n;});  // FT1–FT8 + F9 = effective 9 X
