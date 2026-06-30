@@ -2,61 +2,47 @@
 title: "Modeling Report"
 subtitle: "Per-Asset XGBoost Triple-Barrier Classifier — Baseline, Boosting vs Bagging, Interpretability & Deep-Learning Outlook"
 author:
-
-- Gabriel Marchesan Almeida
-- Paweł Flak
-- Marcus Schürstedt
-date: "today"
+  - Gabriel Marchesan Almeida
+  - Paweł Flak
+  - Marcus Schürstedt
+date: "2026-07-01"
 keywords: [machine learning, finance, XGBoost, gradient boosting, random forest, triple-barrier, purged walk-forward, Optuna, Kelly, S&P 500]
 subject: "Liora APR26 BDS INT — Data Scientist Capstone Project"
 description: "Rendering 2 modeling report: a per-asset XGBoost triple-barrier classifier with purged walk-forward CV, Optuna HPO and Kelly sizing, a measured XGBoost-vs-RandomForest comparison, an interpretability menu, and a deferred deep-learning plan."
 lang: en
-
-# --- Eisvogel template variables -------------------------------------------
 
 titlepage: true
 titlepage-color: "0B3D91"
 titlepage-text-color: "FFFFFF"
 titlepage-rule-color: "FFFFFF"
 titlepage-rule-height: 2
-logo-width: 100mm
 
 toc: true
 toc-own-page: true
 toc-depth: 3
 
-# Page layout
-
 papersize: a4
 geometry:
-
-- top=25mm
-- bottom=25mm
-- left=25mm
-- right=25mm
+  - top=25mm
+  - bottom=25mm
+  - left=25mm
+  - right=25mm
 fontsize: 11pt
 mainfont: "Arial"
 monofont: "Menlo"
-
-# Link colors: must be xcolor-named colors (not raw hex).
 
 linkcolor: "NavyBlue"
 urlcolor: "NavyBlue"
 toccolor: "NavyBlue"
 
-# Code blocks
-
 listings: true
 listings-no-page-break: true
 code-block-font-size: \footnotesize
 
-# Header / footer
-
 header-left: "Modeling Report"
 header-right: "Liora APR26 BDS INT"
 footer-left: "Marchesan · Flak · Schürstedt"
-footer-right: "thepage"
-
+footer-right: '\thepage'
 ---
 
 \newpage
@@ -71,36 +57,35 @@ trade setups**, trains **one XGBoost (gradient-boosting) model per asset**, tune
 with **Optuna** under a **purged walk-forward** cross-validation, sizes positions with
 **fractional Kelly**, and is evaluated strictly **out-of-sample (OOS)**.
 
-Two design questions the Liora brief asks for are answered with **measured numbers**,
-not assertions:
+Two questions the Liora brief asks for are answered with **measured numbers**, not
+assertions:
 
-- **Bagging vs Boosting.** We trained a **RandomForest** (bagging) baseline against the
-tuned **XGBoost** (boosting) on identical features and identical CV folds. Boosting
-wins on **all 10 assets** (mean AUC-PR advantage **+0.027**); RandomForest sits close
-to the no-skill floor.
-- **Interpretability.** A menu of five tree-interpretability methods is laid out with a
-recommended minimal default; this rendering keeps the section **descriptive** in line
-with the project's minimalism value, and defers the heavier methods explicitly.
+- **Bagging vs boosting.** We trained a **RandomForest** (bagging) baseline against the
+  tuned **XGBoost** (boosting) on identical features and identical CV folds. Boosting
+  wins on **all 10 assets** (mean AUC-PR advantage **+0.027**); RandomForest stays
+  essentially at the no-skill floor (it extracts almost no signal).
+- **Interpretability.** Five tree-interpretability methods are presented as a menu with a
+  recommended minimal default. In line with the project's minimalism value, this
+  rendering keeps the section **descriptive** and defers the heavier methods explicitly.
 
 **Deep learning is not implemented.** There is no PyTorch / TensorFlow / Keras in the
-codebase — the model is XGBoost only. Deep learning is a documented "**if time
-permits**" item with a concrete plan and an acceptance gate (§6).
+codebase — the model is XGBoost only. Deep learning is a documented "**if time permits**"
+item, with a concrete plan and an acceptance gate (§6).
 
 **Headline result, stated honestly.** The cross-validated signal is **weak but clean**:
-`cv_auc_pr` ≈ 0.50–0.55 across assets. Out of sample, only **TSLA (+10.4 %, PF 1.55)**
-and **JPM (PF 1.76)** are positive; **AAPL and XOM lose ≈ 5 %**; and **4 of 10 assets
-never trade** at the 0.6 probability gate — i.e. the system is conservative, not
-overfit-aggressive. As decision support, the per-asset edge is **not yet deployable
-capital**, and we present it as a methodologically defensible, leakage-controlled
-negative-leaning result.
-
+`cv_auc_pr` ≈ 0.51–0.55 across assets. Out of sample, **5 of the 10 assets trade and 5
+hold cash** (no setup clears the 0.6 probability gate); of the five that trade, only
+**TSLA (+10.4 %, PF 1.55)** and **JPM (PF 1.76, but essentially flat at +0.23 %)** are
+profitable, while **AAPL and XOM lose ≈ 5 %**. The system is therefore **conservative, not overfit-aggressive**: it
+prefers to sit out rather than trade a weak edge. As decision support, the per-asset
+edge is **not yet deployable capital**; we present it as a methodologically defensible,
+leakage-controlled, negative-leaning result.
 
 | Milestone    | Deadline   | Sections covered            | Status        |
 | ------------ | ---------- | --------------------------- | ------------- |
 | Rendering 1  | 2026-06-03 | §2 – §7 (data → features)   | **Delivered** |
 | Rendering 2  | 2026-07-01 | Modeling §1 – §9 (this doc) | **Delivered** |
 | Final report | 2026-07-08 | Revisions + opening/closing | Not started   |
-
 
 > **Disclaimer:** This project is decision support for a beginner investor, **not**
 > financial advice. Every number below is **out-of-sample on past data** and is not a
@@ -112,11 +97,10 @@ negative-leaning result.
 
 ## 1.1 What this report covers
 
-The Liora **Step 3 (Modeling)** deliverable, per `Formalities/Timeline.md`, must cover:
+The Liora **Step 3 (Modeling)** deliverable, per `Formalities/Timeline.md`, must cover
 *baseline models → metrics, optimization and model comparison → bagging/boosting →
 deep learning → interpretability → scientific & business conclusions*. This document
 maps to those requirements one-to-one:
-
 
 | Step-3 requirement                | Where it lives here |
 | --------------------------------- | ------------------- |
@@ -128,16 +112,14 @@ maps to those requirements one-to-one:
 | Interpretability                  | §7                  |
 | Scientific & business conclusions | §9                  |
 
-
 ## 1.2 The design changed between renderings (a documented pivot)
 
 Rendering 1 (`Formalities/Rendering1/REPORT.md`) described a **three-stage portfolio
 recommender**: cluster the S&P 500 by risk/return, rank stocks *within* clusters with a
-regression model, and recommend top-*N* per cluster under a sector cap, on **daily**
+regression model, and recommend top-*N* per cluster under a sector cap — on **daily**
 bars with a plain `TimeSeriesSplit`. During modeling that design was **superseded** by
-the system documented here. Recording superseded/failed approaches is itself a mentor
+the system documented here. Recording superseded approaches is itself a mentor
 requirement (meeting 2026-05-28), so we state the change plainly:
-
 
 | Rendering-1 design (planned)           | Rendering-2 implementation (actual)              | Why the change                                 |
 | -------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
@@ -146,7 +128,6 @@ requirement (meeting 2026-05-28), so we state the change plainly:
 | **Daily** bars                         | **1h** primary + 1d/1w/cross-TF context features | Richer intra-asset structure                   |
 | Plain `TimeSeriesSplit`                | **Purged walk-forward + embargo**                | Removes label-overlap leakage                  |
 | Sector cap / recommendation list       | Per-asset **Kelly** sizing + OOS backtest        | Direct economic evaluation per asset           |
-
 
 The recommender narrative will be reconciled in the final report; this modeling report
 describes **what runs in the code today**.
@@ -158,21 +139,21 @@ describes **what runs in the code today**.
 ## 2.1 From price bars to a supervised label (Triple-Barrier)
 
 Every eligible 1h bar `t0` is a **candidate trade**. Its **side** is taken from 1h
-momentum, `direction = sign(log_return_5[t0])` (a zero momentum bar is skipped). The
+momentum, `direction = sign(log_return_5[t0])` (a zero-momentum bar is skipped). The
 trade is then simulated under the **ATR Triple-Barrier** contract `TripleBarrier.ATR.v1`
 (`pipeline.py: generate_candidate_events`, `simulate_trade`):
 
 - **Entry** fills at the **next bar open**: `entry = open[t0+1] · (1 + side · slippage)`.
-- **Barrier half-width** `= ATR14[t0] · 1.0` (symmetric). Target `= entry + side · width`;
-stop `= entry − side · width`.
-- **Time barrier** `H = 24` bars. If neither barrier is touched, the trade exits at a
-scheduled close (`scheduled_moc_close`).
+- **Barriers** are symmetric, half-width `= ATR14[t0] · 1.0`: target `= entry + side · width`,
+  stop `= entry − side · width`.
+- **Time barrier** `H = 24` bars: if neither barrier is touched, the trade exits at a
+  scheduled close (`scheduled_moc_close`).
 - **Costs** are charged: commission **1 bp** + slippage **2 bp**.
 - **Label** `Y = 1` if the **net-of-cost** per-unit return is **> 0**, else `Y = 0`.
 
 **What it shows.** This is **binary classification**, not regression: the target is "did
-this Triple-Barrier setup win after costs?". Because wins/losses are roughly balanced
-per asset (positive rate ≈ 0.47–0.52, see §5), **AUC-PR** — not raw accuracy — is the
+this Triple-Barrier setup win after costs?". Because wins and losses are roughly balanced
+per asset (positive rate ≈ 0.47–0.52, see §5.3), **AUC-PR** — not raw accuracy — is the
 honest metric.
 
 ## 2.2 The feature space (X)
@@ -180,14 +161,12 @@ honest metric.
 The model sees **56 numeric features**, namespaced by timeframe and concatenated in a
 deterministic order (`config/feature_namespaces.json`):
 
-
 | Namespace  | IDs     | Count | Content                                                        |
 | ---------- | ------- | ----- | -------------------------------------------------------------- |
-| `1h`       | 1–17    | 17    | 1-hour indicators (the decision clock)                         |
-| `1d`       | 101–117 | 17    | Daily indicators, projected **as-of** to the 1h decision time  |
-| `1w`       | 201–217 | 17    | Weekly indicators, projected **as-of** to the 1h decision time |
-| `multi_tf` | 901–905 | 5     | Cross-timeframe alignment / spread features                    |
-
+| `1h`       | 1–17    | 17    | 1-hour indicators (the decision clock)                        |
+| `1d`       | 101–117 | 17    | Daily indicators, projected **as-of** to the 1h decision time |
+| `1w`       | 201–217 | 17    | Weekly indicators, projected **as-of** to the 1h decision time|
+| `multi_tf` | 901–905 | 5     | Cross-timeframe alignment / spread features                   |
 
 Each per-timeframe block carries the same families: **returns** (`log_return_1/5/20`),
 **trend** (`dist_to_sma_20/50`, `sma_20_sma_50_ratio`, `close_z_score_20`), **momentum**
@@ -197,9 +176,9 @@ and the **`direction`** sign. The five `multi_tf` features summarise agreement a
 timeframes (`momentum_alignment_multi`, `rsi_spread_1h_1d`, `volatility_ratio_1h_1d`,
 `macd_hist_alignment_multi`, `price_vs_sma_alignment_multi`).
 
-**Commentary.** Two properties matter for modeling: (a) **all features are numeric** —
+**Commentary.** Two properties matter for modeling. First, **all features are numeric** —
 there are **no categorical columns**, so no encoding step is needed (a simplification
-versus Rendering 1's encoding plan); and (b) the 1d/1w/cross-TF projections legitimately
+versus Rendering 1's encoding plan). Second, the 1d/1w/cross-TF projections legitimately
 produce **NaN** early in a series, which XGBoost ingests via **native missing-value
 handling** — no imputation layer is added. This follows the project's stated value:
 *use the library's built-in before adding logic*.
@@ -208,21 +187,19 @@ handling** — no imputation layer is added. This follows the project's stated v
 
 The series is split strictly by time (`config/pipeline_parameters.json`):
 
-
 | Segment | Window                      |
 | ------- | --------------------------- |
 | Warmup  | 2016-01-04 → 2016-10-14     |
 | Train   | 2016-10-17 → 2023-12-29     |
 | **OOS** | **2024-01-02 → 2026-05-29** |
 
-
 Leakage is controlled two ways. **(1) Purge:** any training setup whose label horizon
 would reach into OOS is dropped — the guard enforces `t0 + H + embargo ≤ oos_start`
 (`purge_train_setups`). **(2) Purged walk-forward CV** inside Train: 4 contiguous
 validation folds, where a fold's training set keeps only setups with
-`t0 + H < val_start − embargo` (`purged_wf_folds`). With `PURGE_CANDLES = H = 24` and
+`t0 + H < val_start − embargo` (`purged_wf_folds`). With `H = 24` and
 `EMBARGO_BARS = 35`, the combined no-peek span between a label and the next usable bar is
-**H + 35 = 59 bars**. The OOS window is never read during fitting, tuning, or sizing.
+**H + 35 = 59 bars**. The OOS window is never read during fitting, tuning or sizing.
 
 \newpage
 
@@ -231,12 +208,14 @@ validation folds, where a fold's training set keeps only setups with
 Two baselines frame how much the model actually adds.
 
 - **No-skill floor.** For AUC-PR the floor equals the **positive rate** (prevalence). On
-these assets that is ≈ **0.47–0.52** (the `Pos-rate` column in §5). Any model must beat
-this to be meaningful.
-- **Untuned XGBoost.** The project ships an explicit `fallback_params` block used whenever
-CV is infeasible — this is the honest "first iteration": `max_depth 3, eta 0.1, subsample 0.9, colsample_bytree 0.9, min_child_weight 1.0, reg_lambda 1.0, n_estimators 100`.
+  these assets that is ≈ **0.47–0.52** (the `Pos-rate` column in §5.3). Any model must
+  beat this to be meaningful.
+- **Untuned XGBoost.** The project ships an explicit `fallback_params` block, used
+  whenever CV is infeasible — the honest "first iteration": `max_depth 3, eta 0.1,
+  subsample 0.9, colsample_bytree 0.9, min_child_weight 1.0, reg_lambda 1.0,
+  n_estimators 100`.
 
-**What it shows (measured).** In the §5 comparison, the **untuned XGBoost** already
+**What it shows (measured).** In the §5.3 comparison the **untuned XGBoost** already
 clears the prevalence floor on most assets, and **Optuna tuning adds a further, modest
 lift on every asset** (baseline → tuned AUC-PR rises on 10/10). The realistic ceiling is
 low — `cv_auc_pr` tops out around 0.55 — which sets honest expectations for the OOS
@@ -249,21 +228,22 @@ economics in §4 and §9.
 ## 4.1 Metrics
 
 - **Training / selection metric: AUC-PR** (`eval_metric = "aucpr"`; Optuna direction
-`maximize`). For a near-balanced but economically asymmetric "win-after-costs" target,
-AUC-PR is more informative than ROC-AUC because it focuses on the precision of the
-positive (trade-worthy) class.
-- **Decision threshold:** a trade fires only when the model probability `p ≥ THRESHOLD_ENTRY = 0.6` (`run_engine`). A high gate trades precision for recall — it is
-the direct reason some assets trade rarely or never (§9).
+  `maximize`). For a near-balanced but economically asymmetric "win-after-costs" target,
+  AUC-PR is more informative than ROC-AUC because it focuses on the precision of the
+  positive (trade-worthy) class.
+- **Decision threshold.** A trade fires only when the model probability
+  `p ≥ THRESHOLD_ENTRY = 0.6` (`run_engine`). A high gate trades recall for precision —
+  it is the direct reason some assets trade rarely or never (§9).
 - **OOS economic metrics** (`oos_metrics.db`): profit factor (PF), return %, max drawdown
-%, win rate %, trade count, time-in-market %. Strategy ranking (`STRATEGY_OBJECTIVE`)
-is **PF (max) → drawdown (min) → time-in-market (min)**, with win rate informational.
+  %, win rate %, trade count, time-in-market %. Strategy ranking (`STRATEGY_OBJECTIVE`)
+  is **PF (max) → drawdown (min) → time-in-market (min)**, with win rate informational.
 
 ## 4.2 Hyper-parameter optimization (Optuna)
 
-XGBoost is tuned with **Optuna**: **TPE** sampler (seed 42), **MedianPruner** (2 warmup
-steps), **200 trials**, maximizing mean **AUC-PR** over the 4 purged walk-forward folds
-(`layer7_optuna`). The search space (`config/xgboost_optuna_search_space.json`):
-
+XGBoost is tuned with **Optuna**: a **TPE** sampler (seed 42), a **MedianPruner**
+(2 warmup steps), **200 trials**, maximizing the mean **AUC-PR** over the 4 purged
+walk-forward folds (`layer7_optuna`). The search space
+(`config/xgboost_optuna_search_space.json`):
 
 | Hyper-parameter    | XGBoost name                       | Type  | Range        | Scale   |
 | ------------------ | ---------------------------------- | ----- | ------------ | ------- |
@@ -275,19 +255,18 @@ steps), **200 trials**, maximizing mean **AUC-PR** over the 4 purged walk-forwar
 | L2 regularization  | `reg_lambda` → `lambda`            | float | [0.5, 5.0]   | linear  |
 | number of trees    | `n_estimators` → `num_boost_round` | int   | [40, 300]    | linear  |
 
-
-*Example fitted model (AAPL):* `max_depth 5, eta 0.192, subsample 0.748, colsample_bytree 0.965, min_child_weight 9.15, reg_lambda 3.88, n_estimators 115` →
-`cv_auc_pr = 0.541`.
+*Example fitted model (AAPL):* `max_depth 5, eta 0.192, subsample 0.748,
+colsample_bytree 0.965, min_child_weight 9.15, reg_lambda 3.88, n_estimators 115`,
+giving `cv_auc_pr = 0.541`.
 
 A **second, nested** optimization calibrates the **Kelly fraction** λ on a grid of 20
 points in [0.05, 1.0], maximizing **Train out-of-fold log-growth** (`calibrate_kelly`).
-Live sizing is `f = clip(λ·(2p − 1), 0, KELLY_CAP=1.0)`. **Neither** optimization reads
-OOS.
+Live sizing is `f = clip(λ · (2p − 1), 0, KELLY_CAP = 1.0)`. **Neither** optimization
+reads OOS.
 
-## 4.3 Cross-asset OOS results (data anchor — read from `oos_metrics.db`)
+## 4.3 Cross-asset OOS results (read from `oos_metrics.db`)
 
 One architecture, ten independent per-asset fits, evaluated on the same OOS window:
-
 
 | Ticker | Trades | Win % | PF   | Return %   | Max DD % | Time-in-mkt % | CV AUC-PR |
 | ------ | ------ | ----- | ---- | ---------- | -------- | ------------- | --------- |
@@ -302,11 +281,12 @@ One architecture, ten independent per-asset fits, evaluated on the same OOS wind
 | MSFT   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.521     |
 | NVDA   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.523     |
 
-
-**What it shows.** Tradeability is highly asset-dependent under one shared recipe. **Two
-of six trading assets are profitable** (TSLA, JPM); the two high-activity names (XOM,
-AAPL) lose ≈ 5 %; and **four assets never clear the 0.6 gate**, so they hold cash. This
-is the primary "model comparison" deliverable: same model, very different outcomes.
+**What it shows.** Under one shared recipe, tradeability is highly asset-dependent. **Five
+assets trade and five hold cash** (their best probabilities never reach the 0.6 gate). Of
+the five that trade, **two are profitable** (TSLA, JPM); the two high-activity names (XOM,
+AAPL) lose ≈ 5 %; AMZN is marginally negative in return (−0.73 %) on just 6 low-exposure
+trades (PF 0.23). This is the primary **cross-asset** result — one identical recipe,
+very different per-asset outcomes; the model-family comparison (XGB vs RF) is §5.3.
 
 \newpage
 
@@ -314,18 +294,18 @@ is the primary "model comparison" deliverable: same model, very different outcom
 
 ## 5.1 Boosting — what we actually run
 
-XGBoost is **gradient-boosted trees**: shallow trees added **sequentially**, each one
-fitted to the residual errors of the current ensemble, combined with shrinkage `eta`
-(`pipeline.py: _xgb_train`, `objective="binary:logistic"`, `booster="gbtree"`). The
+XGBoost is **gradient-boosted trees**: shallow trees added **sequentially**, each fitted
+to the residual errors of the current ensemble and combined with the shrinkage rate `eta`
+(`pipeline.py: _xgb_train`; `objective="binary:logistic"`, `booster="gbtree"`). The
 boosting-specific controls are exactly the tuned knobs in §4.2: tree depth, learning
-rate, tree count, and L2 regularization.
+rate, number of trees and L2 regularization.
 
 ## 5.2 Bagging — the concept, and where it already lives inside XGBoost
 
 **Bagging** (bootstrap aggregation) trains many learners **in parallel** on bootstrap
 resamples and averages them to **reduce variance** — RandomForest is the canonical
 example. XGBoost is not a bagging method, but it borrows bagging's variance-reduction
-idea **inside** the boosting loop via two tuned parameters:
+idea **inside** the boosting loop through two tuned parameters:
 
 - `subsample ∈ [0.6, 1.0]` — each boosting round uses a random **row** sample;
 - `colsample_bytree ∈ [0.6, 1.0]` — each tree uses a random **feature** sample.
@@ -333,15 +313,14 @@ idea **inside** the boosting loop via two tuned parameters:
 Together these make our XGBoost a **stochastic gradient booster** — boosting with a
 bagging-style randomization baked in.
 
-## 5.3 Measured comparison — XGBoost vs RandomForest (data anchor)
+## 5.3 Measured comparison — XGBoost vs RandomForest
 
 To answer the mentor's explicit request (2026-05-28), we trained a **RandomForest**
-(bagging) baseline against the tuned **XGBoost** (boosting) on the **same features**,
-the **same purged walk-forward folds**, and the **same AUC-PR metric**
-(`reports/compare_xgb_vs_rf.py`, 300-tree RF, seed 42). One asymmetry is itself a
-finding: **RandomForest cannot consume NaN**, so the 1d/1w/cross-TF gaps were
-**median-imputed** (fit on the training fold only); XGBoost needed **no imputation**.
-
+(bagging) baseline against the tuned **XGBoost** (boosting) on the **same features**, the
+**same purged walk-forward folds** and the **same AUC-PR metric**
+(`reports/compare_xgb_vs_rf.py`; 300-tree RF, seed 42). One asymmetry is itself a finding:
+**RandomForest cannot consume NaN**, so the 1d/1w/cross-TF gaps were **median-imputed**
+(fit on the training fold only), whereas XGBoost needed **no imputation**.
 
 | Ticker | Setups | Folds | Pos-rate | Baseline XGB | **Tuned XGB** | RandomForest | Δ (XGB − RF) |
 | ------ | ------ | ----- | -------- | ------------ | ------------- | ------------ | ------------ |
@@ -356,18 +335,17 @@ finding: **RandomForest cannot consume NaN**, so the 1d/1w/cross-TF gaps were
 | TSLA   | 12 570 | 4     | 0.522    | 0.546        | **0.554**     | 0.516        | +0.039       |
 | XOM    | 12 531 | 4     | 0.493    | 0.492        | **0.514**     | 0.498        | +0.016       |
 
-
-**What it shows.** **Boosting beats bagging on all 10 assets** (mean advantage
-**+0.027** AUC-PR; range +0.008 to +0.052). RandomForest hovers near each asset's
-**prevalence floor** (`Pos-rate`), i.e. it extracts little signal here, while tuned
-XGBoost shows a small but **consistent** edge. As a cross-check, the **Tuned XGB** column
-reproduces the stored `cv_auc_pr` from §4.3 to three decimals on every asset, confirming
-the comparison uses the production CV exactly.
+**What it shows.** **Boosting beats bagging on all 10 assets** (mean advantage **+0.027**
+AUC-PR; range +0.008 to +0.052). RandomForest sits at each asset's **prevalence floor**
+(`Pos-rate`) — it extracts almost no signal here — while tuned XGBoost shows a small but
+**consistent** edge. As an internal cross-check, the **Tuned XGB** column reproduces the
+stored `cv_auc_pr` from §4.3 to three decimals on every asset, confirming the comparison
+uses the production CV exactly.
 
 **Why boosting here.** On small, noisy, tabular financial tables, sequential
 error-correction (boosting) extracts the faint signal better than variance-averaging
 (bagging); boosting also keeps XGBoost's **native missing-value** handling, which removed
-an imputation step that RandomForest required.
+the imputation step RandomForest required.
 
 \newpage
 
@@ -378,68 +356,70 @@ an imputation step that RandomForest required.
 There is **no deep learning** in this project. `requirements.txt` pins `xgboost==3.3.0`
 and contains **no** PyTorch, TensorFlow or Keras; there are no neural-network classes
 anywhere in the code. Deep learning is a deliberate **"if time permits"** item (Timeline
-action list; Paul Grolier's DL masterclass, 2026-06-11), **deferred** to a later
+action list; Paul Grolier's DL masterclass, 2026-06-11) and is **deferred** to a later
 rendering — exactly as stated here.
 
 ## 6.2 Why trees first (rationale, not avoidance)
 
-- **Sample size.** The learning units are **setups**, and the per-asset positive class is
-modest — a regime where gradient-boosted trees typically beat neural nets.
 - **Tabular, engineered inputs.** The 56 features are already informative indicators, not
-raw sequences; trees exploit such tables directly.
+  raw price sequences; gradient-boosted trees exploit such tables directly and typically
+  outperform neural nets on them.
+- **Low signal-to-noise.** With `cv_auc_pr` barely above 0.5, extra model capacity is far
+  more likely to **overfit noise** than to find new signal — a regime that favours a
+  small, regularized tree ensemble over a neural net.
 - **Determinism & reproducibility** are project hard-constraints (`seed_everything`,
-`XGBOOST_N_JOBS = 1`, pinned libraries) and are easier to guarantee with XGBoost.
+  `XGBOOST_N_JOBS = 1`, pinned libraries) and are easier to guarantee with XGBoost than
+  with GPU-trained neural nets.
 - **Native missing values** remove an imputation layer (see §5.3).
 - **Minimalism / no ballast** — the project deliberately keeps the dependency surface and
-per-asset deliverable small.
+  the per-asset deliverable small.
 
 ## 6.3 What we would try later (concrete, gated)
 
-A small **MLP / TabMLP** on the same 56-feature X, same purged walk-forward folds, same
-AUC-PR objective, would be the lightest deep-learning baseline. **Acceptance gate:** it
-ships only if it beats the **tuned-XGBoost CV AUC-PR**; otherwise it does not. Sequence
-models (LSTM / temporal CNN over raw bar windows) are noted as a stretch idea, explicitly
-**out of scope** for this rendering.
+A small **MLP / TabMLP** on the same 56-feature X — same folds, same AUC-PR objective —
+would be the lightest deep-learning baseline. **Acceptance gate:** it ships only if it
+beats the **tuned-XGBoost CV AUC-PR**; otherwise it does not. Sequence models
+(LSTM / temporal CNN over raw bar windows) are noted as a stretch idea, explicitly **out
+of scope** for this rendering.
 
 \newpage
 
 # 7. Interpretability
 
-Per the project's minimalism value, this rendering presents interpretability as a clear
-**menu** with a recommended minimal default, and **defers** the heavier methods rather
-than adding dependencies now. No importance numbers are computed in this rendering.
+In keeping with the project's minimalism value, this rendering presents interpretability
+as a clear **menu** with a recommended minimal default, and **defers** the heavier methods
+rather than adding dependencies now. No importance numbers are computed in this rendering.
 
 ## 7.1 The menu (five options)
 
-
-| #   | Method                                                | New dependency         | Cost                 | Output                                                             |
-| --- | ----------------------------------------------------- | ---------------------- | -------------------- | ------------------------------------------------------------------ |
-| 1   | **Native XGBoost importance** (gain / cover / weight) | none (xgboost)         | trivial, no retrain  | global feature ranking                                             |
-| 2   | TreeSHAP (global + local)                             | `shap`                 | moderate             | global + per-setup attributions                                    |
-| 3   | Permutation importance (on OOS)                       | `scikit-learn`         | moderate (re-scores) | model-agnostic global ranking                                      |
-| 4   | Partial dependence / ICE                              | `scikit-learn` + plots | moderate             | shape of a feature's effect                                        |
-| 5   | **By-construction interpretability**                  | none                   | free                 | explicit label / side / sizing rules + documented feature formulas |
-
+| # | Method                                                | New dependency         | Cost                 | Output                                                              |
+| - | ----------------------------------------------------- | ---------------------- | -------------------- | ------------------------------------------------------------------ |
+| 1 | **Native XGBoost importance** (gain / cover / weight) | none (xgboost)         | trivial, no retrain  | global feature ranking                                             |
+| 2 | TreeSHAP (global + local)                             | `shap`                 | moderate             | global + per-setup attributions                                    |
+| 3 | Permutation importance (on OOS)                       | `scikit-learn`         | moderate (re-scores) | model-agnostic global ranking                                      |
+| 4 | Partial dependence / ICE                             | `scikit-learn` + plots | moderate             | shape of a feature's effect                                        |
+| 5 | **By-construction interpretability**                  | none                   | free                 | explicit label / side / sizing rules + documented feature formulas |
 
 ## 7.2 Recommended minimal default
 
 For the final report we recommend shipping **Option 1 + Option 5**:
 
-- **Option 1 (native importance)** is essentially free — the per-asset booster is already
-embedded in `strategy_<TICKER>.py`, so `gain`/`cover`/`weight` rankings can be read off
-the trained model **without retraining and without new dependencies**.
+- **Option 1 (native importance)** is essentially free: the per-asset booster is already
+  embedded in `strategy_<TICKER>.py`, so `gain` / `cover` / `weight` rankings can be read
+  off the trained model **without retraining and without new dependencies**.
 - **Option 5 (by-construction)** is already true of the design and needs nothing: the
-**label** is an explicit Triple-Barrier rule; the **side** is a transparent
-`sign(log_return_5)`; **sizing** is a closed-form Kelly clip `f = clip(λ(2p−1), 0, cap)`; and **every feature** has a documented formula, unit and timeframe in
-`Features/`. The pipeline is interpretable *globally* (which features the booster uses)
-and *by construction* (the rules around the model are all explicit).
+  **label** is an explicit Triple-Barrier rule; the **side** is a transparent
+  `sign(log_return_5)`; **sizing** is a closed-form Kelly clip `f = clip(λ(2p−1), 0, cap)`;
+  and **every feature** has a documented formula, unit and timeframe in `Features/`. The
+  pipeline is interpretable *globally* (which features the booster uses) and *by
+  construction* (the rules around the model are all explicit).
 
 ## 7.3 What we defer (and why)
 
 **TreeSHAP** (Option 2) gives the best local, per-trade explanations but adds the `shap`
 dependency — defer to the final report, and only if the jury asks for per-trade
-attributions. **Permutation importance** and **PDP/ICE** (Options 3–4) are useful but add
-surface area; defer them. The deferral is a direct application of the README's
+attributions. **Permutation importance** and **PDP / ICE** (Options 3–4) are useful but
+add surface area; defer them too. The deferral is a direct application of the README's
 **no-ballast** rule: add an interpretability dependency only when it earns its place.
 
 \newpage
@@ -452,7 +432,7 @@ Each asset's trained booster is frozen into a self-contained, self-verifying fil
 - the model is serialized with `booster.save_raw()` and embedded as a **base64** string;
 - a `MODEL_HASH` (SHA-256 of the raw bytes) guards integrity on load;
 - **golden vectors** (the first few training rows) and their predictions are stored, and a
-`selfcheck` asserts byte-identical predictions when the file is loaded.
+  `selfcheck` asserts byte-identical predictions when the file is loaded.
 
 This satisfies the defense requirement of **no re-training at runtime** (Timeline Step 5)
 and, together with `seed_everything`, `XGBOOST_N_JOBS = 1` and pinned libraries, makes the
@@ -465,29 +445,32 @@ OOS results **reproducible**. The artifact is a frozen predictor, not a notebook
 ## 9.1 Scientific conclusions
 
 - The cross-validated signal is **weak but methodologically clean**: `cv_auc_pr` ≈
-0.50–0.55 with leakage controlled by purge + embargo and a never-touched OOS window.
+  0.51–0.55 (the weakest two assets barely clear 0.50), with leakage controlled by purge +
+  embargo and a never-touched OOS window.
 - **Boosting > bagging** is established with a measured, fold-matched comparison (+0.027
-mean AUC-PR; 10/10 assets, §5.3), and **tuning > untuned** on 10/10 (§3, §5.3).
-- The conservative 0.6 gate means **4 of 10 assets hold cash** OOS — the system errs
-toward *not trading* rather than over-trading a weak edge.
+  mean AUC-PR; 10/10 assets, §5.3), and **tuning > untuned** on 10/10 (§3, §5.3).
+- The conservative 0.6 gate leaves **5 of the 10 assets holding cash** out of sample — the
+  system errs toward *not trading* rather than over-trading a weak edge.
 
 ## 9.2 Business conclusions
 
-- Only **TSLA (+10.4 %, PF 1.55)** and **JPM (PF 1.76)** are OOS-positive; **AAPL and XOM
-lose ≈ 5 %**; AMZN is marginally negative on 6 trades. Net read: as decision support,
-**the current per-asset edge is not yet deployable capital.** This is reported as an
-honest, jury-defensible result, and the disclaimer stands.
+- Of the five assets that trade, only **TSLA (+10.4 %, PF 1.55)** and **JPM (PF 1.76, but
+  essentially break-even at +0.23 %)** are OOS-positive; **AAPL and XOM lose ≈ 5 %**, and
+  AMZN is marginally negative in return (−0.73 %) on 6 low-exposure trades (PF 0.23).
+  Net read: as decision support, **the current per-asset edge is not yet deployable
+  capital.** This is reported as an honest, jury-defensible result, and the disclaimer
+  stands.
 
 ## 9.3 Threats to validity
 
 Survivorship bias carried from Rendering 1 (§5.1 there); single-market / USD-only scope;
-genuinely weak AUC-PR; the RandomForest comparison used median imputation where XGBoost
-used native missing; and the with-vs-without-outlier study (mentor's SNDK protocol) is
+a genuinely weak AUC-PR; the RandomForest comparison used median imputation where XGBoost
+used native missing; and the with-vs-without-outlier study (the mentor's SNDK protocol) is
 not yet run on this universe.
 
 ## 9.4 Roadmap to the final report (2026-07-08)
 
-Add native + (optionally) SHAP importances (§7); run the with-vs-without-outlier study;
+Add native (and optionally SHAP) importances (§7); run the with-vs-without-outlier study;
 optionally add the gated MLP deep-learning baseline (§6); and reconcile the Rendering-1
 recommender narrative with the implemented per-asset classifier.
 
@@ -514,7 +497,7 @@ produced by `reports/compare_xgb_vs_rf.py`. No metric in this report is hand-ent
 Python 3.12; `xgboost 3.3.0`, `optuna 4.8.0`, `numpy 2.5.0`, `pandas 2.2.3`,
 `pyarrow 24.0.0`, `duckdb 1.5.4`, `scikit-learn 1.7.2`. Determinism: fixed seed 42,
 `XGBOOST_N_JOBS = 1`, pinned dependency set. The PDF is rendered with Pandoc + XeLaTeX
-using the Eisvogel template (same recipe as Rendering 1's `reports/build_pdf.sh`).
+using the Eisvogel template (the same recipe as Rendering 1's `reports/build_pdf.sh`).
 
 ## C. Static visualization app
 
@@ -535,4 +518,3 @@ aggregation, native missing-value handling, TreeSHAP, look-ahead leakage, profit
 - Akiba, T. et al. (2019). *Optuna: A Next-generation Hyperparameter Optimization Framework*. KDD.
 - Lundberg, S. & Lee, S. (2017). *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS — listed for the deferred interpretability option.
 - Kelly, J. L. (1956). *A New Interpretation of Information Rate*. Bell System Technical Journal.
-
