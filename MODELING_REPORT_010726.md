@@ -458,7 +458,7 @@ run on this universe.
 cd Project/Structure
 python -m pip install -r requirements.txt          # now includes scikit-learn==1.7.2
 # 1) per-asset pipeline (data -> features -> Optuna -> Kelly -> OOS), if rebuilding assets:
-make run-universe                                   # writes Assets/<T>/ + oos_metrics.db
+make loop "AAPL AMZN GOOGL JNJ JPM META MSFT NVDA TSLA XOM"   # all assets -> Assets/<T>/ + oos_metrics.db
 # 2) the XGBoost-vs-RandomForest model comparison (§5.3):
 python reports/compare_xgb_vs_rf.py                 # prints the table; writes xgb_vs_rf_results.json
 ```
