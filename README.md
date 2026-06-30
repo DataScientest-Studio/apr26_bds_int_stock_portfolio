@@ -1,45 +1,78 @@
-# liora-project-ml-engineering — minimalny pipeline ML (S&P 500, per-asset)
+# liora-project-ml-engineering — minimal per-asset ML pipeline (S&P 500)
 
-Minimalistyczny, samodzielny i reprodukowalny pipeline tradingowy ML: dla wybranego tickera
-liczy warstwy **1.6 → 4.2** w jednym notebooku i zostawia w `Assets/<TICKER>/` dokładnie
-**7 plików** deliverable. Bez SHA / sum kontrolnych / nadmiernych bramek QC / kontraktów /
-testów — wszystko ma być czytelne i łatwe do wytłumaczenia.
+A minimal, self-contained, reproducible ML trading pipeline. For a chosen ticker it
+computes layers **L1 → L9** in one notebook and leaves exactly **7 deliverable files** in
+`Assets/<TICKER>/`. No SHA / checksums / excessive QC gates / contracts / test scaffolding —
+everything is meant to be readable and easy to explain.
 
-## 3 filary
+## Pillars
 
-- **`Plan/`** — **wizualizacja**: statyczna historia pipeline'u (`index.html` → `main_data_flow.html`,
-  `configurations.html`, `glossary.html`). Pokazuje wyłącznie warstwy, które kod naprawdę liczy
-  (1.6 → 4.2).
-- **`Project/`** — projekt roboczy:
-  - `Structure/` — operacyjny root: `pipeline.py` (warstwy 1.6–4.2), `notebook_template.ipynb`
-    (per-asset runner), `build_db.py`, `run_asset.py`, `config/`, `Features/`, `data/seed/`,
-    `Assets/` (na starcie pusty), `Makefile`, `requirements.txt`.
-  - `endproduct/` — mirror SOT (`Layers_Short_SOT/` dla zaimplementowanych warstw) + symlink do `Assets/`.
-- **`Archive/`** — zamrożony materiał: `old-capstone-2026-06-29/` (poprzedni projekt DuckDB/Streamlit
-  „Stocks Recommender” + jego Plan SOT), plus wcześniejsze `runs/` i `experiments/`.
-- **`Formalities/`** — sprawy kursowe (Timeline, audyt danych, rendery) — bez zmian.
+- **`Plan/`** — **visualization**: a static walkthrough of the pipeline
+  (`index.html` → `main_data_flow.html`, `configurations.html`, `glossary.html`,
+  `dashboard.html`). It shows only the layers the code actually computes (L1 → L9).
+- **`Project/`** — the working project:
+  - `Structure/` — the operational root: `pipeline.py` (layers L1–L9),
+    `notebook_template.ipynb` (the per-asset runner), `build_db.py`, `run_asset.py`,
+    `build_dashboard.py`, `asset_writers.py`, `reports/` (e.g. `compare_xgb_vs_rf.py`),
+    `config/`, `Features/`, `data/seed/`, `Assets/` (empty at start), `Makefile`,
+    `requirements.txt`.
+  - `endproduct/` — the source-of-truth mirror (`Layers_Short_SOT.md`, `README.md`) plus a
+    symlink to `Assets/`.
+- **`Archive/`** — frozen material: `old-capstone-2026-06-29/` (the previous DuckDB/Streamlit
+  "Stocks Recommender" project) plus earlier `runs/` and `experiments/`.
+- **`Formalities/`** — course deliverables: `Timeline.md`, `DATA_AUDIT.md`, and the renderings
+  in `Rendering1/`. The Rendering-2 modeling write-up is `MODELING_REPORT_010726.md` at the
+  repo root.
 
-## 7 plików per asset (`Project/Structure/Assets/<TICKER>/`)
+## Pipeline layers (L1 → L9)
 
-1. `<TICKER>__Layer1_6_to_Layer4_2.ipynb` — wykonana kopia notebooka-runnera
-2. `<TICKER>_ohlcv_1h.parquet` — czyste 1h OHLCV (Layer 1.6)
-3. `<TICKER>_ohlcv_1d.parquet` — zmaterializowane 1d
-4. `<TICKER>_ohlcv_1w.parquet` — zmaterializowane 1w
-5. `OPTUNAs_XGB_HPOs_best_params.json` — najlepsze hiperparametry (Layer 3.1)
-6. `strategy_<TICKER>.py` — samodzielny artefakt strategii (model base64 + selfcheck)
-7. `<TICKER>_README.md` — podsumowanie OOS + ścieżka kapitału + ledger transakcji
+| Layer | Name | What it does |
+|---|---|---|
+| L1 | Alpaca OHLCV download | Upstream provenance — raw 1h OHLCV came from the Alpaca Market Data API. |
+| L2 | Seed export | Upstream provenance — one archive per ticker exported to `data/seed/<TICKER>_ohlcv_1h.parquet`. |
+| L3 | DuckDB build | `build_db.py` loads the seed parquets into `liora.duckdb` (table `bars_1h`). |
+| L4 | Parquet 1h / 1d / 1w | The notebook reads DuckDB, writes clean 1h OHLCV, then deterministic 1d and 1w roll-ups. |
+| L5 | Time split | Warmup / Train / OOS split with purge and embargo; OOS stays unread until the verdict step. |
+| L6 | Features + Triple-Barrier Y | Candidate side = `sign(log_return_5)`; 56 namespaced features; label = symmetric ATR Triple Barrier (`H=24`). |
+| L7 | Optuna HPO + Kelly | Optuna tunes XGBoost on Train CV AUC-PR; the Kelly fraction is calibrated on Train out-of-fold log-growth. |
+| L8 | XGB strategy artifact | XGBoost trains on the full Train set and is embedded as base64 in `strategy_<TICKER>.py`. |
+| L9 | OOS endproduct | OOS verdict, dashboard row, README, and the final seven-file asset folder. |
+
+Features are namespaced and concatenated in a deterministic order: `1h` (01–99),
+`1d` (101–199), `1w` (201–299), `multi_tf` (901–999). The active manifest is resolved from
+`config/feature_namespaces.json`. Full contract: `Project/endproduct/Layers_Short_SOT.md`.
+
+## 7 files per asset (`Project/Structure/Assets/<TICKER>/`)
+
+1. `<TICKER>__L4_to_L9.ipynb` — the executed copy of the runner notebook
+2. `<TICKER>_ohlcv_1h.parquet` — clean 1h OHLCV (L4)
+3. `<TICKER>_ohlcv_1d.parquet` — materialized 1d
+4. `<TICKER>_ohlcv_1w.parquet` — materialized 1w
+5. `OPTUNAs_XGB_HPOs_best_params.json` — best hyper-parameters + Kelly fraction (L7)
+6. `strategy_<TICKER>.py` — self-contained strategy artifact (base64 model + selfcheck)
+7. `<TICKER>_README.md` — OOS summary + capital path + trade ledger
 
 ## Quickstart
 
 ```bash
 cd Project/Structure
-make deps          # instalacja requirements.txt do ../.venv
-make build-db      # data/seed/*.parquet -> liora.duckdb
-make run-asset TICKER=AAPL   # uruchamia notebook -> Assets/AAPL/ (7 plików)
-make serve         # statyczna wizualizacja: http://localhost:8000/index.html
+make deps                      # install requirements.txt into ../.venv
+make build-db                  # data/seed/*.parquet -> liora.duckdb
+make run-asset TICKER=AAPL     # run the notebook -> Assets/AAPL/ (7 files)
+make serve                     # static visualization: http://localhost:8000/index.html
 ```
 
-Uniwersum rozszerzasz przez dorzucenie kolejnego `data/seed/<TICKER>_ohlcv_1h.parquet`
-i `make build-db`. `Assets/` startuje pusty — to użytkownik decyduje, ile assetów utworzy.
-Pipeline jest deterministyczny (`seed_everything`, `XGBOOST_N_JOBS=1`), więc wyniki OOS są
-reprodukowalne.
+Run a whole universe in one go, then refresh the dashboard feed:
+
+```bash
+make loop "AAPL TSLA XOM"      # ensure seeds -> build-db -> run each ticker -> dashboard
+make dashboard                 # oos_metrics.db -> Plan/data/dashboard.json
+```
+
+The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in
+`reports/compare_xgb_vs_rf.py`. Run `make help` for the full operator surface.
+
+You extend the universe by dropping another `data/seed/<TICKER>_ohlcv_1h.parquet` and
+running `make build-db`. `Assets/` starts empty — you decide how many assets to create. The
+pipeline is deterministic (`seed_everything`, `XGBOOST_N_JOBS=1`), so OOS results are
+reproducible.
