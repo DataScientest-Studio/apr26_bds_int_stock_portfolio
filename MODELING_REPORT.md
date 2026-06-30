@@ -1,6 +1,6 @@
 ---
 title: "Modeling Report"
-subtitle: "Per-Asset XGBoost Triple-Barrier Classifier — Baseline, Boosting vs Bagging, Interpretability & Deep-Learning Outlook"
+subtitle: "Per-Asset XGBoost Triple-Barrier Classifier — Baseline, Boosting vs Bagging, and Interpretability"
 author:
   - Gabriel Marchesan Almeida
   - Paweł Flak
@@ -8,7 +8,7 @@ author:
 date: "2026-07-01"
 keywords: [machine learning, finance, XGBoost, gradient boosting, random forest, triple-barrier, purged walk-forward, Optuna, Kelly, S&P 500]
 subject: "Liora APR26 BDS INT — Data Scientist Capstone Project"
-description: "Rendering 2 modeling report: a per-asset XGBoost triple-barrier classifier with purged walk-forward CV, Optuna HPO and Kelly sizing, a measured XGBoost-vs-RandomForest comparison, an interpretability menu, and a deferred deep-learning plan."
+description: "Rendering 2 modeling report: a per-asset XGBoost triple-barrier classifier with purged walk-forward CV, Optuna HPO and Kelly sizing, a measured XGBoost-vs-RandomForest comparison, and an interpretability menu; deep learning is not implemented."
 lang: en
 
 titlepage: true
@@ -64,13 +64,12 @@ assertions:
   tuned **XGBoost** (boosting) on identical features and identical CV folds. Boosting
   wins on **all 10 assets** (mean AUC-PR advantage **+0.027**); RandomForest stays
   essentially at the no-skill floor (it extracts almost no signal).
-- **Interpretability.** Five tree-interpretability methods are presented as a menu with a
-  recommended minimal default. In line with the project's minimalism value, this
-  rendering keeps the section **descriptive** and defers the heavier methods explicitly.
+- **Interpretability.** Five tree-interpretability methods are presented as a menu, and the
+  model is interpretable by construction. In line with the project's minimalism value, the
+  section is kept **descriptive** (no importance numbers are computed).
 
 **Deep learning is not implemented.** There is no PyTorch / TensorFlow / Keras in the
-codebase — the model is XGBoost only. Deep learning is a documented "**if time permits**"
-item, with a concrete plan and an acceptance gate (§6).
+codebase — the model is XGBoost only (§6).
 
 **Headline result, stated honestly.** The cross-validated signal is **weak but clean**:
 `cv_auc_pr` ≈ 0.51–0.55 across assets. Out of sample, **5 of the 10 assets trade and 5
@@ -78,7 +77,7 @@ hold cash** (no setup clears the 0.6 probability gate); of the five that trade, 
 **TSLA (+10.4 %, PF 1.55)** and **JPM (PF 1.76, but essentially flat at +0.23 %)** are
 profitable, while **AAPL and XOM lose ≈ 5 %**. The system is therefore **conservative, not overfit-aggressive**: it
 prefers to sit out rather than trade a weak edge. As decision support, the per-asset
-edge is **not yet deployable capital**; we present it as a methodologically defensible,
+edge is **not deployable capital**; we present it as a methodologically defensible,
 leakage-controlled, negative-leaning result.
 
 | Milestone    | Deadline   | Sections covered            | Status        |
@@ -129,8 +128,7 @@ requirement (meeting 2026-05-28), so we state the change plainly:
 | Plain `TimeSeriesSplit`                | **Purged walk-forward + embargo**                | Removes label-overlap leakage                  |
 | Sector cap / recommendation list       | Per-asset **Kelly** sizing + OOS backtest        | Direct economic evaluation per asset           |
 
-The recommender narrative will be reconciled in the final report; this modeling report
-describes **what runs in the code today**.
+This modeling report describes **what runs in the code today**.
 
 \newpage
 
@@ -349,17 +347,15 @@ the imputation step RandomForest required.
 
 \newpage
 
-# 6. Deep Learning — not yet implemented
+# 6. Deep Learning — not implemented
 
 ## 6.1 Current status
 
 There is **no deep learning** in this project. `requirements.txt` pins `xgboost==3.3.0`
 and contains **no** PyTorch, TensorFlow or Keras; there are no neural-network classes
-anywhere in the code. Deep learning is a deliberate **"if time permits"** item (Timeline
-action list; Paul Grolier's DL masterclass, 2026-06-11) and is **deferred** to a later
-rendering — exactly as stated here.
+anywhere in the code. The model is **XGBoost only**.
 
-## 6.2 Why trees first (rationale, not avoidance)
+## 6.2 Why trees, not neural networks
 
 - **Tabular, engineered inputs.** The 56 features are already informative indicators, not
   raw price sequences; gradient-boosted trees exploit such tables directly and typically
@@ -374,21 +370,13 @@ rendering — exactly as stated here.
 - **Minimalism / no ballast** — the project deliberately keeps the dependency surface and
   the per-asset deliverable small.
 
-## 6.3 What we would try later (concrete, gated)
-
-A small **MLP / TabMLP** on the same 56-feature X — same folds, same AUC-PR objective —
-would be the lightest deep-learning baseline. **Acceptance gate:** it ships only if it
-beats the **tuned-XGBoost CV AUC-PR**; otherwise it does not. Sequence models
-(LSTM / temporal CNN over raw bar windows) are noted as a stretch idea, explicitly **out
-of scope** for this rendering.
-
 \newpage
 
 # 7. Interpretability
 
-In keeping with the project's minimalism value, this rendering presents interpretability
-as a clear **menu** with a recommended minimal default, and **defers** the heavier methods
-rather than adding dependencies now. No importance numbers are computed in this rendering.
+In keeping with the project's minimalism value, interpretability is presented as a **menu**
+of methods applicable to a gradient-boosted tree model, alongside what the model already
+provides. No importance numbers are computed in this rendering.
 
 ## 7.1 The menu (five options)
 
@@ -400,9 +388,9 @@ rather than adding dependencies now. No importance numbers are computed in this 
 | 4 | Partial dependence / ICE                             | `scikit-learn` + plots | moderate             | shape of a feature's effect                                        |
 | 5 | **By-construction interpretability**                  | none                   | free                 | explicit label / side / sizing rules + documented feature formulas |
 
-## 7.2 Recommended minimal default
+## 7.2 What this model already supports
 
-For the final report we recommend shipping **Option 1 + Option 5**:
+Two of these methods need nothing new:
 
 - **Option 1 (native importance)** is essentially free: the per-asset booster is already
   embedded in `strategy_<TICKER>.py`, so `gain` / `cover` / `weight` rankings can be read
@@ -413,14 +401,6 @@ For the final report we recommend shipping **Option 1 + Option 5**:
   and **every feature** has a documented formula, unit and timeframe in `Features/`. The
   pipeline is interpretable *globally* (which features the booster uses) and *by
   construction* (the rules around the model are all explicit).
-
-## 7.3 What we defer (and why)
-
-**TreeSHAP** (Option 2) gives the best local, per-trade explanations but adds the `shap`
-dependency — defer to the final report, and only if the jury asks for per-trade
-attributions. **Permutation importance** and **PDP / ICE** (Options 3–4) are useful but
-add surface area; defer them too. The deferral is a direct application of the README's
-**no-ballast** rule: add an interpretability dependency only when it earns its place.
 
 \newpage
 
@@ -457,7 +437,7 @@ OOS results **reproducible**. The artifact is a frozen predictor, not a notebook
 - Of the five assets that trade, only **TSLA (+10.4 %, PF 1.55)** and **JPM (PF 1.76, but
   essentially break-even at +0.23 %)** are OOS-positive; **AAPL and XOM lose ≈ 5 %**, and
   AMZN is marginally negative in return (−0.73 %) on 6 low-exposure trades (PF 0.23).
-  Net read: as decision support, **the current per-asset edge is not yet deployable
+  Net read: as decision support, **the current per-asset edge is not deployable
   capital.** This is reported as an honest, jury-defensible result, and the disclaimer
   stands.
 
@@ -465,14 +445,8 @@ OOS results **reproducible**. The artifact is a frozen predictor, not a notebook
 
 Survivorship bias carried from Rendering 1 (§5.1 there); single-market / USD-only scope;
 a genuinely weak AUC-PR; the RandomForest comparison used median imputation where XGBoost
-used native missing; and the with-vs-without-outlier study (the mentor's SNDK protocol) is
-not yet run on this universe.
-
-## 9.4 Roadmap to the final report (2026-07-08)
-
-Add native (and optionally SHAP) importances (§7); run the with-vs-without-outlier study;
-optionally add the gated MLP deep-learning baseline (§6); and reconcile the Rendering-1
-recommender narrative with the implemented per-asset classifier.
+used native missing; and no with-vs-without-outlier study (the mentor's SNDK protocol) was
+run on this universe.
 
 \newpage
 
@@ -516,5 +490,5 @@ aggregation, native missing-value handling, TreeSHAP, look-ahead leakage, profit
 - Chen, T. & Guestrin, C. (2016). *XGBoost: A Scalable Tree Boosting System*. KDD.
 - Breiman, L. (2001). *Random Forests*. Machine Learning 45(1).
 - Akiba, T. et al. (2019). *Optuna: A Next-generation Hyperparameter Optimization Framework*. KDD.
-- Lundberg, S. & Lee, S. (2017). *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS — listed for the deferred interpretability option.
+- Lundberg, S. & Lee, S. (2017). *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS.
 - Kelly, J. L. (1956). *A New Interpretation of Information Rate*. Bell System Technical Journal.
