@@ -6,6 +6,9 @@ optuna==4.8.0
 numpy==2.5.0
 pandas==2.2.3
 pyarrow==24.0.0
+# RandomForest (bagging) baseline for the Modeling Report XGB-vs-RF comparison
+# (reports/compare_xgb_vs_rf.py); not on the per-asset OOS numeric path.
+scikit-learn==1.7.2
 # notebook runner (run_asset.py executes notebook_template.ipynb); not on the numeric path, unpinned.
 nbconvert
 nbformat

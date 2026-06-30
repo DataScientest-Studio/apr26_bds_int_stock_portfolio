@@ -1,0 +1,109 @@
+{
+  "seed": 42,
+  "rf_n_estimators": 300,
+  "cv_scheme": "purged_walk_forward",
+  "metric": "auc_pr",
+  "scope": "Train only (no OOS read)",
+  "results": [
+    {
+      "ticker": "AAPL",
+      "n_setups": 12565,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.4995622761639475,
+      "xgb_baseline_aucpr": 0.5211460276766413,
+      "xgb_tuned_aucpr": 0.5406967501896782,
+      "rf_aucpr": 0.5038319554076297
+    },
+    {
+      "ticker": "AMZN",
+      "n_setups": 12573,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.5143561600254514,
+      "xgb_baseline_aucpr": 0.5211188253774984,
+      "xgb_tuned_aucpr": 0.5323821814703189,
+      "rf_aucpr": 0.5141736970156974
+    },
+    {
+      "ticker": "GOOGL",
+      "n_setups": 12573,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.49129086136960154,
+      "xgb_baseline_aucpr": 0.5019410610254668,
+      "xgb_tuned_aucpr": 0.533370276323508,
+      "rf_aucpr": 0.49448430803548893
+    },
+    {
+      "ticker": "JNJ",
+      "n_setups": 12526,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.4823566980680185,
+      "xgb_baseline_aucpr": 0.49110354466760225,
+      "xgb_tuned_aucpr": 0.5063886162490666,
+      "rf_aucpr": 0.498849456635343
+    },
+    {
+      "ticker": "JPM",
+      "n_setups": 12541,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.48337453153656007,
+      "xgb_baseline_aucpr": 0.5048217525206498,
+      "xgb_tuned_aucpr": 0.5131296615839482,
+      "rf_aucpr": 0.4908663362796929
+    },
+    {
+      "ticker": "META",
+      "n_setups": 12564,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.48678764724609996,
+      "xgb_baseline_aucpr": 0.48505198968387764,
+      "xgb_tuned_aucpr": 0.5070158927212234,
+      "rf_aucpr": 0.48955749195297793
+    },
+    {
+      "ticker": "MSFT",
+      "n_setups": 12551,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.47310971237351607,
+      "xgb_baseline_aucpr": 0.4855835180844671,
+      "xgb_tuned_aucpr": 0.520733125285538,
+      "rf_aucpr": 0.4686123782610751
+    },
+    {
+      "ticker": "NVDA",
+      "n_setups": 12569,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.5021083618426286,
+      "xgb_baseline_aucpr": 0.5085532466504511,
+      "xgb_tuned_aucpr": 0.5234620393987113,
+      "rf_aucpr": 0.5064574004129522
+    },
+    {
+      "ticker": "TSLA",
+      "n_setups": 12570,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.5217183770883055,
+      "xgb_baseline_aucpr": 0.5458374521598879,
+      "xgb_tuned_aucpr": 0.5543031344265523,
+      "rf_aucpr": 0.5155698001147863
+    },
+    {
+      "ticker": "XOM",
+      "n_setups": 12531,
+      "n_folds": 4,
+      "n_folds_scored": 4,
+      "pos_rate": 0.49317692123533635,
+      "xgb_baseline_aucpr": 0.49163643345943076,
+      "xgb_tuned_aucpr": 0.5138323079539011,
+      "rf_aucpr": 0.49771765280555874
+    }
+  ]
+}
