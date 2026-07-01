@@ -125,6 +125,8 @@ three stages:
 
 - **Team:** Gabriel Marchesan Almeida, Paweł Flak, Marcus Schürstedt.
 - **Mentor:** Paul Grolier (Liora).
+- **Program Manager:** Nicole Lucerni (Liora).
+- **Cohort Leader:** Vincent Lalanne (Liora).
 - **Audience for this report:** Liora jury (technical review, oral defense).
 
 \newpage
