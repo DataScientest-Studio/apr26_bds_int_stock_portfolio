@@ -71,8 +71,8 @@ each Liora milestone:
 | Milestone     | Deadline      | Sections covered             | Status        |
 | ------------- | ------------- | ---------------------------- | ------------- |
 | Rendering 1   | 2026-06-03    | §2 – §7                      | **Delivered** |
-| Rendering 2   | 2026-07-01    | §8 – §9                      | **Delivered** — [modeling report](MODELING_REPORT_010726.md) |
-| Final report  | 2026-07-08    | §1, §10 + revisions of all   | Not started   |
+| Rendering 2   | 2026-07-01    | §8 – §9                      | **Delivered** — content merged below from [`MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md) (submitted, not further modified) |
+| Final report  | 2026-07-08    | §1, §10 + revisions of all   | **In progress** |
 
 This first rendering documents how we acquired the dataset, what it
 contains, the exploratory analysis we ran, the data-quality issues and biases we
@@ -523,72 +523,237 @@ table is materialised.
 
 \newpage
 
-# 8. Modeling [Rendering 2 — delivered as a standalone report]
+# 8. Modeling
 
-> The Rendering-2 modeling deliverable is [`reports/MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md)
-> (per-asset XGBoost triple-barrier classifier; **boosting vs RandomForest** comparison;
-> interpretability menu; deep learning not implemented). The implementing code is on the
-> **`ml-modeling-part`** branch, to be merged to `main` after approval. It will be folded
-> into this section for the final report.
+> This section reproduces, in condensed form, the content of the Rendering-2
+> deliverable, [`reports/MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md)
+> (submitted 2026-07-01, not modified further). It documents the machine
+> learning that is *actually implemented* in the repository: a **per-asset,
+> supervised classifier** that turns 1-hour S&P 500 price bars into
+> **Triple-Barrier-labelled trade setups**, trains **one XGBoost
+> (gradient-boosting) model per asset**, tunes it with **Optuna** under a
+> **purged walk-forward** cross-validation, sizes positions with **fractional
+> Kelly**, and is evaluated strictly **out-of-sample (OOS)**.
 
-<!--
-  Internal outline (NOT rendered to PDF — drives Sprint 2 work):
+## 8.1 Scope and report-vs-implementation reconciliation
 
-  8.1 Baseline models
-    - Clustering baseline: K-Means on (vol, return, beta, max-DD, sector-OHE).
-    - Ranking baseline: linear regression of 12-month forward return on the §7
-      feature set.
-    - Recommendation baseline: equal-weight top-N within each cluster.
+The Liora **Step 3 (Modeling)** deliverable must cover *baseline models →
+metrics, optimization and model comparison → bagging/boosting → deep learning
+→ interpretability → scientific & business conclusions*. §8.2 – §8.8 below map
+to those requirements one-to-one.
 
-  8.2 Optimisation and hyperparameter search
-    - Search strategy (grid / random / Bayesian).
-    - Search budget.
-    - Time-aware CV with TimeSeriesSplit.
+**The design changed between renderings — a documented pivot.** §1.2 of this
+report described a **three-stage portfolio recommender**: cluster the S&P 500
+by risk/return, rank stocks *within* clusters with a regression model, and
+recommend top-*N* per cluster under a sector cap — on **daily** bars with a
+plain `TimeSeriesSplit`. During modeling that design was **superseded** by the
+system documented here. Recording superseded approaches is itself a mentor
+requirement (meeting 2026-05-28), so we state the change plainly:
 
-  8.3 Advanced models — bagging, boosting, Deep Learning
-    - Random Forest (bagging) — per the mentor.
-    - XGBoost (boosting) — per the mentor.
-    - Neural network baseline (Keras MLP) — to be introduced after Paul's
-      masterclass on 2026-06-11.
+| Rendering-1 design (planned)           | Rendering-2 implementation (actual)              | Why the change                                 |
+| --------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| Unsupervised clustering by risk/return  | Removed                                           | No supervised target; hard to defend to a jury |
+| Within-cluster return **regression**    | Per-asset **binary classifier** (Triple-Barrier)  | A clean, tradeable label with leakage control  |
+| **Daily** bars                          | **1h** primary + 1d/1w/cross-TF context features  | Richer intra-asset structure                   |
+| Plain `TimeSeriesSplit`                 | **Purged walk-forward + embargo**                 | Removes label-overlap leakage                  |
+| Sector cap / recommendation list        | Per-asset **Kelly** sizing + OOS backtest         | Direct economic evaluation per asset           |
 
-  8.4 Interpretability
-    - Feature importance (XGBoost gain, permutation importance).
-    - SHAP values on a held-out fold.
-    - Cluster persona descriptions (sector profile, mean Sharpe).
+This section describes **what runs in the code today**; §10 revisits what this
+means for the original questionnaire-driven recommender framed in §1.
 
-  8.5 Hierarchical clustering comparison
-    - Linkage choice (ward, average, complete).
-    - Cophenetic correlation vs. K-Means inertia.
--->
+## 8.2 Problem framing and the learning target
+
+**From price bars to a supervised label (Triple-Barrier).** Every eligible 1h
+bar `t0` is a candidate trade. Its side is taken from 1h momentum,
+`direction = sign(log_return_5[t0])`. The trade is simulated under the **ATR
+Triple-Barrier** contract: entry fills at the next bar open; barriers are
+symmetric at `ATR14[t0] × 1.0`; a 24-bar time barrier closes the trade if
+neither side is touched; commission (1 bp) and slippage (2 bp) are charged.
+The label `Y = 1` if the net-of-cost return is positive, else `0` — this is
+**binary classification**, and because positive rates run ≈ 0.47–0.52 per
+asset, **AUC-PR** (not accuracy) is the honest metric.
+
+**Feature space.** The model sees **56 numeric features**, namespaced by
+timeframe: 17 on the 1h decision clock, 17 daily and 17 weekly indicators
+projected *as-of* the decision time, and 5 cross-timeframe alignment features.
+Families repeat per timeframe: returns, trend, momentum (RSI, MACD),
+volatility (ATR, Bollinger), volume and the `direction` sign. All features are
+numeric — no categorical encoding is needed, unlike the plan in §7.4 — and
+XGBoost's native missing-value handling absorbs the NaNs that daily/weekly
+projections legitimately produce early in a series.
+
+**Leakage control.** The series is split strictly by time: warmup
+(2016-01-04 → 2016-10-14), train (2016-10-17 → 2023-12-29) and a never-touched
+**OOS window** (2024-01-02 → 2026-05-29). A purge step drops any training
+setup whose label horizon reaches into OOS, and cross-validation inside Train
+uses **4 purged walk-forward folds** with a 35-bar embargo — never a random
+k-fold, consistent with the leakage discipline set out in §5.5.
+
+## 8.3 Baseline models
+
+Two baselines frame how much the model adds: the **no-skill floor** (AUC-PR
+equal to each asset's positive rate, ≈ 0.47–0.52) and an **untuned XGBoost**
+with a fixed, honest first-iteration hyperparameter set. The untuned model
+already clears the prevalence floor on most assets, and Optuna tuning (§8.4)
+adds a further, modest lift on **10 / 10** assets — the realistic ceiling is
+low (`cv_auc_pr` tops out around 0.55), which sets honest expectations for the
+OOS economics in §8.4.3.
+
+## 8.4 Metrics, optimization and model comparison
+
+### 8.4.1 Metrics
+
+Training/selection metric is **AUC-PR** (more informative than ROC-AUC for a
+near-balanced, economically asymmetric target). A trade fires only when the
+model's probability `p ≥ 0.6` — a conservative gate that trades recall for
+precision. OOS economic metrics (profit factor, return %, max drawdown %, win
+rate %, trade count, time-in-market %) rank strategies by **PF (max) →
+drawdown (min) → time-in-market (min)**.
+
+### 8.4.2 Hyper-parameter optimization
+
+XGBoost is tuned with **Optuna** (TPE sampler, seed 42, MedianPruner, 200
+trials, maximizing mean AUC-PR over the 4 purged walk-forward folds) over tree
+depth, learning rate, subsample, column subsample, minimum child weight, L2
+regularization and tree count. A second, nested optimization calibrates the
+**Kelly fraction** on a 20-point grid, maximizing train out-of-fold log-growth.
+Neither optimization reads OOS.
+
+### 8.4.3 Cross-asset OOS results
+
+| Ticker | Trades | Win % | PF   | Return %   | Max DD % | Time-in-mkt % | CV AUC-PR |
+| ------ | ------ | ----- | ---- | ---------- | -------- | ------------- | --------- |
+| XOM    | 263    | 48.67 | 0.88 | −5.16      | 7.55     | 36.85         | 0.514     |
+| AAPL   | 236    | 48.73 | 0.88 | −5.63      | 15.68    | 39.12         | 0.541     |
+| TSLA   | 74     | 59.46 | 1.55 | **+10.36** | 4.13     | 11.02         | 0.554     |
+| JPM    | 71     | 64.79 | 1.76 | +0.23      | 0.05     | 11.60         | 0.513     |
+| AMZN   | 6      | 33.33 | 0.23 | −0.73      | 0.83     | 1.46          | 0.532     |
+| GOOGL  | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.533     |
+| JNJ    | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.506     |
+| META   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.507     |
+| MSFT   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.521     |
+| NVDA   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.523     |
+
+One shared recipe, ten independent per-asset fits: **5 of 10 assets trade**,
+5 hold cash (their best probabilities never reach the 0.6 gate). Of the five
+that trade, two are profitable (TSLA, JPM), two lose ≈ 5 % (XOM, AAPL), and
+AMZN is marginally negative on 6 low-exposure trades.
+
+## 8.5 Bagging vs Boosting
+
+XGBoost is **gradient-boosted trees** — shallow trees added sequentially, each
+fitted to the residual errors of the ensemble so far. It is not a bagging
+method, but `subsample` and `colsample_bytree` (both tuned in §8.4.2) borrow
+bagging's row/feature randomization inside the boosting loop, making it a
+**stochastic gradient booster**.
+
+To answer the mentor's explicit request (2026-05-28) for a bagging-vs-boosting
+comparison, a **RandomForest** (bagging, 300 trees, seed 42) baseline was
+trained against the tuned XGBoost on identical features and identical purged
+walk-forward folds:
+
+| Ticker | Setups | Pos-rate | Baseline XGB | **Tuned XGB** | RandomForest | Δ (XGB − RF) |
+| ------ | ------ | -------- | ------------ | ------------- | ------------ | ------------ |
+| AAPL   | 12 565 | 0.500    | 0.521        | **0.541**     | 0.504        | +0.037       |
+| AMZN   | 12 573 | 0.514    | 0.521        | **0.532**     | 0.514        | +0.018       |
+| GOOGL  | 12 573 | 0.491    | 0.502        | **0.533**     | 0.494        | +0.039       |
+| JNJ    | 12 526 | 0.482    | 0.491        | **0.506**     | 0.499        | +0.008       |
+| JPM    | 12 541 | 0.483    | 0.505        | **0.513**     | 0.491        | +0.022       |
+| META   | 12 564 | 0.487    | 0.485        | **0.507**     | 0.490        | +0.017       |
+| MSFT   | 12 551 | 0.473    | 0.486        | **0.521**     | 0.469        | +0.052       |
+| NVDA   | 12 569 | 0.502    | 0.509        | **0.523**     | 0.506        | +0.017       |
+| TSLA   | 12 570 | 0.522    | 0.546        | **0.554**     | 0.516        | +0.039       |
+| XOM    | 12 531 | 0.493    | 0.492        | **0.514**     | 0.498        | +0.016       |
+
+**Boosting beats bagging on all 10 assets** (mean advantage **+0.027** AUC-PR).
+RandomForest sits at each asset's prevalence floor — it extracts almost no
+signal — while tuned XGBoost shows a small but consistent edge. One asymmetry
+is itself a finding: RandomForest cannot consume `NaN`, so the daily/weekly
+gaps were median-imputed (fit on the training fold only), whereas XGBoost
+needed no imputation — its native missing-value handling is a practical
+advantage on top of the accuracy edge.
+
+## 8.6 Deep Learning — not implemented
+
+There is **no deep learning** in this project: `requirements.txt` pins
+`xgboost==3.3.0` and contains no PyTorch, TensorFlow or Keras. This departs
+from the Liora Step 3.3 checklist, which names Deep Learning explicitly, so we
+record the reasoning rather than silently skip it:
+
+- The 56 features are already engineered, tabular indicators — gradient-boosted
+  trees typically outperform neural nets on this kind of input.
+- With `cv_auc_pr` barely above 0.5, extra model capacity is far more likely to
+  overfit noise than to find new signal.
+- Determinism and reproducibility are project hard-constraints (fixed seed,
+  single-threaded XGBoost, pinned libraries), easier to guarantee without a
+  GPU-trained neural net.
+- The project's minimalism value favours a small, regularized tree ensemble
+  and a small dependency surface over an additional model family.
+
+## 8.7 Interpretability
+
+In keeping with the project's minimalism value, interpretability is presented
+as a **menu** of five methods applicable to a gradient-boosted tree model
+(native XGBoost importance, TreeSHAP, permutation importance, partial
+dependence/ICE, and by-construction interpretability), alongside what the
+model already provides for free: native `gain`/`cover`/`weight` rankings
+without retraining, and a pipeline that is interpretable *by construction* —
+an explicit Triple-Barrier label, a transparent momentum-sign side rule, a
+closed-form Kelly sizing formula, and a documented formula/unit/timeframe for
+every feature. No importance numbers are computed in this rendering.
+
+## 8.8 From model to deployable artifact
+
+Each asset's trained booster is frozen into a self-contained, self-verifying
+file (`strategy_<TICKER>.py`): the model is serialized and embedded as base64,
+a SHA-256 hash guards integrity on load, and golden vectors assert
+byte-identical predictions when the file is loaded. This satisfies the defense
+requirement of **no re-training at runtime** (Timeline Step 5) and, together
+with fixed seeding and pinned libraries, makes the OOS results reproducible.
 
 \newpage
 
-# 9. Results and Discussion [PLACEHOLDER — Rendering 2]
+# 9. Results and Discussion
 
-> *Numbers will be filled during Sprint 2.*
+> **Disclaimer:** every number below is out-of-sample on past data and is not a
+> forecast; the project remains decision support for a beginner investor, not
+> financial advice.
 
-<!--
-  Internal outline (NOT rendered to PDF):
+## 9.1 Scientific conclusions
 
-  9.1 Clustering quality
-    - Silhouette score, Davies–Bouldin, Calinski–Harabasz.
-    - Cluster persona summaries.
+The cross-validated signal is **weak but methodologically clean**:
+`cv_auc_pr` ≈ 0.51–0.55 (the weakest two assets barely clear 0.50), with
+leakage controlled by purge + embargo and a never-touched OOS window (§8.2).
+**Boosting > bagging** is established with a measured, fold-matched comparison
+(+0.027 mean AUC-PR, 10/10 assets, §8.5), and **tuning > untuned** on 10/10
+(§8.3, §8.5). The conservative 0.6 probability gate leaves 5 of the 10 assets
+holding cash out of sample — the system errs toward *not trading* rather than
+over-trading a weak edge.
 
-  9.2 Ranking model performance
-    - R², RMSE, ranking IC (information coefficient) on out-of-time test.
-    - Comparison: linear baseline · Random Forest · XGBoost.
-    - With-vs.-without outliers comparison table (per §7.6).
+## 9.2 Business conclusions
 
-  9.3 Recommendation evaluation
-    - Backtest Sharpe of the top-N portfolio vs. equal-weight S&P 500.
-    - Sector-cap binding frequency.
-    - Sensitivity to the user-questionnaire mapping.
+Of the five assets that trade, only **TSLA (+10.4 %, PF 1.55)** and **JPM**
+(PF 1.76, but essentially break-even at +0.23 %) are OOS-positive; **AAPL and
+XOM lose ≈ 5 %**, and AMZN is marginally negative (−0.73 %) on 6 low-exposure
+trades. Net read: as decision support, **the current per-asset edge is not
+deployable capital** — this is reported as an honest, jury-defensible result,
+and the project's disclaimer stands.
 
-  9.4 Threats to validity
-    - Survivorship bias (§5.1) — quantify residual effect.
-    - Out-of-time degradation.
-    - Free-tier feed coverage gaps.
--->
+## 9.3 Threats to validity
+
+- **Survivorship bias**, carried from §5.1, is not re-quantified on this
+  10-asset universe.
+- **Single-market / USD-only scope** (§5.4) applies unchanged.
+- The RandomForest comparison in §8.5 used median imputation where XGBoost
+  used native missing-value handling — a methodological asymmetry, not a
+  confound, but worth stating plainly.
+- The **with-vs.-without-outlier study** the mentor asked for (§5.2, §7.6,
+  the SNDK protocol) was **not run** on this 10-asset universe — it targeted
+  the full S&P 500 clustering design that this rendering superseded (§8.1).
+- **Universe and scope narrowed without an explicit sign-off.** §8.1
+  documents a design pivot from the full S&P 500 clustering/ranking/
+  recommendation pipeline (§1.2) to a **10-asset** per-ticker classifier; §10
+  addresses what this means for the beginner questionnaire promised in §1.
 
 \newpage
 
