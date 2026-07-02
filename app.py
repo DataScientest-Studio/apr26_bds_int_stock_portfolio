@@ -5,6 +5,9 @@ Run:
     streamlit run app.py
 """
 
+import runpy
+from pathlib import Path
+
 import streamlit as st
 
 from src.data_loader import load_prices, load_tickers
@@ -22,6 +25,12 @@ from src.risk_assessment import render_questionnaire
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
 st.title("Stocks Recommender Based on User Profile")
 
+BASE_DIR = Path(__file__).resolve().parent
+FINAL_APP_DIR = BASE_DIR / "mac-2026-06-09-full-6y"
+FINAL_APP_FILE = FINAL_APP_DIR / "app.py"
+FINAL_APP_PAGE = "Final App: Full Recommender"
+MENU_DIVIDER = "──────── Final app ────────"
+
 
 @st.cache_data
 def get_data():
@@ -30,11 +39,45 @@ def get_data():
     return tickers, prices
 
 
+def render_final_app() -> None:
+    """Render the full recommender app from the experiment folder in this process."""
+    if not FINAL_APP_FILE.exists():
+        st.error(f"Could not find final app at `{FINAL_APP_FILE}`.")
+        return
+
+    st.divider()
+    st.markdown("## Final app")
+
+    original_set_page_config = st.set_page_config
+
+    try:
+        # The parent app has already configured the Streamlit page.
+        # The embedded app can still render its title, widgets, charts, and tables.
+        st.set_page_config = lambda *args, **kwargs: None
+        runpy.run_path(str(FINAL_APP_FILE), run_name="__embedded_final_streamlit_app__")
+    except Exception as exc:
+        st.error("The final app could not be rendered inside the main app.")
+        st.exception(exc)
+    finally:
+        st.set_page_config = original_set_page_config
+
+
 tickers, prices = get_data()
 
-page = st.sidebar.radio("Page", ["Exploration", "DataViz", "Risk Assessment"])
+page = st.sidebar.radio(
+    "Main menu",
+    ["Exploration", "DataViz", "Risk Assessment", MENU_DIVIDER, FINAL_APP_PAGE],
+    key="main_app_page",
+)
 
-if page == "Exploration":
+if page == MENU_DIVIDER:
+    st.sidebar.info("Choose the final app entry below the divider.")
+    st.info("Choose **Final App: Full Recommender** in the sidebar to show the complete app.")
+
+elif page == FINAL_APP_PAGE:
+    render_final_app()
+
+elif page == "Exploration":
     st.subheader("1. Exploration")
     st.write("First rows of the metadata table:")
     st.dataframe(tickers.head(10))
