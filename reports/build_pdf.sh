@@ -96,13 +96,22 @@ build_once() {
 
   echo "🔧  Building $(basename "$output") …"
 
+  # Only the single growing report (REPORT.md) gets a build-time date — its
+  # own YAML sets date: "\today", meaning "whenever this was last compiled".
+  # Frozen milestone deliverables (e.g. MODELING_REPORT_010726.md) already
+  # pin their own submission date in YAML and must not have it overwritten.
+  local date_flag=""
+  if [[ "$(basename "$input")" == "REPORT.md" ]]; then
+    date_flag="date:$(date '+%Y-%m-%d')"
+  fi
+
   pandoc "$input" \
     --from=markdown+yaml_metadata_block+tex_math_dollars+pipe_tables+grid_tables+raw_tex \
     --to=pdf \
     --pdf-engine="$PDF_ENGINE" \
     --template="$TEMPLATE_NAME" \
     --toc \
-    --metadata=date:"$(date '+%Y-%m-%d')" \
+    ${date_flag:+--metadata="$date_flag"} \
     --output="$output"
 
   local elapsed=$(( $(date +%s) - started ))
