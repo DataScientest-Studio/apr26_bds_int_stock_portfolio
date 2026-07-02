@@ -17,6 +17,7 @@ from src.plots import (
     plot_risk_return_scatter,
     plot_correlation_heatmap,
 )
+from src.risk_assessment import render_questionnaire
 
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
 st.title("Stocks Recommender Based on User Profile")
@@ -31,7 +32,7 @@ def get_data():
 
 tickers, prices = get_data()
 
-page = st.sidebar.radio("Page", ["Exploration", "DataViz"])
+page = st.sidebar.radio("Page", ["Exploration", "DataViz", "Risk Assessment"])
 
 if page == "Exploration":
     st.subheader("1. Exploration")
@@ -145,3 +146,16 @@ elif page == "DataViz":
         st.markdown("**Validation method:** Pearson Correlation between Annualized Volatility and Annualized Expected Return.\n\n**Interpretation:** We mathematically aggregated all 503 stocks into a single (Risk, Return) tuple and calculated their linear correlation. A strong positive correlation (e.g., > 0.7) would mean 'more risk always equals more reward'.")
         st.write(f"**Calculated Pearson correlation:** `{pearson_corr:.4f}`")
         st.markdown(f"Because the correlation is so close to 0 (`{pearson_corr:.4f}`), we statistically validate the core observation from the scatterplot: taking blind risk does **not** guarantee proportionally higher returns. This definitively proves the business need for a smart recommender that seeks the 'efficient frontier' (high return for a given risk) rather than just picking randomly.")
+
+elif page == "Risk Assessment":
+    st.subheader("3. Risk Assessment")
+    st.write(
+        "Answer the questions below so the recommender can later match the "
+        "portfolio to your risk profile. This page only collects the "
+        "answers for now; connecting them to the recommendation logic is a "
+        "follow-up step."
+    )
+    result = render_questionnaire()
+    if result:
+        st.success("Thanks — your answers were recorded for this session.")
+        st.write(result)

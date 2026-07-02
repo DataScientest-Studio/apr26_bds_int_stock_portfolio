@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Build REPORT.pdf from REPORT.md using pandoc + eisvogel + xelatex.
+# Build report PDFs from Markdown using pandoc + eisvogel + xelatex.
 #
 # Usage:
-#   ./build_pdf.sh                 # build REPORT.pdf in this folder
-#   ./build_pdf.sh --watch         # rebuild on every save (needs fswatch)
-#   ./build_pdf.sh --output X.pdf  # custom output path
+#   ./build_pdf.sh                 # build all reports below (REPORT.md + MODELING_REPORT_010726.md)
+#   ./build_pdf.sh --watch         # rebuild REPORT.md on every save (needs fswatch)
+#   ./build_pdf.sh --input X.md --output X.pdf  # build a single custom report
 #
 # Dependencies (macOS):
 #   brew install pandoc
@@ -17,20 +17,26 @@ set -euo pipefail
 # Configurable bits
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-INPUT="${SCRIPT_DIR}/REPORT.md"
-OUTPUT="${SCRIPT_DIR}/REPORT.pdf"
+# Reports built by default when no --input/--output is given (md:pdf pairs).
+DEFAULT_REPORTS=(
+  "REPORT.md:REPORT.pdf"
+  "MODELING_REPORT_010726.md:MODELING_REPORT_010726.pdf"
+)
+INPUT=""
+OUTPUT=""
 TEMPLATE_NAME="eisvogel"
 # Eisvogel ships as a .latex file. Pandoc looks for it under
 # ~/.pandoc/templates/eisvogel.latex (or ~/.local/share/pandoc/templates/...)
 TEMPLATE_PATH="${HOME}/.pandoc/templates/eisvogel.latex"
 PDF_ENGINE="xelatex"
-# Syntax highlighting is handled by eisvogel via `listings: true` in REPORT.md YAML.
+# Syntax highlighting is handled by eisvogel via `listings: true` in each report's YAML.
 
 # Parse flags
 WATCH=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --watch)  WATCH=1; shift ;;
+    --input)  INPUT="$2"; shift 2 ;;
     --output) OUTPUT="$2"; shift 2 ;;
     -h|--help)
       grep '^#' "$0" | sed 's/^# \{0,1\}//'
@@ -74,43 +80,67 @@ EOF
   exit 1
 fi
 
-if [[ ! -f "$INPUT" ]]; then
-  echo "❌  REPORT.md not found at: $INPUT" >&2
-  exit 1
-fi
-
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
 build_once() {
+  local input="$1"
+  local output="$2"
   local started
   started=$(date +%s)
-  echo "🔧  Building $(basename "$OUTPUT") …"
 
-  pandoc "$INPUT" \
+  if [[ ! -f "$input" ]]; then
+    echo "❌  Input not found at: $input" >&2
+    exit 1
+  fi
+
+  echo "🔧  Building $(basename "$output") …"
+
+  # Only the single growing report (REPORT.md) gets a build-time date — its
+  # own YAML sets date: "\today", meaning "whenever this was last compiled".
+  # Frozen milestone deliverables (e.g. MODELING_REPORT_010726.md) already
+  # pin their own submission date in YAML and must not have it overwritten.
+  local date_flag=""
+  if [[ "$(basename "$input")" == "REPORT.md" ]]; then
+    date_flag="date:$(date '+%Y-%m-%d')"
+  fi
+
+  pandoc "$input" \
     --from=markdown+yaml_metadata_block+tex_math_dollars+pipe_tables+grid_tables+raw_tex \
     --to=pdf \
     --pdf-engine="$PDF_ENGINE" \
     --template="$TEMPLATE_NAME" \
     --toc \
-    --metadata=date:"$(date '+%Y-%m-%d')" \
-    --output="$OUTPUT"
+    ${date_flag:+--metadata="$date_flag"} \
+    --output="$output"
 
   local elapsed=$(( $(date +%s) - started ))
-  echo "✅  Built $OUTPUT  (${elapsed}s)"
+  echo "✅  Built $output  (${elapsed}s)"
 }
 
 # ---------------------------------------------------------------------------
-# Watch mode (optional)
+# Watch mode (optional) — always watches/builds a single report
 # ---------------------------------------------------------------------------
 if [[ "$WATCH" -eq 1 ]]; then
+  WATCH_INPUT="${INPUT:-${SCRIPT_DIR}/REPORT.md}"
+  WATCH_OUTPUT="${OUTPUT:-${SCRIPT_DIR}/REPORT.pdf}"
   require fswatch "Install with: brew install fswatch"
-  echo "👀  Watching $(basename "$INPUT") — Ctrl-C to stop."
-  build_once || true
-  fswatch -o "$INPUT" | while read -r _; do
+  echo "👀  Watching $(basename "$WATCH_INPUT") — Ctrl-C to stop."
+  build_once "$WATCH_INPUT" "$WATCH_OUTPUT" || true
+  fswatch -o "$WATCH_INPUT" | while read -r _; do
     echo ""
-    build_once || echo "⚠️  Build failed, waiting for next save…"
+    build_once "$WATCH_INPUT" "$WATCH_OUTPUT" || echo "⚠️  Build failed, waiting for next save…"
   done
+elif [[ -n "$INPUT" || -n "$OUTPUT" ]]; then
+  # Single custom report requested via --input/--output.
+  [[ -n "$INPUT" ]] || { echo "❌  --output given without --input" >&2; exit 2; }
+  [[ -n "$OUTPUT" ]] || OUTPUT="${INPUT%.md}.pdf"
+  build_once "$INPUT" "$OUTPUT"
 else
-  build_once
+  # Default: build every report in DEFAULT_REPORTS.
+  for pair in "${DEFAULT_REPORTS[@]}"; do
+    md="${pair%%:*}"
+    pdf="${pair##*:}"
+    build_once "${SCRIPT_DIR}/${md}" "${SCRIPT_DIR}/${pdf}"
+  done
 fi

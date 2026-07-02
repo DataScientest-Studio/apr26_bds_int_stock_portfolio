@@ -232,10 +232,11 @@ Mentor: **Paul Grolier**. Framing meeting tentatively scheduled for **Wednesday 
 - [x] Set up a **Streamlit** project skeleton for presentation plots.
 - [x] Produce **5 initial visualizations** + fill the **Data Audit** Excel sheet — Deadline **2026-05-27**. ℹ️ **INFO:** 6 plots in place (sector counts, mean daily volume, daily returns, price line, **correlation heatmap**, **risk/return scatter**) — mentor-reviewed 2026-05-28.
 - [x] Full data-exploration / DataViz / pre-processing **report (Rendering 1)** — Deadline **2026-06-03** · **PDF format**. ✅ **Delivered 2026-06-03** as [`reports/report_v1_June_03_2026.pdf`](reports/report_v1_June_03_2026.pdf) (source [`reports/REPORT.md`](reports/REPORT.md), 6 EDA figures embedded; see [**Building the report PDF**](#building-the-report-pdf)).
+- [x] **Modeling report (Rendering 2)** — Deadline **2026-07-01**. ✅ **Delivered** as [`reports/MODELING_REPORT_010726.md`](reports/MODELING_REPORT_010726.md) (per-asset XGBoost triple-barrier classifier; **boosting vs RandomForest** comparison; interpretability menu; deep learning not implemented). Implementing **code on branch `ml-modeling-part`**, to be merged to `main` after approval.
 - [ ] Add **per-ticker history-length** column to EDA — flag new entrants like **SNDK** (1.2 yrs of history; 342% return / 98% risk outlier in the scatter plot).
 - [ ] Design **with-vs.-without outliers** modeling comparison (mentor 2026-05-28: train both, document impact, don't drop blindly).
 - [ ] Cover **failed approaches** in the report narrative (mentor 2026-05-28: yfinance → Alpaca migration, outlier debate, etc.).
-- [ ] Pre-baked **XGBoost vs. Random Forest** model comparison across data preparations (mentor 2026-05-28).
+- [x] Pre-baked **XGBoost vs. Random Forest** model comparison across data preparations (mentor 2026-05-28). ✅ Done in the [modeling report](reports/MODELING_REPORT_010726.md) §5.3 (boosting wins on all 10 assets, mean +0.027 AUC-PR).
 - [ ] Attend Paul's **"Introduction to Deep Learning"** masterclass on **2026-06-11** (neural networks + Keras).
 
 > Mentor unavailable the week of 2026-06-01 (Slack only). Next mentor meeting: **Monday 2026-06-08, 10:00**. See [`meeting_notes/2026-05-28.md`](meeting_notes/2026-05-28.md).
