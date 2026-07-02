@@ -29,3 +29,6 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Internal working drafts — never a deliverable, must never be committed
+reports/_internal_drafts/
