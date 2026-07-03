@@ -2,14 +2,17 @@
 
 A minimal, self-contained, reproducible ML trading pipeline. For a chosen ticker it
 computes layers **L1 → L9** in one notebook and leaves exactly **7 deliverable files** in
-`Assets/<TICKER>/`. No SHA / checksums / excessive QC gates / contracts / test scaffolding —
-everything is meant to be readable and easy to explain.
+`Assets/<TICKER>/`. The ML runtime stays minimal (no SHA / lineage / heavy QC scaffolding);
+the docs/viz plane is kept honest by one fail-closed gate (`make check`): every data-state
+number has a single home and the visualization derives from the SOT.
 
 ## Pillars
 
-- **`Plan/`** — **visualization**: a static walkthrough of the pipeline
-  (`index.html` → `main_data_flow.html`, `configurations.html`, `glossary.html`,
-  `dashboard.html`). It shows only the layers the code actually computes (L1 → L9).
+- **`Plan/`** — **visualization**: static pages (`index.html` → `procedure_lego.html`,
+  `configurations.html`, `glossary.html`, `dashboard.html`). `procedure_lego.html` is the
+  Procedure Lego canvas (L1–L9 + guards G.1–G.3, drag&drop, per-block replication prompts),
+  generated from `procedure_lego.html.tmpl` by `make build` — edit the `.tmpl`, never the
+  generated `.html`. It shows only what the code actually computes.
 - **`Project/`** — the working project:
   - `Structure/` — the operational root: `pipeline.py` (layers L1–L9),
     `notebook_template.ipynb` (the per-asset runner), `build_db.py`, `run_asset.py`,
@@ -67,6 +70,8 @@ Run a whole universe in one go, then refresh the dashboard feed:
 ```bash
 make loop "AAPL TSLA XOM"      # ensure seeds -> build-db -> run each ticker -> dashboard
 make dashboard                 # oos_metrics.db -> Plan/data/dashboard.json
+make build                     # regenerate Plan/*.html from *.tmpl + Markdown markers
+make check                     # fail-closed gate: drift / stray literals / lego<->SOT crossmatch
 ```
 
 The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in

@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>Procedure Lego — Minimal Per-Asset ML Pipeline (L1–L9 + guards)</title>
+<!--
+  ============================================================================
+  PROCEDURE LEGO · aplikacja 1-plikowa (zero zależności/builda)
+  Minimalny per-asset pipeline S&P 500: warstwy L1–L9 + guardy G.1–G.3 +
+  pochodny dashboard D.1 w 5 torach. POCHODNA SOT: treść klocków = bloki
+  "Kontrakt replikacji" w Project/endproduct/Layers_Short_SOT.md (przy
+  rozbieżności wygrywa SOT). Liczby data-state + config renderowane przez
+  Project/Structure/config/data_state_numbers_gate.py (tokeny {{...}} w .tmpl);
+  edytuj .tmpl, potem `make build` w Project/Structure — nigdy wygenerowanego .html.
+
+  MAPA DLA AGENTÓW — edytuj we właściwej sekcji:
+    CSS  [S1] tokeny kolorów      [S2] layout (workspace/panele)
+         [S3] inventory (lewy)    [S4] canvas + klocki + separatory + sticky nagłówki torów
+         [S5] wizualizacje (viz)  [S6] inspector (prawy)  [S7] toast/media
+         [S8] modal + FAB (dodawanie klocka / potwierdzenie przeniesienia)
+    JS   [J1] DANE   — GROUPS + MODULES (kontrakty procedur; SOT tej apki)
+         [J1b] PROMPTS — prompty replikacyjne PL (decyzje + best practices)
+         [J2] VIZ    — rejestr mini-wizualizacji: 1 klucz = 1 rodzaj klocka
+         [J3] LAYOUT — drabinka dół→góra z ORDER; wymiary canvas pochodne
+         [J4] STATE  — localStorage v2 (order / custom)
+         [J5] ORDER+DND — statyczne depends + insert-with-shift (wskaźnik wstawiania)
+         [J6] CANVAS — render klocków, sticky nagłówki, pan/zoom, drag&drop
+         [J7] INVENTORY + INSPECTOR — panele boczne, prompt replikacyjny
+         [J9] MODAL+CUSTOM — okno „+" (submitAddBlock) + edycja (klik w .selected-id
+              → openEditModal/submitEditBlock, tylko custom) + potwierdzenie ruchu
+              (openMoveModal) + custom-moduły (v2.custom, isCustom/deleteCustomBlock)
+         [J8] BOOT   — start
+
+  JAK DODAĆ MODUŁ — dwie ścieżki:
+  (1) trwale: dopisz obiekt do MODULES (kolejność = przepływ dół→góra) i wskaż
+      viz z rejestru VIZ (lub dodaj nowy wpis w VIZ: {h, render}).
+  (2) w aplikacji: przycisk „+" (lewy-górny róg canvasu) → modal → klocek
+      zapisany w localStorage v2.custom, kasowalny przez „USUŃ KLOCEK" w inspectorze.
+  Tory, separatory, nagłówki i wysokość canvas wyliczają się same; nowy moduł
+  ląduje na szczycie drabinki — przeciągnij go na miejsce (modal potwierdzi ruch).
+  ============================================================================
+-->
+  <style>
+    /* [S1] tokeny */
+    :root{
+      --bg-root:#080A0D;
+      --bg-panel:#0D1117;
+      --line:#27303A;
+      --line-soft:#1B232C;
+      --text:#E8EDF2;
+      --muted:#89929D;
+      --amber:#FFA028;
+      --green:#44D17A;
+      --red:#FF5C6C;
+      --cyan:#54B8FF;
+      /* paleta semantyczna wizualizacji (wg TEST.html: rola → kolor) */
+      --v-src:#ABA99F;      /* source / acquisition */
+      --v-store:#2BB587;    /* store / artifact (teal) */
+      --v-green:#86B23A;    /* transform */
+      --v-amber:#D89A3A;    /* gate / control / OOS */
+      --v-good:#34C96A;     /* wynik / TP / endproduct */
+      --v-fail:#F26B6A;     /* błąd / SL / purge */
+      --v-blue:#5CB0FF;     /* embargo / README */
+      --v-pink:#E673A3;     /* Risk-Box / notebook */
+      --v-gray:#8a8980;     /* świece / neutralne */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;min-width:1024px}
+    body{margin:0;background:var(--bg-root);color:var(--text);font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:hidden}
+    button,input{font:inherit}
+    button{border:0;background:transparent;color:var(--text);padding:0;cursor:pointer}
+    button:hover{color:var(--amber)}
+    button:focus-visible{outline:1px solid var(--amber);outline-offset:-1px}
+
+    /* [S2] layout */
+    .terminal{height:100vh;display:grid;grid-template-rows:minmax(0,1fr);background:var(--line);gap:1px}
+    .workspace{display:grid;grid-template-columns:18% minmax(0,1fr) 24%;gap:1px;min-height:0;background:var(--line)}
+    .panel{min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--bg-panel)}
+
+    /* [S3] inventory */
+    .inventory-controls{padding:7px;border-bottom:1px solid var(--line);display:flex;gap:4px;flex-wrap:wrap}
+    .filter{font-size:9px;color:var(--muted);padding:3px 5px;border:1px solid transparent}
+    .filter.active{color:var(--amber);border-color:var(--amber)}
+    .module-list{overflow:auto;min-height:0;padding:5px 0}
+    .inventory-group{padding:5px 7px 3px;color:var(--muted);font-size:9px;letter-spacing:.08em;border-top:1px solid var(--line-soft)}
+    .inventory-group:first-child{border-top:0}
+    .inventory-row{height:28px;display:grid;grid-template-columns:33px 1fr;align-items:center;gap:6px;padding:0 8px;cursor:grab;border-left:3px solid transparent;color:#C7D0D8}
+    .inventory-row:hover,.inventory-row.selected{background:#111820;color:var(--text)}
+    .inventory-row.selected{border-left-color:var(--amber)}
+    .inventory-id{font-size:10px;color:var(--text)}
+    .inventory-name{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    /* [S4] canvas + klocki */
+    .flow-panel{position:relative}
+    .flow-viewport{position:relative;overflow:hidden;flex:1;background-color:var(--bg-root);background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:20px 20px}
+    .flow-canvas{position:relative;width:1400px;height:2600px;transform-origin:0 0;will-change:transform;cursor:grab} /* wymiary nadpisuje [J8] BOOT z CANVAS_W/H */
+    .flow-canvas.panning{cursor:grabbing}
+    .flow-canvas.drag-over{box-shadow:inset 0 0 0 1px var(--amber)}
+    .lane-sep{position:absolute;top:0;bottom:0;width:1px;background:var(--line);pointer-events:none} /* szerokość kompensuje zoom applyTransform */
+    .insert-line{position:absolute;background:var(--amber);box-shadow:0 0 6px rgba(255,160,40,.45);pointer-events:none;z-index:9}
+    /* sticky nagłówki torów — warstwa viewportu (poza transformacją), stała wielkość ekranowa */
+    .lane-heads{position:absolute;top:0;left:0;right:0;height:26px;pointer-events:none;z-index:8;overflow:hidden}
+    .lane-head{position:absolute;top:0;height:26px;line-height:26px;padding:0 4px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(180deg,var(--bg-root) 30%,rgba(8,10,13,.72) 65%,transparent)}
+
+    .lego{position:absolute;width:184px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:15px 8px 6px;cursor:grab;user-select:none;box-shadow:4px 4px 0 rgba(0,0,0,.18);transition:top .15s ease,left .15s ease}
+    .lego:active{cursor:grabbing}
+    .lego:hover{border-color:#8A96A3;z-index:5}
+    .lego.selected{outline:1px solid var(--amber);outline-offset:2px;z-index:6}
+    .studs{position:absolute;top:-5px;left:9px;display:flex;gap:7px}
+    .stud{width:13px;height:5px;border:1px solid var(--accent);border-bottom:0;background:#161D25}
+    .lego-top{display:flex;gap:7px;align-items:baseline}
+    .lego-id{color:var(--accent);font-size:10px;font-weight:800}
+    .lego-title{font-size:10px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+    /* [S5] wizualizacje — wspólne */
+    .viz-svg{display:block;width:100%;height:auto;margin-top:5px}
+    .viz-label{margin-top:6px;text-align:center;font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .viz-tbl{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:5px}
+    .viz-tbl th,.viz-tbl td{border:1px solid var(--line);text-align:center;overflow:hidden;white-space:nowrap}
+    .viz-tbl th{height:13px;font-size:7px;font-weight:800;color:var(--text);background:rgba(255,255,255,.05)}
+    .viz-tbl td{height:12px;font-size:6.5px;color:#9AA4AE}
+    .ohlcv-x{font-size:1.5em;font-weight:800;vertical-align:-1px;margin-right:1px}
+    /* 1.2 · łańcuch ZIP (LEAN, 1 zip = 1 ticker) */
+    .zip-chain{margin-top:6px;display:flex;align-items:flex-start;justify-content:center;gap:3px}
+    .zip-node{display:flex;flex-direction:column;align-items:center;gap:3px}
+    .zip-box{width:28px;height:19px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--accent);background:rgba(85,199,164,.12);border:1px solid var(--accent);border-radius:2px}
+    .zip-tk{font-size:7px;font-weight:700;letter-spacing:.03em;color:var(--muted)}
+    .zip-dot{flex:0 0 auto;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.55;margin-top:7px}
+    .zip-ell{flex:0 0 auto;color:var(--accent);font-weight:800;letter-spacing:1px;opacity:.7;margin-top:4px}
+    /* 1.3 · checklista QC źródła */
+    .qc-list{margin-top:6px;display:grid;gap:2px}
+    .qc-row{display:grid;grid-template-columns:42px 1fr 10px;align-items:center;font-size:7.5px;color:#9AA4AE}
+    .qc-row b{color:var(--text);font-weight:800}
+    .qc-ok{color:var(--v-good);font-weight:800;justify-self:end}
+    /* 2.2 · macierz cech — narożnik x/t */
+    .xt{position:relative;background:linear-gradient(to top right,transparent 47%,#46515D 47%,#46515D 53%,transparent 53%)!important}
+    .xt .x{position:absolute;top:0;right:2px;font-size:6px}
+    .xt .t{position:absolute;bottom:0;left:2px;font-size:6px}
+    .th-x{color:var(--v-green)!important;background:rgba(134,178,58,.14)!important}
+    .th-y{color:var(--v-good)!important;background:rgba(52,201,106,.20)!important}
+    td.y1{background:rgba(52,201,106,.22);color:var(--v-good)!important;font-weight:800}
+    td.y0{color:var(--muted)!important}
+    /* 2.4 · bramka jakości */
+    .gate{margin-top:8px;display:flex;gap:5px;justify-content:center}
+    .gate-chip{border:1px solid;padding:3px 7px;font-size:9px;font-weight:800;letter-spacing:.04em}
+    .gate-chip.ok{color:var(--v-good);border-color:var(--v-good);background:rgba(52,201,106,.12);box-shadow:0 0 6px rgba(52,201,106,.35)}
+    .gate-chip.warn{color:var(--v-amber);border-color:var(--v-amber);opacity:.5}
+    .gate-chip.fail{color:var(--v-fail);border-color:var(--v-fail);opacity:.5}
+    .gate-note{margin-top:6px;text-align:center;font-size:7.5px;color:var(--muted)}
+    .gate-note b{color:var(--v-good)}
+    /* 3.1 · macierz triali Optuny */
+    .viz-tbl td.o-best,.viz-tbl th.o-best{background:rgba(216,154,58,.16);color:var(--v-amber)}
+    .viz-tbl tr.o-auc td{background:rgba(52,201,106,.10);color:var(--v-good)}
+    .viz-tbl td.o-name{text-align:left;padding-left:3px;color:#C7D0D8}
+    .viz-tbl td.st-p{color:var(--v-fail)}.viz-tbl td.st-b{color:var(--v-good);font-weight:800}
+    /* 3.2 · linia budowy artefaktu */
+    .build{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:3px}
+    .b-arr{color:var(--v-amber);font-size:9px;font-weight:800}
+    .b-chip{border:1px solid;border-radius:2px;padding:3px 4px;font-size:6.5px;font-weight:800;white-space:nowrap}
+    .b-json{color:var(--v-green);border-color:var(--v-green);background:rgba(134,178,58,.10)}
+    .b-xgb{color:#fff;border-color:var(--v-store);background:rgba(29,158,117,.35);font-size:8px;padding:3px 6px}
+    .b-b64{color:var(--v-store);border-color:var(--v-store);background:rgba(29,158,117,.10);font-size:5.8px}
+    .b-py{color:var(--v-good);border-color:var(--v-good);background:rgba(52,201,106,.10)}
+    .build-sub{margin-top:4px;text-align:center;font-size:6.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* 4.2 · legenda plików folderu */
+    .f-legend{margin-top:3px;display:flex;justify-content:center;gap:7px;font-size:6.5px;font-weight:700}
+
+    /* [S6] inspector */
+    .inspector-content{overflow:auto;min-height:0}
+    .empty-state{padding:14px;color:var(--muted);font-size:10px;line-height:1.55}
+    .selected-strip{padding:9px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:center}
+    .selected-id{color:var(--bg-root);background:var(--amber);font-weight:900;font-size:11px;text-align:center;padding:4px 2px}
+    .selected-name{font-size:11px;font-weight:800;line-height:1.2}
+    .selected-kind{font-size:9px;color:var(--muted);margin-top:3px}
+    .inspect-section{border-bottom:1px solid var(--line);padding:9px}
+    .inspect-label{color:var(--amber);font-size:9px;letter-spacing:.09em;margin-bottom:6px}
+    .inspect-text{font-size:10px;color:#C9D1D9;line-height:1.5}
+    .inspect-list{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+    .inspect-list li{font-size:10px;color:#C9D1D9;line-height:1.4}
+    .inspect-list li::before{content:'›';color:var(--amber);margin-right:6px}
+    .knob-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+    .knob{min-width:0;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .knob b{display:block;color:var(--muted);font-size:8px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .knob span{display:block;margin-top:3px;color:var(--text);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* akordeon promptu replikacyjnego */
+    .prompt-acc summary{list-style:none;display:flex;align-items:center;gap:6px;color:var(--amber);font-size:9px;letter-spacing:.09em;cursor:pointer;user-select:none}
+    .prompt-acc summary::-webkit-details-marker{display:none}
+    .prompt-acc summary i{font-style:normal;transition:transform .15s}
+    .prompt-acc[open] summary i{transform:rotate(90deg)}
+    .prompt-bar{display:flex;justify-content:flex-end;margin:8px 0 6px}
+    .prompt-bar button{color:var(--cyan);font-size:10px}
+    .prompt-bar button:hover{color:var(--amber)}
+    .prompt-pre{margin:0;background:#0A0E13;border:1px solid var(--line);padding:8px;font-size:10px;line-height:1.5;color:#C9D1D9;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+    /* powiększona kopia viz w inspectorze */
+    .viz-card{margin-top:2px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:13px;overflow:hidden}
+    .viz-card .viz-tbl th{height:18px;font-size:10px}
+    .viz-card .viz-tbl td{height:16px;font-size:9px}
+    .viz-card .viz-label{font-size:10px;margin-top:9px}
+    .viz-card .qc-row{font-size:10px;grid-template-columns:64px 1fr 14px}
+    .viz-card .gate-chip{font-size:12px;padding:5px 12px}
+    .viz-card .gate-note,.viz-card .build-sub{font-size:9.5px}
+    .viz-card .b-chip{font-size:9px;padding:5px 7px}
+    .viz-card .b-b64{font-size:8px}.viz-card .b-xgb{font-size:11px}
+    .viz-card .f-legend{font-size:9px;gap:12px}
+    .viz-card .xt .x,.viz-card .xt .t{font-size:9px}
+    .viz-card .zip-box{width:36px;height:24px;font-size:11px}
+    .viz-card .zip-tk{font-size:9px}
+    .viz-card .zip-dot{width:5px;height:5px;margin-top:11px}
+    .viz-card .zip-ell{margin-top:8px}
+
+    /* [S7] toast + media */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,45px);opacity:0;pointer-events:none;border:1px solid var(--amber);background:#0B1016;color:var(--amber);padding:6px 9px;font-size:10px;z-index:60;transition:.16s}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:1180px){html,body{min-width:900px}.workspace{grid-template-columns:190px minmax(500px,1fr) 240px}.inventory-name{font-size:9px}}
+
+    /* [S8] modal + FAB — okno „+" (dodaj klocek, F1) + potwierdzenie ruchu (F2) */
+    .add-fab{position:absolute;top:8px;left:8px;z-index:12;width:26px;height:26px;border:1px solid var(--amber);background:var(--bg-panel);color:var(--amber);font-size:17px;font-weight:800;line-height:22px;text-align:center;box-shadow:2px 2px 0 rgba(0,0,0,.35);cursor:pointer}
+    .add-fab:hover{background:var(--amber);color:var(--bg-root)}
+    .add-fab:focus-visible{outline:1px solid var(--amber);outline-offset:2px}
+    .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(8,10,13,.72);display:flex;align-items:center;justify-content:center;padding:24px}
+    .modal-overlay[hidden]{display:none} /* konieczne — display:flex bije UA [hidden] */
+    .modal{width:min(560px,92vw);max-height:88vh;display:flex;flex-direction:column;background:var(--bg-panel);border:1px solid var(--line);border-top:3px solid var(--amber);box-shadow:6px 6px 0 rgba(0,0,0,.45)}
+    .modal-head{padding:12px 14px;border-bottom:1px solid var(--line);color:var(--amber);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+    .modal-body{padding:12px 14px;display:grid;gap:9px;overflow:auto}
+    .modal-foot{padding:11px 14px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+    .modal-grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .modal-field{display:grid;gap:3px;border:1px solid transparent;border-radius:2px;padding:5px 6px}
+    .modal-field>label{font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+    .modal-field:focus-within{border-color:var(--amber);background:rgba(255,160,40,.05)} /* highlight aktywnego pola */
+    .modal-field.err{border-color:var(--red)}
+    .modal-field.err>label{color:var(--red)}
+    .modal-field .err-msg{font-size:8.5px;color:var(--red)}
+    .modal input,.modal select,.modal textarea{width:100%;background:var(--bg-root);border:1px solid var(--line);color:var(--text);font:inherit;padding:5px 6px;outline:none}
+    .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:var(--amber)}
+    .modal input[readonly]{color:var(--muted);cursor:not-allowed}
+    .modal textarea{resize:vertical;min-height:44px;line-height:1.4}
+    .modal-btn{border:1px solid var(--line);background:transparent;color:var(--text);padding:6px 14px;font:inherit;font-size:10px;letter-spacing:.05em;cursor:pointer}
+    .modal-btn:hover{border-color:var(--amber);color:var(--amber)}
+    .modal-btn.primary{border-color:var(--amber);color:var(--amber)}
+    .modal-btn.primary:hover{background:var(--amber);color:var(--bg-root)}
+    .move-summary{font-size:11px;color:var(--text);line-height:1.7}
+    .move-summary b{color:var(--amber)}
+    .move-chip{display:inline-flex;align-items:center;gap:6px;margin:0 3px;padding:4px 9px;border:1px solid var(--amber);color:var(--amber);background:rgba(255,160,40,.10);font-weight:800;box-shadow:0 0 9px rgba(255,160,40,.55)}
+    .del-wrap{padding:9px;border-bottom:1px solid var(--line)}
+    .del-block{width:100%;padding:7px;border:1px solid var(--red);background:transparent;color:var(--red);font-size:10px;letter-spacing:.06em;cursor:pointer}
+    .del-block:hover{background:var(--red);color:var(--bg-root)}
+  </style>
+</head>
+<body>
+  <main class="terminal">
+    <section class="workspace">
+      <aside class="panel inventory">
+        <div class="inventory-controls" id="filters"></div>
+        <div class="module-list" id="moduleList"></div>
+      </aside>
+
+      <section class="panel flow-panel">
+        <div class="flow-viewport" id="flowViewport">
+          <div class="flow-canvas" id="flowCanvas" aria-label="Drag and drop procedure canvas">
+            <div class="insert-line" id="insertLine" hidden></div>
+          </div>
+          <div class="lane-heads" id="laneHeads" aria-hidden="true"></div>
+          <button class="add-fab" id="addFab" title="Dodaj klocek" aria-label="Dodaj nowy klocek">+</button>
+        </div>
+      </section>
+
+      <aside class="panel inspector">
+        <div class="inspector-content" id="inspectorContent"></div>
+      </aside>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head" id="modalTitle"></div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot" id="modalFoot"></div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    /* ==================================================================
+       [J1] DANE — GROUPS + MODULES (kontrakty warstw; POCHODNA bloków
+       „Kontrakt replikacji" w Project/endproduct/Layers_Short_SOT.md —
+       przy rozbieżności wygrywa SOT). Kolejność w MODULES = przepływ
+       dół→góra; depends = statyczne zależności (kontekst promptu
+       replikacyjnego).
+       ================================================================== */
+    const GROUPS = [
+      {id:'s1', name:'S1 DATA', color:'#55c7a4', subtitle:'Źródło → zachowana prawda danych (L1–L4)'},
+      {id:'s2', name:'S2 SPLIT+FEATURES+LABEL', color:'#FF5C6C', subtitle:'Split z purge/embargo → X/Y Triple Barrier (L5–L6)'},
+      {id:'s3', name:'S3 TRAINING', color:'#f0ae54', subtitle:'Optuna HPO + Kelly → frozen XGB strategy (L7–L8)'},
+      {id:'s4', name:'S4 OOS+PRODUCT', color:'#ef7898', subtitle:'One-shot OOS → 7-plikowy deliverable → dashboard (L9, D.1)'},
+      {id:'sg', name:'GUARDS', color:'#54B8FF', subtitle:'Bramki fail-closed: source QC na odczycie → szczelność splitu → akceptacja + kontrakt 7 plików'}
+    ];
+
+    const MODULES = [
+      {id:"L1", group:"s1", title:"Alpaca OHLCV download (provenance)", kind:"upstream provenance — not executed by this repo", short:"Alpaca Market Data API → raw 1h OHLCV per ticker", viz:"ohlcv",
+       input:["Alpaca Market Data API, 1h equity bars — fetched by the upstream SP500 source repo (qc-raw-ohlcv-data-sp500-alpaca), never by this project"],
+       transform:["None in this repo — provenance only: documents where the raw bars came from."],
+       output:"raw 1h OHLCV per ticker held upstream (Alpaca-fed DuckDB)",
+       invariant:["This repo never touches the network and holds no API secrets.", "No live download path exists anywhere in Project/Structure/."],
+       knobs:["executed_by=upstream source repo"],
+       test:["none — provenance block, not an executed layer"],
+       depends:[]},
+      {id:"L2", group:"s1", title:"seed export — one parquet per ticker", kind:"frozen input acquisition", short:"upstream DuckDB → data/seed/<TICKER>_ohlcv_1h.parquet ×10", viz:"zip",
+       input:["upstream SP500 DuckDB (ohlcv_1h view) at SP500_DUCKDB (Makefile variable)"],
+       transform:["ENSURE_SEEDS_PY (Makefile, run by make loop) exports only MISSING tickers: select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts.", "tz-localize America/New_York → convert to UTC; volume cast to float64."],
+       output:"data/seed/<TICKER>_ohlcv_1h.parquet × 10 seed tickers (committed; the universe grows by dropping in another seed)",
+       invariant:["Existing seeds are never overwritten — only missing tickers are exported.", "Columns are exactly timestamp/open/high/low/close/volume with UTC timestamps; no derived columns."],
+       knobs:["SP500_DUCKDB=<upstream DuckDB path> (Makefile)"],
+       test:["make loop with all seeds present prints „all requested seeds already present” and writes nothing", "a missing ticker absent upstream ⇒ SystemExit"],
+       depends:["L1"]},
+      {id:"L3", group:"s1", title:"build_db.py → liora.duckdb", kind:"canonical input store", short:"all seeds → one DuckDB table bars_1h", viz:"duckdb",
+       input:["all data/seed/*_ohlcv_1h.parquet"],
+       transform:["DROP TABLE IF EXISTS bars_1h → CREATE TABLE bars_1h(ticker, timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE).", "Plain INSERT per seed with the ticker column added — no cleaning, no calendar, no QC here (G.1 asserts on read)."],
+       output:"liora.duckdb, table bars_1h (182065 rows over 10 tickers); regenerable, gitignored",
+       invariant:["Zero value mutation — a verbatim load.", "Drop+recreate: no partial state survives a rebuild."],
+       knobs:["seed_dir=data/seed", "db=liora.duckdb"],
+       test:["make build-db prints per-ticker bar counts + the final summary", "corrupt seed values surface later as a G.1 RuntimeError"],
+       depends:["L2"]},
+      {id:"L4", group:"s1", title:"snapshot → 1h/1d/1w parquets", kind:"clean raw-truth materializer", short:"DuckDB read → clean 1h + deterministic 1d/1w roll-ups", viz:"snapshot",
+       input:["liora.duckdb bars_1h (read-only connection), one ticker"],
+       transform:["layer4_snapshot_to_parquet: ordered SELECT of the 6 OHLCV columns → G.1 source QC (fail-closed) → atomic_write parquet (pyarrow, zstd).", "layer4_materialize_timeframes + aggregate_to_timeframe: 1d = ET (America/New_York) calendar-day groups, 1w = ISO-week groups (Monday anchor); O=first, H=max, L=min, C=last, V=sum.", "close_ts / available_at are derived in memory for the L6 as-of projection and NOT persisted."],
+       output:"Assets/<T>/<T>_ohlcv_1h.parquet + _1d + _1w (deliverable files #2–#4; pure OHLCV columns)",
+       invariant:["Roll-ups derive only from the same clean 1h frame — no external calendar, no holiday list, no completeness gate.", "Corrupt source stops the run (G.1); repair never happens here."],
+       knobs:["SESSION_TIMEZONE=America/New_York", "CONTEXT_TIMEFRAMES=(1d, 1w)", "compression=zstd"],
+       test:["make run-asset TICKER=<T> leaves the 3 parquets in Assets/<T>/", "re-running is deterministic (same bytes for the same DB)"],
+       depends:["L3"]},
+      {id:"G.1", group:"sg", title:"source QC on read — fail-closed", kind:"source-integrity gate", short:"corrupt OHLCV ⇒ RuntimeError, never cleaned", viz:"guard",
+       input:["the L4 dataframe immediately after the DuckDB read (before any write)"],
+       transform:["Predicates (pipeline.py:193–214): unparseable timestamp(s) · duplicate timestamp(s) · non-monotonic order · non-finite or ≤0 OHLC · high<low · high<max(open,close) · low>min(open,close) · non-finite or negative volume.", "Any hit ⇒ RuntimeError („L4 source QC FAILED …”) listing every violated predicate."],
+       output:"a verdict only — pass returns the same dataframe untouched",
+       invariant:["Read-only: never mutates a row; zero cleaning / imputation / row synthesis.", "Fail-closed: the notebook run dies, no partial deliverable is published."],
+       knobs:["predicates=fixed in code (pipeline.py:193-214)"],
+       test:["corrupt one seed value (e.g. negative volume) → make run-asset raises RuntimeError before any parquet is written"],
+       depends:["L4"]},
+      {id:"L5", group:"s2", title:"temporal split + purge/embargo", kind:"leakage-safe time split", short:"frozen dates → Warm-up / Train / OOS marks", viz:"split",
+       input:["the clean 1h frame from L4", "frozen split dates from config/pipeline_parameters.json"],
+       transform:["layer5_split: boolean masks warmup/train/oos from the frozen dates (end dates inclusive) + integer bounds (train/oos start/end indices).", "purge_train_setups: keep a Train event only if t0 + H + EMBARGO_BARS ≤ oos_start_idx, then assert t0 + H < oos_start_idx for every kept event."],
+       output:"masks + bounds (in-memory views); the parquet stays one unsplit file",
+       invariant:["Marks only — zero physical splitting; purge (=H) and embargo are both positive.", "Embargo covers the label window with a buffer; the binding leakage control is the asserted label-window purge (rolling feature windows reach up to W_SMA_SLOW=50 bars).", "The OOS boundary is read again only at L9."],
+       knobs:["warmup=2016-01-04→2016-10-14", "train=2016-10-17→2023-12-29", "oos=2024-01-02→2026-05-29", "PURGE_CANDLES=H=24", "EMBARGO_BARS=35"],
+       test:["validate_parameters rejects PURGE_CANDLES != H", "the purge assertion fires if any kept label window crosses the boundary"],
+       depends:["L4"]},
+      {id:"G.2", group:"sg", title:"split leakage guard", kind:"leakage-safety gate", short:"purge assert + purged WF CV + Kelly OOS assert", viz:"guard",
+       input:["Train events + bounds from L5", "fold layout inputs at L7 time"],
+       transform:["(1) purge assertion all(t0 + H < oos_start_idx) in purge_train_setups.", "(2) purged walk-forward CV purged_wf_folds: k=4 contiguous validation segments over Train; a fold's training events must satisfy t0 + H < val_lo − EMBARGO_BARS; folds with <5 val or <10 train events are dropped.", "(3) Kelly calibration assert max(val t0) < oos_start_idx — calibration never reaches OOS."],
+       output:"a verdict only — violations raise (AssertionError), nothing is repaired",
+       invariant:["No validation fold ever precedes its training data (walk-forward direction).", "Every check counts candle indices, never wall-clock.", "The OOS index range is untouched by any fold."],
+       knobs:["H=24", "EMBARGO_BARS=35", "cv_folds=4", "min_fold=5 val / 10 train"],
+       test:["shrinking Train so a label window crosses the boundary makes purge_train_setups raise", "calibrate_kelly raises if any fold's validation reaches OOS"],
+       depends:["L5"]},
+      {id:"L6", group:"s2", title:"candidates + 56 features + Triple Barrier Y", kind:"feature & label engineering", short:"eligible bars → Output B: X @ close[t0] + Y_outcome", viz:"featmx",
+       input:["clean 1h frame + Train mask/bounds (L5)", "the active feature manifest (resolve_feature_manifest) + feature context (build_feature_context)"],
+       transform:["Candidates: every scanned bar with finite log_return_5 and ATR width > EPS; side direction = sign(log_return_5), zero/NaN ⇒ skip.", "Features: 56 X = 17 1h + 17 1d + 17 1w (completed roll-up bars projected as-of on available_at ≤ decision_timestamp = close[t0]) + 5 multi_tf (pure functions of projected values); missing context ⇒ NaN (XGBoost native missing); a non-finite mandatory 1h feature EXCLUDES the row — never imputed.", "Label TripleBarrier.ATR.v1 (simulate_trade): entry open[t0+1]·(1+s·slip); TP/SL = entry ± ATR14[t0]·1.0; close-based triggers, condition exit open[t+1], scheduled exit close[t_sched] (TIME_BARRIER at t0+H); net return includes costs on both sides; Y_outcome = 1 iff net > 0.", "Label-uniqueness weights = mean of 1/concurrency over the holding window."],
+       output:"Output B: id/timestamp columns + 56 X + the audit lane (target/stop/width%, exit reason, net return, Y_outcome, weight)",
+       invariant:["X uses only data at or before close[t0]; the future is read only inside the label lane [t0, t0+H].", "Audit columns never enter XGBoost.DMatrix (X selection = effective_feature_names only).", "The label geometry is symmetric — no per-side barrier multipliers."],
+       knobs:["H=24", "TB_ATR_MULTIPLIER=1.0", "W_ATR=14 (wilder)", "SIGNAL_MOMENTUM_FEATURE=log_return_5", "SIGNAL_ZERO_POLICY=skip", "BARRIER_MODE=close", "COMMISSION_BPS=1", "SLIPPAGE_BPS=2"],
+       test:["make feature-search prints the resolved 56-feature manifest (namespace order, ascending ids)", "validate_parameters guards every knob's domain"],
+       depends:["L5"]},
+      {id:"L7", group:"s3", title:"Optuna HPO + Kelly calibration", kind:"purged walk-forward HPO + sizing calibration", short:"Train CV → best XGB params + per-asset Kelly λ", viz:"optuna",
+       input:["Output B + bounds (Train), seed=42", "search space config/xgboost_optuna_search_space.json"],
+       transform:["layer7_optuna: TPESampler(seed=42) + MedianPruner(warmup 2), 200 trials; metric = tie-invariant AUC-PR averaged over purged_wf_folds k=4; single-class / fold-less data ⇒ deterministic fallback_params.", "Suggest order and bounds are registry-driven from the search-space JSON (7 XGB params).", "calibrate_kelly: GridSampler over λ ∈ [0.05, 1.0] × 20 points; per fold a fold-model predicts out-of-fold and run_engine replays the validation range with f = clip(λ·(2p−1), 0, 1.0); objective = Σ log growth; ties → the smallest λ."],
+       output:"OPTUNAs_XGB_HPOs_best_params.json (deliverable file #5): best_params + kelly_fraction + cv_auc_pr + folds + manifest + lineage",
+       invariant:["Optimization strictly inside Train; OOS is never read.", "The label geometry (Triple Barrier) is never tuned.", "Kelly touches sizing only — the XGB study and the model bytes are independent of λ.", "The same seed ⇒ an identical trial sequence."],
+       knobs:["N_TRIALS=200", "cv_folds=4", "OPTUNA_OBJECTIVE=auc_pr", "RANDOM_SEED=42", "XGBOOST_N_JOBS=1", "KELLY_CAP=1.0"],
+       test:["re-running the notebook reproduces best_params + cv_auc_pr exactly (pinned env, seeded TPE, nthread=1)", "the G.2 assert in calibrate_kelly holds"],
+       depends:["L6", "G.2"]},
+      {id:"L8", group:"s3", title:"frozen XGB strategy artifact", kind:"final asset strategy artifact", short:"full-Train fit → strategy_<TICKER>.py (base64 + selfcheck)", viz:"build",
+       input:["Output B + best_params (+ kelly_fraction) from L7", "the manifest, lineage, the Train window"],
+       transform:["layer8_train: final fit on the FULL Train (uniqueness-weighted).", "strategy_meta: MODEL_B64 = base64 of booster.save_raw(); MODEL_HASH = sha256; embedded manifest (names/ids/namespaces); THRESHOLD_ENTRY; LABEL_CONTRACT=TripleBarrier.ATR.v1; EXECUTION_CONTRACT (fills, costs, capital mode, kelly cap + basis); golden vectors = first 3 X rows + predictions.", "asset_writers.write_strategy emits the standalone file with _load() (hash-checked decode), predict_proba(), selfcheck() (golden vectors, atol 1e-6)."],
+       output:"strategy_<TICKER>.py (deliverable file #6) — imports with no training-data access",
+       invariant:["The artifact is standalone: base64 model, no filesystem reads at import.", "MODEL_HASH binds the payload — a flipped byte fails _load.", "Selfcheck divergence raises."],
+       knobs:["THRESHOLD_ENTRY=0.6 (embedded from config)", "golden_vectors=3"],
+       test:["python3 strategy_<T>.py prints „selfcheck: True”", "tampering with MODEL_B64 breaks the hash assert"],
+       depends:["L7"]},
+      {id:"G.3", group:"sg", title:"acceptance + deliverable contract gate", kind:"acceptance + folder-contract gate", short:"acceptance semantics + exact 7-file contract + selfcheck", viz:"guard",
+       input:["the Train run_engine summary (acceptance)", "the produced Assets/<T>/ folder (contract)", "the artifact (selfcheck)"],
+       transform:["accept_strategy: with MIN_TRAIN_ACCEPTANCE_TRADES=null the mode is correctness_check — accepted as a correctness result; rankable records whether Train PF is finite; a non-null minimum enables real rejection.", "run_asset.py asserts the folder holds EXACTLY the 7 contract files (missing or extra ⇒ SystemExit).", "The artifact selfcheck re-predicts the golden vectors on import/run."],
+       output:"acceptance dict (stamped into the artifact as ACCEPTANCE) + the pass/fail of the 7-file assert",
+       invariant:["THRESHOLD_ENTRY is a config constant used identically in Train acceptance and the OOS verdict — never tuned on OOS.", "No extra files may ride along in an asset folder."],
+       knobs:["MIN_TRAIN_ACCEPTANCE_TRADES=null", "PF_ZERO_GROSS_LOSS_POLICY=not_rankable", "THRESHOLD_ENTRY=0.6"],
+       test:["make run-asset ends with „OK <T>: 7 files”", "adding any 8th file makes the next run exit with „7-file contract violated”"],
+       depends:["L8"]},
+      {id:"L9", group:"s4", title:"one-shot OOS + 7-file endproduct", kind:"one-shot OOS verdict + deliverable", short:"single OOS scan → README + oos_metrics row → 7 files", viz:"folder",
+       input:["the frozen OOS mask + bounds (L5)", "the trained booster (L8) + kelly_fraction (L7)", "the feature context"],
+       transform:["generate_candidate_events on masks[oos] — the first and only OOS scan; score_setups uses the same X assembler and the same eligibility gate as Train.", "run_engine over [oos_start_idx, oos_end_idx]: one open position, per-t0 best-p selection, threshold 0.6, exact-tie skip, per-trade Kelly f = clip(λ·(2p−1), 0, 1.0), equity marked to close per held bar, capital-depletion halt.", "write_readme: capital path + ROI/365 + feature table + the Triple Barrier ledger (first 50 trades); write_oos_metrics: UPSERT of 16 result columns into oos_metrics.db (side store OUTSIDE the 7 files)."],
+       output:"<TICKER>_README.md (deliverable file #7) + the oos_metrics row; with the executed notebook (file #1) the 7-file contract is complete",
+       invariant:["OOS is scanned exactly once, at the end — no parameter, threshold or feature choice reads it.", "The engine is the same code path as Train acceptance.", "Results are framed as a correctness/research result, not an edge claim (MIN_OOS_TRADES_FOR_INTERPRETATION=null, CORP_ACTIONS_POLICY=deferred ⇒ raw unadjusted prices, UNIVERSE_MODE=current_constituents_research ⇒ survivorship caveat)."],
+       knobs:["oos=2024-01-02→2026-05-29", "INITIAL_CAPITAL_USD=1000.0", "CAPITAL_MODE=kelly_fractional_compounding", "POSITION_POLICY=one_open_position_per_asset"],
+       test:["the notebook's final cell verifies the 6 on-disk deliverables; run_asset.py adds the ipynb and asserts all 7", "the README ledger equals the engine ledger (same run, same object)"],
+       depends:["L8", "G.3"]},
+      {id:"D.1", group:"s4", title:"dashboard feed (derived)", kind:"derived read-only universe view", short:"oos_metrics.db → Plan/data/dashboard.json → dashboard.html", viz:"oos",
+       input:["oos_metrics.db (the L9 side store)"],
+       transform:["build_dashboard.py (stdlib, runs without the venv): SELECT * ordered by ticker → Plan/data/dashboard.json; absent/empty DB ⇒ [] (empty-safe)."],
+       output:"Plan/data/dashboard.json, fetched by the static Plan/dashboard.html (sortable, PF/return color-coded, empty state)",
+       invariant:["Derived + regenerable + gitignored (Plan/data/).", "The page renders read-only and never synthesizes a value that is not in the JSON."],
+       knobs:["source=oos_metrics.db", "feed=Plan/data/dashboard.json"],
+       test:["make dashboard prints „dashboard: N asset(s)”", "with no DB the JSON is an empty list and the page shows its empty state"],
+       depends:["L9"]}
+    ];
+
+    /* ==================================================================
+       [J1b] PROMPTS — prompty replikacyjne (PL): pełny zapis decyzji
+       projektowych i best practices per klocek (rationale żyje TYLKO
+       tutaj — SOT trzyma fakty). Kontekst sąsiadów dokłada generator
+       replicationPrompt() ze statycznych MODULES[].depends. Pola: cel / decyzje /
+       inwarianty / testy / zasady. Wspólna stopka: PROMPT_FOOTER
+       (wspólne deterministyczne zasady całego pipeline'u).
+       ================================================================== */
+    const PROMPTS={
+      "L1":{
+        cel:"Udokumentuj pochodzenie danych: surowe świece 1h OHLCV pochodzą z Alpaca Market Data API i zostały pobrane przez upstreamowe repo źródłowe — to repo świadomie nie wykonuje żadnego poboru.",
+        decyzje:["prowieniencja jako klocek, nie jako kod — bo minimalne repo nie powinno dublować płaszczyzny akwizycji (utrzymuje ją repo źródłowe qc-raw-ohlcv-data-sp500-alpaca), a wizualizacja bez klocka źródła kłamałaby o rodowodzie danych", "zero sieci i sekretów w tym repo — bo reprodukowalność per-asset ma zależeć wyłącznie od zamrożonych seedów w gicie, nie od dostępności API i kluczy", "uczciwe oznaczenie „not executed by this repo” w kind — bo klocek bez tego wyglądałby jak wykonywana warstwa (canvas honesty)"],
+        inwarianty:["żaden kod w Project/Structure/ nie otwiera połączeń sieciowych", "brak kluczy API w repo i w konfiguracji", "zmiana danych źródłowych wchodzi wyłącznie przez nowe seedy (L2), nigdy przez poprawki w locie"],
+        testy:["grep za alpaca/http w Project/Structure/ zwraca wyłącznie prowieniencję w komentarzach/docach", "make loop przy kompletnych seedach działa offline"],
+        zasady:["nie dodawaj poboru danych do tego repo — nowy zakres danych realizuj w repo źródłowym i wyeksportuj świeży seed"]},
+      "L2":{
+        cel:"Zamroź wejście pipeline'u jako per-tickerowe parquety surowego 1h OHLCV commitowane w repo — uniwersum rośnie przez dorzucenie seeda, nigdy przez mutację istniejącego.",
+        decyzje:["seedy commitowane w gicie — bo samowystarczalność (klon = działa) jest przy 10 tickerach ważniejsza niż rozmiar repo", "eksport tylko BRAKUJĄCYCH tickerów (ENSURE_SEEDS_PY w make loop) — bo istniejący seed jest zamrożonym faktem; nadpisanie zmieniłoby przeszłość i złamało reprodukowalność wyników", "normalizacja stref przy eksporcie: tz-localize America/New_York → UTC — bo runtime liczy wyłącznie na UTC, a dwuznaczności DST rozstrzyga się raz, u źródła", "czyste kolumny OHLCV bez pochodnych — bo każda kolumna pochodna w seedzie to ukryta logika poza pipeline'em"],
+        inwarianty:["istniejący seed nigdy nie jest nadpisywany", "kolumny dokładnie timestamp/open/high/low/close/volume, timestamp w UTC", "brak wartości pochodnych w seedach"],
+        testy:["make loop przy kompletnych seedach wypisuje „all requested seeds already present” i nic nie zapisuje", "brakujący ticker nieobecny upstream ⇒ SystemExit"],
+        zasady:["nowy asset = nowy plik seeda + make build-db; seedów nie edytuje się w miejscu"]},
+      "L3":{
+        cel:"Zbuduj jeden analityczny magazyn wejściowy: wszystkie seedy w jednej tabeli bars_1h w liora.duckdb — verbatim, bez czyszczenia.",
+        decyzje:["DROP+CREATE zamiast upsertu — bo pełna przebudowa z seedów jest tania i eliminuje ryzyko stanu częściowego", "zero QC przy load — bo bramka jakości żyje w JEDNYM miejscu (G.1 na odczycie L4); zdublowane predykaty rozjeżdżają się w czasie", "DuckDB jako format pośredni — bo SQL-owy odczyt per ticker jest prostszy niż żonglowanie wieloma parquetami w notebooku, a plik jest regenerowalny i gitignorowany"],
+        inwarianty:["load jest verbatim — zero mutacji wartości", "liora.duckdb jest w pełni odtwarzalna z data/seed/ (make build-db)", "żaden inny proces nie pisze do bazy"],
+        testy:["make build-db wypisuje liczbę barów per ticker i podsumowanie buildu", "uszkodzona wartość w seedzie wybucha później jako G.1 RuntimeError — nie znika w load"],
+        zasady:["traktuj liora.duckdb jak cache: kasuj śmiało (make clean), odtwarzaj z seedów"]},
+      "L4":{
+        cel:"Zmaterializuj czystą prawdę assetu: jeden czysty parquet 1h + deterministyczne roll-upy 1d/1w — wszystkie wyłącznie OHLCV.",
+        decyzje:["read-only connect do DuckDB — bo warstwa licząca nigdy nie może modyfikować magazynu wejściowego", "atomic_write (tmp + os.replace) — bo częściowo zapisany parquet to najgorszy rodzaj korupcji: wygląda jak poprawny plik", "1d po dniu kalendarzowym ET, 1w po tygodniu ISO (kotwica poniedziałek) — bo sesja US żyje w America/New_York, a tydzień ISO jest deterministyczny bez kalendarza giełdowego", "O=first/H=max/L=min/C=last/V=sum na tym, co istnieje — bez syntezy brakujących barów, bo synteza to fałszywe dane", "close_ts/available_at liczone w pamięci i NIEpersystowane — bo parquety mają zostać czystym OHLCV, a semantyka dostępności należy do projekcji w L6"],
+        inwarianty:["parquety zawierają wyłącznie timestamp/open/high/low/close/volume", "roll-upy pochodzą tylko z tego samego czystego 1h", "korupcja źródła zatrzymuje run (G.1) — naprawa nigdy w tej warstwie"],
+        testy:["make run-asset zostawia 3 parquety w Assets/<T>/", "ponowny run daje identyczne bajty przy tej samej bazie"],
+        zasady:["żadnych kalendarzy giełdowych ani list świąt w tej warstwie — agregacja zależy tylko od danych"]},
+      "L5":{
+        cel:"Wyznacz szczelny podział czasu na jednym ciągłym indeksie świec: Warm-up / Train / OOS z purge i embargo; OOS zamrożony aż do L9.",
+        decyzje:["maski + indeksy zamiast fizycznego cięcia pliku — bo jeden ciągły parquet wyklucza rozjazd partycji i pozwala liczyć okna cech przez granice bez duplikacji danych", "purge zdefiniowany na eventach (t0+H+embargo ≤ oos_start) z twardym assertem t0+H < oos_start — bo okno etykiety nie może zahaczyć o OOS; assert w kodzie zamiast konwencji w dokumentach", "embargo 35 barów PONAD purge — bo bufor na styku Train/OOS ogranicza przeciek przez autokorelację; wiążącą kontrolą pozostaje purge okna etykiety (okna rolling cech sięgają do W_SMA_SLOW=50 barów; chroni kierunek walk-forward + assert purge)", "daty splitu zamrożone w config — bo granice partycji to kontrakt badania, nie parametr do strojenia"],
+        inwarianty:["purge i embargo zawsze > 0; PURGE_CANDLES == H wymuszone walidacją parametrów", "parquet pozostaje jednym plikiem — tylko widoki", "granica OOS czytana ponownie dopiero w L9"],
+        testy:["validate_parameters odrzuca PURGE_CANDLES != H", "assert purge wybucha, gdy okno etykiety przekracza granicę"],
+        zasady:["nigdy nie upraszczaj do Warm-up→Train→OOS bez purge/embargo; zmiana dat splitu = nowe badanie, nie tweak"]},
+      "L6":{
+        cel:"Zamień kwalifikujące się bary Train na Output B: X liczone na close[t0] + uczciwa etykieta net-return z symetrycznego ATR Triple Barrier.",
+        decyzje:["strona kandydata = sign(log_return_5), zero/NaN ⇒ skip — bo minimalny i przejrzysty sygnał kierunku bez stanu geometrycznego; skip zamiast kierunku domyślnego, bo brak sygnału to brak decyzji", "cechy w 4 namespace'ach id (1h 01–99, 1d 101–199, 1w 201–299, multi_tf 901–999) — bo porządek kolumn modelu ma być deterministyczny i czytelny z rejestrów, nie z kodu", "projekcja as-of (merge_asof po available_at ≤ close[t0]) WYŁĄCZNIE domkniętych barów coarse — bo bar 1d/1w „dostępny” przed swoim zamknięciem to look-ahead", "NaN = native missing XGBoost dla kontekstu, ale niefinita obowiązkowa cecha 1h WYKLUCZA wiersz — bo rdzeń 1h musi istnieć, kontekst może brakować; imputacja fałszowałaby rozkłady", "etykieta symetryczna (TP i SL w tej samej odległości ATR) — bo b=1 upraszcza Kelly do f=λ(2p−1) i eliminuje strojenie asymetrycznych barier", "fill: wejście open[t0+1], wyjście warunkowe open[t+1], planowe close[t_sched]; koszty po obu stronach — bo decyzja podjęta na close[t0] nie może wykonać się w tej samej świecy", "wagi unikalności etykiet (średnia 1/współbieżność) — bo nakładające się okna etykiet zawyżają pewność modelu"],
+        inwarianty:["X tylko z danych ≤ close[t0]; przyszłość wyłącznie w pasie etykiety [t0, t0+H]", "kolumny audytowe nigdy nie wchodzą do DMatrix", "Y_outcome = 1 wtedy i tylko wtedy, gdy lokalny NET return > 0"],
+        testy:["make feature-search drukuje manifest (kolejność namespace, rosnące id)", "validate_parameters pilnuje domen wszystkich knobów"],
+        zasady:["nowa cecha wchodzi przez rejestr namespace (implemented:true) — nigdy przez kod poza rejestrem", "cechy licz wektorowo raz na cały frame, nie per event"]},
+      "L7":{
+        cel:"Wystrój wyłącznie hiperparametry XGB na purged walk-forward CV w Train (AUC-PR), a potem skalibruj per-asset Kelly λ na out-of-fold log-growth — bez dotykania OOS.",
+        decyzje:["AUC-PR zamiast accuracy/AUC-ROC — bo klasy są niezbalansowane, a decyzję odcina próg na prawdopodobieństwie; implementacja tie-invariant (stabilny mergesort) dla pełnego determinizmu", "TPE z seedem + MedianPruner(warmup 2) — bo 200 triali na CPU wymaga prunowania, a seed daje identyczną sekwencję triali w każdym runie", "przestrzeń poszukiwań w JSON, nie w kodzie — bo zakresy to konfiguracja badania; suggest-order z rejestru utrzymuje determinizm TPE", "Kelly λ osobnym studium GridSampler na predykcjach OOF — bo sizing nie może wpływać na model (bajty boostera niezależne od λ), a grid jest w pełni deterministyczny; remisy → najmniejsza λ (konserwatywnie)", "fallback_params przy braku foldów lub jednej klasie — bo mały asset nie może wywalić całego runu, a wynik pozostaje deterministyczny"],
+        inwarianty:["optymalizacja wyłącznie w Train; żaden fold walidacyjny nie poprzedza swoich danych treningowych", "geometria etykiety nie jest strojona", "ten sam seed ⇒ identyczna sekwencja triali i identyczne best_params"],
+        testy:["ponowny run notebooka odtwarza best_params + cv_auc_pr co do wartości", "assert w calibrate_kelly: max(val t0) < oos_start"],
+        zasady:["nie dodawaj parametru do przestrzeni bez aktualizacji JSON + SOT", "progu wejścia i barier nie tuninguj — to kontrakt, nie hiperparametr"]},
+      "L8":{
+        cel:"Zamroź strategię jako jeden samowystarczalny plik: model w base64, kontrakt wykonania, manifest cech i selfcheck na golden vectors.",
+        decyzje:["base64 w .py zamiast osobnego pliku modelu — bo jeden plik = jeden artefakt; modelu nie da się „zgubić” obok kodu", "MODEL_HASH (sha256 surowych bajtów) w artefakcie — bo każdy przekłamany bajt payloadu ma wybuchać przy _load, a nie cicho zmieniać predykcje", "golden vectors = pierwsze 3 wiersze X + predykcje — bo selfcheck po przeniesieniu pliku wykrywa niekompatybilność wersji XGBoost/środowiska", "artefakt czysty przy imporcie (zero odczytów z dysku) — bo strategia ma być przenośna i audytowalna bez pipeline'u"],
+        inwarianty:["import artefaktu nie czyta żadnych danych treningowych", "model przyjmuje wektor wyłącznie w porządku manifestu", "rozbieżny selfcheck ⇒ assert, nie ostrzeżenie"],
+        testy:["python3 strategy_<T>.py drukuje „selfcheck: True”", "manipulacja MODEL_B64 łamie assert hasha"],
+        zasady:["wygenerowanego artefaktu nie edytuje się ręcznie — zmiany wchodzą przez writer + regenerację"]},
+      "L9":{
+        cel:"Wykonaj jedyny odczyt OOS: skan kandydatów, scoring tym samym assemblerem X, jeden przebieg silnika i zapis werdyktu (README + wiersz oos_metrics).",
+        decyzje:["OOS czytany dokładnie raz, na końcu notebooka — bo wielokrotne zaglądanie do OOS zamienia test w trening; selekcja cech i parametrów nigdy nie widzi OOS, a negatywny wynik NIE cofa selekcji", "ten sam run_engine dla akceptacji Train i werdyktu OOS — bo dwa silniki to dwa różne światy wykonania i nieporównywalne liczby", "Kelly per-trade f=clip(λ(2p−1),0,cap) — bo pewność modelu ma skalować ekspozycję, a cap chroni przed pełnym all-in przy p≈1", "wynik framowany jako correctness/research result — bo MIN_OOS_TRADES=null, corp-actions deferred (surowe ceny) i survivorship (current constituents) wykluczają traktowanie PF jako edge claim; zastrzeżenia jawnie w README", "ledger ≤50 wierszy w README + pełny stan w oos_metrics.db — bo README ma być czytelne dla człowieka, a maszyna czyta bazę"],
+        inwarianty:["OOS skanowany raz; żadna wcześniejsza decyzja nie czyta OOS", "próg i λ pochodzą wyłącznie z Train", "wiersz oos_metrics zawiera tylko kolumny wynikowe"],
+        testy:["ostatnia komórka notebooka weryfikuje 6 plików; run_asset.py domyka i assertuje 7", "ledger w README == ledger silnika (ten sam obiekt, ten sam run)"],
+        zasady:["po ujrzeniu OOS nie ma poprawek — zmiana czegokolwiek = nowy pełny cykl (make loop) i jawnie nowy wynik"]},
+      "D.1":{
+        cel:"Pokaż zapisane werdykty OOS całego uniwersum w jednej read-only tabeli — feed pochodny, nigdy źródło prawdy.",
+        decyzje:["SQLite → JSON → statyczny HTML zamiast serwera/frameworka — bo Plan/ ma być statyczne (make on = http.server), a sql.js/WASM byłby zbędną zależnością", "feed gitignorowany — bo to pochodna oos_metrics.db; commitowanie feedu tworzyłoby drugą prawdę", "empty-safe — bo świeży klon bez runów ma pokazywać pusty stan z instrukcją, nie błąd"],
+        inwarianty:["dashboard nie liczy nowych metryk — renderuje wyłącznie to, co w JSON", "brak jakiegokolwiek zapisu z poziomu przeglądarki"],
+        testy:["make dashboard drukuje liczbę assetów", "bez bazy JSON = pusta lista, strona pokazuje empty state"],
+        zasady:["nowa kolumna wchodzi przez write_oos_metrics → build_dashboard → dashboard.html, w tej kolejności"]}
+    };
+    /* wspólna stopka zasad — deterministyczne best practice całego pipeline */
+    const PROMPT_FOOTER=[
+      'rdzeń deterministyczny: te same wejścia → bit-identyczne wyjścia; zero ukrytego stanu globalnego',
+      'walidacja fail-closed: warunek niespełniony = STOP z jawnym błędem, nigdy cicha kontynuacja',
+      'zero look-ahead i zero fill-forward — żadna decyzja nie widzi danych z przyszłości',
+      'czysta logika oddzielona od I/O (adapter na brzegu, typowana konfiguracja); bez schedulera, serwisów i chmury'];
+
+    /* ==================================================================
+       [J2] VIZ — rejestr mini-wizualizacji (język wizualny wg wzorca).
+       1 wpis = {h: pełna wysokość klocka px, render(m) → HTML string}.
+       Wszystkie treści statyczne (bez inputu użytkownika) — bez escape.
+       ================================================================== */
+    const PAL={src:'#ABA99F',store:'#2BB587',green:'#86B23A',amber:'#D89A3A',good:'#34C96A',
+      fail:'#F26B6A',blue:'#5CB0FF',pink:'#E673A3',gray:'#8a8980',red:'#E24B4A',dot:'#C24444'};
+    const svgV=(h,body)=>`<svg class="viz-svg" viewBox="0 0 168 ${h}" aria-hidden="true">${body}</svg>`;
+
+    const VIZ={
+      /* L1 — surowa macierz OHLCV (Alpaca, upstream) × koszyk tickerów */
+      ohlcv:{h:112,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:16px"></colgroup><tbody>
+          <tr><th>t</th><th>O</th><th>H</th><th>L</th><th>C</th><th>V</th></tr>
+          <tr><td>t₁</td><td>187.2</td><td>188.5</td><td>186.9</td><td>188.1</td><td>.41M</td></tr>
+          <tr><td>t₂</td><td>188.0</td><td>189.3</td><td>187.6</td><td>187.9</td><td>.38M</td></tr>
+          <tr><td>t₃</td><td>187.8</td><td>188.2</td><td>186.4</td><td>186.8</td><td>.52M</td></tr>
+        </tbody></table>
+        <div class="viz-label" style="color:var(--amber)"><span class="ohlcv-x">×</span> 10 tickers · Alpaca 1h · upstream</div>`},
+
+      /* L2 — łańcuch seedów: 1 parquet = 1 ticker, raw UTC */
+      zip:{h:86,render:()=>`
+        <div class="zip-chain">${['AAPL','MSFT','NVDA','XOM'].map((t,i)=>`${i?'<span class="zip-dot"></span>':''}<div class="zip-node"><div class="zip-box">PQT</div><div class="zip-tk">${t}</div></div>`).join('')}<span class="zip-ell">···</span></div>
+        <div class="viz-label">one seed parquet per ticker · raw UTC</div>`},
+
+      /* G.x — generic guard: kompaktowa checklista bramki (fail-closed);
+         nowy guard: dopisz wiersze do R[id] albo polegaj na fallbacku */
+      guard:{h:104,render:m=>{
+        const R={
+          'G.1':[['time','parse · unique · monotonic'],['ohlc','finite · &gt;0 · hi/lo bounds'],['volume','finite · ≥ 0'],['verdict','RuntimeError · never cleaned']],
+          'G.2':[['purge','assert t0+H &lt; oos_start'],['embargo','35 bars beyond purge'],['wf cv','k=4 purged walk-forward'],['kelly','OOF only · val &lt; oos_start']],
+          'G.3':[['accept','correctness_check · PF rankable'],['threshold','0.6 fixed · never OOS-tuned'],['files','exactly 7 · SystemExit'],['selfcheck','golden vectors · hash bind']]};
+        const rows=(R[m.id]||[['guard','checks defined per module']]).map(([k,t])=>`<div class="qc-row"><b>${k}</b><span>${t}</span><span class="qc-ok">✓</span></div>`).join('');
+        return `<div class="qc-list">${rows}</div><div class="viz-label">fail-closed guard · read-only</div>`;}},
+
+      /* L3 — cylinder DuckDB: verbatim load seedów, QC odroczone do G.1 */
+      duckdb:{h:116,render:()=>svgV(62,`
+        <path d="M10,12 v26 a20,6 0 0 0 40,0 v-26" fill="rgba(107,114,128,.14)" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <ellipse cx="30" cy="12" rx="20" ry="6" fill="rgba(107,114,128,.25)" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <text x="30" y="30" text-anchor="middle" font-size="6" fill="#B8C0C8">bars_1h</text>
+        <text x="30" y="56" text-anchor="middle" font-size="5" font-weight="700" fill="#C7D0D8">liora.duckdb</text>
+        <line x1="58" y1="25" x2="82" y2="25" stroke="${PAL.amber}" stroke-width="1.5"/>
+        <polygon points="88,25 80,21.5 80,28.5" fill="${PAL.amber}"/>
+        <text x="72" y="15" text-anchor="middle" font-size="6" font-weight="700" fill="${PAL.amber}">build_db.py</text>
+        <text x="72" y="37" text-anchor="middle" font-size="5.5" fill="#89929D">verbatim load</text>
+        <rect x="92" y="12" width="70" height="30" rx="3" fill="rgba(43,181,135,.10)" stroke="${PAL.store}" stroke-width="1.1"/>
+        <text x="127" y="25" text-anchor="middle" font-size="6.5" font-weight="800" fill="${PAL.store}">182065 rows</text>
+        <text x="127" y="36" text-anchor="middle" font-size="5.5" fill="#89929D">QC deferred → G.1 on read</text>`)+
+        `<div class="viz-label">one table · regenerable · gitignored</div>`},
+
+      /* L4 — DuckDB read → trzy czyste parquety per asset (1h/1d/1w) */
+      snapshot:{h:112,render:()=>svgV(58,`
+        <path d="M8,10 h30 l10,10 v28 h-40 z" fill="rgba(107,114,128,.14)" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <path d="M38,10 v10 h10" fill="none" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <text x="28" y="32" text-anchor="middle" font-size="5.5" fill="#B8C0C8">atomic</text>
+        <text x="28" y="40" text-anchor="middle" font-size="5.5" fill="#B8C0C8">write</text>
+        <line x1="52" y1="29" x2="70" y2="29" stroke="${PAL.amber}" stroke-width="1.4"/>
+        <polygon points="76,29 68,25.5 68,32.5" fill="${PAL.amber}"/>
+        <text x="63" y="18" text-anchor="middle" font-size="5.5" font-weight="700" fill="${PAL.amber}">G.1 ✓</text>
+        ${['1h','1d','1w'].map((tf,i)=>{const x=80+i*30;return `<path d="M${x},10 h18 l7,7 v31 h-25 z" fill="rgba(216,154,58,.12)" stroke="${PAL.amber}" stroke-width="1"/><path d="M${x+18},10 v7 h7" fill="none" stroke="${PAL.amber}" stroke-width="1"/><text x="${x+12}" y="33" text-anchor="middle" font-size="6.5" font-weight="800" fill="${PAL.amber}">${tf}</text>`;}).join('')}`)+
+        `<div class="viz-label">clean OHLCV parquet ×3 · zstd</div>`},
+
+      /* L5 — kolorowy pasek splitu czasowego z purge + embargo na styku */
+      split:{h:106,render:()=>svgV(52,`
+        <text x="2" y="8" font-size="6" fill="${PAL.src}">WARM-UP</text>
+        <text x="59" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="${PAL.store}">TRAIN</text>
+        <text x="140" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="${PAL.amber}">OOS</text>
+        <rect x="2" y="12" width="14" height="14" fill="rgba(138,137,128,.45)"/>
+        <rect x="16" y="12" width="86" height="14" fill="rgba(29,158,117,.55)"/>
+        <rect x="102" y="12" width="5" height="14" fill="rgba(255,59,48,.9)"/>
+        <rect x="107" y="12" width="7" height="14" fill="rgba(62,155,255,.85)"/>
+        <rect x="114" y="12" width="52" height="14" fill="rgba(186,117,23,.8)"/>
+        <line x1="104" y1="26" x2="88" y2="36" stroke="${PAL.fail}" stroke-width="1"/>
+        <text x="88" y="44" text-anchor="end" font-size="6" font-weight="700" fill="${PAL.fail}">purge</text>
+        <line x1="110" y1="26" x2="126" y2="36" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="126" y="44" font-size="6" font-weight="700" fill="${PAL.blue}">embargo</text>
+        <line x1="146" y1="33" x2="164" y2="33" stroke="#89929D" stroke-width="1"/>
+        <polygon points="166,33 160,30.5 160,35.5" fill="#89929D"/>
+        <text x="144" y="36" text-anchor="end" font-size="5.5" fill="#89929D">time</text>`)+
+        `<div class="viz-label">purge H=24 · embargo 35</div>`},
+
+      /* L6 — stojąca macierz cech: wiersze = kandydaci, kolumny = X + Y_outcome */
+      featmx:{h:120,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:16px"></colgroup><tbody>
+          <tr><th class="xt"><span class="x">x</span><span class="t">t</span></th><th class="th-x">ret5</th><th class="th-x">rsi14</th><th class="th-x">⋯</th><th class="th-x">dir±1</th><th class="th-y">Y</th></tr>
+          <tr><th>t₁</th><td>-0.8</td><td>41.3</td><td>⋯</td><td>+1</td><td class="y1">1</td></tr>
+          <tr><th>t₂</th><td>0.6</td><td>63.2</td><td>⋯</td><td>−1</td><td class="y0">0</td></tr>
+          <tr><th>t₃</th><td>1.4</td><td>55.8</td><td>⋯</td><td>+1</td><td class="y1">1</td></tr>
+          <tr><th>⋯</th><td>⋯</td><td>⋯</td><td>⋯</td><td>⋯</td><td>⋯</td></tr>
+        </tbody></table>
+        <div class="viz-label">56 X · Y = [net &gt; 0] · TripleBarrier.ATR.v1</div>`},
+
+      /* L7 — macierz triali Optuny (XGB) + kalibracja Kelly λ na OOF */
+      optuna:{h:132,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:56px"></colgroup><tbody>
+          <tr><th></th><th>T01</th><th>T02</th><th>⋯</th><th class="o-best">T137★</th></tr>
+          <tr><td class="o-name">eta</td><td>.081</td><td>.204</td><td>⋯</td><td class="o-best">.052</td></tr>
+          <tr><td class="o-name">max_depth</td><td>3</td><td>5</td><td>⋯</td><td class="o-best">4</td></tr>
+          <tr><td class="o-name">subsample</td><td>.90</td><td>.72</td><td>⋯</td><td class="o-best">.86</td></tr>
+          <tr class="o-auc"><td class="o-name">AUC-PR</td><td>.381</td><td>.352</td><td>⋯</td><td class="o-best">.421</td></tr>
+          <tr><td class="o-name">status</td><td>tested</td><td class="st-p">pruned</td><td>⋯</td><td class="o-best st-b">best</td></tr>
+        </tbody></table>
+        <div class="viz-label">TPE seed=42 · AUC-PR · WF k=4 · Kelly λ OOF grid</div>`},
+
+      /* L8 — linia budowy artefaktu: json → XGB → base64 → strategy.py */
+      build:{h:94,render:()=>`
+        <div class="build">
+          <span class="b-chip b-json">.json</span><span class="b-arr">→</span>
+          <span class="b-chip b-xgb">XGB</span><span class="b-arr">→</span>
+          <span class="b-chip b-b64">MODEL_B64</span><span class="b-arr">→</span>
+          <span class="b-chip b-py">.py</span>
+        </div>
+        <div class="build-sub">full-Train champion → base64 → embed · selfcheck</div>
+        <div class="viz-label">strategy_&lt;TICKER&gt;.py · TripleBarrier.ATR.v1 · frozen</div>`},
+
+      /* D.1 — metryki OOS + histogram PF (feed dashboardu, read-only) */
+      oos:{h:118,render:()=>`
+        <table class="viz-tbl"><tbody>
+          <tr><th>PF</th><th>MDD%</th><th>TIM%</th><th>WR%</th><th>tr</th></tr>
+          <tr><td>1.42</td><td>12.3</td><td>9.4</td><td>51.2</td><td>87</td></tr>
+        </tbody></table>`+
+        svgV(32,[5,10,16,22,18,12,8,4].map((h,i)=>
+          `<rect x="${4+i*19}" y="${28-h}" width="17" height="${h}" fill="${i<3?'rgba(242,107,106,.5)':'rgba(52,201,106,.55)'}"/>`).join('')+
+          `<line x1="60" y1="2" x2="60" y2="30" stroke="#89929D" stroke-width="1" stroke-dasharray="3 3"/>
+           <text x="63" y="8" font-size="5.5" fill="#89929D">PF=1</text>`)+
+        `<div class="viz-label">oos_metrics.db → dashboard.json · read-only</div>`},
+
+      /* L9 — folder deliverable: dokładnie 7 plików per asset */
+      folder:{h:122,render:()=>svgV(54,`
+        <path d="M10,10 v-4 a2,2 0 0 1 2,-2 h34 l6,6" fill="rgba(52,201,106,.10)" stroke="${PAL.good}" stroke-width="1.1"/>
+        <rect x="10" y="10" width="148" height="40" rx="3" fill="rgba(52,201,106,.05)" stroke="${PAL.good}" stroke-width="1.1"/>
+        ${[PAL.pink,PAL.amber,PAL.amber,PAL.amber,PAL.green,PAL.good,PAL.blue].map((c,i)=>{
+          const x=18+i*19;
+          return `<path d="M${x},16 h10 l5,5 v21 h-15 z" fill="${c}22" stroke="${c}" stroke-width="1"/><path d="M${x+10},16 v5 h5" fill="none" stroke="${c}" stroke-width="1"/>`;
+        }).join('')}`)+
+        `<div class="f-legend"><span style="color:${PAL.pink}">.ipynb</span><span style="color:${PAL.amber}">.parquet ×3</span><span style="color:${PAL.green}">.json</span><span style="color:${PAL.good}">.py</span><span style="color:${PAL.blue}">.md</span></div>
+        <div class="viz-label">Assets/&lt;TICKER&gt;/ · 7 files</div>`}
+    };
+    function vizCard(m){const v=VIZ[m.viz];return v?v.render(m):'';}
+
+    /* ==================================================================
+       [J3] LAYOUT — drabinka dół→góra z persystowanego ORDER (jedyne
+       źródło pozycji), tor (x) = grupa; wymiary canvas POCHODNE.
+       ================================================================== */
+    const BLOCK_W=184, LANE_W=230, GAP=36, MARGIN_X=23, TOP_PAD=70, BOTTOM_PAD=50;
+    const LANE_X={};GROUPS.forEach((g,i)=>LANE_X[g.id]=MARGIN_X+i*LANE_W);
+    const DIVX=GROUPS.slice(0,-1).map((g,i)=>Math.round((MARGIN_X+i*LANE_W+BLOCK_W+MARGIN_X+(i+1)*LANE_W)/2));
+    const CANVAS_W=MARGIN_X*2+(GROUPS.length-1)*LANE_W+BLOCK_W;
+    let CANVAS_H=TOP_PAD+BOTTOM_PAD+MODULES.reduce((a,m)=>a+VIZ[m.viz].h+GAP,0)-GAP; /* mutowalne: recomputeCanvasH() po add/delete custom */
+    function layoutFor(order){const pos={};let y=CANVAS_H-BOTTOM_PAD;
+      order.forEach(id=>{const m=mod(id);if(!m)return;y-=VIZ[m.viz].h;pos[id]={x:LANE_X[m.group],y};y-=GAP;});return pos;}
+
+    /* ==================================================================
+       [J4] STATE — localStorage v2: order / custom
+       (positions/edges/disabled porzucone)
+       ================================================================== */
+    const STORAGE='liora-ml-engineering-procedure-lego/v1';
+    const $=q=>document.querySelector(q);
+    let selectedId=null, inventoryFilter='all', draggedId=null;
+
+    function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+    function group(id){return GROUPS.find(g=>g.id===id)}
+    function mod(id){return MODULES.find(m=>m.id===id)}
+    function blockH(id){const m=mod(id);return m?VIZ[m.viz].h:54}
+    /* order: nieznane id odfiltrowane, duplikaty usunięte, brakujące
+       dopisane na końcu (= szczyt drabinki) w kolejności MODULES */
+    function sanitizeOrder(order){const ids=new Set(MODULES.map(m=>m.id));
+      const out=(Array.isArray(order)?order:[]).filter((id,i,a)=>ids.has(id)&&a.indexOf(id)===i);
+      MODULES.forEach(m=>{if(!out.includes(m.id))out.push(m.id);});return out;}
+    let _state=null;
+    function loadState(){
+      try{const raw=JSON.parse(localStorage.getItem(STORAGE));
+        if(raw)return {order:sanitizeOrder(raw.order),custom:MODULES.filter(m=>m._custom)};}catch(e){}
+      return {order:MODULES.map(m=>m.id),custom:MODULES.filter(m=>m._custom)};}
+    function getState(){return _state||(_state=loadState());}
+    function saveState(s){_state=s;localStorage.setItem(STORAGE,JSON.stringify(s));}
+    function color(m){return group(m.group).color}
+
+    /* ==================================================================
+       [J5] ORDER + DND — statyczne zależności z MODULES[].depends +
+       insert-with-shift: drop liczy indeks wstawienia z Y drabinki,
+       klocki powyżej przesuwają się same (repositionBlocks)
+       ================================================================== */
+    let zoom=1,panX=0,panY=0,panning=null,panMoved=false;
+
+    function depsOf(id){const m=mod(id);return m&&m.depends?m.depends.slice():[];}
+    function dependentsOf(id){return MODULES.filter(m=>(m.depends||[]).includes(id)).map(m=>m.id);}
+    function canvasPoint(ev){const r=$('#flowCanvas').getBoundingClientRect();return {x:(ev.clientX-r.left)/zoom,y:(ev.clientY-r.top)/zoom};}
+
+    /* indeks wstawienia k∈[0,n]: liczba klocków, których środek leży PONIŻEJ kursora (drabinka rośnie dół→góra) */
+    function insertIndexAt(cy,order,pos){return order.filter(id=>pos[id].y+blockH(id)/2>cy).length;}
+    function gapY(k,order,pos){
+      if(!order.length)return CANVAS_H-BOTTOM_PAD;
+      if(k===0){const id=order[0];return pos[id].y+blockH(id)+GAP/2;}
+      return pos[order[k-1]].y-GAP/2;}
+
+    let lastGapK=-1;
+    function showInsertLine(k,order,pos){if(k===lastGapK)return;lastGapK=k;const el=$('#insertLine');
+      el.hidden=false;el.style.left=MARGIN_X+'px';el.style.width=(CANVAS_W-2*MARGIN_X)+'px';
+      el.style.height=Math.max(2,2/zoom)+'px';el.style.top=(gapY(k,order,pos)-1)+'px';}
+    function hideInsertLine(){lastGapK=-1;const el=$('#insertLine');if(el)el.hidden=true;}
+
+    /* ==================================================================
+       [J6] CANVAS — klocki, sticky nagłówki torów, pan / zoom / drag&drop
+       ================================================================== */
+    function applyTransform(){const c=$('#flowCanvas');if(c)c.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;const v=$('#flowViewport');if(v){const s=20*zoom;v.style.backgroundSize=s+'px '+s+'px';v.style.backgroundPosition=panX+'px '+panY+'px';}syncLaneHeads();}
+    function contentBox(){const pos=layoutFor(getState().order);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      MODULES.forEach(m=>{const p=pos[m.id];x0=Math.min(x0,p.x);y0=Math.min(y0,p.y);x1=Math.max(x1,p.x+BLOCK_W);y1=Math.max(y1,p.y+blockH(m.id));});
+      return {x:x0-40,y:y0-70,w:x1-x0+80,h:y1-y0+120};}
+    function fitView(){const vp=$('#flowViewport');if(!vp)return;const vw=vp.clientWidth||1000,vh=vp.clientHeight||700;const b=contentBox();
+      zoom=Math.max(0.15,Math.min((vw-24)/b.w,(vh-24)/b.h,1.15));panX=Math.round((vw-b.w*zoom)/2-b.x*zoom);panY=Math.round((vh-b.h*zoom)/2-b.y*zoom);applyTransform();}
+
+    function lego(m,p,s){
+      const g=group(m.group);
+      const el=document.createElement('article');
+      el.className=`lego ${selectedId===m.id?'selected':''}`;
+      el.dataset.id=m.id;el.draggable=true;
+      el.style.setProperty('--accent',g.color);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.height=blockH(m.id)+'px';
+      el.innerHTML=`<div class="studs"><i class="stud"></i><i class="stud"></i><i class="stud"></i><i class="stud"></i></div>`+
+        `<div class="lego-top"><span class="lego-id">${m.id}</span><span class="lego-title">${safe(m.title)}</span></div>${vizCard(m)}`;
+      el.addEventListener('click',e=>{e.stopPropagation();select(m.id)});
+      el.addEventListener('dragstart',e=>{draggedId=m.id;e.dataTransfer.setData('text/plain',m.id);e.dataTransfer.effectAllowed='move';setTimeout(()=>el.style.opacity='.25',0)});
+      el.addEventListener('dragend',()=>{el.style.opacity='';draggedId=null;$('#flowCanvas').classList.remove('drag-over');hideInsertLine();});
+      return el;
+    }
+    /* sticky nagłówki torów: warstwa w viewport (poza transformacją),
+       pozycja x synchronizowana z pan/zoom w applyTransform */
+    function renderLaneHeads(){const c=$('#laneHeads');if(!c)return;
+      c.innerHTML=GROUPS.map(g=>`<div class="lane-head" data-group="${g.id}" style="color:${g.color}">${safe(g.name)}</div>`).join('');syncLaneHeads();}
+    function syncLaneHeads(){const c=$('#laneHeads');if(!c)return;
+      c.querySelectorAll('.lane-head').forEach(el=>{
+        el.style.left=(panX+zoom*LANE_X[el.dataset.group])+'px';
+        el.style.width=Math.max(24,zoom*BLOCK_W)+'px';});
+      const sw=Math.max(1,1/zoom)+'px';
+      document.querySelectorAll('#flowCanvas .lane-sep').forEach(d=>d.style.width=sw);}
+    function renderLaneSeps(){const c=$('#flowCanvas');
+      DIVX.forEach(x=>{const d=document.createElement('div');d.className='lane-sep';d.style.left=x+'px';c.appendChild(d);});}
+    function renderCanvas(){
+      const canvas=$('#flowCanvas'); canvas.querySelectorAll('.lego').forEach(n=>n.remove());
+      const s=getState(),pos=layoutFor(s.order);
+      s.order.forEach(id=>{const m=mod(id);if(m)canvas.appendChild(lego(m,pos[id],s));});
+    }
+    function repositionBlocks(){const s=getState(),pos=layoutFor(s.order);
+      document.querySelectorAll('#flowCanvas .lego').forEach(el=>{const p=pos[el.dataset.id];if(p){el.style.left=p.x+'px';el.style.top=p.y+'px';}});}
+    function select(id){selectedId=id;renderInventory();renderCanvas();renderInspector(mod(id));}
+    function clearSelect(){selectedId=null;renderInventory();renderCanvas();renderInspector(null);}
+
+    $('#flowCanvas').addEventListener('dragover',e=>{
+      if(!draggedId)return;                       // obce dragi (pliki itp.) — ignoruj
+      e.preventDefault();e.dataTransfer.dropEffect='move';
+      $('#flowCanvas').classList.add('drag-over');
+      const s=getState(),pos=layoutFor(s.order);
+      showInsertLine(insertIndexAt(canvasPoint(e).y,s.order,pos),s.order,pos);});
+    $('#flowCanvas').addEventListener('dragleave',e=>{
+      if(e.target===$('#flowCanvas')){$('#flowCanvas').classList.remove('drag-over');hideInsertLine();}});
+    $('#flowCanvas').addEventListener('drop',e=>{
+      e.preventDefault();$('#flowCanvas').classList.remove('drag-over');hideInsertLine();
+      const id=e.dataTransfer.getData('text/plain')||draggedId;if(!id||!mod(id))return;
+      const s=getState();const k=insertIndexAt(canvasPoint(e).y,s.order,layoutFor(s.order));
+      const old=s.order.indexOf(id);
+      if(old>=0&&(k===old||k===old+1)){select(id);return;}       // sąsiedni gap = no-op, BEZ modala (instant select)
+      const newOrder=s.order.slice();let kk=k;                   // przechwyć proponowany order (modal blokuje → bez liczenia ponownie)
+      if(old>=0){newOrder.splice(old,1);if(kk>old)kk--;}         // korekta indeksu po usunięciu
+      newOrder.splice(kk,0,id);
+      openMoveModal({id,newOrder,summaryHTML:describeMove(id,newOrder)}); // NIE commit — czekaj na OK
+    });
+    $('#flowCanvas').addEventListener('click',e=>{if(e.target===$('#flowCanvas')){if(panMoved){panMoved=false;return;}clearSelect();}});
+    $('#flowViewport').addEventListener('wheel',e=>{e.preventDefault();const vp=$('#flowViewport').getBoundingClientRect();const mx=e.clientX-vp.left,my=e.clientY-vp.top;const f=e.deltaY<0?1.12:1/1.12;const nz=Math.max(0.15,Math.min(3,zoom*f));const cx=(mx-panX)/zoom,cy=(my-panY)/zoom;panX=mx-cx*nz;panY=my-cy*nz;zoom=nz;applyTransform();},{passive:false});
+    $('#flowCanvas').addEventListener('pointerdown',e=>{if(e.button!==0)return;if(e.target!==$('#flowCanvas'))return;panning={sx:e.clientX,sy:e.clientY,px:panX,py:panY};panMoved=false;$('#flowCanvas').classList.add('panning');});
+    $('#flowCanvas').addEventListener('dblclick',e=>{if(e.target===$('#flowCanvas'))fitView();});
+    document.addEventListener('pointermove',e=>{if(!panning)return;panX=panning.px+(e.clientX-panning.sx);panY=panning.py+(e.clientY-panning.sy);if(Math.abs(e.clientX-panning.sx)+Math.abs(e.clientY-panning.sy)>3)panMoved=true;applyTransform();});
+    document.addEventListener('pointerup',()=>{if(panning){panning=null;$('#flowCanvas').classList.remove('panning');}});
+
+    /* ==================================================================
+       [J7] INVENTORY + INSPECTOR — panele boczne, prompt replikacyjny
+       ================================================================== */
+    function renderFilters(){
+      const opts=[['all','ALL'],...GROUPS.map(g=>[g.id,g.name])];
+      $('#filters').innerHTML=opts.map(([id,label])=>`<button class="filter ${inventoryFilter===id?'active':''}" data-filter="${id}">${label}</button>`).join('');
+      document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{inventoryFilter=b.dataset.filter;renderFilters();renderInventory();});
+    }
+    function renderInventory(){
+      const list=$('#moduleList'); let html='';
+      GROUPS.filter(g=>inventoryFilter==='all'||inventoryFilter===g.id).forEach(g=>{
+        const items=MODULES.filter(m=>m.group===g.id);
+        html+=`<div class="inventory-group" style="color:${g.color}">${g.name}</div>`;
+        html+=items.map(m=>`<div class="inventory-row ${selectedId===m.id?'selected':''}" data-id="${m.id}" draggable="true" style="--accent:${g.color}"><span class="inventory-id">${m.id}</span><span class="inventory-name">${safe(m.title)}</span></div>`).join('');
+      });
+      list.innerHTML=html;
+      list.querySelectorAll('.inventory-row').forEach(row=>{
+        row.addEventListener('click',()=>select(row.dataset.id));
+        row.addEventListener('dragstart',e=>{draggedId=row.dataset.id;e.dataTransfer.setData('text/plain',draggedId);e.dataTransfer.effectAllowed='move';});
+        row.addEventListener('dragend',()=>{draggedId=null;$('#flowCanvas').classList.remove('drag-over');hideInsertLine();});
+      });
+    }
+    function parseKnob(v){const [a,...b]=v.split('=');return {key:a,value:b.join('=')||'required'}}
+    function renderInspector(m){
+      if(!m){$('#inspectorContent').innerHTML='<div class="empty-state">Kliknij klocek lub wybierz go z inventory.<br><br>Canvas pokazuje identyfikator, nazwę i mini-wizualizację warstwy. Inspector pokazuje kontrakt procedury: input → transform → output → invariants → knobs.</div>';return;}
+      const c=color(m);
+      /* zachowaj stan akordeonu i scroll promptu przez re-render (toggle, nowy kabel) */
+      const prevAcc=$('#inspectorContent .prompt-acc');
+      const accOpen=!!(prevAcc&&prevAcc.open);
+      const preScroll=accOpen?(($('#inspectorContent .prompt-pre')||{}).scrollTop||0):0;
+      $('#inspectorContent').innerHTML=`
+        <div class="selected-strip"><div class="selected-id" style="background:${c}">${m.id}</div><div><div class="selected-name">${safe(m.title)}</div><div class="selected-kind">${safe(m.kind)} — ${safe(m.short)}</div></div></div>
+        ${isCustom(m.id)?`<div class="del-wrap"><button class="del-block" id="delBlock">USUŃ KLOCEK</button></div>`:''}
+        <section class="inspect-section"><div class="inspect-label">INPUT</div><ul class="inspect-list">${m.input.map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">TRANSFORM</div><ul class="inspect-list">${m.transform.map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">OUTPUT</div><div class="inspect-text">${safe(m.output)}</div></section>
+        <section class="inspect-section"><div class="inspect-label">INVARIANTS</div><ul class="inspect-list">${m.invariant.map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">LOW-CODE KNOBS</div><div class="knob-grid">${m.knobs.map(x=>{const k=parseKnob(x);return `<div class="knob"><b>${safe(k.key)}</b><span>${safe(k.value)}</span></div>`}).join('')}</div></section>
+        <section class="inspect-section"><div class="inspect-label">VISUALIZATION</div><div class="viz-card" style="--accent:${c}">${vizCard(m)}</div></section>
+        <section class="inspect-section"><details class="prompt-acc"${accOpen?' open':''}><summary><i>▸</i> PROMPT REPLIKACYJNY · DECYZJE &amp; BEST PRACTICES</summary><div class="prompt-bar"><button id="copyReplica">KOPIUJ PROMPT</button></div><pre class="prompt-pre">${safe(replicationPrompt(m))}</pre></details></section>`;
+      if(accOpen){const pp=$('#inspectorContent .prompt-pre');if(pp)pp.scrollTop=preScroll;}
+      $('#copyReplica').onclick=()=>copyText(replicationPrompt(m));
+      if(isCustom(m.id)){const db=$('#delBlock');if(db)db.onclick=()=>deleteCustomBlock(m.id);}
+      const sid=$('#inspectorContent .selected-id');        // klik w badge ID → edycja (custom) / toast (wbudowany)
+      if(sid){if(isCustom(m.id)){sid.style.cursor='pointer';sid.title='Edytuj klocek';sid.onclick=()=>openEditModal(m.id);}
+        else{sid.style.cursor='help';sid.title='Wbudowany klocek — edytuj w źródle (SOT)';sid.onclick=()=>toast('Wbudowany klocek — edytuj w źródle (SOT)');}}
+    }
+    /* prompt replikacyjny: sekcja KONTEKST liczona statycznie z
+       MODULES[].depends (depsOf / dependentsOf), więc zawsze opisuje
+       zadeklarowaną okoliczną logikę; treść merytoryczna z
+       PROMPTS[id] — patrz sekcja [J1b] */
+    function replicationPrompt(m){
+      const P=PROMPTS[m.id]||{};
+      const up=depsOf(m.id).map(d=>{const dm=mod(d);return dm?`upstream: ${d} „${dm.title}" → dostarcza: ${dm.output}`:`upstream: ${d}`;});
+      const down=dependentsOf(m.id).map(d=>{const dm=mod(d);return dm?`downstream: ${m.output} → konsumuje: ${d} „${dm.title}"`:`downstream: ${d}`;});
+      const ctx=[...(up.length?up:['upstream: brak — pierwszy klocek przepływu']),
+                 ...(down.length?down:['downstream: brak — ostatni klocek przepływu']),
+                 'model wykonania: per-asset one-shot notebook L4→L9 (make run-asset), uniwersum = make loop; brak faz globalnych'];
+      const sec=(h,items)=>`\n\n${h}\n`+items.map(x=>'- '+x).join('\n');
+      return `=== ${m.id} · ${m.title} — PROMPT REPLIKACYJNY ===`+
+        sec('CEL',[P.cel||m.kind])+
+        sec('KONTEKST PIPELINE (okoliczna logika)',ctx)+
+        sec('DECYZJE PROJEKTOWE',P.decyzje||[])+
+        sec('INWARIANTY (nienegocjowalne)',P.inwarianty||m.invariant)+
+        sec('KNOBS (parametry low-code)',m.knobs)+
+        sec('TESTY AKCEPTACYJNE',P.testy||m.test)+
+        sec('ZASADY IMPLEMENTACJI',[...(P.zasady||[]),...PROMPT_FOOTER]);
+    }
+    function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1500)}
+    async function copyText(t){try{await navigator.clipboard.writeText(t);toast('COPIED');}catch(e){toast('CLIPBOARD UNAVAILABLE');}}
+
+    /* ==================================================================
+       [J9] MODAL + CUSTOM — okno „+" (dodaj klocek, F1), okno potwierdzenia
+       przeniesienia (F2) oraz custom-moduły trzymane w localStorage v2.custom.
+       Wszystkie treści użytkownika przechodzą przez safe(); id ograniczone do
+       [A-Za-z0-9._-] (lego()/renderInventory wstrzykują ${m.id} RAW).
+       ================================================================== */
+    function recomputeCanvasH(){CANVAS_H=TOP_PAD+BOTTOM_PAD+MODULES.reduce((a,m)=>a+VIZ[m.viz].h+GAP,0)-GAP;return CANVAS_H;}
+    function sizeCanvas(){const fc=$('#flowCanvas');if(fc){fc.style.width=CANVAS_W+'px';fc.style.height=CANVAS_H+'px';}}
+
+    const ID_RE=/^[A-Za-z0-9._-]{1,24}$/;
+    function isCustom(id){const m=mod(id);return !!(m&&m._custom);}
+    function normalizeModule(raw){
+      if(!raw||typeof raw!=='object')return null;
+      const id=String(raw.id||'').trim();
+      if(!ID_RE.test(id))return null;
+      if(!VIZ[raw.viz])return null;                          // zła viz → drop (nie crashuj VIZ[m.viz].h)
+      if(!GROUPS.some(g=>g.id===raw.group))return null;
+      const title=String(raw.title||'').trim();if(!title)return null;
+      const arr=v=>Array.isArray(v)?v.map(x=>String(x)).filter(Boolean):[];
+      return {id,group:raw.group,viz:raw.viz,title,
+        kind:String(raw.kind||'custom module'),short:String(raw.short||''),
+        input:arr(raw.input),transform:arr(raw.transform),output:String(raw.output||'—'),
+        invariant:arr(raw.invariant),knobs:arr(raw.knobs),test:arr(raw.test),depends:arr(raw.depends),
+        _custom:true};
+    }
+    function loadCustomModules(){                            // BOOT: PRZED pierwszym getState()
+      let raw=null;try{raw=JSON.parse(localStorage.getItem(STORAGE));}catch(e){}
+      const list=(raw&&Array.isArray(raw.custom))?raw.custom:[];
+      list.forEach(r=>{const m=normalizeModule(r);if(m&&!MODULES.some(x=>x.id===m.id))MODULES.push(m);});
+    }
+    function deleteCustomBlock(id){
+      if(!isCustom(id))return;
+      const i=MODULES.findIndex(m=>m.id===id);if(i>=0)MODULES.splice(i,1);
+      const s=getState();
+      s.order=s.order.filter(x=>x!==id);
+      s.custom=MODULES.filter(m=>m._custom);
+      saveState(s);
+      if(selectedId===id)selectedId=null;
+      recomputeCanvasH();sizeCanvas();
+      renderInventory();renderCanvas();renderInspector(selectedId?mod(selectedId):null);
+      toast(id+' USUNIĘTY');
+    }
+
+    /* ---- generyczna powłoka modala (F1 + F2) ---- */
+    let modalMode=null,pendingMove=null,editId=null;
+    function openModal(title,bodyHTML,buttons,onShow){
+      $('#modalTitle').innerHTML=title;
+      $('#modalBody').innerHTML=bodyHTML;
+      const foot=$('#modalFoot');foot.innerHTML='';
+      buttons.forEach(b=>{const el=document.createElement('button');
+        el.className='modal-btn'+(b.variant?' '+b.variant:'');el.textContent=b.label;el.onclick=b.onClick;foot.appendChild(el);});
+      $('#modalOverlay').hidden=false;
+      document.removeEventListener('keydown',modalKeydown);   // idempotentnie, bez leaka
+      document.addEventListener('keydown',modalKeydown);
+      if(onShow)onShow();
+    }
+    function closeModal(){$('#modalOverlay').hidden=true;document.removeEventListener('keydown',modalKeydown);modalMode=null;pendingMove=null;editId=null;}
+    function modalKeydown(e){
+      if(e.key==='Escape'){e.preventDefault();closeModal();}
+      else if(e.key==='Enter'&&modalMode==='move'){e.preventDefault();commitMove();}
+      else if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&modalMode==='add'){e.preventDefault();submitAddBlock();}
+      else if(e.key==='Enter'&&e.target.tagName!=='TEXTAREA'&&modalMode==='edit'){e.preventDefault();submitEditBlock(editId);}
+    }
+    function focusFirst(){const el=$('#modalBody').querySelector('select,input,textarea')||$('#modalFoot').querySelector('.modal-btn.primary')||$('#modalFoot').querySelector('.modal-btn');if(el)el.focus();}
+
+    /* ---- F1: dodaj / edytuj klocek (wspólny formularz) ---- */
+    function suggestId(groupId){const pre=groupId==='sg'?'G':groupId.replace('s','');let n=1,id;do{id=pre+'.C'+n;n++;}while(MODULES.some(m=>m.id===id));return id;}
+    function fieldWrap(fid,label,control){return `<div class="modal-field" id="fld-${fid}"><label for="f-${fid}">${label}</label>${control}<span class="err-msg"></span></div>`;}
+    /* p=preset (edit) lub {} (add). p._edit → ID readonly (id = klucz, niezmienny). */
+    function blockFormBody(p){
+      p=p||{};const v=x=>safe(x==null?'':String(x));const lines=a=>safe(Array.isArray(a)?a.join('\n'):'');
+      const sel=(cur,val)=>cur===val?' selected':'';
+      const gopts=GROUPS.map(g=>`<option value="${g.id}"${sel(p.group,g.id)}>${safe(g.name)}</option>`).join('');
+      const vopts=Object.keys(VIZ).map(k=>`<option value="${k}"${sel(p.viz||'guard',k)}>${k}</option>`).join('');
+      const ta=(fid,ph,val)=>`<textarea id="f-${fid}" placeholder="${ph}">${val||''}</textarea>`;
+      const idVal=v(p.id!=null?p.id:suggestId(GROUPS[0].id));
+      return `
+        <div class="modal-grid2">
+          ${fieldWrap('group','Tor',`<select id="f-group">${gopts}</select>`)}
+          ${fieldWrap('id','ID',`<input id="f-id" value="${idVal}" maxlength="24"${p._edit?' readonly':''}>`)}
+        </div>
+        ${fieldWrap('title','Tytuł',`<input id="f-title" value="${v(p.title)}" placeholder="np. custom quality gate">`)}
+        ${fieldWrap('kind','Rodzaj',`<input id="f-kind" value="${v(p.kind)}" placeholder="np. fail-closed gate">`)}
+        ${fieldWrap('short','Krótki opis',`<input id="f-short" value="${v(p.short)}" placeholder="input → output w 1 linii">`)}
+        <div class="modal-grid2">
+          ${fieldWrap('viz','Viz',`<select id="f-viz">${vopts}</select>`)}
+          ${fieldWrap('depends','Zależności (id, po przecinku)',`<input id="f-depends" value="${safe((p.depends||[]).join(', '))}" placeholder="1.4, G.1">`)}
+        </div>
+        ${fieldWrap('input','INPUT (1 pozycja / linia)',ta('input','1 wejście / linia',lines(p.input)))}
+        ${fieldWrap('transform','TRANSFORM (1 pozycja / linia)',ta('transform','1 krok / linia',lines(p.transform)))}
+        ${fieldWrap('output','OUTPUT (1 linia)',`<input id="f-output" value="${v(p.output&&p.output!=='—'?p.output:'')}" placeholder="artefakt wyjściowy">`)}
+        ${fieldWrap('invariant','INVARIANTS (1 pozycja / linia)',ta('invariant','1 inwariant / linia',lines(p.invariant)))}
+        ${fieldWrap('knobs','KNOBS (key=value / linia)',ta('knobs','key=value / linia',lines(p.knobs)))}
+        ${fieldWrap('test','TESTS (1 pozycja / linia)',ta('test','1 test / linia',lines(p.test)))}`;
+    }
+    function readBlockForm(){
+      const val=id=>(($('#'+id)||{}).value||'');
+      const lines=fid=>val(fid).split('\n').map(s=>s.trim()).filter(Boolean);
+      return {id:val('f-id').trim(),group:val('f-group'),title:val('f-title').trim(),viz:val('f-viz'),
+        kind:val('f-kind').trim(),short:val('f-short').trim(),
+        depends:val('f-depends').split(',').map(s=>s.trim()).filter(Boolean),
+        input:lines('f-input'),transform:lines('f-transform'),output:val('f-output').trim()||'—',
+        invariant:lines('f-invariant'),knobs:lines('f-knobs'),test:lines('f-test')};
+    }
+    function markErr(fid,msg){const f=$('#fld-'+fid);if(!f)return null;f.classList.add('err');const e=f.querySelector('.err-msg');if(e)e.textContent=msg;return fid;}
+    function focusFirstErr(){const f=$('#modalBody .modal-field.err input,#modalBody .modal-field.err select');if(f)f.focus();}
+    function openAddModal(){
+      modalMode='add';
+      openModal('DODAJ KLOCEK',blockFormBody(),[
+        {label:'ANULUJ',onClick:closeModal},
+        {label:'OK',variant:'primary',onClick:submitAddBlock}
+      ],()=>{
+        focusFirst();
+        const gsel=$('#f-group'),idin=$('#f-id');let last=idin.value,touched=false;
+        idin.addEventListener('input',()=>{touched=(idin.value!==last);});
+        gsel.addEventListener('change',()=>{if(!touched){last=suggestId(gsel.value);idin.value=last;}});
+      });
+    }
+    function submitAddBlock(){
+      document.querySelectorAll('#modalBody .modal-field').forEach(f=>f.classList.remove('err'));
+      const d=readBlockForm();let bad=null;
+      if(!ID_RE.test(d.id))bad=bad||markErr('id','ID: 1–24 znaków [A-Za-z0-9._-]');
+      else if(MODULES.some(m=>m.id===d.id))bad=bad||markErr('id','ID musi być unikalne');
+      if(!d.title)bad=bad||markErr('title','Tytuł wymagany');
+      if(!VIZ[d.viz])bad=bad||markErr('viz','Nieznany viz');
+      if(bad){focusFirstErr();return;}
+      const m=normalizeModule(d);
+      if(!m){toast('Niepoprawny moduł');return;}
+      MODULES.push(m);
+      const s=getState();
+      s.order.push(m.id);                                     // szczyt drabinki = koniec order
+      s.custom=MODULES.filter(x=>x._custom);
+      saveState(s);                                           // _state spójny (memoizacja)
+      recomputeCanvasH();sizeCanvas();
+      selectedId=m.id;
+      renderInventory();renderCanvas();renderInspector(m);fitView();
+      closeModal();toast(d.id+' DODANY');
+    }
+    function openEditModal(id){
+      const m=mod(id);if(!m||!isCustom(id))return;           // edycja tylko dla custom
+      modalMode='edit';editId=id;
+      openModal('EDYTUJ KLOCEK · '+safe(id),blockFormBody({...m,_edit:true}),[
+        {label:'ANULUJ',onClick:closeModal},
+        {label:'ZAPISZ',variant:'primary',onClick:()=>submitEditBlock(id)}
+      ],focusFirst);
+    }
+    function submitEditBlock(id){
+      if(!id||!isCustom(id))return;
+      document.querySelectorAll('#modalBody .modal-field').forEach(f=>f.classList.remove('err'));
+      const d=readBlockForm();d.id=id;                       // ID niezmienne (readonly)
+      let bad=null;
+      if(!d.title)bad=bad||markErr('title','Tytuł wymagany');
+      if(!VIZ[d.viz])bad=bad||markErr('viz','Nieznany viz');
+      if(bad){focusFirstErr();return;}
+      const m=normalizeModule(d);
+      if(!m){toast('Niepoprawny moduł');return;}
+      const i=MODULES.findIndex(x=>x.id===id);if(i<0)return;
+      MODULES[i]=m;                                           // podmiana w miejscu (zachowuje pozycję + _custom)
+      const s=getState();s.custom=MODULES.filter(x=>x._custom);saveState(s);
+      recomputeCanvasH();sizeCanvas();                        // viz/wysokość mogła się zmienić
+      renderInventory();renderCanvas();renderInspector(m);
+      closeModal();toast(id+' ZAPISANY');
+    }
+
+    /* ---- F2: potwierdzenie przeniesienia ---- */
+    function describeMove(id,newOrder){
+      const m=mod(id),i=newOrder.indexOf(id);
+      const below=i>0?mod(newOrder[i-1]):null;                // order[i-1] = fizycznie NIŻEJ (drabinka dół→góra)
+      const above=i<newOrder.length-1?mod(newOrder[i+1]):null;
+      const where=!below?'na dół drabinki':!above?'na szczyt drabinki':`między <b>${safe(below.id)}</b> a <b>${safe(above.id)}</b>`;
+      const line=(lab,x)=>`${lab}: `+(x?`<b>${safe(x.id)}</b> „${safe(x.title)}"`:'—');
+      return `<div class="move-summary">Przenieś <span class="move-chip">${safe(id)} · ${safe(m.title)}</span><br>pozycja docelowa: <b>${where}</b><br>${line('poniżej',below)}<br>${line('powyżej',above)}</div>`;
+    }
+    function openMoveModal(proposed){
+      modalMode='move';pendingMove=proposed;
+      openModal('POTWIERDŹ PRZENIESIENIE',proposed.summaryHTML,[
+        {label:'ANULUJ',onClick:closeModal},
+        {label:'OK',variant:'primary',onClick:commitMove}
+      ],focusFirst);
+    }
+    function commitMove(){
+      if(!pendingMove)return;
+      const {id,newOrder}=pendingMove;
+      const s=getState();s.order=newOrder;saveState(s);
+      selectedId=id;closeModal();
+      document.querySelectorAll('#flowCanvas .lego').forEach(el=>el.classList.toggle('selected',el.dataset.id===id));
+      repositionBlocks();renderInventory();renderInspector(mod(id));   // repositionBlocks = animowany slide
+    }
+
+    /* ==================================================================
+       [J8] BOOT
+       ================================================================== */
+    loadCustomModules();            // 1. PRZED pierwszym getState()/renderem — customy trafiają do MODULES
+    recomputeCanvasH();sizeCanvas();// 2-3. wysokość obejmuje customy (zamiast inline width/height)
+    renderLaneSeps();renderLaneHeads();
+    renderFilters();renderInventory();renderCanvas();renderInspector(null);
+    fitView();
+    $('#addFab').onclick=openAddModal;
+    $('#modalOverlay').addEventListener('click',e=>{if(e.target===$('#modalOverlay'))closeModal();}); // backdrop = cancel
+  </script>
+</body>
+</html>

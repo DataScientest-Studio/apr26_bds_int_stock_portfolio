@@ -3,9 +3,11 @@
 This folder presents the implemented minimal per-asset ML pipeline and the
 deliverable contract.
 
-- [`Layers_Short_SOT.md`](Layers_Short_SOT.md) — the source of truth for L1-L9.
+- [`Layers_Short_SOT.md`](Layers_Short_SOT.md) — the source of truth for L1-L9 + guards
+  (per-module "Kontrakt replikacji" blocks; the Procedure Lego MODULES derive from them).
 - `Assets/` — symlink to [`../Structure/Assets/`](../Structure/Assets), produced by `make run-asset` / `make loop`.
-- `main_data_flow.html` — symlink to the visualization in [`Plan/`](../../Plan/main_data_flow.html).
+- `procedure_lego.html` — symlink to the Procedure Lego visualization in [`Plan/`](../../Plan/procedure_lego.html)
+  (generated from `Plan/procedure_lego.html.tmpl` by `make build`; guarded by `make check`).
 
 ## The 7-File Contract (`Assets/<TICKER>/`)
 

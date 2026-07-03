@@ -64,6 +64,8 @@ make build-db
 make run-asset TICKER=AAPL
 make loop "AAPL TSLA XOM"
 make dashboard
+make build   # regenerate Plan/*.html from *.tmpl + Markdown markers
+make check   # fail-closed gate: drift / stray literals / lego<->SOT crossmatch
 make on
 ```
 
@@ -179,7 +181,7 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **KNOBS:** none — predicates are fixed in code.
 - **TESTY AKCEPTACYJNE:** corrupt one seed value (e.g. negative volume) → `make run-asset` raises
   `RuntimeError "L4 source QC FAILED"` before any parquet is written.
-- **DEPENDS:** upstream: L4 (inline) · downstream: blocks L5+ · scope: per-asset guard.
+- **DEPENDS:** upstream: L4 · downstream: blocks L5+ · scope: per-asset guard (inline in L4's read).
 
 ## Kontrakt replikacji — L5 temporal split + purge/embargo
 
