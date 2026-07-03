@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configurations</title>
+<!--
+  GENERATED PAGE — rendered from Plan/configurations.html.tmpl by
+  Project/Structure/config/data_state_numbers_gate.py (make build).
+  Every value below is a {{...}} token resolved live from config/*.json and
+  Features/*/feature_registry.json — the page can never drift from config.
+  Edit the .tmpl, then `make build`; `make check` fails on drift.
+-->
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:1080px;margin:0 auto;padding:36px 20px}
+    a{color:#0b5cab;text-decoration:none;font-weight:650}
+    h2{margin:28px 0 6px;font-size:20px}
+    table{width:100%;border-collapse:collapse;background:white;border:1px solid #dfe5ec;margin:12px 0}
+    th,td{text-align:left;border-bottom:1px solid #e8edf3;padding:9px 10px;vertical-align:top}
+    th{background:#eef2f6}
+    code{background:#eef2f6;border-radius:5px;padding:2px 5px}
+    .src{color:#5a6a7a;font-size:13px}
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="index.html">Back</a></p>
+  <h1>Configurations</h1>
+  <p class="src">Single sources: <code>config/pipeline_parameters.json</code> ·
+  <code>config/xgboost_optuna_search_space.json</code> ·
+  <code>config/feature_namespaces.json</code> + the four feature registries ·
+  <code>config/frozen_data_state_numbers.json</code>. Rendered by <code>make build</code>,
+  guarded by <code>make check</code>.</p>
+
+  <h2>Label &amp; candidates (L6)</h2>
+  <table>
+    <tr><th>Knob</th><th>Value</th></tr>
+    <tr><td>Horizon / purge</td><td><code>H={{H}}</code> bars, <code>PURGE_CANDLES={{PURGE_CANDLES}}</code> (must equal H), embargo <code>{{EMBARGO_BARS}}</code> bars</td></tr>
+    <tr><td>Candidate side</td><td><code>direction = sign({{SIGNAL_MOMENTUM_FEATURE}})</code>, zero policy <code>{{SIGNAL_ZERO_POLICY}}</code></td></tr>
+    <tr><td>Barrier</td><td><code>ATR{{W_ATR}} × {{TB_ATR_MULTIPLIER}}</code>, symmetric target/stop, trigger clock <code>{{BARRIER_MODE}}</code></td></tr>
+    <tr><td>Fills</td><td>entry <code>{{ENTRY_FILL}}</code> · condition exit <code>{{EXIT_FILL}}</code> · scheduled exit <code>{{SCHEDULED_EXIT_FILL}}</code></td></tr>
+    <tr><td>Costs</td><td>commission <code>{{COMMISSION_BPS}}</code> bps + slippage <code>{{SLIPPAGE_BPS}}</code> bps, both sides</td></tr>
+    <tr><td>Indicator windows</td><td>W_VOL={{W_VOL}} · W_RSI={{W_RSI}} · W_BB={{W_BB}} (k={{BB_K}}) · SMA {{W_SMA_FAST}}/{{W_SMA_SLOW}} · MACD {{MACD_FAST}}/{{MACD_SLOW}}/{{MACD_SIGNAL}}</td></tr>
+  </table>
+
+  <h2>Time split (L5)</h2>
+  <table>
+    <tr><th>Partition</th><th>Window</th></tr>
+    <tr><td>Warm-up</td><td>{{splits_warmup_start}} → {{splits_warmup_end}}</td></tr>
+    <tr><td>Train</td><td>{{splits_train_start}} → {{splits_train_end}}</td></tr>
+    <tr><td>OOS (frozen until L9)</td><td>{{splits_oos_start}} → {{splits_oos_end}}</td></tr>
+  </table>
+
+  <h2>Feature namespaces (L6)</h2>
+  <table>
+    <tr><th>Namespace</th><th>ID range</th><th>Implemented</th><th>Registry</th></tr>
+    <tr><td>1h</td><td><code>01-99</code></td><td>{{n_features_1h}}</td><td><code>Features/features_1h/feature_registry.json</code></td></tr>
+    <tr><td>1d</td><td><code>101-199</code></td><td>{{n_features_1d}}</td><td><code>Features/features_1d/feature_registry.json</code></td></tr>
+    <tr><td>1w</td><td><code>201-299</code></td><td>{{n_features_1w}}</td><td><code>Features/features_1w/feature_registry.json</code></td></tr>
+    <tr><td>multi_tf</td><td><code>901-999</code></td><td>{{n_features_multi_tf}}</td><td><code>Features/features_between_timeframes/feature_registry.json</code></td></tr>
+    <tr><td><b>total</b></td><td></td><td><b>{{n_features_total}}</b></td><td>model column order: namespace order, then ascending id</td></tr>
+  </table>
+
+  <h2>Optuna HPO (L7)</h2>
+  <table>
+    <tr><th>Objective</th><th>Value</th></tr>
+    <tr><td>Metric / direction</td><td><code>{{xgb_obj_metric}}</code> / <code>{{xgb_obj_direction}}</code></td></tr>
+    <tr><td>Sampler / pruner</td><td><code>{{xgb_obj_sampler}}(seed={{RANDOM_SEED}})</code> / <code>{{xgb_obj_pruner}}</code> (warmup {{xgb_obj_pruner_warmup}})</td></tr>
+    <tr><td>CV</td><td><code>{{xgb_obj_cv_scheme}}</code>, k={{xgb_obj_cv_folds}}, {{xgb_obj_scope}}</td></tr>
+    <tr><td>Budget</td><td><code>N_TRIALS={{N_TRIALS}}</code>, <code>XGBOOST_N_JOBS={{XGBOOST_N_JOBS}}</code></td></tr>
+  </table>
+  <table>
+    <tr><th>Parameter</th><th>Suggest</th><th>Low</th><th>High</th><th>Scale</th></tr>
+    <tr><td><code>max_depth</code></td><td>{{xgb_max_depth_type}}</td><td>{{xgb_max_depth_low}}</td><td>{{xgb_max_depth_high}}</td><td>{{xgb_max_depth_log}}</td></tr>
+    <tr><td><code>eta</code></td><td>{{xgb_eta_type}}</td><td>{{xgb_eta_low}}</td><td>{{xgb_eta_high}}</td><td>{{xgb_eta_log}}</td></tr>
+    <tr><td><code>subsample</code></td><td>{{xgb_subsample_type}}</td><td>{{xgb_subsample_low}}</td><td>{{xgb_subsample_high}}</td><td>{{xgb_subsample_log}}</td></tr>
+    <tr><td><code>colsample_bytree</code></td><td>{{xgb_colsample_bytree_type}}</td><td>{{xgb_colsample_bytree_low}}</td><td>{{xgb_colsample_bytree_high}}</td><td>{{xgb_colsample_bytree_log}}</td></tr>
+    <tr><td><code>min_child_weight</code></td><td>{{xgb_min_child_weight_type}}</td><td>{{xgb_min_child_weight_low}}</td><td>{{xgb_min_child_weight_high}}</td><td>{{xgb_min_child_weight_log}}</td></tr>
+    <tr><td><code>reg_lambda</code></td><td>{{xgb_reg_lambda_type}}</td><td>{{xgb_reg_lambda_low}}</td><td>{{xgb_reg_lambda_high}}</td><td>{{xgb_reg_lambda_log}}</td></tr>
+    <tr><td><code>n_estimators</code></td><td>{{xgb_n_estimators_type}}</td><td>{{xgb_n_estimators_low}}</td><td>{{xgb_n_estimators_high}}</td><td>{{xgb_n_estimators_log}}</td></tr>
+  </table>
+
+  <h2>Kelly sizing &amp; engine (L7/L9)</h2>
+  <table>
+    <tr><th>Knob</th><th>Value</th></tr>
+    <tr><td>Capital mode</td><td><code>{{CAPITAL_MODE}}</code>, start <code>{{INITIAL_CAPITAL_USD}}</code> USD</td></tr>
+    <tr><td>Kelly</td><td>per-trade <code>f = clip(λ·(2p−1), 0, {{KELLY_CAP}})</code>; λ grid [{{KELLY_CALIBRATION_low}}, {{KELLY_CALIBRATION_high}}] × {{KELLY_CALIBRATION_grid_points}} on Train-OOF log-growth ({{KELLY_CALIBRATION_objective}})</td></tr>
+    <tr><td>Entry gate</td><td><code>THRESHOLD_ENTRY={{THRESHOLD_ENTRY}}</code> (fixed in config; never tuned on OOS)</td></tr>
+    <tr><td>Position policy</td><td><code>{{POSITION_POLICY}}</code>; simultaneous setups: <code>{{SIMULTANEOUS_SETUP_POLICY}}</code>; pyramiding {{ALLOW_PYRAMIDING}}, reversal-while-open {{ALLOW_REVERSAL_WHILE_OPEN}}</td></tr>
+    <tr><td>Result framing</td><td>MIN_TRAIN_ACCEPTANCE_TRADES={{MIN_TRAIN_ACCEPTANCE_TRADES}} · MIN_OOS_TRADES_FOR_INTERPRETATION={{MIN_OOS_TRADES_FOR_INTERPRETATION}} · CORP_ACTIONS_POLICY={{CORP_ACTIONS_POLICY}} · UNIVERSE_MODE={{UNIVERSE_MODE}} · PF zero-gross-loss: {{PF_ZERO_GROSS_LOSS_POLICY}}</td></tr>
+  </table>
+
+  <h2>Determinism &amp; data state</h2>
+  <table>
+    <tr><th>Fact</th><th>Value</th></tr>
+    <tr><td>Seeds</td><td><code>RANDOM_SEED={{RANDOM_SEED}}</code>, <code>XGBOOST_N_JOBS={{XGBOOST_N_JOBS}}</code>, pinned <code>requirements.txt</code></td></tr>
+    <tr><td>Universe</td><td>{{n_assets_seed}} seed tickers in <code>data/seed/</code></td></tr>
+    <tr><td>DuckDB</td><td><code>bars_1h</code>: {{duckdb_rows_bars_1h}} rows (regenerable, gitignored)</td></tr>
+    <tr><td>Bar clock</td><td><code>{{BAR_TIMESTAMP_CONVENTION}}</code>, timeframe <code>{{TF}}</code></td></tr>
+  </table>
+</main>
+</body>
+</html>
