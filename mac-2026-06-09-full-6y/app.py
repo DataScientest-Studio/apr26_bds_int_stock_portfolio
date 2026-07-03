@@ -71,6 +71,78 @@ PROFILE_CONFIG = {
 }
 
 
+def risk_answers_to_recommendation_defaults(risk_answers: dict | None) -> dict:
+    """Translate the main app's risk questionnaire into recommender control defaults."""
+    defaults = {
+        "profile": "Balanced",
+        "max_volatility_60d": 0.50,
+        "portfolio_size": 10,
+        "ranking_objective": "Highest expected return",
+        "max_sector_weight_pct": 30,
+        "excluded_sectors": [],
+        "min_predicted_return_pct": 0,
+        "min_recent_return_pct": -80,
+    }
+    if not risk_answers:
+        return defaults
+
+    score = 0
+    score += {"Beginner": -1, "Some experience": 0, "Experienced": 1}.get(
+        risk_answers.get("experience"), 0
+    )
+    score += {
+        "Less than 1 week": -1,
+        "1-4 weeks": 0,
+        "1-12 months": 1,
+        "1+ year": 1,
+    }.get(risk_answers.get("horizon"), 0)
+    score += {"5%": -2, "10%": -1, "20%": 1, "30% or more": 2}.get(
+        risk_answers.get("loss_tolerance"), 0
+    )
+    score += {"Sell everything": -2, "Sell part of it": -1, "Hold": 0, "Buy more": 1}.get(
+        risk_answers.get("drawdown_reaction"), 0
+    )
+    score += {
+        "Minimize losses, even if it means missing some gains": -2,
+        "Maximize potential returns, even if it means larger swings": 2,
+        "Balance steady, moderate gains against moderate risk": 0,
+    }.get(risk_answers.get("goal"), 0)
+
+    if score <= -3:
+        defaults["profile"] = "Conservative"
+        defaults["ranking_objective"] = "Smoother ride"
+        defaults["min_recent_return_pct"] = -10
+    elif score >= 3:
+        defaults["profile"] = "Aggressive"
+        defaults["ranking_objective"] = "Highest expected return"
+        defaults["min_predicted_return_pct"] = 2
+    else:
+        defaults["profile"] = "Balanced"
+        defaults["ranking_objective"] = "Risk-adjusted return"
+        defaults["min_recent_return_pct"] = -30
+
+    if risk_answers.get("goal") == "Minimize losses, even if it means missing some gains":
+        defaults["ranking_objective"] = "Smoother ride"
+    elif risk_answers.get("goal") == "Maximize potential returns, even if it means larger swings":
+        defaults["ranking_objective"] = "Highest expected return"
+    elif risk_answers.get("goal") == "Balance steady, moderate gains against moderate risk":
+        defaults["ranking_objective"] = "Risk-adjusted return"
+
+    defaults["portfolio_size"] = {
+        "Few (1-3)": 3,
+        "Moderate (4-7)": 7,
+        "Fully diversified (8-10)": 10,
+    }.get(risk_answers.get("position_count"), defaults["portfolio_size"])
+    defaults["max_sector_weight_pct"] = {
+        "Few (1-3)": 60,
+        "Moderate (4-7)": 40,
+        "Fully diversified (8-10)": 30,
+    }.get(risk_answers.get("position_count"), defaults["max_sector_weight_pct"])
+    defaults["excluded_sectors"] = risk_answers.get("sectors_avoid") or []
+    defaults["max_volatility_60d"] = PROFILE_CONFIG[defaults["profile"]]["max_volatility_60d"]
+    return defaults
+
+
 @st.cache_data
 def get_data():
     tickers = load_tickers()
@@ -386,26 +458,51 @@ if page == "Recommendation":
     st.pyplot(plot_feature_importance(feature_importance), clear_figure=True)
 
     st.subheader("Define Preferences")
+    risk_answers = st.session_state.get("risk_answers")
+    preference_defaults = risk_answers_to_recommendation_defaults(risk_answers)
+    if risk_answers and st.session_state.get("_applied_risk_answers") != risk_answers:
+        st.session_state["recommendation_profile"] = preference_defaults["profile"]
+        st.session_state["recommendation_max_volatility_60d"] = preference_defaults["max_volatility_60d"]
+        st.session_state["recommendation_portfolio_size"] = preference_defaults["portfolio_size"]
+        st.session_state["recommendation_ranking_objective"] = preference_defaults["ranking_objective"]
+        st.session_state["recommendation_max_sector_weight_pct"] = preference_defaults["max_sector_weight_pct"]
+        st.session_state["recommendation_excluded_sectors"] = preference_defaults["excluded_sectors"]
+        st.session_state["recommendation_min_predicted_return_pct"] = preference_defaults[
+            "min_predicted_return_pct"
+        ]
+        st.session_state["recommendation_min_recent_return_pct"] = preference_defaults[
+            "min_recent_return_pct"
+        ]
+        st.session_state["_applied_risk_answers"] = risk_answers.copy()
+
+    if risk_answers:
+        st.info(
+            "Preference controls are prefilled from the main Risk Assessment form. "
+            "You can still adjust them before reviewing the recommendations."
+        )
+
     left, right = st.columns([1, 1])
     with left:
+        profile_options = list(PROFILE_CONFIG)
         profile = st.selectbox(
             "Risk profile",
-            list(PROFILE_CONFIG),
-            index=1,
+            profile_options,
+            index=profile_options.index(preference_defaults["profile"]),
+            key="recommendation_profile",
             help=(
                 "Sets the starting volatility cap. Conservative starts lower, Balanced is moderate, "
                 "Aggressive allows jumpier stocks, and Custom starts from the Balanced value."
             ),
         )
         st.caption(PROFILE_CONFIG[profile]["description"])
-        default_volatility = PROFILE_CONFIG[profile]["max_volatility_60d"]
         max_volatility_60d = st.slider(
             "Maximum 60-day volatility",
             min_value=0.10,
             max_value=1.20,
-            value=float(default_volatility),
+            value=float(preference_defaults["max_volatility_60d"]),
             step=0.05,
             format="%.2f",
+            key="recommendation_max_volatility_60d",
             help=(
                 "Filters out stocks whose annualized 60-day volatility is above this value. "
                 "Lower values generally mean smoother recent price behavior; higher values allow larger swings."
@@ -415,17 +512,20 @@ if page == "Recommendation":
             "Number of recommended stocks",
             min_value=3,
             max_value=20,
-            value=10,
+            value=preference_defaults["portfolio_size"],
             step=1,
+            key="recommendation_portfolio_size",
             help=(
                 "Controls how many stocks the app returns. More stocks usually improve diversification, "
                 "but each holding gets a smaller equal weight."
             ),
         )
+        objective_options = ["Highest expected return", "Risk-adjusted return", "Smoother ride"]
         ranking_objective = st.selectbox(
             "Selection objective",
-            ["Highest expected return", "Risk-adjusted return", "Smoother ride"],
-            index=0,
+            objective_options,
+            index=objective_options.index(preference_defaults["ranking_objective"]),
+            key="recommendation_ranking_objective",
             help=(
                 "Highest expected return ranks by model score. Risk-adjusted return divides expected return by "
                 "volatility. Smoother ride penalizes volatile names more directly."
@@ -436,9 +536,10 @@ if page == "Recommendation":
             "Maximum sector weight",
             min_value=10,
             max_value=60,
-            value=30,
+            value=preference_defaults["max_sector_weight_pct"],
             step=5,
             format="%d%%",
+            key="recommendation_max_sector_weight_pct",
             help=(
                 "Limits concentration in one sector. For example, 30% with 10 stocks allows at most 3 names "
                 "from the same sector in an equal-weight portfolio."
@@ -446,9 +547,20 @@ if page == "Recommendation":
         )
         max_sector_weight = max_sector_weight_pct / 100
         sectors = sorted(rankings["sector"].dropna().unique())
+        if risk_answers:
+            st.session_state["recommendation_excluded_sectors"] = [
+                sector
+                for sector in st.session_state.get("recommendation_excluded_sectors", [])
+                if sector in sectors
+            ]
+        default_excluded_sectors = [
+            sector for sector in preference_defaults["excluded_sectors"] if sector in sectors
+        ]
         excluded_sectors = st.multiselect(
             "Exclude sectors",
             sectors,
+            default=default_excluded_sectors,
+            key="recommendation_excluded_sectors",
             help=(
                 "Removes selected sectors before ranking. Use this to avoid sectors the user does not want "
                 "to invest in or already owns elsewhere."
@@ -458,9 +570,10 @@ if page == "Recommendation":
             "Minimum predicted 63-day return",
             min_value=-20,
             max_value=25,
-            value=0,
+            value=preference_defaults["min_predicted_return_pct"],
             step=1,
             format="%d%%",
+            key="recommendation_min_predicted_return_pct",
             help=(
                 "Requires the model's expected 63-trading-day return to be at least this value. "
                 "Raising it makes the filter stricter and may reduce diversification."
@@ -471,9 +584,10 @@ if page == "Recommendation":
             "Minimum recent 60-day return",
             min_value=-80,
             max_value=150,
-            value=-80,
+            value=preference_defaults["min_recent_return_pct"],
             step=5,
             format="%d%%",
+            key="recommendation_min_recent_return_pct",
             help=(
                 "Filters by the stock's realized return over the latest 60 trading days. "
                 "Use it to avoid recent losers or to focus on positive momentum."

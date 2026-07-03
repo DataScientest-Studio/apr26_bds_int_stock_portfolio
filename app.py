@@ -194,9 +194,9 @@ elif page == "Risk Assessment":
     st.subheader("3. Risk Assessment")
     st.write(
         "Answer the questions below so the recommender can later match the "
-        "portfolio to your risk profile. This page only collects the "
-        "answers for now; connecting them to the recommendation logic is a "
-        "follow-up step."
+        "portfolio to your risk profile. After submitting, open "
+        "**Final App: Full Recommender** and its recommendation preferences "
+        "will be prefilled from these answers."
     )
     result = render_questionnaire()
     if result:
