@@ -120,8 +120,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **TRANSFORM:** `ENSURE_SEEDS_PY` (Makefile, run by `make loop`) exports only MISSING tickers:
   `select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts`,
   tz-localize `America/New_York` → convert UTC, volume cast float64.
-- **OUTPUT:** `data/seed/<TICKER>_ohlcv_1h.parquet` × 10 seed tickers (committed; the universe
-  grows by dropping in another seed).
+- **OUTPUT:** `data/seed/<TICKER>_ohlcv_1h.parquet` × <!--na:n_assets_seed-->10<!--/na--> seed
+  tickers (committed; the universe grows by dropping in another seed).
 - **INWARIANTY:** existing seeds are never overwritten; columns are exactly
   timestamp/open/high/low/close/volume with UTC timestamps; no derived columns.
 - **KNOBS:** `SP500_DUCKDB` (Makefile variable).
@@ -136,7 +136,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **TRANSFORM:** `build_db.py`: `DROP TABLE IF EXISTS bars_1h` → `CREATE TABLE bars_1h(ticker,
   timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE)` → plain INSERT per seed with the
   ticker column added. No cleaning, no calendar, no QC here (G.1 asserts on read).
-- **OUTPUT:** `liora.duckdb`, table `bars_1h` (182065 rows over 10 tickers); regenerable, gitignored.
+- **OUTPUT:** `liora.duckdb`, table `bars_1h` (<!--na:duckdb_rows_bars_1h-->182065<!--/na--> rows
+  over <!--na:n_assets_seed-->10<!--/na--> tickers); regenerable, gitignored.
 - **INWARIANTY:** zero value mutation — a verbatim load; drop+recreate means no partial state
   survives a rebuild.
 - **KNOBS:** `seed_dir=data/seed` · `db=liora.duckdb` (module constants in `build_db.py`).
@@ -227,9 +228,12 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   (`resolve_feature_manifest`, pipeline.py:332), the feature context (`build_feature_context`, :459).
 - **TRANSFORM:** candidates (`generate_candidate_events`, :491): every scanned bar with finite
   `log_return_5` and ATR width > EPS becomes a candidate; side `direction=sign(log_return_5)`,
-  zero/NaN momentum ⇒ skip. Features: 56 X = 17 `1h` + 17 `1d` + 17 `1w` (coarse frames from
+  zero/NaN momentum ⇒ skip. Features: <!--na:n_features_total-->56<!--/na--> X =
+  <!--na:n_features_1h-->17<!--/na--> `1h` + <!--na:n_features_1d-->17<!--/na--> `1d` +
+  <!--na:n_features_1w-->17<!--/na--> `1w` (coarse frames from
   completed roll-up bars, projected as-of via `merge_asof` on `available_at <= decision_timestamp`
-  = close[t0]) + 5 `multi_tf` (pure functions of already-projected values); missing context ⇒ NaN
+  = close[t0]) + <!--na:n_features_multi_tf-->5<!--/na--> `multi_tf` (pure functions of
+  already-projected values); missing context ⇒ NaN
   (XGBoost native missing); a non-finite mandatory 1h feature EXCLUDES the row
   (`core_feature_eligibility`, :480) — never imputed. Label (`simulate_trade`, :513),
   `TripleBarrier.ATR.v1`: entry `open[t0+1]·(1+s·slip)`; TP/SL = entry ± `ATR14[t0]·TB_ATR_MULTIPLIER`;
@@ -238,7 +242,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   at the range end); per-unit net return includes commission on both sides.
   `Y_outcome = 1` iff net return > 0. Label-uniqueness weights = mean of 1/concurrency over the
   holding window (`_uniqueness_weights`, :552).
-- **OUTPUT:** Output B (`layer6_output_b`, :569): id/timestamp columns + 56 X + the audit lane
+- **OUTPUT:** Output B (`layer6_output_b`, :569): id/timestamp columns +
+  <!--na:n_features_total-->56<!--/na--> X + the audit lane
   (`target_level`, `stop_level`, `barrier_width_pct`, `local_market_exit_reason`,
   `local_per_unit_net_return`, `Y_outcome`, `label_uniqueness_weight`).
 - **INWARIANTY:** X uses only data at or before close[t0]; the future is read only inside the
@@ -247,7 +252,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **KNOBS:** `H=24` · `TB_ATR_MULTIPLIER=1.0` · `W_ATR=14` (Wilder) ·
   `SIGNAL_MOMENTUM_FEATURE=log_return_5` · `SIGNAL_ZERO_POLICY=skip` · `BARRIER_MODE=close` ·
   `COMMISSION_BPS=1` · `SLIPPAGE_BPS=2` · `EPS=1e-9`.
-- **TESTY AKCEPTACYJNE:** `make feature-search` prints the resolved 56-feature manifest
+- **TESTY AKCEPTACYJNE:** `make feature-search` prints the resolved
+  <!--na:n_features_total-->56<!--/na-->-feature manifest
   (namespace order, ascending ids); `validate_parameters` guards every knob's domain.
 - **DEPENDS:** upstream: L5 · downstream: L7 · scope: per-asset.
 

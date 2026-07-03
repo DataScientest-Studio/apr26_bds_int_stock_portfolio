@@ -5,6 +5,8 @@
 #   make feature-search          print the active simple feature manifest
 #   make loop "AAPL TSLA XOM"    ensure seeds -> build-db -> run each ticker -> dashboard
 #   make dashboard               refresh Dashboard feed: oos_metrics.db -> Plan/data/dashboard.json
+#   make build                   regenerate Plan/*.html from *.tmpl + Markdown markers (single-home-per-fact)
+#   make check                   fail-closed gate: number drift / stray literals / lego<->SOT crossmatch
 #   make serve                   serve the static visualization (Plan/) on :8000 (foreground)
 #   make on                      serve Plan/ in the background + open the browser
 #   make off                     stop the background viz server
@@ -28,10 +30,16 @@ ifeq (loop,$(firstword $(MAKECMDGOALS)))
 	@:
 endif
 
-.PHONY: deps build-db run-asset feature-search loop dashboard serve on off restart logs clean help
+.PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
+
+build:
+	python3 config/data_state_numbers_gate.py build
+
+check:
+	python3 config/data_state_numbers_gate.py check
 
 deps:
 	$(PIP) install -r requirements.txt

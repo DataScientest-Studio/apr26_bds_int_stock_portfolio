@@ -33,7 +33,7 @@ everything is meant to be readable and easy to explain.
 | L3 | DuckDB build | `build_db.py` loads the seed parquets into `liora.duckdb` (table `bars_1h`). |
 | L4 | Parquet 1h / 1d / 1w | The notebook reads DuckDB, writes clean 1h OHLCV, then deterministic 1d and 1w roll-ups. |
 | L5 | Time split | Warmup / Train / OOS split with purge and embargo; OOS stays unread until the verdict step. |
-| L6 | Features + Triple-Barrier Y | Candidate side = `sign(log_return_5)`; 56 namespaced features; label = symmetric ATR Triple Barrier (`H=24`). |
+| L6 | Features + Triple-Barrier Y | Candidate side = `sign(log_return_5)`; <!--na:n_features_total-->56<!--/na--> namespaced features; label = symmetric ATR Triple Barrier (`H=24`). |
 | L7 | Optuna HPO + Kelly | Optuna tunes XGBoost on Train CV AUC-PR; the Kelly fraction is calibrated on Train out-of-fold log-growth. |
 | L8 | XGB strategy artifact | XGBoost trains on the full Train set and is embedded as base64 in `strategy_<TICKER>.py`. |
 | L9 | OOS endproduct | OOS verdict, dashboard row, README, and the final seven-file asset folder. |
