@@ -329,29 +329,70 @@ def _registry_features(namespace):
     return list(FEATURE_REGISTRIES[namespace]["features"])
 
 
-def resolve_feature_manifest(ticker=None, cfg=None, registries=None):
+PER_ASSET_OVERRIDES_PATH = ROOT / "config" / "per_asset_feature_overrides.json"
+
+
+def _load_per_asset_overrides():
+    """Gitignored per-asset optional-feature allowlists written by the feature-search worker.
+    Absent file == no overrides (the resolver path is then identical to the global default)."""
+    if not PER_ASSET_OVERRIDES_PATH.exists():
+        return {}
+    return _load_json(PER_ASSET_OVERRIDES_PATH).get("asset_overrides", {})
+
+
+def _override_selection(ticker, overrides, registries):
+    """Validated optional-id set for `ticker`, or None. Fail-closed: the frozen 1h namespace
+    (ids 1-99) may never appear in an override, nor may unknown/unimplemented ids."""
+    if ticker is None:
+        return None
+    ov = overrides.get(str(ticker).upper())
+    if ov is None:
+        return None
+    sel = {int(i) for i in ov["selected_optional_ids"]}
+    if any(1 <= i <= 99 for i in sel):
+        raise RuntimeError(f"per-asset override for {ticker} may not touch the frozen 1h namespace (ids 1-99)")
+    known = {int(f["id"]) for reg in registries.values()
+             for f in reg["features"] if bool(f.get("implemented", True))}
+    unknown = sel - known
+    if unknown:
+        raise RuntimeError(f"per-asset override for {ticker} names unknown/unimplemented feature ids: {sorted(unknown)}")
+    return sel
+
+
+def resolve_feature_manifest(ticker=None, cfg=None, registries=None, overrides=None):
     cfg = FEATURE_NAMESPACES if cfg is None else cfg
     registries = FEATURE_REGISTRIES if registries is None else registries
+    overrides = _load_per_asset_overrides() if overrides is None else overrides
+    sel = _override_selection(ticker, overrides, registries)
     active = [ns for ns in cfg["namespace_order"] if cfg["namespaces"][ns].get("enabled", True)]
     blocks, ids, names = [], [], []
     for ns in active:
         feats = sorted(list(registries[ns]["features"]), key=lambda f: int(f["id"]))
         block_ids = [int(f["id"]) for f in feats if bool(f.get("implemented", True))]
         block_names = [f["name"] for f in feats if bool(f.get("implemented", True))]
+        if sel is not None and ns != "1h":
+            keep = [k for k, i in enumerate(block_ids) if i in sel]
+            block_ids = [block_ids[k] for k in keep]
+            block_names = [block_names[k] for k in keep]
+            if not block_ids:
+                continue
         blocks.append({"namespace": ns, "id_range": cfg["namespaces"][ns]["id_range"],
                        "feature_ids": block_ids, "feature_names": block_names,
                        "feature_count": len(block_ids)})
         ids.extend(block_ids)
         names.extend(block_names)
+    source = "config/feature_namespaces.json"
+    if sel is not None:
+        source += f" + config/per_asset_feature_overrides.json[{str(ticker).upper()}]"
     return {"schema_version": cfg.get("schema_version", "simple_features.v1"),
             "ticker": ticker,
             "namespace_order": list(cfg["namespace_order"]),
-            "active_namespaces": active,
+            "active_namespaces": [b["namespace"] for b in blocks],
             "per_namespace": blocks,
             "effective_feature_ids": ids,
             "effective_feature_names": names,
             "effective_feature_count": len(names),
-            "feature_selection_source": "config/feature_namespaces.json"}
+            "feature_selection_source": source}
 
 
 DEFAULT_FEATURE_MANIFEST = resolve_feature_manifest(None)

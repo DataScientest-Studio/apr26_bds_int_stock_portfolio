@@ -11,3 +11,6 @@ __pycache__/
 # Background viz server (make on / make off)
 .viz.pid
 .viz.log
+
+# Per-asset optional-feature overrides (written by feature_search_worker.py; regenerable research output)
+config/per_asset_feature_overrides.json
