@@ -10,8 +10,8 @@ the blueprint, mirrored 1:1 by the Procedure Lego MODULES.
 | Layer | Name | Contract |
 |---|---|---|
 | L1 | Alpaca OHLCV Download | Upstream provenance. Raw 1h OHLCV came from Alpaca Market Data API. |
-| L2 | ZIP Archive / Seed Export | Upstream provenance. One archive per ticker was exported to `data/seed/<TICKER>_ohlcv_1h.parquet`. |
-| L3 | DuckDB Build | `build_db.py` loads all seed parquets into `liora.duckdb`, table `bars_1h`. |
+| L2 | Upstream store | The upstream SP500 DuckDB is the frozen input; `bars.load_bars` is the canonical transform. |
+| L3 | DuckDB Build | `build_db.py` copies the full upstream universe into `liora.duckdb`, table `bars_1h`. |
 | L4 | Parquet 1h / 1d / 1w | The notebook reads DuckDB, writes clean 1h OHLCV, then deterministic 1d and 1w roll-ups. |
 | L5 | Time Split | Warmup / Train / OOS split with purge and embargo. OOS stays unread until the verdict step. |
 | L6 | Features + Triple Barrier Y | Candidate bars use 1h momentum for side, Features come from namespaces, Y is symmetric ATR Triple Barrier. |
@@ -116,37 +116,39 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **TESTY AKCEPTACYJNE:** none — provenance block, not an executed layer.
 - **DEPENDS:** upstream: — · downstream: L2 · scope: provenance (not executed).
 
-## Kontrakt replikacji — L2 seed export (one parquet per ticker)
+## Kontrakt replikacji — L2 upstream store (canonical bar acquisition)
 
-- **CEL:** freeze the pipeline input as committed per-ticker raw 1h OHLCV parquets.
+- **CEL:** define the single canonical transform from the upstream store to the pipeline's raw
+  1h OHLCV frame; the store is the frozen input, read verbatim — this repo commits no raw bars.
 - **INPUT:** upstream SP500 DuckDB (`ohlcv_1h` view) at `SP500_DUCKDB`
   (Makefile default `/opt/to_liora_school/qc-raw-ohlcv-data-sp500-alpaca/endproduct/ohlcv_1h_sp500_alpaca.duckdb`).
-- **TRANSFORM:** `ENSURE_SEEDS_PY` (Makefile, run by `make loop`) exports only MISSING tickers:
+- **TRANSFORM:** `bars.load_bars(ticker)`:
   `select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts`,
-  tz-localize `America/New_York` → convert UTC, volume cast float64.
-- **OUTPUT:** `data/seed/<TICKER>_ohlcv_1h.parquet` × <!--na:n_assets_seed-->20<!--/na--> seed
-  tickers (committed; the universe grows by dropping in another seed).
-- **INWARIANTY:** existing seeds are never overwritten; columns are exactly
-  timestamp/open/high/low/close/volume with UTC timestamps; no derived columns.
-- **KNOBS:** `SP500_DUCKDB` (Makefile variable).
-- **TESTY AKCEPTACYJNE:** `make loop` with all seeds present prints "all requested seeds already
-  present" and writes nothing; a missing ticker absent upstream ⇒ `SystemExit`.
-- **DEPENDS:** upstream: L1 · downstream: L3 · scope: provenance + top-up (executed only by `make loop`).
+  tz-localize `America/New_York` → convert UTC, volume cast float64. Nothing is materialized here.
+- **OUTPUT:** an in-memory frame, columns exactly timestamp/open/high/low/close/volume (UTC),
+  consumed by both L3 (`build_db`) and the S.1 search plane through the same call.
+- **INWARIANTY:** the store is opened read-only and never written; the transform is deterministic;
+  no derived columns; the repo holds no committed raw bars (they live upstream).
+- **KNOBS:** `SP500_DUCKDB` (Makefile variable / env override).
+- **TESTY AKCEPTACYJNE:** `bars.load_bars('AAPL')` is deterministic (frame-equal across calls);
+  a ticker absent upstream ⇒ `RuntimeError`.
+- **DEPENDS:** upstream: L1 · downstream: L3 · scope: input boundary (canonical transform).
 
 ## Kontrakt replikacji — L3 build_db.py → liora.duckdb
 
-- **CEL:** one analytical input store for the whole run: every seed in a single DuckDB table.
-- **INPUT:** all `data/seed/*_ohlcv_1h.parquet`.
+- **CEL:** one analytical input store for the whole run: the full upstream universe in a single
+  DuckDB table.
+- **INPUT:** the upstream store via `bars.load_bars` for every upstream ticker.
 - **TRANSFORM:** `build_db.py`: `DROP TABLE IF EXISTS bars_1h` → `CREATE TABLE bars_1h(ticker,
-  timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE)` → plain INSERT per seed with the
+  timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE)` → plain INSERT per ticker with the
   ticker column added. No cleaning, no calendar, no QC here (G.1 asserts on read).
-- **OUTPUT:** `liora.duckdb`, table `bars_1h` (<!--na:duckdb_rows_bars_1h-->364079<!--/na--> rows
-  over <!--na:n_assets_seed-->20<!--/na--> tickers); regenerable, gitignored.
+- **OUTPUT:** `liora.duckdb`, table `bars_1h` (the full upstream universe; the row and ticker
+  counts are printed by `build_db`, not frozen in docs); regenerable, gitignored.
 - **INWARIANTY:** zero value mutation — a verbatim load; drop+recreate means no partial state
-  survives a rebuild.
-- **KNOBS:** `seed_dir=data/seed` · `db=liora.duckdb` (module constants in `build_db.py`).
-- **TESTY AKCEPTACYJNE:** `make build-db` prints per-ticker bar counts and the final
-  "built … from N ticker(s)"; corrupt seed values surface later as a G.1 `RuntimeError`.
+  survives a rebuild; per-ticker frames are identical to what S.1 reads (same `bars.load_bars`).
+- **KNOBS:** `db=liora.duckdb` (module constant in `build_db.py`) · `SP500_DUCKDB` (upstream path).
+- **TESTY AKCEPTACYJNE:** `make build-db` prints "built … N bars over M ticker(s)"; a corrupt
+  upstream value surfaces later as a G.1 `RuntimeError`.
 - **DEPENDS:** upstream: L2 · downstream: L4 · scope: per-universe (one DB, all tickers).
 
 ## Kontrakt replikacji — L4 snapshot → 1h/1d/1w parquets
@@ -181,7 +183,7 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **INWARIANTY:** read-only (never mutates a row); zero cleaning / imputation / row synthesis;
   fail-closed — the notebook run dies, no partial deliverable is published.
 - **KNOBS:** none — predicates are fixed in code.
-- **TESTY AKCEPTACYJNE:** corrupt one seed value (e.g. negative volume) → `make run-asset` raises
+- **TESTY AKCEPTACYJNE:** an out-of-range OHLCV value in the source (e.g. negative volume) → `make run-asset` raises
   `RuntimeError "L4 source QC FAILED"` before any parquet is written.
 - **DEPENDS:** upstream: L4 · downstream: blocks L5+ · scope: per-asset guard (inline in L4's read).
 
@@ -271,8 +273,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   upstream symbol (symbol asc) filtered by eligibility (`min_train_bars` in the frozen Train
   window; too-thin tickers become `ineligible` with a recorded reason, judged once at insert);
   `make search-on` ⇒ explicit `SEARCH_TICKERS` list (legacy, apply-on-satisfied). Bars come
-  seed-first-else-upstream via `seeds.py` (byte-identical transform, parity asserted on every
-  seed write); the superset Output B (<!--na:n_features_total-->56<!--/na--> X) per ticker is
+  from the upstream store via `bars.load_bars` (the same canonical transform `build_db` uses);
+  the superset Output B (<!--na:n_features_total-->56<!--/na--> X) per ticker is
   built once per pass via `derive_output_b`; `search_control.json` carries the agent-tunable knobs.
 - **TRANSFORM:** `feature_search_worker.py` runs ROUNDS forever over the non-parked,
   non-ineligible tickers. Per ticker: TRIAGE first (stage-1 grid only — 1h-only and
@@ -296,9 +298,9 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **OUTPUT:** CONVERGED(t) := deep passes ≥ `min_deep_rounds` AND (the last completed pass
   adopted nothing OR ended on a dead streak ≥ `no_improve_N`) — evaluated only after a
   COMPLETED pass, purely from db state. Converged tickers are applied in ONE round-end BATCH,
-  three-phase and race-free: (1) SERIAL seed export + `apply_override` (per-ticker seed parquet
-  + the single overrides JSON read-modify-write — never concurrent); (2) SERIAL ONE `build_db`
-  rebuild (L3 drop+recreate, once per round), strictly before and never during any run_asset;
+  three-phase and race-free: (1) SERIAL `apply_override` (the single overrides JSON
+  read-modify-write — never concurrent); (2) SERIAL ensure `liora.duckdb` exists (built once from
+  the full upstream universe), strictly before and never during any run_asset;
   (3) **PARALLEL `run_asset.py` at `APPLY_JOBS`** (each opens `liora.duckdb` read-only + the
   overrides, writes its OWN `Assets/<T>/` + one WAL-safe `oos_metrics` UPSERT; the coordinator
   is the sole `search_state.db` writer). Each run_asset = the asset's SINGLE OOS read → status
@@ -332,7 +334,7 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   (not control-file): `SEARCH_JOBS` (search worker processes, default cpu_count-1) ·
   `APPLY_JOBS` (parallel run_asset in the apply phase, default = SEARCH_JOBS).
 - **TESTY AKCEPTACYJNE:** `feature_search_worker.py --selfcheck` (provider determinism,
-  eligibility, seed↔upstream parity, 4 convergence cases, batch success/failure paths);
+  eligibility, bars-transform determinism, 4 convergence cases, batch success/failure paths);
   kill -9 mid-pass resumes without re-evaluating any stored subset key; an override
   containing a 1h id raises RuntimeError; `applied` survives later rounds with no second
   `run_asset` (pending_better only).

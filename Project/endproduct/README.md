@@ -26,10 +26,10 @@ engineering / ML), not a frontend one.
 
 ## Data Provenance
 
-Raw 1h OHLCV was downloaded upstream from Alpaca, archived one ticker per ZIP,
-and exported once to `Project/Structure/data/seed/*_ohlcv_1h.parquet`.
-`build_db.py` loads those seed parquets into `liora.duckdb`. The repository does
-not call the data API live.
+Raw 1h OHLCV was downloaded upstream from Alpaca into the source repo's DuckDB store.
+This project reads that store verbatim through the canonical `bars.load_bars` transform
+(`bars.py`); `build_db.py` copies the full universe into `liora.duckdb`. The repository
+holds no committed raw bars and never calls the data API live.
 
 ## Reproducibility
 

@@ -42,7 +42,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pipeline as P  # noqa: E402
-import seeds  # noqa: E402
+import bars  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 # SEARCH_STATE_DB / SEARCH_OVERRIDES_PATH: test-isolation overrides (integration smokes
@@ -102,7 +102,7 @@ def resolve_mode():
         return "list", t, os.environ.get("SEARCH_APPLY_POLICY") or "satisfied"
     if u.lower() == "all":
         import duckdb
-        con = duckdb.connect(seeds.upstream_path(), read_only=True)
+        con = duckdb.connect(bars.upstream_path(), read_only=True)
         try:
             universe = [r[0] for r in con.execute(
                 "select distinct symbol from ohlcv_1h order by symbol").fetchall()]
@@ -331,7 +331,7 @@ def eligibility_map(tickers, ctl=None):
     import duckdb
     thr = int((ctl or CONTROL_DEFAULTS)["min_train_bars"])
     sp = P.PIPELINE_PARAMETERS["splits"]
-    con = duckdb.connect(seeds.upstream_path(), read_only=True)
+    con = duckdb.connect(bars.upstream_path(), read_only=True)
     try:
         rows = con.execute(
             "select symbol, count(*) filter (where ts >= ? and ts <= ?) as train_bars, "
@@ -344,7 +344,7 @@ def eligibility_map(tickers, ctl=None):
     out = {}
     for t in tickers:
         if t not in stats:
-            out[t] = (False, f"not found upstream ({seeds.upstream_path()})")
+            out[t] = (False, f"not found upstream ({bars.upstream_path()})")
             continue
         tb, first_ts, n = stats[t]
         if tb < thr:
@@ -409,11 +409,11 @@ def cv_aucpr(df_b, bounds, names, seed):
 
 class TickerContext:
     """Superset Output-B for one ticker, built once and cached for the round.
-    Bars come seed-first-else-upstream (seeds.load_bars) — identical frames by the
-    seeds.py parity contract, so search results never depend on the source."""
+    Bars come from the upstream store via the canonical bars.load_bars transform —
+    the same one build_db uses, so search and apply see identical frames."""
 
     def __init__(self, ticker):
-        df = seeds.load_bars(ticker)
+        df = bars.load_bars(ticker)
         manifest = P.resolve_feature_manifest(ticker, overrides={})   # superset: all 56
         rec = P.derive_output_b(df, ticker, manifest)
         got = set(rec["manifest"]["effective_feature_ids"])
@@ -639,6 +639,7 @@ def apply_override(t, ids, cv, stage):
 
 
 def run_asset(t):
+    ensure_liora_db()                      # run_asset.py reads liora.duckdb; build it once if absent
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     heartbeat(ticker=t, phase="run_asset", grace_s=10800)
     logf = LOG_DIR / f"run_asset_{t}.log"
@@ -712,37 +713,34 @@ def _run_apply_round(con, jobs=1):
     """Round-end apply plane (policy=converged): every ticker that converged this round is
     applied in ONE batch. THREE phases with a strict ordering that makes the shared-state
     mutations race-free so the run_asset step can later parallelize:
-      (1) SERIAL: seed export + apply_override (both mutate SHARED files — a per-ticker seed
-          parquet and the single overrides JSON via read-modify-write — so never concurrent);
-      (2) SERIAL: ONE build_db rebuild (drop+recreate liora.duckdb), strictly BEFORE and never
-          during any run_asset (which opens liora.duckdb read-only);
+      (1) SERIAL: apply_override (read-modify-write of the single overrides JSON — never concurrent);
+      (2) SERIAL: ensure liora.duckdb exists (built once from the full upstream universe), strictly
+          BEFORE and never during any run_asset (which opens liora.duckdb read-only);
       (3) run_asset per ticker (each = the asset's SINGLE OOS read) + coordinator _finalize_apply
           (the sole search_state.db writer here). jobs>1 parallelizes phase 3 (see the
           ThreadPool path); jobs<=1 runs it sequentially. Crash-safe: 'satisfied' rows persist,
-          seed export + override write + rebuild are idempotent — next round's batch retries
+          override write + db build are idempotent — next round's batch retries
           (run_asset attempts stay capped at 3)."""
     batch = con.execute("SELECT * FROM assets WHERE status='satisfied' ORDER BY ticker").fetchall()
     if not batch:
         return
     log(f"batch apply: {len(batch)} converged ticker(s)")
     heartbeat(phase="batch_apply", n=len(batch), grace_s=3600)
-    # (1) SERIAL: export seed + write override (shared-state writes, must not race)
+    # (1) SERIAL: write override (shared-state RMW of the single overrides JSON, must not race)
     ok = []
     for a in batch:
         try:
-            seeds.export_seed(a["ticker"])
             apply_override(a["ticker"], key_ids(a["best_subset_key"]), a["best_cv"], "auto_converged")
             ok.append(a)
         except Exception as e:
-            set_asset(con, a["ticker"], status="parked", error=f"seed/override: {e!r}"[:500])
-            alert(f"{a['ticker']}: PARKED — seed/override failed ({e!r})")
+            set_asset(con, a["ticker"], status="parked", error=f"override: {e!r}"[:500])
+            alert(f"{a['ticker']}: PARKED — override failed ({e!r})")
     if not ok:
         return
-    # (2) SERIAL: one rebuild, strictly before any run_asset
+    # (2) SERIAL: ensure liora.duckdb (full upstream universe), strictly before any run_asset
     heartbeat(phase="build_db", grace_s=1800)
     try:
-        import build_db
-        build_db.build_db()
+        ensure_liora_db()
     except Exception as e:
         alert(f"batch build_db failed ({e!r}) — batch deferred to next round")
         return
@@ -814,30 +812,25 @@ def round_order(con, universe, ctl, mode="list"):
     return prio + triage + deep + applied
 
 
-def ensure_db_inputs(universe, mode="list"):
-    """list mode: seeds precondition + rebuild liora.duckdb if a ticker is missing (as before).
-    universe mode: only assert the upstream store is readable — bars come upstream-direct;
-    seeds/liora.duckdb materialize at apply time (the batch-apply step owns them)."""
-    if mode == "universe":
-        import duckdb
-        con = duckdb.connect(seeds.upstream_path(), read_only=True)
-        con.execute("select 1 from ohlcv_1h limit 1").fetchone()
-        con.close()
+def ensure_liora_db():
+    """Build liora.duckdb from the full upstream universe if it is missing. Idempotent — a
+    present DB already holds every upstream ticker (build_db copies the whole store), so
+    run_asset reads any applied ticker without a per-round rebuild."""
+    if (ROOT / "liora.duckdb").exists():
         return
-    missing_seed = [t for t in universe if not seeds.seed_path(t).exists()]
-    if missing_seed:
-        raise SystemExit(f"missing seeds {missing_seed} — run `make ensure-seeds` first")
-    need_build = not (ROOT / "liora.duckdb").exists()
-    if not need_build:
-        import duckdb
-        con = duckdb.connect(str(ROOT / "liora.duckdb"), read_only=True)
-        have = {r[0] for r in con.execute("select distinct ticker from bars_1h").fetchall()}
-        con.close()
-        need_build = any(t not in have for t in universe)
-    if need_build:
-        log("rebuilding liora.duckdb (new seeds present)")
-        import build_db
-        build_db.build_db()
+    log("building liora.duckdb from the upstream store")
+    import build_db
+    build_db.build_db()
+
+
+def ensure_db_inputs(universe, mode="list"):
+    """Both modes read bars upstream-direct (bars.load_bars) during SEARCH; liora.duckdb is
+    needed only at APPLY (run_asset reads it) and is built there. Here we just assert the
+    upstream store is readable, so a misconfigured SP500_DUCKDB fails fast at startup."""
+    import duckdb
+    con = duckdb.connect(bars.upstream_path(), read_only=True)
+    con.execute("select 1 from ohlcv_1h limit 1").fetchone()
+    con.close()
 
 
 # ------------------------------------------------------ parallel search round ---
@@ -1131,11 +1124,12 @@ def selfcheck():
     assert e["AAPL"][0]
     print("2. eligibility: Q ->", e["Q"][1][:50], "| AAPL eligible")
 
-    # 3. seed <-> upstream parity
+    # 3. canonical bars transform: deterministic + column contract
     import pandas as pd
-    pd.testing.assert_frame_equal(pd.read_parquet(seeds.seed_path("AAPL")),
-                                  seeds.load_bars_from_upstream("AAPL"))
-    print("3. AAPL seed == upstream transform (frame-equal)")
+    b1 = bars.load_bars("AAPL")
+    pd.testing.assert_frame_equal(b1, bars.load_bars("AAPL"))
+    assert list(b1.columns) == ["timestamp", "open", "high", "low", "close", "volume"]
+    print(f"3. bars.load_bars('AAPL') deterministic ({len(b1)} bars, UTC)")
 
     # 4. converged predicate on fabricated states
     con = db_connect()
@@ -1157,34 +1151,28 @@ def selfcheck():
         assert got == expect, f"case {i}: expected {expect}, got {got}"
     print("4. converged predicate: 4/4 fabricated cases")
 
-    # 5. batch path with a stubbed run_asset
-    global run_asset
-    real_run_asset, real_export = run_asset, seeds.export_seed
+    # 5. batch path with a stubbed run_asset + no real db build (ensure_liora_db no-op)
+    global run_asset, ensure_liora_db
+    real_run_asset, real_ensure = run_asset, ensure_liora_db
     try:
-        seeds.export_seed = lambda t: None
         run_asset = lambda t: 0
+        ensure_liora_db = lambda: None
         set_asset(con, "AAPL", status="satisfied", best_subset_key="101", best_cv=0.6,
                   run_asset_attempts=0)
-        import build_db as _bdb
-        real_build = _bdb.build_db
-        _bdb.build_db = lambda: None
-        try:
-            _run_apply_round(con)                                  # sequential (jobs=1)
-            a = asset_row(con, "AAPL")
-            assert a["status"] == "applied" and a["applied_subset_key"] == "101"
-            # parallel apply branch (ThreadPool, jobs=2) over 2 satisfied tickers
-            set_asset(con, "AAPL", status="satisfied", best_subset_key="101", best_cv=0.6)
-            con.execute("INSERT OR IGNORE INTO assets(ticker,status,best_subset_key,best_cv,updated_at) "
-                        "VALUES('MSFT','satisfied','201',0.6,?)", (utcnow(),))
-            con.execute("UPDATE assets SET status='satisfied', best_subset_key='201', best_cv=0.6 "
-                        "WHERE ticker='MSFT'"); con.commit()
-            os.environ["APPLY_JOBS"] = "2"
-            _run_apply_round(con, jobs=2)
-            os.environ.pop("APPLY_JOBS", None)
-            assert asset_row(con, "AAPL")["status"] == "applied"
-            assert asset_row(con, "MSFT")["status"] == "applied"
-        finally:
-            _bdb.build_db = real_build
+        _run_apply_round(con)                                  # sequential (jobs=1)
+        a = asset_row(con, "AAPL")
+        assert a["status"] == "applied" and a["applied_subset_key"] == "101"
+        # parallel apply branch (ThreadPool, jobs=2) over 2 satisfied tickers
+        set_asset(con, "AAPL", status="satisfied", best_subset_key="101", best_cv=0.6)
+        con.execute("INSERT OR IGNORE INTO assets(ticker,status,best_subset_key,best_cv,updated_at) "
+                    "VALUES('MSFT','satisfied','201',0.6,?)", (utcnow(),))
+        con.execute("UPDATE assets SET status='satisfied', best_subset_key='201', best_cv=0.6 "
+                    "WHERE ticker='MSFT'"); con.commit()
+        os.environ["APPLY_JOBS"] = "2"
+        _run_apply_round(con, jobs=2)
+        os.environ.pop("APPLY_JOBS", None)
+        assert asset_row(con, "AAPL")["status"] == "applied"
+        assert asset_row(con, "MSFT")["status"] == "applied"
         run_asset = lambda t: 1
         for _ in range(3):
             set_asset(con, "AAPL", status="satisfied")
@@ -1193,7 +1181,7 @@ def selfcheck():
         assert asset_row(con, "AAPL")["status"] == "parked"
         print("5. batch apply: sequential + parallel(ThreadPool) -> applied; 3 failures -> parked")
     finally:
-        run_asset, seeds.export_seed = real_run_asset, real_export
+        run_asset, ensure_liora_db = real_run_asset, real_ensure
 
     # 6. jobs resolution: universe honours SEARCH_JOBS; list mode is clamped sequential
     os.environ["SEARCH_JOBS"] = "2"

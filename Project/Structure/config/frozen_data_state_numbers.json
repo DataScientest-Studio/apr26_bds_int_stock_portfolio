@@ -1,9 +1,0 @@
-{
-  "_meta": {
-    "purpose": "The ONLY hand-edited home for observed data-state numbers. Every other appearance is a generated region: <!--na:KEY-->VALUE<!--/na--> markers in authored Markdown and {{KEY}} tokens in Plan/*.html.tmpl. Edit here, then `make build`; `make check` fails on drift.",
-    "rebuild": "n_assets_seed = count of GIT-TRACKED data/seed/*_ohlcv_1h.parquet (the gate verifies this live; seeds exported at runtime by the S.1 loop are pending-batch research artifacts and stay untracked until committed WITH an n_assets_seed + duckdb_rows_bars_1h bump in the same commit); duckdb_rows_bars_1h = `select count(*) from bars_1h` after `make build-db` over the committed seed set.",
-    "not_here": "Feature counts come live from Features/*/feature_registry.json (implemented==true) and config values live from config/*.json \u2014 the gate derives them at render time so they can never drift."
-  },
-  "n_assets_seed": 20,
-  "duckdb_rows_bars_1h": 364079
-}

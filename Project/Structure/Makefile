@@ -1,14 +1,13 @@
 # Minimal per-asset pipeline. One operator surface.
 #   make deps                    install requirements into ../.venv
-#   make build-db                data/seed/*_ohlcv_1h.parquet -> liora.duckdb
+#   make build-db                upstream SP500 DuckDB -> liora.duckdb (full universe, verbatim copy)
 #   make run-asset TICKER=AAPL   run the notebook -> Assets/AAPL/ (7 files)
 #   make feature-search          print the active simple feature manifest
-#   make loop "AAPL TSLA XOM"    ensure seeds -> build-db -> run each ticker -> dashboard
+#   make loop "AAPL TSLA XOM"    build-db (if missing) -> run each ticker -> dashboard
 #   make dashboard               refresh Dashboard feed: oos_metrics.db -> Plan/data/dashboard.json
 #   make build                   regenerate Plan/*.html from *.tmpl + Markdown markers (single-home-per-fact)
 #   make check                   fail-closed gate: number drift / stray literals / lego<->SOT crossmatch
-#   make ensure-seeds            export any missing SEARCH_TICKERS seeds from SP500_DUCKDB
-#   make feature-search-loop     PRIMARY loop: full-universe parallel search (503 tickers, SEARCH_JOBS workers, triage -> deepen, apply-at-convergence)
+#   make feature-search-loop     PRIMARY loop: full-universe parallel search (SEARCH_JOBS workers, triage -> deepen, apply-at-convergence)
 #   make search-on SEARCH_TICKERS="AAPL XOM"   legacy sequential list mode for testing (requires an explicit list, apply-on-satisfied)
 #   make search-install-cron     install @reboot + */15 cron so the loop always runs on the server (survives reboot)
 #   make search-uninstall-cron   remove the cron entries
@@ -31,7 +30,7 @@ PORT ?= 8000
 APP_PORT ?= 8501
 PID := .viz.pid
 LOG := .viz.log
-# Upstream store path lives in seeds.py (single home); set SP500_DUCKDB only to override it.
+# Upstream store path lives in bars.py (single home); set SP500_DUCKDB only to override it.
 SP500_DUCKDB ?=
 
 LOOP_TICKERS := $(strip $(if $(TICKERS),$(TICKERS),$(filter-out loop,$(MAKECMDGOALS))))
@@ -54,7 +53,7 @@ SEARCH_LOG_DIR := logs/search
 SEARCH_SUP_PID := .search_supervisor.pid
 
 .PHONY: deps build-db run-asset feature-search loop dashboard build check serve app on off restart logs clean help \
-        ensure-seeds search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on \
+        search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on \
         search-install-cron search-uninstall-cron
 
 help:
@@ -96,16 +95,12 @@ feature-search:
 
 loop:
 	@echo "loop tickers: $(LOOP_TICKERS)"
-	@LOOP_TICKERS="$(LOOP_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) seeds.py
-	$(PY) build_db.py
+	@SP500_DUCKDB="$(SP500_DUCKDB)" test -f liora.duckdb || SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) build_db.py
 	@for T in $(LOOP_TICKERS); do echo ">>> run-asset $$T"; $(PY) run_asset.py TICKER=$$T || exit 1; done
 	python3 build_dashboard.py
 
 dashboard:
 	python3 build_dashboard.py
-
-ensure-seeds:
-	@LOOP_TICKERS="$(SEARCH_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) seeds.py
 
 # Shared launcher tail: start the outer supervisor once (PID file), print monitor hints.
 # $(SEARCH_ENV) carries the mode env into both search_on.sh and the supervisor's relaunches.
@@ -123,7 +118,7 @@ define SEARCH_SUP_START
 endef
 
 search-on: SEARCH_ENV = SEARCH_TICKERS="$(SEARCH_TICKERS)"
-search-on: ensure-seeds
+search-on:
 	@test -n "$(SEARCH_TICKERS)" || (echo "usage: make search-on SEARCH_TICKERS=\"AAPL XOM\"  (no default; for the full run use make feature-search-loop)" && exit 1)
 	@$(SEARCH_ENV) bash scripts/search_on.sh
 	$(SEARCH_SUP_START)

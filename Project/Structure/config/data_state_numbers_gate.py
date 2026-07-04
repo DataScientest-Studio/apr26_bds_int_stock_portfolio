@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Single-source generator + gate for the pipeline's frozen data-state numbers.
+"""Single-source generator + gate for the pipeline's derived documentation numbers.
 
-The ONLY hand-edited home for data-state numbers is ./frozen_data_state_numbers.json (same
-directory). Every other place those numbers appear is a *generated region*:
+The numbers in the docs are DERIVED, never hand-typed: feature counts come live from
+Features/*/feature_registry.json (implemented==true) and config values come live from
+config/*.json. Every place they appear is a *generated region*:
   - Markdown (root README.md + Project/endproduct/*.md): inline marker regions
         <!--na:KEY-->VALUE<!--/na-->   (HTML comments are invisible when rendered)
   - Plan/procedure_lego.html: rendered from Plan/procedure_lego.html.tmpl, where each
-        literal is a {{KEY}} token (data-state + live feature counts + live config values).
+        literal is a {{KEY}} token (live feature counts + live config values).
   - Plan/configurations.html: rendered from Plan/configurations.html.tmpl — every config value
         (pipeline_parameters.json + xgboost_optuna_search_space.json + feature_namespaces.json
         registries) as a {{KEY}} token, so the page can never drift from config/.
+
+The raw bars are the full upstream S&P 500 universe copied verbatim into liora.duckdb
+(build_db.py) — not a committed set, so no bar/ticker count is frozen here.
 
 Deliberately NOT scanned: anything under Assets/ (runtime artifacts).
 
@@ -21,10 +25,9 @@ Commands
   build   re-render every marker value from the registry and render each Plan/*.html.tmpl
           -> Plan/*.html. Idempotent (writes only on change).
   check   audit gate (no writes, exit!=0 on drift). Invariants:
-            (1) registry consistency: n_assets_seed == count of data/seed/*_ohlcv_1h.parquet;
-            (2) every marker region and generated HTML equals a fresh render from the registry;
-            (3) no stray data-state literal exists outside a marker / {{token}};
-            (4) Procedure Lego <-> SOT crossmatch: the MODULES ids and depends in the .tmpl [J1]
+            (1) every marker region and generated HTML equals a fresh render from the registry;
+            (2) no stray data-state literal exists outside a marker / {{token}};
+            (3) Procedure Lego <-> SOT crossmatch: the MODULES ids and depends in the .tmpl [J1]
                 match the "Kontrakt replikacji" blocks in Project/endproduct/Layers_Short_SOT.md.
 
 Run from anywhere:  python3 config/data_state_numbers_gate.py {init|build|check}
@@ -38,7 +41,6 @@ ROOT = Path(__file__).resolve().parent.parent           # .../Project/Structure
 REPO = ROOT.parent.parent                                # repo root
 PLAN = REPO / "Plan"
 
-FROZEN_DATA_STATE_NUMBERS = ROOT / "config" / "frozen_data_state_numbers.json"
 PIPELINE_PARAMETERS_JSON = ROOT / "config" / "pipeline_parameters.json"
 XGBOOST_OPTUNA_SEARCH_SPACE_JSON = ROOT / "config" / "xgboost_optuna_search_space.json"
 FEATURE_NAMESPACES_JSON = ROOT / "config" / "feature_namespaces.json"
@@ -53,10 +55,8 @@ CONFIG_TMPL = PLAN / "configurations.html.tmpl"
 # Kept deliberately narrow — only unambiguous phrasings; everything else is structural
 # (markers / tokens written by hand or by init).
 RULES = [
-    (re.compile(r'\b182065\b'), 'duckdb_rows_bars_1h'),
     (re.compile(r'\b56\b(?=(-feature|\s+(X\b|features?\b|numeric features\b|namespaced features\b|effective)))'),
      'n_features_total'),
-    (re.compile(r'\b10\b(?=\s+(seed\s+)?(tickers?|assets?)\b)'), 'n_assets_seed'),
 ]
 
 MARKER_RE = re.compile(r'<!--na:(\w+)-->(.*?)<!--/na-->')
@@ -75,11 +75,6 @@ def strict_json_loads(text):
     return json.loads(text, object_pairs_hook=no_dupes)
 
 
-def load_data_state_registry():
-    raw = strict_json_loads(FROZEN_DATA_STATE_NUMBERS.read_text(encoding='utf-8'))
-    return {k: v for k, v in raw.items() if not k.startswith('_')}
-
-
 def feature_counts():
     """Live implemented-feature counts from the machine registries (never hand-declared)."""
     ns_cfg = strict_json_loads(FEATURE_NAMESPACES_JSON.read_text(encoding='utf-8'))
@@ -94,10 +89,8 @@ def feature_counts():
 
 
 def marker_context():
-    """Render context for the Markdown `na:` markers: data-state + live feature counts."""
-    ctx = dict(load_data_state_registry())
-    ctx.update(feature_counts())
-    return ctx
+    """Render context for the Markdown `na:` markers: live feature counts (implemented==true)."""
+    return feature_counts()
 
 
 def _fmt(v):
@@ -310,30 +303,8 @@ def strip_markers_line(line):
     return MARKER_RE.sub(lambda m: '', line)
 
 
-def tracked_seed_count():
-    """n_assets_seed describes the COMMITTED data state, so count git-tracked seeds, not
-    on-disk files: the continuous feature-search loop (S.1) legitimately exports untracked
-    seeds at apply time; committing such a batch requires bumping n_assets_seed (+
-    duckdb_rows_bars_1h) in the same commit — which this gate then enforces. Falls back to
-    the on-disk glob when git is unavailable."""
-    import subprocess
-    try:
-        out = subprocess.run(["git", "ls-files", "data/seed/*_ohlcv_1h.parquet"],
-                             cwd=str(ROOT), capture_output=True, text=True, timeout=30)
-        if out.returncode == 0:
-            return len([l for l in out.stdout.splitlines() if l.strip()])
-    except Exception:
-        pass
-    return len(list((ROOT / 'data' / 'seed').glob('*_ohlcv_1h.parquet')))
-
-
 def cmd_check(marker_ctx, page_ctx):
     errors = []
-
-    n_seeds = tracked_seed_count()
-    if n_seeds != marker_ctx['n_assets_seed']:
-        errors.append('registry: n_assets_seed={} but git tracks {} seed parquet(s)'
-                      .format(marker_ctx['n_assets_seed'], n_seeds))
 
     for p in md_files():
         rel = p.relative_to(REPO)
@@ -357,7 +328,7 @@ def cmd_check(marker_ctx, page_ctx):
         for e in errors:
             print('  -', e)
         return 1
-    print('CHECK OK: registry is the single source; all regions in sync; lego<->SOT crossmatch holds.')
+    print('CHECK OK: derived numbers in sync; no stray literals; lego<->SOT crossmatch holds.')
     return 0
 
 

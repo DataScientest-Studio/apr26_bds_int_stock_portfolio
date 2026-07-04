@@ -80,8 +80,8 @@ b) **Append to `Project/Structure/logs/search/agent_journal.md`** — timestampe
 
 ## 3. Forbidden — never do any of these
 
-- Edit `pipeline.py`, `feature_search_worker.py`, `seeds.py`, the Makefile, anything
-  under `scripts/`, any git-tracked file under `config/`, the SOT, or the Plan/ pages.
+- Edit `pipeline.py`, `feature_search_worker.py`, `bars.py`, `build_db.py`, the Makefile,
+  anything under `scripts/`, any git-tracked file under `config/`, the SOT, or the Plan/ pages.
 - Change `apply_policy` or `min_train_bars` in the control file — both are env/insert-time
   owned; the worker ignores the drift and alerts (you may READ them).
 - Touch `config/per_asset_feature_overrides.json` (the worker owns it).

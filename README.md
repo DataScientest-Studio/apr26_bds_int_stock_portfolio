@@ -42,8 +42,8 @@ replicating the modules, not the frontend.
   - `Structure/` — the operational root: `app.py` (the Tier-1 client app),
     `pipeline.py` (layers L1–L9), `notebook_template.ipynb` (the per-asset runner),
     `build_db.py`, `run_asset.py`, `build_dashboard.py`, `asset_writers.py`,
-    `reports/` (e.g. `compare_xgb_vs_rf.py`), `config/`, `Features/`, `data/seed/`,
-    `Assets/` (empty at start), `Makefile`, `requirements.txt`.
+    `reports/` (e.g. `compare_xgb_vs_rf.py`), `config/`, `Features/`, `bars.py`
+    (canonical upstream read), `Assets/` (empty at start), `Makefile`, `requirements.txt`.
   - `endproduct/` — the Tier-3 source-of-truth mirror (`Layers_Short_SOT.md`,
     `README.md`) plus a symlink to `Assets/`.
 
@@ -52,8 +52,8 @@ replicating the modules, not the frontend.
 | Layer | Name | What it does |
 |---|---|---|
 | L1 | Alpaca OHLCV download | Upstream provenance — raw 1h OHLCV came from the Alpaca Market Data API. |
-| L2 | Seed export | Upstream provenance — one archive per ticker exported to `data/seed/<TICKER>_ohlcv_1h.parquet`. |
-| L3 | DuckDB build | `build_db.py` loads the seed parquets into `liora.duckdb` (table `bars_1h`). |
+| L2 | Upstream store | The upstream SP500 DuckDB is the frozen input; `bars.load_bars` is the canonical read transform (this repo commits no raw bars). |
+| L3 | DuckDB build | `build_db.py` copies the full upstream universe into `liora.duckdb` (table `bars_1h`). |
 | L4 | Parquet 1h / 1d / 1w | The notebook reads DuckDB, writes clean 1h OHLCV, then deterministic 1d and 1w roll-ups. |
 | L5 | Time split | Warmup / Train / OOS split with purge and embargo; OOS stays unread until the verdict step. |
 | L6 | Features + Triple-Barrier Y | Candidate side = `sign(log_return_5)`; <!--na:n_features_total-->56<!--/na--> namespaced features; label = symmetric ATR Triple Barrier (`H=24`). |
@@ -78,17 +78,20 @@ Features are namespaced and concatenated in a deterministic order: `1h` (01–99
 ## Document cross-match & dependencies
 
 ```
-config/*.json + Features/*/feature_registry.json + config/frozen_data_state_numbers.json
+config/*.json + Features/*/feature_registry.json   (feature counts + config values, derived live)
   │  make build (render) · make check (fail-closed audit)
   ├─> Plan/configurations.html            ({{...}} tokens — Tier 2)
   ├─> Plan/procedure_lego.html            ({{...}} tokens — Tier 3)
   └─> README.md + Project/endproduct/*.md (inline na:KEY marker regions)
 
+upstream SP500 DuckDB ── bars.load_bars (canonical transform) ──> build_db.py ─> liora.duckdb
+  (the full universe, read verbatim; no raw bars committed to this repo)
+
 Project/endproduct/Layers_Short_SOT.md — "Kontrakt replikacji" blocks (the Tier-3 source)
   └─ derive 1:1, gate-crossmatched ─> procedure_lego.html [J1] MODULES
                                       (rationale lives only in the [J1b] PL PROMPTS)
 
-make run-asset / make loop
+make run-asset / make loop  (reads liora.duckdb)
   ├─> Assets/<T>/ — the 7-file deliverable
   └─> oos_metrics.db ── make dashboard ──> Plan/data/dashboard.json ──> dashboard.html (Tier 2)
                     └── read-only ───────> app.py — ML Basket Simulator (Tier 1, make app)
@@ -104,7 +107,7 @@ crossmatch.
 ```bash
 cd Project/Structure
 make deps                      # install requirements.txt into ../.venv
-make build-db                  # data/seed/*.parquet -> liora.duckdb
+make build-db                  # upstream SP500 DuckDB -> liora.duckdb (full universe)
 make run-asset TICKER=AAPL     # run the notebook -> Assets/AAPL/ (7 files)
 make on                        # static visualization (background): http://localhost:8000/index.html; make off stops
 make app                       # ML Basket Simulator demo (Streamlit): http://localhost:8501
@@ -118,7 +121,7 @@ straight from `oos_metrics.db` (nothing is retrained at runtime).
 Run a whole universe in one go, then refresh the dashboard feed:
 
 ```bash
-make loop "AAPL TSLA XOM"      # ensure seeds -> build-db -> run each ticker -> dashboard
+make loop "AAPL TSLA XOM"      # build-db (if missing) -> run each ticker -> dashboard
 make dashboard                 # oos_metrics.db -> Plan/data/dashboard.json
 make build                     # regenerate Plan/*.html from *.tmpl + Markdown markers
 make check                     # fail-closed gate: drift / stray literals / lego<->SOT crossmatch
@@ -138,7 +141,8 @@ make search-off                # graceful stop
 The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in
 `reports/compare_xgb_vs_rf.py`. Run `make help` for the full operator surface.
 
-You extend the universe by dropping another `data/seed/<TICKER>_ohlcv_1h.parquet` and
-running `make build-db`. `Assets/` starts empty — you decide how many assets to create. The
+The universe is the full upstream SP500 store: `make build-db` copies every ticker into
+`liora.duckdb`, and you materialize as many `Assets/` as you want with `make run-asset` /
+`make loop`. `Assets/` starts empty — you decide how many assets to create. The
 pipeline is deterministic (`seed_everything`, `XGBOOST_N_JOBS=1`), so OOS results are
 reproducible.

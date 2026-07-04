@@ -19,7 +19,7 @@
 <body>
 <main>
   <h1>Liora minimal per-asset ML pipeline</h1>
-  <p>Tier 2 — Backend explanation: these pages explain the backend behind the ML Basket Simulator. One per-asset pipeline: Alpaca OHLCV provenance, ZIP seed export, DuckDB, 1h/1d/1w parquets, split, feature namespaces, Triple Barrier labels, Optuna, XGB artifact, and OOS endproduct.</p>
+  <p>Tier 2 — Backend explanation: these pages explain the backend behind the ML Basket Simulator. One per-asset pipeline: Alpaca OHLCV provenance, upstream store, DuckDB, 1h/1d/1w parquets, split, feature namespaces, Triple Barrier labels, Optuna, XGB artifact, and OOS endproduct.</p>
   <nav>
     <a href="procedure_lego.html">Procedure Lego</a>
     <a href="configurations.html">Configurations</a>
@@ -43,7 +43,7 @@
     not a frontend one).</p>
   </section>
   <section class="grid">
-    <div class="card"><h2>L1-L4 Data</h2><p>Upstream Alpaca data is archived and exported to seed parquets. DuckDB becomes the shared input, then each asset writes clean 1h plus 1d/1w roll-ups.</p></div>
+    <div class="card"><h2>L1-L4 Data</h2><p>Upstream Alpaca data lives in the source store, read verbatim by <code>bars.load_bars</code>. DuckDB becomes the shared input, then each asset writes clean 1h plus 1d/1w roll-ups.</p></div>
     <div class="card"><h2>L5-L6 Model Rows</h2><p>Train/OOS split is index-based. Candidate bars use 1h momentum for side. Features are resolved by namespace and Y is an ATR Triple Barrier label.</p></div>
     <div class="card"><h2>L7-L9 Output</h2><p>Optuna tunes XGB, Kelly is calibrated on Train out-of-fold growth, the model is embedded as base64, and every asset keeps the seven-file contract.</p></div>
   </section>

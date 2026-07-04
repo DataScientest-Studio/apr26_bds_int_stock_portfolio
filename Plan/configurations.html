@@ -30,9 +30,8 @@
   <p class="src">Tier 2 — Backend explanation: every knob behind the pipeline and the
   client app's OOS numbers, rendered live from config. Single sources: <code>config/pipeline_parameters.json</code> ·
   <code>config/xgboost_optuna_search_space.json</code> ·
-  <code>config/feature_namespaces.json</code> + the four feature registries ·
-  <code>config/frozen_data_state_numbers.json</code>. Rendered by <code>make build</code>,
-  guarded by <code>make check</code>.</p>
+  <code>config/feature_namespaces.json</code> + the four feature registries. Rendered by
+  <code>make build</code>, guarded by <code>make check</code>.</p>
 
   <h2>Label &amp; candidates (L6)</h2>
   <table>
@@ -96,8 +95,8 @@
   <table>
     <tr><th>Fact</th><th>Value</th></tr>
     <tr><td>Seeds</td><td><code>RANDOM_SEED=42</code>, <code>XGBOOST_N_JOBS=1</code>, pinned <code>requirements.txt</code></td></tr>
-    <tr><td>Universe</td><td>20 seed tickers in <code>data/seed/</code></td></tr>
-    <tr><td>DuckDB</td><td><code>bars_1h</code>: 364079 rows (regenerable, gitignored)</td></tr>
+    <tr><td>Universe</td><td>the full upstream S&amp;P 500 store, read verbatim (no raw bars committed)</td></tr>
+    <tr><td>DuckDB</td><td><code>bars_1h</code>: the full universe copied from upstream via <code>build_db.py</code> (regenerable, gitignored)</td></tr>
     <tr><td>Bar clock</td><td><code>interval_open_utc</code>, timeframe <code>1h</code></td></tr>
   </table>
 </main>
