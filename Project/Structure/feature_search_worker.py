@@ -959,6 +959,11 @@ def run_loop():
         rnd_done = int(con.execute("SELECT value FROM meta WHERE key='rounds_completed'").fetchone()[0])
         rnd = rnd_done + 1
         log(f"=== round {rnd}: {len(order)} tickers ===")
+        # Drain any converged backlog FIRST (idempotent — acts only on status='satisfied'), so
+        # applied/deliverables start flowing immediately instead of waiting for this whole round's
+        # search sweep to finish; then run the search phase, then apply what converged this round.
+        if policy == "converged":
+            _run_apply_round(con, jobs)
         total_new = _run_search_round(con, order, rnd, policy, seed, jobs)
         if stop_requested(read_control()):
             return 3
