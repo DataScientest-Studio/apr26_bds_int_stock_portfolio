@@ -813,13 +813,28 @@ def round_order(con, universe, ctl, mode="list"):
 
 
 def ensure_liora_db():
-    """Build liora.duckdb from the full upstream universe if it is missing. Idempotent — a
-    present DB already holds every upstream ticker (build_db copies the whole store), so
-    run_asset reads any applied ticker without a per-round rebuild."""
-    if (ROOT / "liora.duckdb").exists():
-        return
-    log("building liora.duckdb from the upstream store")
+    """Build liora.duckdb from the full upstream universe if it is MISSING or INCOMPLETE
+    (a partial/interrupted build, or the upstream store gained a ticker). A complete DB
+    returns immediately, so run_asset reads any applied ticker without a per-round rebuild.
+    The completeness check restores the self-heal that a bare existence check would lose;
+    build_db publishes atomically, so a present DB is always complete."""
     import build_db
+    db = ROOT / "liora.duckdb"
+    if db.exists():
+        try:
+            import duckdb
+            con = duckdb.connect(str(db), read_only=True)
+            try:
+                have = {r[0] for r in con.execute("select distinct ticker from bars_1h").fetchall()}
+            finally:
+                con.close()
+            if set(bars.upstream_tickers()) <= have:
+                return
+            log("liora.duckdb incomplete vs upstream — rebuilding")
+        except Exception as e:
+            log(f"liora.duckdb check failed ({e!r}) — rebuilding")
+    else:
+        log("building liora.duckdb from the upstream store")
     build_db.build_db()
 
 
@@ -1115,8 +1130,9 @@ def selfcheck():
     m1 = resolve_mode()
     m2 = resolve_mode()
     assert m1 == m2 and m1[0] == "universe" and m1[2] == "converged"
-    assert len(m1[1]) == 503 and m1[1] == sorted(m1[1]) and "BF.B" in m1[1] and "BRK.B" in m1[1]
-    print("1. universe provider deterministic (503 asc, dotted present)")
+    assert len(m1[1]) > 400 and m1[1] == sorted(bars.upstream_tickers()) \
+        and "BF.B" in m1[1] and "BRK.B" in m1[1]
+    print(f"1. universe provider deterministic ({len(m1[1])} asc, dotted present)")
 
     # 2. eligibility: Q ineligible, AAPL eligible
     e = eligibility_map(["Q", "AAPL"])

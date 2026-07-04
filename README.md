@@ -8,11 +8,12 @@ make on          # Tier 2+3 Plan site, background -> http://localhost:8000/index
 make dashboard   # refresh the OOS table feed only (oos_metrics.db -> Plan/data/dashboard.json); open it via the Plan site -> Dashboard
 ```
 
-A minimal, self-contained, reproducible ML trading pipeline with a client-facing
-demo on top. For a chosen ticker it computes layers **L1 → L9** in one notebook and
-leaves exactly **7 deliverable files** in `Assets/<TICKER>/`; the **ML Basket
-Simulator** (Streamlit) lets a client replay a basket of those results over the
-fixed OOS window. The ML runtime stays minimal (no SHA / lineage / heavy QC
+A minimal, reproducible ML trading pipeline with a client-facing demo on top. Raw
+1h bars are read verbatim from an external upstream S&P 500 DuckDB store (not
+committed to this repo); for a chosen ticker the pipeline computes layers
+**L1 → L9** in one notebook and leaves exactly **7 deliverable files** in
+`Assets/<TICKER>/`; the **ML Basket Simulator** (Streamlit) lets a client replay a
+basket of those results over the fixed OOS window. The ML runtime stays minimal (no SHA / lineage / heavy QC
 scaffolding); the docs/viz plane is kept honest by one fail-closed gate
 (`make check`): every data-state number has a single home and the visualization
 derives from the SOT.
@@ -131,11 +132,12 @@ The continuous per-asset feature search (S.1) runs detached in tmux and keeps go
 until you stop it — see the S.1 block in `Project/endproduct/Layers_Short_SOT.md`:
 
 ```bash
-make search-on                 # launch the supervised search loop (top-20 by default)
+make feature-search-loop       # PRIMARY: supervised full-universe search (runs until every ticker is optimized)
 make search-status             # per-ticker status / best CV / pending_better
 make search-agent-on           # optional: Claude Sonnet steering via /loop
 make search-apply TICKER=AAPL  # manual re-apply (a deliberate second OOS read)
 make search-off                # graceful stop
+# legacy/testing: make search-on SEARCH_TICKERS="AAPL XOM"  (explicit list, apply-on-satisfied)
 ```
 
 The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in

@@ -1,4 +1,4 @@
-# Generated input (regenerable from data/seed/ via `make build-db`)
+# Generated input (regenerable from the upstream store via `make build-db`)
 liora.duckdb
 # OOS results store (Layer 4.1, regenerable by re-running assets) — feeds the Dashboard
 oos_metrics.db
