@@ -880,6 +880,8 @@ def _run_search_round(con, order, rnd, policy, seed, jobs):
     ctx = mp.get_context("spawn")
     consumed, total_new = set(), 0
     log(f"round {rnd}: parallel search — {jobs} jobs over {len(order)} tickers")
+    heartbeat(phase="search", round=rnd, in_flight=min(jobs, len(order)),
+              done=0, total=len(order), new=0, grace_s=SEARCH_GRACE_S)  # liveness before 1st completion
     for attempt in range(1, PARALLEL_MAX_RESTARTS + 1):
         todo = [t for t in order if t not in consumed]
         if not todo or stop_requested(read_control()):
