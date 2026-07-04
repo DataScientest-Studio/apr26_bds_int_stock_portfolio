@@ -1,4 +1,0 @@
-# Allowlist for config/data_state_gate.py stray-literal check.
-# One entry per line: either "relative/path:lineno" or a substring of the offending line.
-# Lines starting with # are comments. Keep empty unless a genuine non-data-state
-# coincidence (e.g. an unrelated 503/10000) is reported by `check`.

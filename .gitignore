@@ -2,10 +2,9 @@
 data/*.csv
 data/by_ticker/
 
-# Large data artifacts — yfinance / run data live OUTSIDE git
+# Large data artifacts — run data lives OUTSIDE git
 /data/
 *.duckdb
-Archive/experiments/yfinance/
 
 # Report PDFs (regenerate locally via reports/build_pdf.sh)
 reports/*.pdf

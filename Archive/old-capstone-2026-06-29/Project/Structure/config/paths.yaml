@@ -1,6 +1,0 @@
-# Path configuration for the live project code.
-# Relative values are resolved against the Structure/ directory (the code root),
-# regardless of where this file lives. See src/paths.py.
-endproduct_root: ../endproduct
-archive_runs: ../../Archive/runs
-active_run: 2026-06-08
