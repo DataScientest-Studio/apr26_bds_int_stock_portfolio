@@ -3,7 +3,9 @@
 # worker (a slow run_asset subprocess is expected and carries its own grace
 # period in the heartbeat; a false kill here would lose real work, same
 # lesson qc_sp500_1h_jupyters learned the hard way). Loops forever (continuous
-# mode); stops only on STOP.flag / HALT.flag.
+# mode); stops only on STOP.flag / HALT.flag. Heartbeat now also carries phase=search +
+# in_flight/done/total (parallel rounds); grace_s (1800 search/build_db, 10800 apply) is
+# honored as before so a long parallel run_asset batch never false-alarms.
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."   # Project/Structure/
 LOG_DIR=logs/search

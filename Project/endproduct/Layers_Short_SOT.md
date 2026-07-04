@@ -280,18 +280,29 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   first pass greedy forward/backward, later passes pair-swap / restart-from-k-th-best /
   add-remove-2 with k from the ticker's OWN deep-pass count, plus agent-suggested subsets
   (validated fail-closed). Each candidate = a column slice of the shared superset, scored by
-  mean purged-WF CV AUC-PR (fixed `fallback_params`, k=4, seed 42); evaluations are keyed in
-  `search_state.db` (WAL, single writer) so a resume or later round never re-evaluates a
-  subset. An erroring ticker is PARKED (status + error + alert) and the round continues.
+  mean purged-WF CV AUC-PR (fixed `fallback_params`, k=4, seed 42). The SEARCH phase runs
+  **`SEARCH_JOBS` worker processes (spawn, each nthread=1)** — one self-contained ticker unit
+  (triage OR one deep pass) per task, dispatched N-at-a-time; every worker opens its OWN
+  `search_state.db` connection and writes only its ticker's disjoint rows, so WAL serializes
+  the millisecond commits while the seconds-long CV runs in parallel. A ticker is submitted
+  once and consumed once (never concurrent with itself); completion order across tickers never
+  affects any ticker's own byte-identical result. Evaluations are keyed so a resume, a later
+  round, or a self-healed pool casualty never re-evaluates a subset. An erroring ticker is
+  PARKED (status + error + alert) and the round continues. Parallel search is valid only with
+  policy=converged (coordinator-owned apply); list mode and the satisfied policy clamp to one
+  worker.
 - **OUTPUT:** CONVERGED(t) := deep passes ≥ `min_deep_rounds` AND (the last completed pass
   adopted nothing OR ended on a dead streak ≥ `no_improve_N`) — evaluated only after a
-  COMPLETED pass, purely from db state. Converged tickers are applied in ONE round-end BATCH:
-  export missing seeds (upstream → `data/seed/`, untracked until the user's batch commit) →
-  ONE `build_db` rebuild (L3 drop+recreate, once per round) → sequential `run_asset.py`
-  (each = the asset's SINGLE OOS read) → status `applied`. Best may equal a baseline — the
-  explicit override in the gitignored `config/per_asset_feature_overrides.json` IS the
-  product. Later Train-CV improvements only set `pending_better` — re-apply (a deliberate
-  second OOS read) is manual: `make search-apply TICKER=…`.
+  COMPLETED pass, purely from db state. Converged tickers are applied in ONE round-end BATCH,
+  three-phase and race-free: (1) SERIAL seed export + `apply_override` (per-ticker seed parquet
+  + the single overrides JSON read-modify-write — never concurrent); (2) SERIAL ONE `build_db`
+  rebuild (L3 drop+recreate, once per round), strictly before and never during any run_asset;
+  (3) **PARALLEL `run_asset.py` at `APPLY_JOBS`** (each opens `liora.duckdb` read-only + the
+  overrides, writes its OWN `Assets/<T>/` + one WAL-safe `oos_metrics` UPSERT; the coordinator
+  is the sole `search_state.db` writer). Each run_asset = the asset's SINGLE OOS read → status
+  `applied`. Best may equal a baseline — the explicit override in the gitignored
+  `config/per_asset_feature_overrides.json` IS the product. Later Train-CV improvements only set
+  `pending_better` — re-apply (a deliberate second OOS read) is manual: `make search-apply TICKER=…`.
 - **INWARIANTY:** selection never reads OOS and an OOS result never reopens selection;
   overrides never touch ids 1–99 (three enforcement layers + `mandatory_core_feature_names`
   backstop); the next candidate is a pure function of (state db, control file, the ticker's
@@ -304,7 +315,9 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   min_deep_rounds=2 · min_train_bars=3000 (consumed once per new ticker) ·
   apply_policy (env-owned: converged for feature-search-loop, satisfied for search-on;
   the worker mirrors it for the agent to read and ignores file drift) ·
-  priorities · paused_tickers · stage3_candidates · halt.
+  priorities · paused_tickers · stage3_candidates · halt. Parallelism knobs are env-owned
+  (not control-file): `SEARCH_JOBS` (search worker processes, default cpu_count-1) ·
+  `APPLY_JOBS` (parallel run_asset in the apply phase, default = SEARCH_JOBS).
 - **TESTY AKCEPTACYJNE:** `feature_search_worker.py --selfcheck` (provider determinism,
   eligibility, seed↔upstream parity, 4 convergence cases, batch success/failure paths);
   kill -9 mid-pass resumes without re-evaluating any stored subset key; an override

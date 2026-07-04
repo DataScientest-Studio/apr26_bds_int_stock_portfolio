@@ -40,7 +40,10 @@ pre-filter; reason recorded, not your concern to fix); `pending_better=1` (a Tra
 candidate now beats the applied subset); heartbeat age (`phase` in `run_asset`,
 `batch_apply`, `build_db` carries `grace_s` — a long silence there is normal);
 `round`, `deep_rounds_done` and `rounds_completed` (are rounds still finding new
-evaluations?). Useful extra queries:
+evaluations?). Rounds now run N-parallel: the heartbeat carries `phase=search` with
+`in_flight`/`done`/`total`, and a healthy loop shows OS `load ~SEARCH_JOBS` with several
+distinct tickers advancing between beats. `SEARCH_JOBS`/`APPLY_JOBS` are env-owned (not
+control-file knobs). Useful extra queries:
 `select status, count(*) from assets group by status` (universe progress);
 `select count(*) from assets where baseline_ref is not null and status != 'ineligible'`
 (triage progress); `select ticker, converged_at from assets where status='satisfied'`
