@@ -4,6 +4,6 @@
     "rebuild": "n_assets_seed = count of data/seed/*_ohlcv_1h.parquet (the gate verifies this live); duckdb_rows_bars_1h = `select count(*) from bars_1h` after `make build-db` (sum of the per-ticker bar counts it prints).",
     "not_here": "Feature counts come live from Features/*/feature_registry.json (implemented==true) and config values live from config/*.json — the gate derives them at render time so they can never drift."
   },
-  "n_assets_seed": 10,
-  "duckdb_rows_bars_1h": 182065
+  "n_assets_seed": 20,
+  "duckdb_rows_bars_1h": 364079
 }

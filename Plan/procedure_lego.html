@@ -305,10 +305,10 @@
        knobs:["executed_by=upstream source repo"],
        test:["none — provenance block, not an executed layer"],
        depends:[]},
-      {id:"L2", group:"s1", title:"seed export — one parquet per ticker", kind:"frozen input acquisition", short:"upstream DuckDB → data/seed/<TICKER>_ohlcv_1h.parquet ×10", viz:"zip",
+      {id:"L2", group:"s1", title:"seed export — one parquet per ticker", kind:"frozen input acquisition", short:"upstream DuckDB → data/seed/<TICKER>_ohlcv_1h.parquet ×20", viz:"zip",
        input:["upstream SP500 DuckDB (ohlcv_1h view) at SP500_DUCKDB (Makefile variable)"],
        transform:["ENSURE_SEEDS_PY (Makefile, run by make loop) exports only MISSING tickers: select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts.", "tz-localize America/New_York → convert to UTC; volume cast to float64."],
-       output:"data/seed/<TICKER>_ohlcv_1h.parquet × 10 seed tickers (committed; the universe grows by dropping in another seed)",
+       output:"data/seed/<TICKER>_ohlcv_1h.parquet × 20 seed tickers (committed; the universe grows by dropping in another seed)",
        invariant:["Existing seeds are never overwritten — only missing tickers are exported.", "Columns are exactly timestamp/open/high/low/close/volume with UTC timestamps; no derived columns."],
        knobs:["SP500_DUCKDB=<upstream DuckDB path> (Makefile)"],
        test:["make loop with all seeds present prints „all requested seeds already present” and writes nothing", "a missing ticker absent upstream ⇒ SystemExit"],
@@ -316,7 +316,7 @@
       {id:"L3", group:"s1", title:"build_db.py → liora.duckdb", kind:"canonical input store", short:"all seeds → one DuckDB table bars_1h", viz:"duckdb",
        input:["all data/seed/*_ohlcv_1h.parquet"],
        transform:["DROP TABLE IF EXISTS bars_1h → CREATE TABLE bars_1h(ticker, timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE).", "Plain INSERT per seed with the ticker column added — no cleaning, no calendar, no QC here (G.1 asserts on read)."],
-       output:"liora.duckdb, table bars_1h (182065 rows over 10 tickers); regenerable, gitignored",
+       output:"liora.duckdb, table bars_1h (364079 rows over 20 tickers); regenerable, gitignored",
        invariant:["Zero value mutation — a verbatim load.", "Drop+recreate: no partial state survives a rebuild."],
        knobs:["seed_dir=data/seed", "db=liora.duckdb"],
        test:["make build-db prints per-ticker bar counts + the final summary", "corrupt seed values surface later as a G.1 RuntimeError"],
@@ -512,7 +512,7 @@
           <tr><td>t₂</td><td>188.0</td><td>189.3</td><td>187.6</td><td>187.9</td><td>.38M</td></tr>
           <tr><td>t₃</td><td>187.8</td><td>188.2</td><td>186.4</td><td>186.8</td><td>.52M</td></tr>
         </tbody></table>
-        <div class="viz-label" style="color:var(--amber)"><span class="ohlcv-x">×</span> 10 tickers · Alpaca 1h · upstream</div>`},
+        <div class="viz-label" style="color:var(--amber)"><span class="ohlcv-x">×</span> 20 tickers · Alpaca 1h · upstream</div>`},
 
       /* L2 — łańcuch seedów: 1 parquet = 1 ticker, raw UTC */
       zip:{h:86,render:()=>`
@@ -540,7 +540,7 @@
         <text x="72" y="15" text-anchor="middle" font-size="6" font-weight="700" fill="${PAL.amber}">build_db.py</text>
         <text x="72" y="37" text-anchor="middle" font-size="5.5" fill="#89929D">verbatim load</text>
         <rect x="92" y="12" width="70" height="30" rx="3" fill="rgba(43,181,135,.10)" stroke="${PAL.store}" stroke-width="1.1"/>
-        <text x="127" y="25" text-anchor="middle" font-size="6.5" font-weight="800" fill="${PAL.store}">182065 rows</text>
+        <text x="127" y="25" text-anchor="middle" font-size="6.5" font-weight="800" fill="${PAL.store}">364079 rows</text>
         <text x="127" y="36" text-anchor="middle" font-size="5.5" fill="#89929D">QC deferred → G.1 on read</text>`)+
         `<div class="viz-label">one table · regenerable · gitignored</div>`},
 

@@ -122,7 +122,7 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **TRANSFORM:** `ENSURE_SEEDS_PY` (Makefile, run by `make loop`) exports only MISSING tickers:
   `select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts`,
   tz-localize `America/New_York` → convert UTC, volume cast float64.
-- **OUTPUT:** `data/seed/<TICKER>_ohlcv_1h.parquet` × <!--na:n_assets_seed-->10<!--/na--> seed
+- **OUTPUT:** `data/seed/<TICKER>_ohlcv_1h.parquet` × <!--na:n_assets_seed-->20<!--/na--> seed
   tickers (committed; the universe grows by dropping in another seed).
 - **INWARIANTY:** existing seeds are never overwritten; columns are exactly
   timestamp/open/high/low/close/volume with UTC timestamps; no derived columns.
@@ -138,8 +138,8 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 - **TRANSFORM:** `build_db.py`: `DROP TABLE IF EXISTS bars_1h` → `CREATE TABLE bars_1h(ticker,
   timestamp TIMESTAMPTZ, open, high, low, close, volume DOUBLE)` → plain INSERT per seed with the
   ticker column added. No cleaning, no calendar, no QC here (G.1 asserts on read).
-- **OUTPUT:** `liora.duckdb`, table `bars_1h` (<!--na:duckdb_rows_bars_1h-->182065<!--/na--> rows
-  over <!--na:n_assets_seed-->10<!--/na--> tickers); regenerable, gitignored.
+- **OUTPUT:** `liora.duckdb`, table `bars_1h` (<!--na:duckdb_rows_bars_1h-->364079<!--/na--> rows
+  over <!--na:n_assets_seed-->20<!--/na--> tickers); regenerable, gitignored.
 - **INWARIANTY:** zero value mutation — a verbatim load; drop+recreate means no partial state
   survives a rebuild.
 - **KNOBS:** `seed_dir=data/seed` · `db=liora.duckdb` (module constants in `build_db.py`).
