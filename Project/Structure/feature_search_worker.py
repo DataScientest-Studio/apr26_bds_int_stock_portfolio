@@ -717,13 +717,40 @@ def _run_apply_round(con, jobs=1):
     except Exception as e:
         alert(f"batch build_db failed ({e!r}) — batch deferred to next round")
         return
-    # (3) run_asset per ticker (P4 flips this to a ThreadPool at APPLY_JOBS)
-    for a in ok:
-        if stop_requested(read_control()):
-            return
-        rc = run_asset(a["ticker"])
-        _finalize_apply(con, a["ticker"], a["best_subset_key"], a["best_cv"],
-                        a["run_asset_attempts"] or 0, rc)
+    # (3) run_asset per ticker — PARALLEL via ThreadPool (each run_asset is already a subprocess,
+    # so threads only supervise: zero extra worker RSS, which matters on a 7.6 GiB box). Each
+    # subprocess reads liora.duckdb read-only + the overrides file, and writes its OWN Assets/<T>/
+    # + one WAL-safe oos_metrics UPSERT; the coordinator (this thread pool's owner process) is the
+    # SOLE search_state.db writer via _finalize_apply, so assets rows never contend.
+    aj = min(jobs, _apply_jobs())
+    heartbeat(phase="batch_apply", n=len(ok), in_flight=0, done=0, total=len(ok), grace_s=10800)
+    if aj <= 1:
+        for a in ok:
+            if stop_requested(read_control()):
+                return
+            _finalize_apply(con, a["ticker"], a["best_subset_key"], a["best_cv"],
+                            a["run_asset_attempts"] or 0, run_asset(a["ticker"]))
+        return
+    from concurrent.futures import ThreadPoolExecutor, FIRST_COMPLETED, wait
+    log(f"batch apply: {len(ok)} run_asset in parallel ({aj} jobs)")
+    with ThreadPoolExecutor(max_workers=aj) as ex:
+        futs = {ex.submit(run_asset, a["ticker"]): a for a in ok}
+        pending = set(futs)
+        while pending:
+            done, pending = wait(pending, timeout=PARALLEL_STALL_TIMEOUT_S, return_when=FIRST_COMPLETED)
+            if not done and stop_requested(read_control()):
+                break
+            for fut in done:
+                a = futs[fut]
+                try:
+                    rc = fut.result()
+                except Exception as e:
+                    rc = 99
+                    alert(f"{a['ticker']}: run_asset raised {e!r}")
+                _finalize_apply(con, a["ticker"], a["best_subset_key"], a["best_cv"],
+                                a["run_asset_attempts"] or 0, rc)
+            heartbeat(phase="batch_apply", n=len(ok), in_flight=len(pending),
+                      done=len(ok) - len(pending), total=len(ok), grace_s=10800)
 
 
 # ------------------------------------------------------------------ orders ---
@@ -1095,18 +1122,29 @@ def selfcheck():
         real_build = _bdb.build_db
         _bdb.build_db = lambda: None
         try:
-            _run_apply_round(con)
+            _run_apply_round(con)                                  # sequential (jobs=1)
+            a = asset_row(con, "AAPL")
+            assert a["status"] == "applied" and a["applied_subset_key"] == "101"
+            # parallel apply branch (ThreadPool, jobs=2) over 2 satisfied tickers
+            set_asset(con, "AAPL", status="satisfied", best_subset_key="101", best_cv=0.6)
+            con.execute("INSERT OR IGNORE INTO assets(ticker,status,best_subset_key,best_cv,updated_at) "
+                        "VALUES('MSFT','satisfied','201',0.6,?)", (utcnow(),))
+            con.execute("UPDATE assets SET status='satisfied', best_subset_key='201', best_cv=0.6 "
+                        "WHERE ticker='MSFT'"); con.commit()
+            os.environ["APPLY_JOBS"] = "2"
+            _run_apply_round(con, jobs=2)
+            os.environ.pop("APPLY_JOBS", None)
+            assert asset_row(con, "AAPL")["status"] == "applied"
+            assert asset_row(con, "MSFT")["status"] == "applied"
         finally:
             _bdb.build_db = real_build
-        a = asset_row(con, "AAPL")
-        assert a["status"] == "applied" and a["applied_subset_key"] == "101"
         run_asset = lambda t: 1
         for _ in range(3):
             set_asset(con, "AAPL", status="satisfied")
             _apply_and_run(con, "AAPL", "101", 0.6, asset_row(con, "AAPL")["run_asset_attempts"] or 0,
                            stage="auto_converged")
         assert asset_row(con, "AAPL")["status"] == "parked"
-        print("5. batch apply: success->applied; 3 failures->parked")
+        print("5. batch apply: sequential + parallel(ThreadPool) -> applied; 3 failures -> parked")
     finally:
         run_asset, seeds.export_seed = real_run_asset, real_export
 
