@@ -14,3 +14,8 @@ __pycache__/
 
 # Per-asset optional-feature overrides (written by feature_search_worker.py; regenerable research output)
 config/per_asset_feature_overrides.json
+# Feature-search plane (S.1): state db, control file, logs, supervisor pid — all regenerable runtime
+search_state.db*
+search_control.json
+logs/
+.search_supervisor.pid
