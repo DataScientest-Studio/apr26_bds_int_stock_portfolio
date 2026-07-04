@@ -10,6 +10,8 @@
 #   make ensure-seeds            export any missing SEARCH_TICKERS seeds from SP500_DUCKDB
 #   make search-on               launch the search loop on an explicit list (SEARCH_TICKERS, apply-on-satisfied)
 #   make feature-search-loop     FULL-UNIVERSE search (503 upstream tickers, upstream-direct bars, triage -> deepen, apply-at-convergence)
+#   make search-install-cron     install @reboot + */15 cron so the loop always runs on the server (survives reboot)
+#   make search-uninstall-cron   remove the cron entries
 #   make search-off              stop the search loop gracefully (STOP.flag) and its supervisor
 #   make search-status           one-shot per-ticker search status (sqlite, read-only)
 #   make search-logs             tail the search worker log
@@ -46,7 +48,8 @@ SEARCH_LOG_DIR := logs/search
 SEARCH_SUP_PID := .search_supervisor.pid
 
 .PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help \
-        ensure-seeds search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on
+        ensure-seeds search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on \
+        search-install-cron search-uninstall-cron
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -141,6 +144,18 @@ search-logs:
 search-apply:
 	@test -n "$(TICKER)" || (echo "usage: make search-apply TICKER=AAPL" && exit 1)
 	$(PY) feature_search_worker.py --apply $(TICKER)
+
+CRON_MARK := liora-feature-search-loop
+search-install-cron:
+	@CMD="bash -lc 'cd $(CURDIR) && bash scripts/search_cron.sh >> logs/search/cron.log 2>&1'"; \
+	( crontab -l 2>/dev/null | grep -v "$(CRON_MARK)"; \
+	  echo "@reboot $$CMD # $(CRON_MARK)"; \
+	  echo "*/15 * * * * $$CMD # $(CRON_MARK)" ) | crontab -
+	@echo "installed cron (@reboot + */15) for the full-universe loop:"; crontab -l | grep "$(CRON_MARK)"
+
+search-uninstall-cron:
+	@crontab -l 2>/dev/null | grep -v "$(CRON_MARK)" | crontab - || true
+	@echo "removed cron entries tagged $(CRON_MARK)"
 
 search-agent-on:
 	@tmux has-session -t $(SEARCH_SESSION) 2>/dev/null || (echo "run 'make search-on' first" && exit 1)
