@@ -4,8 +4,8 @@
 
 ```bash
 make app         # Tier 1 client app (Streamlit) -> http://localhost:8501 : click tickers (each = $1000), Calculate basket
-make serve       # Tier 2+3 Plan site -> http://localhost:8000/index.html : backend docs + Procedure Lego blueprint
-make dashboard   # refresh the OOS table feed (oos_metrics.db -> Plan/data/dashboard.json); open it via the Plan site -> Dashboard
+make on          # Tier 2+3 Plan site, background -> http://localhost:8000/index.html (refreshes the dashboard feed; make off stops)
+make dashboard   # refresh the OOS table feed only (oos_metrics.db -> Plan/data/dashboard.json); open it via the Plan site -> Dashboard
 ```
 
 A minimal, self-contained, reproducible ML trading pipeline with a client-facing
@@ -24,7 +24,7 @@ Every document in this repo has exactly one of three roles:
 | Tier | Role | Artifact | Audience | Entry point |
 |---|---|---|---|---|
 | 1 | Client app | ML Basket Simulator — `Project/Structure/app.py` | clients | `make app` → `http://localhost:8501` |
-| 2 | Backend explanation | `Plan/` pages: `index`, `configurations`, `glossary`, `dashboard` | reviewers / operators | `make serve` → `http://localhost:8000/index.html` |
+| 2 | Backend explanation | `Plan/` pages: `index`, `configurations`, `glossary`, `dashboard` | reviewers / operators | `make on` → `http://localhost:8000/index.html` |
 | 3 | Replication blueprint | `Plan/procedure_lego.html` + the "Kontrakt replikacji" blocks & PL PROMPTS in `Project/endproduct/Layers_Short_SOT.md` | engineers rebuilding an analogous app | the Procedure Lego link on the index page |
 
 Tier 3 is a data-processing blueprint (data science / data engineering / ML) —
@@ -106,7 +106,7 @@ cd Project/Structure
 make deps                      # install requirements.txt into ../.venv
 make build-db                  # data/seed/*.parquet -> liora.duckdb
 make run-asset TICKER=AAPL     # run the notebook -> Assets/AAPL/ (7 files)
-make serve                     # static visualization: http://localhost:8000/index.html
+make on                        # static visualization (background): http://localhost:8000/index.html; make off stops
 make app                       # ML Basket Simulator demo (Streamlit): http://localhost:8501
 ```
 
