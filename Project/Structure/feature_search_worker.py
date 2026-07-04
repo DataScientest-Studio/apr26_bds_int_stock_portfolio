@@ -568,12 +568,11 @@ def run_asset(t):
     return rc
 
 
-def _apply_and_run(con, t, subset_key_val, cv, attempts_before, stage="auto_first_satisfied"):
-    """Apply the winning subset and fire the SINGLE OOS read via run_asset.py. On
-    failure, retry up to 3 attempts (across rounds) before parking the ticker —
-    a repeatedly-broken run_asset must not spin forever."""
-    apply_override(t, key_ids(subset_key_val), cv, stage)
-    rc = run_asset(t)
+def _finalize_apply(con, t, subset_key_val, cv, attempts_before, rc):
+    """Status transition after a run_asset returned rc — the ONLY search_state.db writer for
+    an apply. rc==0 -> applied; else retry up to 3 attempts (across rounds) -> satisfied, then
+    parked. Coordinator-only in the parallel apply phase (single writer) so N concurrent
+    run_assets never contend on assets rows."""
     if rc == 0:
         set_asset(con, t, status="applied", applied_subset_key=subset_key_val,
                   applied_cv=cv, pending_better=0)
@@ -588,6 +587,15 @@ def _apply_and_run(con, t, subset_key_val, cv, attempts_before, stage="auto_firs
                   error=f"run_asset failed rc={rc} x{attempts}")
         alert(f"{t}: PARKED after {attempts} run_asset failures (see logs/search/run_asset_{t}.log)")
     return False
+
+
+def _apply_and_run(con, t, subset_key_val, cv, attempts_before, stage="auto_first_satisfied"):
+    """Inline apply for list mode / policy=satisfied / manual re-apply / selfcheck: write the
+    override, fire the SINGLE OOS read, finalize. (The converged batch plane splits these steps
+    across serial + parallel phases — see _run_apply_round.)"""
+    apply_override(t, key_ids(subset_key_val), cv, stage)
+    rc = run_asset(t)
+    return _finalize_apply(con, t, subset_key_val, cv, attempts_before, rc)
 
 
 def maybe_apply(con, t, ctl, policy="satisfied"):
@@ -615,28 +623,37 @@ def maybe_apply(con, t, ctl, policy="satisfied"):
               f"(make search-apply TICKER={t})")
 
 
-def batch_apply(con, ctl):
+def _run_apply_round(con, jobs=1):
     """Round-end apply plane (policy=converged): every ticker that converged this round is
-    applied in ONE batch — export missing seeds (upstream -> data/seed, untracked until the
-    user's batch commit), ONE build_db rebuild (L3 drop+recreate, once per round, never per
-    ticker), then run_asset sequentially (each the asset's SINGLE OOS read). Crash-safe:
-    'satisfied' rows persist, seed export no-ops, the rebuild is idempotent — the next
-    round's batch simply retries (run_asset attempts stay capped at 3)."""
+    applied in ONE batch. THREE phases with a strict ordering that makes the shared-state
+    mutations race-free so the run_asset step can later parallelize:
+      (1) SERIAL: seed export + apply_override (both mutate SHARED files — a per-ticker seed
+          parquet and the single overrides JSON via read-modify-write — so never concurrent);
+      (2) SERIAL: ONE build_db rebuild (drop+recreate liora.duckdb), strictly BEFORE and never
+          during any run_asset (which opens liora.duckdb read-only);
+      (3) run_asset per ticker (each = the asset's SINGLE OOS read) + coordinator _finalize_apply
+          (the sole search_state.db writer here). jobs>1 parallelizes phase 3 (see the
+          ThreadPool path); jobs<=1 runs it sequentially. Crash-safe: 'satisfied' rows persist,
+          seed export + override write + rebuild are idempotent — next round's batch retries
+          (run_asset attempts stay capped at 3)."""
     batch = con.execute("SELECT * FROM assets WHERE status='satisfied' ORDER BY ticker").fetchall()
     if not batch:
         return
-    log(f"batch apply: {len(batch)} converged ticker(s): {' '.join(a['ticker'] for a in batch)}")
+    log(f"batch apply: {len(batch)} converged ticker(s)")
     heartbeat(phase="batch_apply", n=len(batch), grace_s=3600)
+    # (1) SERIAL: export seed + write override (shared-state writes, must not race)
     ok = []
     for a in batch:
         try:
             seeds.export_seed(a["ticker"])
+            apply_override(a["ticker"], key_ids(a["best_subset_key"]), a["best_cv"], "auto_converged")
             ok.append(a)
         except Exception as e:
-            set_asset(con, a["ticker"], status="parked", error=f"seed export: {e!r}"[:500])
-            alert(f"{a['ticker']}: PARKED — seed export failed ({e!r})")
+            set_asset(con, a["ticker"], status="parked", error=f"seed/override: {e!r}"[:500])
+            alert(f"{a['ticker']}: PARKED — seed/override failed ({e!r})")
     if not ok:
         return
+    # (2) SERIAL: one rebuild, strictly before any run_asset
     heartbeat(phase="build_db", grace_s=1800)
     try:
         import build_db
@@ -644,11 +661,13 @@ def batch_apply(con, ctl):
     except Exception as e:
         alert(f"batch build_db failed ({e!r}) — batch deferred to next round")
         return
+    # (3) run_asset per ticker (P4 flips this to a ThreadPool at APPLY_JOBS)
     for a in ok:
         if stop_requested(read_control()):
             return
-        _apply_and_run(con, a["ticker"], a["best_subset_key"], a["best_cv"],
-                       a["run_asset_attempts"] or 0, stage="auto_converged")
+        rc = run_asset(a["ticker"])
+        _finalize_apply(con, a["ticker"], a["best_subset_key"], a["best_cv"],
+                        a["run_asset_attempts"] or 0, rc)
 
 
 # ------------------------------------------------------------------ orders ---
@@ -757,7 +776,7 @@ def run_loop():
                 alert(f"{t}: PARKED — {e!r}")
                 log(traceback.format_exc())
         if policy == "converged":
-            batch_apply(con, read_control())
+            _run_apply_round(con)
         con.execute("UPDATE meta SET value=? WHERE key='rounds_completed'", (str(rnd),))
         con.commit()
         log(f"round {rnd} done: {counters['new']} new evaluations")
@@ -920,7 +939,7 @@ def selfcheck():
         real_build = _bdb.build_db
         _bdb.build_db = lambda: None
         try:
-            batch_apply(con, ctl)
+            _run_apply_round(con)
         finally:
             _bdb.build_db = real_build
         a = asset_row(con, "AAPL")
