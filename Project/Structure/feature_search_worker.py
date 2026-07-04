@@ -386,23 +386,32 @@ def evaluate(con, ctx, subset, stage, source, rnd, ctl, seed, counters):
 
 # ----------------------------------------------------------- search stages ---
 
-def candidate_stream(con, ctx, rnd, ctl):
-    """Deterministic candidate generator for (ticker, round). Yields (subset, stage, source).
-    The stream inspects the db lazily so adopted improvements reshape later candidates."""
+def candidate_stream(con, ctx, phase, ctl):
+    """Deterministic candidate generator for (ticker, phase). Yields (subset, stage, source).
+    phase='triage' — stage-1 grid ONLY (baselines + 8 block combos); never greedy, never agent.
+    phase='deep'   — first deep pass = greedy around the live best; later passes = pair-swap /
+                     restart-from-kth-best / add-remove-2, with k derived from the ticker's OWN
+                     deep_rounds_done (never the global round — determinism per ticker must not
+                     depend on how many rounds other tickers consumed). Agent candidates drain
+                     at the end of every deep pass. The stream inspects the db lazily so adopted
+                     improvements reshape later candidates."""
     t = ctx.ticker
 
     def best_ids():
         r = asset_row(con, t)
         return set(key_ids(r["best_subset_key"] or ""))
 
-    if rnd <= 1:
-        # stage-1: baselines + the 8 block combos
+    if phase == "triage":
         yield [], "grid", "worker"                                     # 1h-only baseline
         yield list(OPTIONAL_IDS), "grid", "worker"                     # all-56 baseline
         for combo in itertools.chain.from_iterable(
                 itertools.combinations(("1d", "1w", "multi_tf"), k) for k in (1, 2, 3)):
             yield sorted(i for b in combo for i in BLOCKS[b]), "grid", "worker"
-        # stage-2: greedy passes around the live best
+        return                                                          # NO greedy, NO agent drain
+
+    deep_done = asset_row(con, t)["deep_rounds_done"] or 0
+    if deep_done == 0:
+        # first deep pass: greedy passes around the live best
         for _ in range(64):                                            # pass budget; streak/budget break earlier
             base = best_ids()
             for i in sorted(base):
@@ -411,13 +420,13 @@ def candidate_stream(con, ctx, rnd, ctl):
                 if i not in base:
                     yield sorted(base | {i}), "greedy", "worker"
     else:
-        # deeper rounds: pair-swap -> restart greedy from k-th best -> add/remove-2
+        # later deep passes: pair-swap -> restart greedy from k-th best -> add/remove-2
         base = best_ids()
         for i in sorted(base):
             for j in OPTIONAL_IDS:
                 if j not in base:
                     yield sorted((base - {i}) | {j}), "swap", "worker"
-        k = min(rnd, 10)
+        k = min(deep_done + 1, 10)
         kth = con.execute(
             "SELECT subset_key FROM evaluations WHERE ticker=? "
             "ORDER BY cv_auc_pr DESC, n_features ASC, subset_key ASC LIMIT 1 OFFSET ?",
@@ -439,7 +448,7 @@ def candidate_stream(con, ctx, rnd, ctl):
         for i, j in itertools.combinations(pool, 2):
             yield sorted(base | {i, j}), "swap", "worker"
 
-    # stage-3: agent candidates (drained every round)
+    # stage-3: agent candidates (drained every deep pass)
     for cand in ctl["stage3_candidates"].get(t, []):
         try:
             ids = sorted(int(x) for x in cand)
@@ -452,30 +461,27 @@ def candidate_stream(con, ctx, rnd, ctl):
         yield ids, "agent", "agent"
 
 
-def search_ticker(con, t, rnd, ctl, seed, counters):
-    ctx = TickerContext(t)
+def _enter_round(con, t, rnd):
+    """Only the very first pass flips pending->searching. A ticker that is already
+    satisfied/applied must NEVER have its lifecycle status touched here — resetting
+    it would make the apply plane re-fire run_asset (a second OOS read)."""
     a = asset_row(con, t)
-    # Only the very first pass flips pending->searching. A ticker that is already
-    # satisfied/applied must NEVER have its lifecycle status touched here — resetting
-    # it every round would make maybe_apply() re-fire apply_override()+run_asset(),
-    # i.e. a second OOS read, on every round. Continued polishing stays Train-only.
     if a["status"] == "pending":
         set_asset(con, t, status="searching", round=rnd)
     else:
         set_asset(con, t, round=rnd)
-    con.execute("UPDATE assets SET no_improve_streak=0 WHERE ticker=?", (t,))
-    con.commit()
-    for subset, stage, source in candidate_stream(con, ctx, rnd, ctl):
+    return asset_row(con, t)
+
+
+def triage_ticker(con, t, rnd, ctl, seed, counters):
+    """Stage-1 grid only. Never applies, never counts toward convergence."""
+    ctx = TickerContext(t)
+    _enter_round(con, t, rnd)
+    for subset, stage, source in candidate_stream(con, ctx, "triage", ctl):
         ctl = read_control()
         if stop_requested(ctl) or t in ctl["paused_tickers"]:
             return
-        if counters["ticker_new"] >= (ctl["round_budget_evals"] if rnd > 1 else ctl["stage2_max_evals"]):
-            break
         evaluate(con, ctx, subset, stage, source, rnd, ctl, seed, counters)
-        a = asset_row(con, t)
-        if stage == "greedy" and a["no_improve_streak"] >= ctl["no_improve_N"]:
-            break
-    # stage-1 finished at least once: record baseline_ref
     a = asset_row(con, t)
     if a["baseline_ref"] is None:
         rows = {r["subset_key"]: r["cv_auc_pr"] for r in con.execute(
@@ -483,6 +489,48 @@ def search_ticker(con, t, rnd, ctl, seed, counters):
             (t, "", subset_key(OPTIONAL_IDS)))}
         if len(rows) == 2:
             set_asset(con, t, baseline_ref=max(rows.values()))
+
+
+def deep_ticker(con, t, rnd, ctl, seed, counters):
+    """One deep pass. Opens the pass ONCE (pass_round + pass_start_best_key persisted, so a
+    kill-resume replays the same pass over cached evaluations and reaches the identical
+    decision). Returns True iff the pass COMPLETED (exhaustion / budget / streak) — an
+    interrupted pass returns False and is replayed on the next launch."""
+    ctx = TickerContext(t)
+    a = _enter_round(con, t, rnd)
+    if a["pass_round"] != rnd:
+        set_asset(con, t, pass_round=rnd, pass_start_best_key=a["best_subset_key"])
+    con.execute("UPDATE assets SET no_improve_streak=0 WHERE ticker=?", (t,))
+    con.commit()
+    for subset, stage, source in candidate_stream(con, ctx, "deep", ctl):
+        ctl = read_control()
+        if stop_requested(ctl) or t in ctl["paused_tickers"]:
+            return False
+        budget = ctl["round_budget_evals"] if (a["deep_rounds_done"] or 0) >= 1 else ctl["stage2_max_evals"]
+        if counters["ticker_new"] >= budget:
+            break
+        evaluate(con, ctx, subset, stage, source, rnd, ctl, seed, counters)
+        if stage == "greedy" and asset_row(con, t)["no_improve_streak"] >= ctl["no_improve_N"]:
+            break
+    return True
+
+
+def finish_deep_pass(con, t, ctl, policy):
+    """CONVERGED(t) := deep_rounds_done >= min_deep_rounds AND (the pass adopted nothing OR it
+    ended on a dead streak). Evaluated ONLY after a COMPLETED deep pass, purely from db state.
+    A pass with 0 new evaluations (space exhausted) satisfies 'adopted nothing'."""
+    a = asset_row(con, t)
+    adopted = (a["best_subset_key"] or "") != (a["pass_start_best_key"] or "")
+    set_asset(con, t, deep_rounds_done=(a["deep_rounds_done"] or 0) + 1, pass_round=None)
+    if policy != "converged" or a["status"] not in ("pending", "searching"):
+        return
+    a = asset_row(con, t)
+    converged = (a["deep_rounds_done"] >= int(ctl["min_deep_rounds"])
+                 and (not adopted or (a["no_improve_streak"] or 0) >= ctl["no_improve_N"]))
+    if converged:
+        set_asset(con, t, status="satisfied", converged_at=utcnow())
+        log(f"{t}: CONVERGED after {a['deep_rounds_done']} deep passes (adopted={adopted}) — "
+            f"best {a['best_subset_key'] or '(1h-only)'} queued for batch apply")
 
 
 # ------------------------------------------------------------- apply plane ---
@@ -520,11 +568,11 @@ def run_asset(t):
     return rc
 
 
-def _apply_and_run(con, t, subset_key_val, cv, attempts_before):
+def _apply_and_run(con, t, subset_key_val, cv, attempts_before, stage="auto_first_satisfied"):
     """Apply the winning subset and fire the SINGLE OOS read via run_asset.py. On
     failure, retry up to 3 attempts (across rounds) before parking the ticker —
     a repeatedly-broken run_asset must not spin forever."""
-    apply_override(t, key_ids(subset_key_val), cv, "auto_first_satisfied")
+    apply_override(t, key_ids(subset_key_val), cv, stage)
     rc = run_asset(t)
     if rc == 0:
         set_asset(con, t, status="applied", applied_subset_key=subset_key_val,
@@ -542,19 +590,21 @@ def _apply_and_run(con, t, subset_key_val, cv, attempts_before):
     return False
 
 
-def maybe_apply(con, t, ctl):
-    """Own the ENTIRE apply/OOS lifecycle transition. status in (pending, searching)
-    means "never yet satisfied" (search_ticker only ever sets searching from
-    pending, never from satisfied/applied — see search_ticker's comment)."""
+def maybe_apply(con, t, ctl, policy="satisfied"):
+    """Own the ENTIRE inline apply/OOS lifecycle transition (list mode / policy=satisfied).
+    Under policy=converged the inline apply branches are DISABLED — the round-end
+    batch_apply owns satisfied->applied — and only the pending_better branch stays live.
+    status in (pending, searching) means "never yet satisfied" (_enter_round only ever
+    sets searching from pending, never from satisfied/applied)."""
     a = asset_row(con, t)
     if a["best_cv"] is None or a["baseline_ref"] is None:
         return
     sensible = a["best_cv"] >= a["baseline_ref"] + ctl["min_gain"]
-    if a["status"] in ("pending", "searching") and sensible:
+    if policy == "satisfied" and a["status"] in ("pending", "searching") and sensible:
         set_asset(con, t, status="satisfied")
         log(f"{t}: satisfied (best_cv={a['best_cv']:.4f} >= baseline {a['baseline_ref']:.4f} + {ctl['min_gain']})")
         _apply_and_run(con, t, a["best_subset_key"], a["best_cv"], a["run_asset_attempts"] or 0)
-    elif a["status"] == "satisfied" and sensible:
+    elif policy == "satisfied" and a["status"] == "satisfied" and sensible:
         # retry path after a previously failed run_asset (still capped at 3 attempts)
         _apply_and_run(con, t, a["best_subset_key"], a["best_cv"], a["run_asset_attempts"] or 0)
     elif a["status"] == "applied" and a["applied_cv"] is not None \
@@ -565,17 +615,68 @@ def maybe_apply(con, t, ctl):
               f"(make search-apply TICKER={t})")
 
 
+def batch_apply(con, ctl):
+    """Round-end apply plane (policy=converged): every ticker that converged this round is
+    applied in ONE batch — export missing seeds (upstream -> data/seed, untracked until the
+    user's batch commit), ONE build_db rebuild (L3 drop+recreate, once per round, never per
+    ticker), then run_asset sequentially (each the asset's SINGLE OOS read). Crash-safe:
+    'satisfied' rows persist, seed export no-ops, the rebuild is idempotent — the next
+    round's batch simply retries (run_asset attempts stay capped at 3)."""
+    batch = con.execute("SELECT * FROM assets WHERE status='satisfied' ORDER BY ticker").fetchall()
+    if not batch:
+        return
+    log(f"batch apply: {len(batch)} converged ticker(s): {' '.join(a['ticker'] for a in batch)}")
+    heartbeat(phase="batch_apply", n=len(batch), grace_s=3600)
+    ok = []
+    for a in batch:
+        try:
+            seeds.export_seed(a["ticker"])
+            ok.append(a)
+        except Exception as e:
+            set_asset(con, a["ticker"], status="parked", error=f"seed export: {e!r}"[:500])
+            alert(f"{a['ticker']}: PARKED — seed export failed ({e!r})")
+    if not ok:
+        return
+    heartbeat(phase="build_db", grace_s=1800)
+    try:
+        import build_db
+        build_db.build_db()
+    except Exception as e:
+        alert(f"batch build_db failed ({e!r}) — batch deferred to next round")
+        return
+    for a in ok:
+        if stop_requested(read_control()):
+            return
+        _apply_and_run(con, a["ticker"], a["best_subset_key"], a["best_cv"],
+                       a["run_asset_attempts"] or 0, stage="auto_converged")
+
+
 # ------------------------------------------------------------------ orders ---
 
-def round_order(con, universe, ctl):
+def round_order(con, universe, ctl, mode="list"):
     rows = {r["ticker"]: r for r in con.execute("SELECT * FROM assets")}
-    healthy = [t for t in universe if rows.get(t) and rows[t]["status"] != "parked"
+    healthy = [t for t in universe if rows.get(t)
+               and rows[t]["status"] not in ("parked", "ineligible")
                and t not in ctl["paused_tickers"]]
     prio = [t for t in ctl["priorities"] if t in healthy]
     rest = [t for t in healthy if t not in prio]
-    unsat = [t for t in rest if rows[t]["status"] in ("pending", "searching", "satisfied")]
-    sat = [t for t in rest if rows[t]["status"] == "applied"]
-    return prio + unsat + sat
+    if mode == "list":
+        unsat = [t for t in rest if rows[t]["status"] in ("pending", "searching", "satisfied")]
+        sat = [t for t in rest if rows[t]["status"] == "applied"]
+        return prio + unsat + sat
+    # universe mode: triage first (universe order), then deepen by gain rank
+    # (gain = best_cv - baseline_ref, tie ticker asc) — COMPUTE ORDERING ONLY, never selection.
+    def gain(t):
+        r = rows[t]
+        if r["best_cv"] is None or r["baseline_ref"] is None:
+            return float("-inf")
+        return r["best_cv"] - r["baseline_ref"]
+    triage = [t for t in rest if rows[t]["baseline_ref"] is None]
+    deep = sorted([t for t in rest if rows[t]["baseline_ref"] is not None
+                   and rows[t]["status"] != "applied"], key=lambda t: (-gain(t), t))
+    applied = sorted([t for t in rest if rows[t]["status"] == "applied"
+                      and rows[t]["baseline_ref"] is not None], key=lambda t: (-gain(t), t))
+    return prio + triage + deep + applied
 
 
 def ensure_db_inputs(universe, mode="list"):
@@ -624,9 +725,9 @@ def run_loop():
             heartbeat(phase="halted")
             log("halt/stop requested — exiting 3")
             return 3
-        order = round_order(con, universe, ctl)
+        order = round_order(con, universe, ctl, mode)
         if not order:
-            alert("all tickers parked/paused — sleeping 300s")
+            alert("all tickers parked/paused/ineligible — sleeping 300s")
             heartbeat(phase="all_parked")
             time.sleep(300)
             continue
@@ -640,12 +741,19 @@ def run_loop():
                 return 3
             counters["ticker_new"] = 0
             try:
-                search_ticker(con, t, rnd, ctl, seed, counters)
-                maybe_apply(con, t, read_control())
+                if asset_row(con, t)["baseline_ref"] is None:
+                    triage_ticker(con, t, rnd, ctl, seed, counters)   # ~9 evals, NEVER applies
+                else:
+                    completed = deep_ticker(con, t, rnd, ctl, seed, counters)
+                    if completed:
+                        finish_deep_pass(con, t, read_control(), policy)
+                maybe_apply(con, t, read_control(), policy)
             except Exception as e:
                 set_asset(con, t, status="parked", error=repr(e)[:500])
                 alert(f"{t}: PARKED — {e!r}")
                 log(traceback.format_exc())
+        if policy == "converged":
+            batch_apply(con, read_control())
         con.execute("UPDATE meta SET value=? WHERE key='rounds_completed'", (str(rnd),))
         con.commit()
         log(f"round {rnd} done: {counters['new']} new evaluations")
@@ -667,15 +775,15 @@ def plan_next():
     con = db_connect()
     db_init(con, universe, mode, policy, read_control())
     ctl = read_control()
-    order = round_order(con, universe, ctl)
-    rnd = int(con.execute("SELECT value FROM meta WHERE key='rounds_completed'").fetchone()[0]) + 1
+    order = round_order(con, universe, ctl, mode)
     for t in order:
         ctx = type("Stub", (), {"ticker": t})()   # candidate_stream needs only .ticker
-        for subset, stage, _ in candidate_stream(con, ctx, rnd, ctl):
+        phase = "triage" if asset_row(con, t)["baseline_ref"] is None else "deep"
+        for subset, stage, _ in candidate_stream(con, ctx, phase, ctl):
             key = subset_key(subset)
             if not con.execute("SELECT 1 FROM evaluations WHERE ticker=? AND subset_key=?",
                                (t, key)).fetchone():
-                print(f"{t}\t{stage}\t{key}")
+                print(f"{t}\t{phase}\t{stage}\t{key}")
                 return 0
     print("(no new candidate in the current round shape)")
     return 0
@@ -744,11 +852,94 @@ def manual_apply(t):
     return 1
 
 
+def selfcheck():
+    """No-network-write, no-OOS sanity of the universe-mode machinery. EVERYTHING it touches
+    is redirected into a throwaway dir (db, overrides, alerts, heartbeat) so a selfcheck can
+    run next to the live loop without polluting its state."""
+    import tempfile
+    global DB_PATH, OVERRIDES_PATH, ALERTS, HEARTBEAT
+    tmpdir = tempfile.mkdtemp(prefix="fsw_selfcheck_")
+    DB_PATH = Path(tmpdir) / "t.db"
+    OVERRIDES_PATH = Path(tmpdir) / "overrides.json"
+    ALERTS = Path(tmpdir) / "ALERTS.txt"
+    HEARTBEAT = Path(tmpdir) / "heartbeat.json"
+
+    # 1. universe provider determinism
+    os.environ["SEARCH_UNIVERSE"] = "all"
+    m1 = resolve_mode()
+    m2 = resolve_mode()
+    assert m1 == m2 and m1[0] == "universe" and m1[2] == "converged"
+    assert len(m1[1]) == 503 and m1[1] == sorted(m1[1]) and "BF.B" in m1[1] and "BRK.B" in m1[1]
+    print("1. universe provider deterministic (503 asc, dotted present)")
+
+    # 2. eligibility: Q ineligible, AAPL eligible
+    e = eligibility_map(["Q", "AAPL"])
+    assert not e["Q"][0] and "min_train_bars" in e["Q"][1]
+    assert e["AAPL"][0]
+    print("2. eligibility: Q ->", e["Q"][1][:50], "| AAPL eligible")
+
+    # 3. seed <-> upstream parity
+    import pandas as pd
+    pd.testing.assert_frame_equal(pd.read_parquet(seeds.seed_path("AAPL")),
+                                  seeds.load_bars_from_upstream("AAPL"))
+    print("3. AAPL seed == upstream transform (frame-equal)")
+
+    # 4. converged predicate on fabricated states
+    con = db_connect()
+    os.environ["SEARCH_UNIVERSE"] = "AAPL"
+    db_init(con, ["AAPL"], "universe", "converged", dict(CONTROL_DEFAULTS))
+    ctl = dict(CONTROL_DEFAULTS)
+    cases = [  # (deep_before, pass_start_key, best_key, streak, expect_satisfied)
+        (0, "101", "101", 0, False),    # only 1 completed pass -> below min_deep_rounds
+        (1, "101", "101,201", 3, False),  # adopted + live streak -> not converged
+        (1, "101", "101", 0, True),     # >=2 passes, adopted nothing -> converged
+        (1, "101", "101,201", 8, True),  # adopted but ended on dead streak -> converged
+    ]
+    for i, (deep, start_key, best_key, streak, expect) in enumerate(cases, 1):
+        set_asset(con, "AAPL", status="searching", deep_rounds_done=deep, pass_round=99,
+                  pass_start_best_key=start_key, best_subset_key=best_key,
+                  no_improve_streak=streak, converged_at=None)
+        finish_deep_pass(con, "AAPL", ctl, "converged")
+        got = asset_row(con, "AAPL")["status"] == "satisfied"
+        assert got == expect, f"case {i}: expected {expect}, got {got}"
+    print("4. converged predicate: 4/4 fabricated cases")
+
+    # 5. batch path with a stubbed run_asset
+    global run_asset
+    real_run_asset, real_export = run_asset, seeds.export_seed
+    try:
+        seeds.export_seed = lambda t: None
+        run_asset = lambda t: 0
+        set_asset(con, "AAPL", status="satisfied", best_subset_key="101", best_cv=0.6,
+                  run_asset_attempts=0)
+        import build_db as _bdb
+        real_build = _bdb.build_db
+        _bdb.build_db = lambda: None
+        try:
+            batch_apply(con, ctl)
+        finally:
+            _bdb.build_db = real_build
+        a = asset_row(con, "AAPL")
+        assert a["status"] == "applied" and a["applied_subset_key"] == "101"
+        run_asset = lambda t: 1
+        for _ in range(3):
+            set_asset(con, "AAPL", status="satisfied")
+            _apply_and_run(con, "AAPL", "101", 0.6, asset_row(con, "AAPL")["run_asset_attempts"] or 0,
+                           stage="auto_converged")
+        assert asset_row(con, "AAPL")["status"] == "parked"
+        print("5. batch apply: success->applied; 3 failures->parked")
+    finally:
+        run_asset, seeds.export_seed = real_run_asset, real_export
+    print("SELFCHECK OK")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan-next", action="store_true")
     ap.add_argument("--status", action="store_true")
     ap.add_argument("--apply", metavar="TICKER")
+    ap.add_argument("--selfcheck", action="store_true")
     args = ap.parse_args()
     os.chdir(ROOT)
     if args.status:
@@ -757,6 +948,8 @@ def main():
         return plan_next()
     if args.apply:
         return manual_apply(args.apply)
+    if args.selfcheck:
+        return selfcheck()
     return run_loop()
 
 
