@@ -672,8 +672,12 @@ def round_order(con, universe, ctl, mode="list"):
             return float("-inf")
         return r["best_cv"] - r["baseline_ref"]
     triage = [t for t in rest if rows[t]["baseline_ref"] is None]
+    # Only still-searching tickers deepen. A `satisfied` ticker has converged and is
+    # waiting for the round-end batch_apply (which queries status='satisfied' directly) —
+    # keeping it in the deep rotation would burn a full deep pass per round on a ticker
+    # that is done searching, ballooning the round and starving the batch. Exclude it.
     deep = sorted([t for t in rest if rows[t]["baseline_ref"] is not None
-                   and rows[t]["status"] != "applied"], key=lambda t: (-gain(t), t))
+                   and rows[t]["status"] in ("pending", "searching")], key=lambda t: (-gain(t), t))
     applied = sorted([t for t in rest if rows[t]["status"] == "applied"
                       and rows[t]["baseline_ref"] is not None], key=lambda t: (-gain(t), t))
     return prio + triage + deep + applied
