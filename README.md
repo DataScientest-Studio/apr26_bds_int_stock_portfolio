@@ -1,5 +1,13 @@
 # liora-project-ml-engineering — minimal per-asset ML pipeline (S&P 500)
 
+**Run & use (from `Project/Structure`):**
+
+```bash
+make app         # Tier 1 client app (Streamlit) -> http://localhost:8501 : click tickers (each = $1000), Calculate basket
+make serve       # Tier 2+3 Plan site -> http://localhost:8000/index.html : backend docs + Procedure Lego blueprint
+make dashboard   # refresh the OOS table feed (oos_metrics.db -> Plan/data/dashboard.json); open it via the Plan site -> Dashboard
+```
+
 A minimal, self-contained, reproducible ML trading pipeline with a client-facing
 demo on top. For a chosen ticker it computes layers **L1 → L9** in one notebook and
 leaves exactly **7 deliverable files** in `Assets/<TICKER>/`; the **ML Basket
