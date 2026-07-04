@@ -1,6 +1,6 @@
 # liora-project-ml-engineering — minimal per-asset ML pipeline (S&P 500)
 
-**Run & use (from `Project/Structure`):**
+**Run & use (from the repo root or `Project/Structure`):**
 
 ```bash
 make app         # Tier 1 client app (Streamlit) -> http://localhost:8501 : click tickers (each = $1000), Calculate basket

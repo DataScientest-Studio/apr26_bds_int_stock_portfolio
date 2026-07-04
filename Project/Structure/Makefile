@@ -184,7 +184,7 @@ clean:
 
 on:
 	@python3 build_dashboard.py >/dev/null 2>&1 || true
-	@if [ -f $(PID) ] && kill -0 $$(cat $(PID)) 2>/dev/null; then echo "already running (PID $$(cat $(PID)))"; else rm -f $(PID) $(LOG); nohup python3 -m http.server $(PORT) --directory ../../Plan > $(LOG) 2>&1 & echo $$! > $(PID); sleep 1; kill -0 $$(cat $(PID)) 2>/dev/null && echo "http://localhost:$(PORT)/index.html (PID $$(cat $(PID)))" || { echo "failed to start:"; tail -n 20 $(LOG); rm -f $(PID); exit 1; }; fi
+	@if [ -f $(PID) ] && kill -0 $$(cat $(PID)) 2>/dev/null; then echo "already running: http://localhost:$(PORT)/index.html (PID $$(cat $(PID)))"; else rm -f $(PID) $(LOG); nohup python3 -m http.server $(PORT) --directory ../../Plan > $(LOG) 2>&1 & echo $$! > $(PID); sleep 1; kill -0 $$(cat $(PID)) 2>/dev/null && echo "http://localhost:$(PORT)/index.html (PID $$(cat $(PID)))" || { echo "failed to start:"; tail -n 20 $(LOG); rm -f $(PID); exit 1; }; fi
 	@xdg-open "http://localhost:$(PORT)/index.html" >/dev/null 2>&1 || true
 
 off:
