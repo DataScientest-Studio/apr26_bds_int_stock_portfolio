@@ -525,42 +525,26 @@ table is materialised.
 
 # 8. Modeling
 
-> This section reproduces, in condensed form, the content of the Rendering-2
-> deliverable, [`reports/MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md)
-> (submitted 2026-07-01, not modified further). It documents the machine
-> learning that is *actually implemented* in the repository: a **per-asset,
-> supervised classifier** that turns 1-hour S&P 500 price bars into
-> **Triple-Barrier-labelled trade setups**, trains **one XGBoost
-> (gradient-boosting) model per asset**, tunes it with **Optuna** under a
-> **purged walk-forward** cross-validation, sizes positions with **fractional
-> Kelly**, and is evaluated strictly **out-of-sample (OOS)**.
+> \textcolor{red}{Two modeling tracks were built against the same S\&P 500 universe: a
+> per-asset intraday classifier, and a full-universe regression recommender
+> now wired to the risk questionnaire.}
 
-## 8.1 Scope and report-vs-implementation reconciliation
+\begingroup\color{red}
+## 8.1 Two modeling tracks, explored in parallel
 
-The Liora **Step 3 (Modeling)** deliverable, per `Formalities/Timeline.md`,
-must cover *baseline models → metrics, optimization and model comparison →
-bagging/boosting → deep learning → interpretability → scientific & business
-conclusions*. §8.2 – §8.8 below map to those requirements one-to-one.
+The team pursued two complementary tracks rather than a single pipeline:
 
-**The design changed between renderings — a documented pivot.** Rendering 1
-(`Formalities/Rendering1/REPORT.md`, folded into §1.2 of this document)
-described a **three-stage portfolio recommender**: cluster the S&P 500 by
-risk/return, rank stocks *within* clusters with a regression model, and
-recommend top-*N* per cluster under a sector cap — on **daily** bars with a
-plain `TimeSeriesSplit`. During modeling that design was **superseded** by the
-system documented here. Recording superseded approaches is itself a mentor
-requirement (meeting 2026-05-28), so we state the change plainly:
+- **Track A — Per-asset intraday classifier.** A supervised binary classifier
+  on 1-hour bars with Triple-Barrier labelling, tuned with Optuna, sized with
+  fractional Kelly, built on a 10-asset subset and evaluated out-of-sample.
+- **Track B — Full-universe regression recommender.** A regression-ranking
+  approach across the full 503-ticker universe, targeting a 63-trading-day
+  forward return, feeding a profile-based portfolio layer with a 30% sector
+  cap.
 
-| Rendering-1 design (planned)           | Rendering-2 implementation (actual)              | Why the change                                 |
-| --------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
-| Unsupervised clustering by risk/return  | Removed                                           | No supervised target; hard to defend to a jury |
-| Within-cluster return **regression**    | Per-asset **binary classifier** (Triple-Barrier)  | A clean, tradeable label with leakage control  |
-| **Daily** bars                          | **1h** primary + 1d/1w/cross-TF context features  | Richer intra-asset structure                   |
-| Plain `TimeSeriesSplit`                 | **Purged walk-forward + embargo**                 | Removes label-overlap leakage                  |
-| Sector cap / recommendation list        | Per-asset **Kelly** sizing + OOS backtest         | Direct economic evaluation per asset           |
-
-This section describes **what runs in the code today**; §10 revisits what this
-means for the original questionnaire-driven recommender framed in §1.
+Neither implements the unsupervised clustering originally proposed; both
+replaced it with a supervised or rule-based layer.
+\endgroup
 
 ## 8.2 Problem framing and the learning target
 
@@ -768,7 +752,7 @@ formula, unit and timeframe.
 ## 8.8 From model to deployable artifact
 
 Each asset's trained booster is frozen into a self-contained, self-verifying
-file `Assets/<TICKER>/strategy_<TICKER>.py` (`asset_writers.py`,
+file `Assets/TICKER/strategy_TICKER.py` (`asset_writers.py`,
 `strategy_meta`): the model is serialized with `booster.save_raw()` and
 embedded as a base64 string, a `MODEL_HASH` (SHA-256 of the raw bytes) guards
 integrity on load, and golden vectors (the first few training rows) and their
@@ -777,6 +761,60 @@ when the file is loaded. This satisfies the defense requirement of **no
 re-training at runtime** (Timeline Step 5) and, together with fixed seeding
 and pinned libraries, makes the OOS results reproducible. The artifact is a
 frozen predictor, not a notebook to re-run.
+
+\begingroup\color{red}
+## 8.9 Track B — Full-universe regression recommender
+
+**Dataset.** The full six-year Alpaca IEX window available at run time: 503
+S&P 500 tickers, 2020-07-27 → 2026-06-08 (5.86 years, 1,474 trading dates),
+729,313 price rows, 0 missing OHLCV/adjusted-close values. Shortest-history
+constituents: `SNDK`, `PSKY`, `Q`, plus newer entrants `FDXF`, `GEV`, `SOLV`,
+`VLTO`, `KVUE`, `GEHC` and `WBD`.
+
+**Target and split.** The target is `target_63d_return` — the forward return
+roughly three market months out (63 trading days), ranking stocks rather than
+predicting an exact price. A fixed time-based split (train 2020-10-20 →
+2024-12-31, test 2025-01-02 → 2026-03-09) compares five candidate models:
+
+| Model                              | MAE   | RMSE  | Spearman rank corr. | Top-5 avg. actual return |
+| ----------------------------------- | ----: | ----: | -------------------: | ------------------------: |
+| Ridge (baseline)                   | 0.134 | 0.203 | **0.164**             | **0.343**                 |
+| Random Forest                      | 0.135 | 0.207 | 0.083                 | 0.216                      |
+| Random Forest, no `history_days`   | 0.135 | 0.205 | 0.110                 | 0.301                      |
+| XGBoost, no `history_days`         | 0.137 | 0.210 | 0.060                 | 0.179                      |
+| ROCm PyTorch MLP                   | 0.342 | 0.430 | −0.020                | 0.179                      |
+
+`history_days` — a feature suspected of leaking listing-recency information —
+is deliberately dropped from the two "no `history_days`" variants and from the
+production candidate.
+
+**Walk-forward validation.** The no-`history_days` Random Forest, retrained on
+expanding history across 13 rolling 63-day folds, beat the universe average
+return on **9 of 13 folds** (mean top-5 return 18.2% vs. mean universe return
+4.7%) — a more realistic view than the single fixed split.
+
+**Portfolio construction.** Rankings from the no-`history_days` Random Forest
+feed a rule-based portfolio layer: 10 stocks, equal-weighted, **≤30% per
+sector**.
+
+| Profile      | Expected 63-day return | Avg. 60-day volatility | Sectors | Max sector weight |
+| ------------ | -----------------------: | ------------------------: | ------: | ------------------: |
+| Conservative | 6.8%                     | 28.4%                     | 6       | 30%                  |
+| Balanced     | 8.4%                     | 40.6%                     | 5       | 30%                  |
+| Aggressive   | 12.7%                    | 53.5%                     | 5       | 30%                  |
+
+**Wired to the risk questionnaire.** The 9-question risk-assessment form now
+prefills this portfolio layer's controls — risk profile, volatility cap,
+portfolio size, ranking objective, sector cap and excluded sectors — directly
+from the user's answers.
+
+**Honest headline.** Ridge, the simplest model, had the best rank correlation
+and top-5 actual return on the fixed split; the no-`history_days` Random
+Forest is used in the running app because it balances performance,
+explainability and walk-forward robustness better than the alternatives — not
+because it topped every metric. Neither XGBoost nor the ROCm PyTorch MLP beat
+the simpler baselines on this universe.
+\endgroup
 
 \newpage
 
@@ -815,12 +853,30 @@ and the project's disclaimer stands.
   used native missing-value handling — a methodological asymmetry, not a
   confound, but worth stating plainly.
 - The **with-vs.-without-outlier study** the mentor asked for (§5.2, §7.6,
-  the SNDK protocol) was **not run** on this 10-asset universe — it targeted
-  the full S&P 500 clustering design that this rendering superseded (§8.1).
-- **Universe and scope narrowed without an explicit sign-off.** §8.1
-  documents a design pivot from the full S&P 500 clustering/ranking/
-  recommendation pipeline (§1.2) to a **10-asset** per-ticker classifier; §10
-  addresses what this means for the beginner questionnaire promised in §1.
+  the SNDK protocol) was **not run** on either track's universe.
+\begingroup\color{red}
+- **Universe scope.** Track A runs on a 10-asset subset; Track B runs on the
+  **full 503-ticker S&P 500 universe**.
+
+## 9.4 Reconciling the two tracks
+
+Track A and Track B answer different questions, and neither alone fulfils the
+original proposal end to end:
+
+- **Fidelity to the original proposal.** Track B is the closer match: full
+  universe, a 3-month-ish forward-return horizon, an enforced 30% sector cap,
+  and the risk questionnaire feeding its portfolio controls directly. Track A
+  trades a narrower universe on an intraday horizon with no sector-cap
+  mechanism.
+- **Rigor of the negative result.** Track A reports a weak, mostly
+  unprofitable OOS result plainly rather than overselling it. Track B is
+  equally honest that the simplest model (Ridge) outperforms the fancier ones
+  on this data.
+- **What ships as "the recommender."** The running app presents Track B,
+  wired to the questionnaire, as the beginner-facing recommender; Track A
+  stands on its own as a separate exploration of short-horizon trading
+  signals on a subset of names.
+\endgroup
 
 \newpage
 
@@ -845,7 +901,7 @@ and the project's disclaimer stands.
 
 ## A. Reproducibility
 
-**Data acquisition, EDA and pre-processing (§2 – §7):**
+**Data acquisition, EDA and pre-processing:**
 
 ```bash
 git clone <repo-url> && cd apr26_bds_int_stock_portfolio
@@ -857,59 +913,57 @@ python reports/make_figures.py            # regenerate figures + printed statist
 ./reports/build_pdf.sh                    # rebuild this PDF
 ```
 
-Every figure and statistic in §2 – §7 is produced by `reports/make_figures.py`;
-no number in that range is hand-entered.
+Every EDA figure and statistic is produced by `reports/make_figures.py`; no
+number is hand-entered.
 
-**Modeling (§8 – §9):** the code that produced §8 – §9 lives on the
-**`ml-modeling-part`** branch, not on `main` — checking out `main` alone is not
-enough to reproduce these numbers.
+**Modeling:** the modeling code lives on the **`ml-modeling-part`** branch,
+not on `main` — checking out `main` alone is not enough to reproduce these
+numbers.
 
 ```bash
 git checkout ml-modeling-part
 cd Project/Structure
 python -m pip install -r requirements.txt          # includes scikit-learn==1.7.2
 make loop "AAPL AMZN GOOGL JNJ JPM META MSFT NVDA TSLA XOM"   # -> Assets/<T>/ + oos_metrics.db
-python reports/compare_xgb_vs_rf.py                 # the §8.5 XGBoost-vs-RandomForest table
+python reports/compare_xgb_vs_rf.py                 # the XGBoost-vs-RandomForest table
 ```
 
-The §8.4.3 cross-asset table is read directly from `oos_metrics.db`; the §8.5
-comparison is produced by `reports/compare_xgb_vs_rf.py`. No metric in §8 – §9
-is hand-entered. `ml-modeling-part` merges to `main` after mentor approval.
+The cross-asset table is read directly from `oos_metrics.db`; the comparison
+table is produced by `reports/compare_xgb_vs_rf.py`. No modeling metric is
+hand-entered. `ml-modeling-part` merges to `main` after mentor approval.
 
 ## B. Computing environment
 
-**EDA / pre-processing (§2 – §7):** macOS (Darwin 25.x), **Python 3.14**, with
+**EDA / pre-processing:** macOS (Darwin 25.x), **Python 3.14**, with
 `pandas 3.0`, `numpy 2.4`, `scipy 1.17`, `matplotlib 3.10` and `seaborn`; data
 access via `alpaca-py`. The PDF is rendered with Pandoc + XeLaTeX using the
 Eisvogel template (`reports/build_pdf.sh`). Exact versions are pinned in
 `requirements.txt`.
 
-**Modeling (§8 – §9):** Python 3.12, on the `ml-modeling-part` branch:
-`xgboost 3.3.0`, `optuna 4.8.0`, `numpy 2.5.0`, `pandas 2.2.3`, `pyarrow 24.0.0`,
-`duckdb 1.5.4`, `scikit-learn 1.7.2`. Determinism: fixed seed 42,
-`XGBOOST_N_JOBS = 1`, pinned dependency set.
+**Modeling:** Python 3.12, on the `ml-modeling-part` branch: `xgboost 3.3.0`,
+`optuna 4.8.0`, `numpy 2.5.0`, `pandas 2.2.3`, `pyarrow 24.0.0`, `duckdb 1.5.4`,
+`scikit-learn 1.7.2`. Determinism: fixed seed 42, `XGBOOST_N_JOBS = 1`, pinned
+dependency set.
 
 ## C. Streamlit application
 
 The exploratory dashboard (`app.py`) serves the six EDA figures interactively
 and is the basis for the defense demo. A **Risk Assessment** page (9-question
-investor questionnaire) has since been added — it collects answers into
-session state but is **not yet wired** to the §8 modeling scripts; closing that
-gap is tracked as an open item ahead of the final report. A separate, static
-visualization app (`Plan/index.html` on `ml-modeling-part`, with
-`main_data_flow.html`, `configurations.html`, `glossary.html` and
-`dashboard.html` views) is a no-retraining companion to the §8 – §9 results
-for the oral defense.
+investor questionnaire) has since been added and now prefills the full-universe
+recommender's preferences. A separate, static visualization app
+(`Plan/index.html` on `ml-modeling-part`, with `main_data_flow.html`,
+`configurations.html`, `glossary.html` and `dashboard.html` views) is a
+no-retraining companion for the oral defense.
 
 ## D. Glossary
 
 Adjusted close, log-return, annualised volatility, beta, max drawdown, Sharpe
 ratio, IEX vs. SIP feed, survivorship bias, look-ahead leakage,
-`TimeSeriesSplit` — §2 – §7. Triple-Barrier label, ATR, AUC-PR, ROC-AUC, purged
+`TimeSeriesSplit`, Triple-Barrier label, ATR, AUC-PR, ROC-AUC, purged
 walk-forward, embargo, TPE sampler, MedianPruner, fractional Kelly, stochastic
 gradient boosting, bagging / bootstrap aggregation, native missing-value
-handling, TreeSHAP, profit factor — §8 – §9. Full definitions to be expanded
-for the final report.
+handling, TreeSHAP, profit factor. Full definitions to be expanded for the
+final report.
 
 ## E. Bibliography
 
