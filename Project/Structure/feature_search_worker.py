@@ -60,6 +60,13 @@ HALT_FLAG = LOG_DIR / "HALT.flag"
 DEFAULT_UNIVERSE = ("AAPL MSFT NVDA AMZN GOOGL META TSLA AVGO LLY JPM "
                     "V UNH XOM MA COST PG HD JNJ WMT NFLX")
 
+THREAD_ENV_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                   "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+PARALLEL_STALL_TIMEOUT_S = 1800   # no ticker completes in this window -> pool wedged -> recreate
+PARALLEL_MAX_RESTARTS = 6         # bounded self-heal after worker death / stall
+SEARCH_GRACE_S = 1800            # heartbeat grace during the parallel search phase
+_IN_POOL = False                 # True inside a spawn worker -> heartbeat() stays silent there
+
 CONTROL_DEFAULTS = {
     "schema_version": "search_control.v1",
     "epsilon": 0.0005,
@@ -131,10 +138,59 @@ def alert(msg):
 
 
 def heartbeat(**kw):
+    # ProcessPool workers stay silent — the coordinator owns the beat. Threads in the apply
+    # phase each write via a per-writer temp name so concurrent renames are last-wins, never torn.
+    if _IN_POOL:
+        return
+    import threading
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    tmp = HEARTBEAT.with_suffix(".tmp")
+    tmp = HEARTBEAT.with_suffix(f".tmp.{os.getpid()}.{threading.get_ident()}")
     tmp.write_text(json.dumps({"ts": utcnow(), **kw}), encoding="utf-8")
     os.replace(tmp, HEARTBEAT)
+
+
+def _set_thread_env(n=1):
+    for v in THREAD_ENV_VARS:
+        os.environ[v] = str(n)
+
+
+def _die_with_parent():
+    """Linux: ask the kernel to SIGKILL this worker the instant the coordinator dies, so a
+    kill -9 of the coordinator (e.g. the supervisor relaunching a dead pane) never leaves
+    orphaned spawn workers eating CPU. No-op off Linux / if prctl is unavailable."""
+    try:
+        import ctypes
+        PR_SET_PDEATHSIG = 1
+        ctypes.CDLL("libc.so.6", use_errno=True).prctl(PR_SET_PDEATHSIG, 9, 0, 0, 0)
+    except Exception:
+        pass
+
+
+def _pool_worker_init():
+    """Runs once per spawned search worker, before any xgboost/duckdb import inside a task:
+    die with the parent, pin every math-lib thread count to 1 (byte-identity needs nthread=1),
+    re-seed."""
+    global _IN_POOL
+    _IN_POOL = True
+    _die_with_parent()
+    _set_thread_env(1)
+    P.seed_everything()
+
+
+def _resolve_jobs(mode, policy="converged"):
+    """Parallel worker count. Parallel search is only valid with apply_policy=converged, where
+    applies are coordinator-owned (batch phase). List mode and the satisfied policy both imply
+    inline apply-as-you-go (run_asset + shared-file writes per ticker) -> clamp to sequential
+    (byte-identical legacy path, no shared-write race). Universe+converged honours SEARCH_JOBS
+    (default cpu_count-1)."""
+    if mode == "list" or policy != "converged":
+        return 1
+    return max(1, int(os.environ.get("SEARCH_JOBS") or (os.cpu_count() or 2) - 1))
+
+
+def _apply_jobs():
+    return max(1, int(os.environ.get("APPLY_JOBS") or os.environ.get("SEARCH_JOBS")
+                      or (os.cpu_count() or 2) - 1))
 
 
 def stop_requested(ctl):
@@ -728,12 +784,127 @@ def ensure_db_inputs(universe, mode="list"):
         build_db.build_db()
 
 
+# ------------------------------------------------------ parallel search round ---
+
+def _process_one_ticker(con, t, rnd, policy, seed, counters):
+    """One ticker's search unit for round rnd (triage OR one deep pass) + maybe_apply.
+    Reads/writes ONLY ticker t's rows (disjoint from every other ticker). Raises -> caller parks."""
+    if asset_row(con, t)["baseline_ref"] is None:
+        triage_ticker(con, t, rnd, read_control(), seed, counters)   # ~9 evals, NEVER applies
+    else:
+        if deep_ticker(con, t, rnd, read_control(), seed, counters):
+            finish_deep_pass(con, t, read_control(), policy)
+    maybe_apply(con, t, read_control(), policy)
+
+
+def _search_one_ticker(ticker, rnd, policy, seed):
+    """Picklable ProcessPool task: process one ticker with its OWN sqlite connection (spawn -
+    nothing inherited). Never runs run_asset (apply is coordinator-owned; under converged,
+    maybe_apply only sets pending_better). Returns a small result dict."""
+    con = db_connect()
+    counters = {"new": 0, "ticker_new": 0}
+    try:
+        ctl = read_control()
+        a = asset_row(con, ticker)
+        if a is None or stop_requested(ctl) or ticker in ctl["paused_tickers"]:
+            return {"ticker": ticker, "ok": True, "new": 0, "skipped": True}
+        _process_one_ticker(con, ticker, rnd, policy, seed, counters)
+        return {"ticker": ticker, "ok": True, "new": counters["new"]}
+    except Exception as e:
+        try:
+            set_asset(con, ticker, status="parked", error=repr(e)[:500])
+        except Exception:
+            pass
+        return {"ticker": ticker, "ok": False, "new": counters["new"], "error": repr(e)[:500]}
+    finally:
+        con.close()
+
+
+def _search_round_sequential(con, order, rnd, policy, seed):
+    """Legacy single-process path (list mode / SEARCH_JOBS=1) — byte-identical to the old loop."""
+    total_new = 0
+    for t in order:
+        if stop_requested(read_control()):
+            break
+        counters = {"new": 0, "ticker_new": 0}
+        try:
+            _process_one_ticker(con, t, rnd, policy, seed, counters)
+        except Exception as e:
+            set_asset(con, t, status="parked", error=repr(e)[:500])
+            alert(f"{t}: PARKED — {e!r}")
+            log(traceback.format_exc())
+        total_new += counters["new"]
+    return total_new
+
+
+def _run_search_round(con, order, rnd, policy, seed, jobs):
+    """Parallel search phase: N spawn workers, one self-contained ticker unit each, dispatched
+    continuously (executor keeps N in flight). Each ticker is submitted once and consumed once
+    (never concurrent with itself), so per-ticker rows stay race-free under WAL. Self-heals a
+    dead/stalled pool by recreating it and resubmitting the not-yet-consumed tickers (keyed
+    evals make replay idempotent). Barrier at the end frees worker RSS before the apply phase."""
+    if jobs <= 1:
+        return _search_round_sequential(con, order, rnd, policy, seed)
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor, FIRST_COMPLETED, wait
+    from concurrent.futures.process import BrokenProcessPool
+    ctx = mp.get_context("spawn")
+    consumed, total_new = set(), 0
+    log(f"round {rnd}: parallel search — {jobs} jobs over {len(order)} tickers")
+    for attempt in range(1, PARALLEL_MAX_RESTARTS + 1):
+        todo = [t for t in order if t not in consumed]
+        if not todo or stop_requested(read_control()):
+            break
+        if attempt > 1:
+            log(f"search pool restart {attempt}/{PARALLEL_MAX_RESTARTS}: {len(todo)} tickers left")
+        ex = ProcessPoolExecutor(max_workers=jobs, mp_context=ctx, initializer=_pool_worker_init)
+        futs = {ex.submit(_search_one_ticker, t, rnd, policy, seed): t for t in todo}
+        pending, broken = set(futs), False
+        try:
+            while pending:
+                if stop_requested(read_control()):
+                    break
+                done, pending = wait(pending, timeout=PARALLEL_STALL_TIMEOUT_S,
+                                     return_when=FIRST_COMPLETED)
+                if not done:
+                    log("search stalled (no completion in the window) -> recreate pool")
+                    broken = True
+                    break
+                for fut in done:
+                    t = futs[fut]
+                    try:
+                        res = fut.result()
+                    except BrokenProcessPool:
+                        broken = True
+                        continue                       # casualty: not consumed -> resubmitted
+                    except Exception as e:
+                        res = {"ticker": t, "ok": False, "new": 0, "error": repr(e)[:500]}
+                    consumed.add(t)
+                    total_new += res.get("new", 0)
+                    if not res.get("ok", True):
+                        alert(f"{t}: PARKED — {res.get('error')}")
+                heartbeat(phase="search", round=rnd, in_flight=len(pending),
+                          done=len(consumed), total=len(order), new=total_new, grace_s=SEARCH_GRACE_S)
+                if broken:
+                    break
+        except BrokenProcessPool as e:
+            log(f"search pool broken ({e!r}) -> recreate")
+            broken = True
+        finally:
+            ex.shutdown(wait=False, cancel_futures=True)   # barrier: free worker RSS before APPLY
+        if not broken or stop_requested(read_control()):
+            break
+    return total_new
+
+
 # -------------------------------------------------------------------- main ---
 
 def run_loop():
     seed = P.seed_everything()
     P.validate_parameters()
     mode, universe, policy = resolve_mode()
+    jobs = _resolve_jobs(mode, policy)
+    _set_thread_env(1)                       # pin the coordinator too (build_db / duckdb)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     ensure_db_inputs(universe, mode)
     con = db_connect()
@@ -741,7 +912,7 @@ def run_loop():
     db_init(con, universe, mode, policy, ctl)
     mirror_apply_policy(policy)
     log(f"worker up: mode={mode}, apply_policy={policy}, universe={len(universe)} tickers, "
-        f"optional ids={len(OPTIONAL_IDS)}")
+        f"jobs={jobs}, optional ids={len(OPTIONAL_IDS)}")
     while True:
         ctl = read_control()
         if stop_requested(ctl):
@@ -756,31 +927,16 @@ def run_loop():
             continue
         rnd_done = int(con.execute("SELECT value FROM meta WHERE key='rounds_completed'").fetchone()[0])
         rnd = rnd_done + 1
-        counters = {"new": 0, "ticker_new": 0}
         log(f"=== round {rnd}: {len(order)} tickers ===")
-        for t in order:
-            ctl = read_control()
-            if stop_requested(ctl):
-                return 3
-            counters["ticker_new"] = 0
-            try:
-                if asset_row(con, t)["baseline_ref"] is None:
-                    triage_ticker(con, t, rnd, ctl, seed, counters)   # ~9 evals, NEVER applies
-                else:
-                    completed = deep_ticker(con, t, rnd, ctl, seed, counters)
-                    if completed:
-                        finish_deep_pass(con, t, read_control(), policy)
-                maybe_apply(con, t, read_control(), policy)
-            except Exception as e:
-                set_asset(con, t, status="parked", error=repr(e)[:500])
-                alert(f"{t}: PARKED — {e!r}")
-                log(traceback.format_exc())
+        total_new = _run_search_round(con, order, rnd, policy, seed, jobs)
+        if stop_requested(read_control()):
+            return 3
         if policy == "converged":
-            _run_apply_round(con)
+            _run_apply_round(con, jobs)
         con.execute("UPDATE meta SET value=? WHERE key='rounds_completed'", (str(rnd),))
         con.commit()
-        log(f"round {rnd} done: {counters['new']} new evaluations")
-        if counters["new"] == 0:
+        log(f"round {rnd} done: {total_new} new evaluations")
+        if total_new == 0:
             heartbeat(phase="idle", round=rnd)
             log("no new evaluations this round — space exhausted for now; sleeping 600s")
             for _ in range(20):
@@ -953,6 +1109,13 @@ def selfcheck():
         print("5. batch apply: success->applied; 3 failures->parked")
     finally:
         run_asset, seeds.export_seed = real_run_asset, real_export
+
+    # 6. jobs resolution: universe honours SEARCH_JOBS; list mode is clamped sequential
+    os.environ["SEARCH_JOBS"] = "2"
+    assert _resolve_jobs("universe", "converged") == 2 and _resolve_jobs("list", "converged") == 1
+    assert _resolve_jobs("universe", "satisfied") == 1   # satisfied policy -> sequential (no inline-apply race)
+    os.environ.pop("SEARCH_JOBS", None)
+    print("6. jobs resolution: universe=SEARCH_JOBS, list clamped to 1")
     print("SELFCHECK OK")
     return 0
 
