@@ -259,6 +259,44 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   (namespace order, ascending ids); `validate_parameters` guards every knob's domain.
 - **DEPENDS:** upstream: L5 · downstream: L7 · scope: per-asset.
 
+## Kontrakt replikacji — S.1 per-asset feature search (continuous research plane)
+
+- **CEL:** continuously search, per asset, for a sensible subset of the OPTIONAL coarse
+  features (1d/1w/multi_tf) — the 1h namespace stays frozen — until the operator stops
+  the loop; selection is Train-only.
+- **INPUT:** the superset Output B (<!--na:n_features_total-->56<!--/na--> X) per ticker,
+  built once per round via `derive_output_b`; `search_control.json` (agent-tunable knobs);
+  the seed universe (`SEARCH_TICKERS`, default top-20 mcap).
+- **TRANSFORM:** `feature_search_worker.py` runs ROUNDS over the non-problematic tickers
+  forever: stage-1 baselines (1h-only, all-<!--na:n_features_total-->56<!--/na-->) +
+  8 namespace-block combos → stage-2 deterministic greedy forward/backward → stage-3
+  agent-suggested subsets (validated fail-closed) → deeper rounds pair-swap / restart
+  from k-th best / add-remove-2. Each candidate = a column slice of the shared superset,
+  scored by mean purged-WF CV AUC-PR (fixed `fallback_params`, k=4, seed 42); evaluations
+  are keyed in `search_state.db` (WAL, single writer) so a resume or later round never
+  re-evaluates a subset. An erroring ticker is PARKED (status + error + alert) and the
+  round continues over the healthy rest.
+- **OUTPUT:** on the FIRST time a ticker reaches `satisfied`
+  (`best_cv ≥ max(cv(1h-only), cv(all)) + min_gain`): the winner is written atomically to
+  the gitignored `config/per_asset_feature_overrides.json` and `run_asset.py` fires once
+  (full Optuna + the asset's SINGLE OOS read) → status `applied`. Later Train-CV
+  improvements only set `pending_better` — re-apply (a deliberate second OOS read) is
+  manual: `make search-apply TICKER=…`.
+- **INWARIANTY:** selection never reads OOS and an OOS result never reopens selection;
+  overrides never touch ids 1–99 (three enforcement layers + `mandatory_core_feature_names`
+  backstop); the next candidate is a pure function of (state db, control file, round);
+  the loop has NO completion condition — it stops only via STOP.flag / HALT.flag /
+  `make search-off`; results stay framed as research (survivorship, corp-actions deferred).
+- **KNOBS:** `search_control.json` (gitignored runtime, NOT in configurations.html):
+  epsilon=0.0005 · no_improve_N=8 · min_gain=0.002 · round_budget_evals=150 ·
+  priorities · paused_tickers · stage3_candidates · halt.
+- **TESTY AKCEPTACYJNE:** kill -9 of the worker mid-round resumes without re-evaluating
+  any stored subset key; an override containing a 1h id raises RuntimeError; a parked
+  ticker does not stop the round; `applied` status survives later rounds with no second
+  `run_asset` (pending_better only).
+- **DEPENDS:** upstream: L6 · downstream: L7 · scope: offline research plane
+  (`make search-on`, tmux-supervised, runs until interrupted).
+
 ## Kontrakt replikacji — L7 Optuna HPO + Kelly calibration
 
 - **CEL:** tune only the XGB hyperparameters on Train CV, then calibrate one per-asset Kelly λ on

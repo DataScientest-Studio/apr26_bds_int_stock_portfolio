@@ -74,6 +74,17 @@ make build                     # regenerate Plan/*.html from *.tmpl + Markdown m
 make check                     # fail-closed gate: drift / stray literals / lego<->SOT crossmatch
 ```
 
+The continuous per-asset feature search (S.1) runs detached in tmux and keeps going
+until you stop it — see the S.1 block in `Project/endproduct/Layers_Short_SOT.md`:
+
+```bash
+make search-on                 # launch the supervised search loop (top-20 by default)
+make search-status             # per-ticker status / best CV / pending_better
+make search-agent-on           # optional: Claude Sonnet steering via /loop
+make search-apply TICKER=AAPL  # manual re-apply (a deliberate second OOS read)
+make search-off                # graceful stop
+```
+
 The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in
 `reports/compare_xgb_vs_rf.py`. Run `make help` for the full operator surface.
 

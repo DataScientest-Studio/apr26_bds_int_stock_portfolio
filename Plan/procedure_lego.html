@@ -9,7 +9,7 @@
   ============================================================================
   PROCEDURE LEGO · aplikacja 1-plikowa (zero zależności/builda)
   Minimalny per-asset pipeline S&P 500: warstwy L1–L9 + guardy G.1–G.3 +
-  pochodny dashboard D.1 w 5 torach. POCHODNA SOT: treść klocków = bloki
+  ciągły search plane S.1 + pochodny dashboard D.1 w 5 torach. POCHODNA SOT: treść klocków = bloki
   "Kontrakt replikacji" w Project/endproduct/Layers_Short_SOT.md (przy
   rozbieżności wygrywa SOT). Liczby data-state + config renderowane przez
   Project/Structure/config/data_state_numbers_gate.py (tokeny {{...}} w .tmpl);
@@ -291,7 +291,7 @@
     const GROUPS = [
       {id:'s1', name:'S1 DATA', color:'#55c7a4', subtitle:'Źródło → zachowana prawda danych (L1–L4)'},
       {id:'s2', name:'S2 SPLIT+FEATURES+LABEL', color:'#FF5C6C', subtitle:'Split z purge/embargo → X/Y Triple Barrier (L5–L6)'},
-      {id:'s3', name:'S3 TRAINING', color:'#f0ae54', subtitle:'Optuna HPO + Kelly → frozen XGB strategy (L7–L8)'},
+      {id:'s3', name:'S3 TRAINING', color:'#f0ae54', subtitle:'Feature search → Optuna HPO + Kelly → frozen XGB strategy (S.1, L7–L8)'},
       {id:'s4', name:'S4 OOS+PRODUCT', color:'#ef7898', subtitle:'One-shot OOS → 7-plikowy deliverable → dashboard (L9, D.1)'},
       {id:'sg', name:'GUARDS', color:'#54B8FF', subtitle:'Bramki fail-closed: source QC na odczycie → szczelność splitu → akceptacja + kontrakt 7 plików'}
     ];
@@ -361,6 +361,14 @@
        knobs:["H=24", "TB_ATR_MULTIPLIER=1.0", "W_ATR=14 (wilder)", "SIGNAL_MOMENTUM_FEATURE=log_return_5", "SIGNAL_ZERO_POLICY=skip", "BARRIER_MODE=close", "COMMISSION_BPS=1", "SLIPPAGE_BPS=2"],
        test:["make feature-search prints the resolved 56-feature manifest (namespace order, ascending ids)", "validate_parameters guards every knob's domain"],
        depends:["L5"]},
+      {id:"S.1", group:"s3", title:"per-asset feature search (continuous)", kind:"tmux-supervised research plane — runs until interrupted", short:"rounds over healthy tickers → sensible optional-feature subset per asset", viz:"optuna",
+       input:["the superset Output B (56 X) per ticker, built once per round via derive_output_b", "search_control.json (agent-tunable: epsilon, min_gain, priorities, stage-3 candidates, halt)", "the seed universe (SEARCH_TICKERS, default top-20 mcap)"],
+       transform:["feature_search_worker.py loops ROUNDS forever over the non-parked tickers: stage-1 baselines (1h-only, all) + 8 namespace-block combos; stage-2 deterministic greedy; stage-3 agent candidates (validated fail-closed); deeper rounds pair-swap / restart from k-th best / add-remove-2.", "Each candidate = a column slice of the shared superset, scored by mean purged-WF CV AUC-PR (fixed fallback_params, k=4, seed 42); evaluations keyed in search_state.db — a resume or later round never re-evaluates a subset.", "An erroring ticker is PARKED (status + error + alert) and the round continues over the healthy rest.", "First `satisfied` (best_cv ≥ max baseline + min_gain) → winner atomically to the gitignored per_asset_feature_overrides.json → run_asset.py once (the asset's SINGLE OOS read) → applied; later Train-CV improvements only set pending_better (manual make search-apply)."],
+       output:"config/per_asset_feature_overrides.json (gitignored winner per ticker) + search_state.db evaluations + applied assets regenerated with their override",
+       invariant:["Selection never reads OOS; an OOS result never reopens selection; re-apply is a deliberate manual decision.", "Overrides never touch ids 1-99 (three enforcement layers; the 1h eligibility gate stays stable).", "The next candidate is a pure function of (state db, control file, round).", "No completion condition — the loop stops only via STOP.flag / HALT.flag / make search-off."],
+       knobs:["epsilon=0.0005", "min_gain=0.002", "no_improve_N=8", "round_budget_evals=150", "SEARCH_TICKERS=top-20 mcap (Makefile)"],
+       test:["kill -9 mid-round resumes without re-evaluating any stored subset key", "an override containing a 1h id raises RuntimeError", "`applied` survives later rounds with no second run_asset (pending_better only)"],
+       depends:["L6"]},
       {id:"L7", group:"s3", title:"Optuna HPO + Kelly calibration", kind:"purged walk-forward HPO + sizing calibration", short:"Train CV → best XGB params + per-asset Kelly λ", viz:"optuna",
        input:["Output B + bounds (Train), seed=42", "search space config/xgboost_optuna_search_space.json"],
        transform:["layer7_optuna: TPESampler(seed=42) + MedianPruner(warmup 2), 200 trials; metric = tie-invariant AUC-PR averaged over purged_wf_folds k=4; single-class / fold-less data ⇒ deterministic fallback_params.", "Suggest order and bounds are registry-driven from the search-space JSON (7 XGB params).", "calibrate_kelly: GridSampler over λ ∈ [0.05, 1.0] × 20 points; per fold a fold-model predicts out-of-fold and run_engine replays the validation range with f = clip(λ·(2p−1), 0, 1.0); objective = Σ log growth; ties → the smallest λ."],
@@ -448,6 +456,12 @@
         inwarianty:["X tylko z danych ≤ close[t0]; przyszłość wyłącznie w pasie etykiety [t0, t0+H]", "kolumny audytowe nigdy nie wchodzą do DMatrix", "Y_outcome = 1 wtedy i tylko wtedy, gdy lokalny NET return > 0"],
         testy:["make feature-search drukuje manifest (kolejność namespace, rosnące id)", "validate_parameters pilnuje domen wszystkich knobów"],
         zasady:["nowa cecha wchodzi przez rejestr namespace (implemented:true) — nigdy przez kod poza rejestrem", "cechy licz wektorowo raz na cały frame, nie per event"]},
+      "S.1":{
+        cel:"Zbuduj ciągłą, nadzorowaną pętlę per-asset szukającą sensownego podzbioru cech opcjonalnych (1d/1w/multi_tf; 1h zamrożone) — działającą w tmux po rozłączeniu terminala, aż do przerwania przez operatora.",
+        decyzje:["pętla ciągła bez warunku końca (rundy po zdrowych tickerach) — bo przestrzeń jest duża, a wartość rośnie z czasem pracy; koniec wyznacza operator (make search-off), nie algorytm", "problematyczny ticker = parked + alert, runda toczy się dalej — bo jeden zepsuty seed nie może zatrzymać całego uniwersum (lekcja z supervisora projektu 07: alert, nie kill)", "selekcja WYŁĄCZNIE na Train purged-WF CV AUC-PR ze stałymi fallback_params — bo zmienny model mieszałby wkład cech z wkładem hiperparametrów, a OOS użyty do selekcji przestałby być OOS", "apply + jedyny odczyt OOS przy PIERWSZYM satisfied (best ≥ max(baseline 1h-only, baseline all) + min_gain), potem tylko pending_better i ręczny re-apply — bo pętla ciągła z automatycznym re-apply zamieniłaby OOS w drugi zbiór treningowy", "ewaluacje kluczowane w sqlite (WAL, jeden pisarz) — bo resume po kill/restart i kolejne rundy nie mogą liczyć tego samego podzbioru dwa razy", "warstwa sterująca = agent Sonnet przez /loop edytujący TYLKO search_control.json — bo szkielet ma być w pełni deterministyczny i samowystarczalny, a agent tylko przestawia priorytety/kandydatów i alarmuje", "nadzór trójwarstwowy (resume-loop → watchdog alert-only z grace dla run_asset → zewnętrzny supervisor z HALT.flag i ochroną przed crash-stormem) — bo pętla ma przeżyć rozłączenie, OOM i padnięcie całej sesji tmux"],
+        inwarianty:["override nigdy nie dotyka id 1–99 (schema bez 1h + RuntimeError w resolverze + assert workera)", "OOS czytany raz per asset; wynik OOS nigdy nie cofa selekcji", "następny kandydat = czysta funkcja (stan db + control + runda)", "kill po PID-file/pane, nigdy pkill po nazwie"],
+        testy:["kill -9 workera w środku rundy → wznowienie bez ponownej ewaluacji żadnego klucza", "kandydat agenta z id 1h → odrzucony fail-closed z alertem", "status applied przeżywa kolejne rundy bez drugiego run_asset (tylko pending_better)"],
+        zasady:["nowe etapy przeszukiwania dodawaj w candidate_stream (deterministyczna enumeracja), nigdy przez losowość bez ziarna", "stan pętli jest regenerowalny i gitignorowany — commituje się kod i kontrakty, nie wyniki przeszukiwania"]},
       "L7":{
         cel:"Wystrój wyłącznie hiperparametry XGB na purged walk-forward CV w Train (AUC-PR), a potem skalibruj per-asset Kelly λ na out-of-fold log-growth — bez dotykania OOS.",
         decyzje:["AUC-PR zamiast accuracy/AUC-ROC — bo klasy są niezbalansowane, a decyzję odcina próg na prawdopodobieństwie; implementacja tie-invariant (stabilny mergesort) dla pełnego determinizmu", "TPE z seedem + MedianPruner(warmup 2) — bo 200 triali na CPU wymaga prunowania, a seed daje identyczną sekwencję triali w każdym runie", "przestrzeń poszukiwań w JSON, nie w kodzie — bo zakresy to konfiguracja badania; suggest-order z rejestru utrzymuje determinizm TPE", "Kelly λ osobnym studium GridSampler na predykcjach OOF — bo sizing nie może wpływać na model (bajty boostera niezależne od λ), a grid jest w pełni deterministyczny; remisy → najmniejsza λ (konserwatywnie)", "fallback_params przy braku foldów lub jednej klasie — bo mały asset nie może wywalić całego runu, a wynik pozostaje deterministyczny"],
