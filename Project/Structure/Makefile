@@ -8,7 +8,8 @@
 #   make build                   regenerate Plan/*.html from *.tmpl + Markdown markers (single-home-per-fact)
 #   make check                   fail-closed gate: number drift / stray literals / lego<->SOT crossmatch
 #   make ensure-seeds            export any missing SEARCH_TICKERS seeds from SP500_DUCKDB
-#   make search-on               launch the continuous per-asset feature-search loop (S.1, tmux, supervised)
+#   make search-on               launch the search loop on an explicit list (SEARCH_TICKERS, apply-on-satisfied)
+#   make feature-search-loop     FULL-UNIVERSE search (503 upstream tickers, upstream-direct bars, triage -> deepen, apply-at-convergence)
 #   make search-off              stop the search loop gracefully (STOP.flag) and its supervisor
 #   make search-status           one-shot per-ticker search status (sqlite, read-only)
 #   make search-logs             tail the search worker log
@@ -39,12 +40,13 @@ ifeq (loop,$(firstword $(MAKECMDGOALS)))
 endif
 
 SEARCH_TICKERS ?= AAPL MSFT NVDA AMZN GOOGL META TSLA AVGO LLY JPM V UNH XOM MA COST PG HD JNJ WMT NFLX
+SEARCH_UNIVERSE ?= all
 SEARCH_SESSION := liora_feature_search
 SEARCH_LOG_DIR := logs/search
 SEARCH_SUP_PID := .search_supervisor.pid
 
 .PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help \
-        ensure-seeds search-on search-off search-status search-logs search-apply search-agent-on
+        ensure-seeds search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -96,18 +98,30 @@ dashboard:
 ensure-seeds:
 	@LOOP_TICKERS="$(SEARCH_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) seeds.py
 
-search-on: ensure-seeds
-	@SEARCH_TICKERS="$(SEARCH_TICKERS)" bash scripts/search_on.sh
+# Shared launcher tail: start the outer supervisor once (PID file), print monitor hints.
+# $(SEARCH_ENV) carries the mode env into both search_on.sh and the supervisor's relaunches.
+define SEARCH_SUP_START
 	@if [ -f $(SEARCH_SUP_PID) ] && kill -0 $$(cat $(SEARCH_SUP_PID)) 2>/dev/null; then \
 	  echo "supervisor already running (PID $$(cat $(SEARCH_SUP_PID)))"; \
 	else \
 	  mkdir -p $(SEARCH_LOG_DIR); \
-	  SEARCH_TICKERS="$(SEARCH_TICKERS)" nohup bash scripts/_search_supervisor.sh >> $(SEARCH_LOG_DIR)/supervisor.log 2>&1 & \
+	  $(SEARCH_ENV) nohup bash scripts/_search_supervisor.sh >> $(SEARCH_LOG_DIR)/supervisor.log 2>&1 & \
 	  echo $$! > $(SEARCH_SUP_PID); \
 	  echo "supervisor started (PID $$(cat $(SEARCH_SUP_PID)))"; \
 	fi
 	@echo "monitor: tmux attach -t $(SEARCH_SESSION)   (windows: run, watch)"
 	@echo "or:      make search-status / make search-logs"
+endef
+
+search-on: SEARCH_ENV = SEARCH_TICKERS="$(SEARCH_TICKERS)"
+search-on: ensure-seeds
+	@$(SEARCH_ENV) bash scripts/search_on.sh
+	$(SEARCH_SUP_START)
+
+feature-search-loop: SEARCH_ENV = SEARCH_UNIVERSE="$(SEARCH_UNIVERSE)"
+feature-search-loop:
+	@$(SEARCH_ENV) bash scripts/search_on.sh
+	$(SEARCH_SUP_START)
 
 search-off:
 	@mkdir -p $(SEARCH_LOG_DIR)
