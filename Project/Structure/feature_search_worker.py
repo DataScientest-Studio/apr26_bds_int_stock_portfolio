@@ -42,11 +42,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pipeline as P  # noqa: E402
+import seeds  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
-DB_PATH = ROOT / "search_state.db"
+# SEARCH_STATE_DB / SEARCH_OVERRIDES_PATH: test-isolation overrides (integration smokes
+# run against a throwaway db + overrides file without touching the live loop's state).
+DB_PATH = Path(os.environ.get("SEARCH_STATE_DB") or ROOT / "search_state.db")
 CONTROL_PATH = ROOT / "search_control.json"
-OVERRIDES_PATH = ROOT / "config" / "per_asset_feature_overrides.json"
+OVERRIDES_PATH = Path(os.environ.get("SEARCH_OVERRIDES_PATH")
+                      or ROOT / "config" / "per_asset_feature_overrides.json")
 LOG_DIR = ROOT / "logs" / "search"
 HEARTBEAT = LOG_DIR / "heartbeat.json"
 ALERTS = LOG_DIR / "ALERTS.txt"
@@ -63,12 +67,41 @@ CONTROL_DEFAULTS = {
     "stage2_max_evals": 200,
     "min_gain": 0.002,
     "round_budget_evals": 150,
+    "min_deep_rounds": 2,          # convergence floor (apply_policy=converged); agent-tunable [2,6]
+    "min_train_bars": 3000,        # universe eligibility threshold; consumed once per new ticker
+    "apply_policy": "satisfied",   # mirrored from env by the worker; agent READ-ONLY (env wins)
     "priorities": [],
     "paused_tickers": [],
     "stage3_candidates": {},
     "halt": False,
     "notes": "",
 }
+
+
+def resolve_mode():
+    """Pure function of env -> (mode, universe, apply_policy).
+    SEARCH_UNIVERSE unset  -> 'list' mode: SEARCH_TICKERS (legacy, byte-identical behavior).
+    SEARCH_UNIVERSE='all'  -> 'universe' mode: every upstream symbol, ORDER BY symbol ASC.
+    SEARCH_UNIVERSE='<T..>'-> 'universe' mode over an explicit list (integration subsets).
+    SEARCH_UNIVERSE_LIMIT  -> truncate the universe (smoke tests only)."""
+    u = (os.environ.get("SEARCH_UNIVERSE") or "").strip()
+    if not u:
+        universe = (os.environ.get("SEARCH_TICKERS") or DEFAULT_UNIVERSE).upper().split()
+        return "list", universe, os.environ.get("SEARCH_APPLY_POLICY") or "satisfied"
+    if u.lower() == "all":
+        import duckdb
+        con = duckdb.connect(seeds.upstream_path(), read_only=True)
+        try:
+            universe = [r[0] for r in con.execute(
+                "select distinct symbol from ohlcv_1h order by symbol").fetchall()]
+        finally:
+            con.close()
+    else:
+        universe = u.upper().split()
+    lim = int(os.environ.get("SEARCH_UNIVERSE_LIMIT") or 0)
+    if lim:
+        universe = universe[:lim]
+    return "universe", universe, os.environ.get("SEARCH_APPLY_POLICY") or "converged"
 
 OPTIONAL_IDS = sorted(
     int(f["id"])
@@ -132,6 +165,21 @@ def read_control():
     return _control_cache["data"]
 
 
+def mirror_apply_policy(policy):
+    """apply_policy is env-owned: the worker writes the resolved value into the control
+    file so the agent can READ it; any later drift in the file is ignored (env wins)."""
+    try:
+        raw = json.loads(CONTROL_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        raw = dict(CONTROL_DEFAULTS)
+    if raw.get("apply_policy") != policy:
+        raw["apply_policy"] = policy
+        tmp = CONTROL_PATH.with_suffix(".tmp")
+        tmp.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+        os.replace(tmp, CONTROL_PATH)
+        _control_cache["mtime"] = None   # force re-read
+
+
 # ------------------------------------------------------------------- state ---
 
 def db_connect(readonly=False):
@@ -145,7 +193,7 @@ def db_connect(readonly=False):
     return con
 
 
-def db_init(con, universe):
+def db_init(con, universe, mode="list", apply_policy="satisfied", ctl=None):
     con.executescript("""
     CREATE TABLE IF NOT EXISTS evaluations(
       ticker TEXT, subset_key TEXT, subset_ids_json TEXT,
@@ -162,13 +210,75 @@ def db_init(con, universe):
       error TEXT, updated_at TEXT);
     CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT);
     """)
-    for t in universe:
-        con.execute("INSERT OR IGNORE INTO assets(ticker, status, updated_at) VALUES(?, 'pending', ?)",
-                    (t, utcnow()))
+    _migrate_v2(con)
+    known = {r[0] for r in con.execute("SELECT ticker FROM assets")}
+    new = [t for t in universe if t not in known]
+    elig = eligibility_map(new, ctl) if (mode == "universe" and new) else {}
+    for t in new:
+        verdict = elig.get(t)
+        if verdict is not None and not verdict[0]:
+            con.execute("INSERT OR IGNORE INTO assets(ticker, status, ineligible_reason, updated_at) "
+                        "VALUES(?, 'ineligible', ?, ?)", (t, verdict[1], utcnow()))
+        else:
+            con.execute("INSERT OR IGNORE INTO assets(ticker, status, updated_at) VALUES(?, 'pending', ?)",
+                        (t, utcnow()))
     con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('universe', ?)", (" ".join(universe),))
+    con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('mode', ?)", (mode,))
+    con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('apply_policy', ?)", (apply_policy,))
     con.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('started_at', ?)", (utcnow(),))
     con.execute("INSERT OR IGNORE INTO meta(key, value) VALUES('rounds_completed', '0')")
     con.commit()
+
+
+def _migrate_v2(con):
+    """Idempotent schema v2: per-ticker pass/convergence bookkeeping + ineligible reason.
+    Backfills deep_rounds_done for a carried-over db (rounds >= 2 were deep by the old shape)."""
+    have = {r[1] for r in con.execute("PRAGMA table_info(assets)")}
+    if "deep_rounds_done" in have:
+        return
+    con.executescript("""
+    ALTER TABLE assets ADD COLUMN deep_rounds_done INTEGER DEFAULT 0;
+    ALTER TABLE assets ADD COLUMN pass_round INTEGER;
+    ALTER TABLE assets ADD COLUMN pass_start_best_key TEXT;
+    ALTER TABLE assets ADD COLUMN converged_at TEXT;
+    ALTER TABLE assets ADD COLUMN ineligible_reason TEXT;
+    """)
+    con.execute("UPDATE assets SET deep_rounds_done = "
+                "(SELECT COUNT(DISTINCT round) FROM evaluations e "
+                " WHERE e.ticker = assets.ticker AND e.round >= 2)")
+    con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('schema', 'v2')")
+    con.commit()
+
+
+def eligibility_map(tickers, ctl=None):
+    """Universe-mode pre-filter, judged ONCE per new ticker at insert: enough Train-window
+    bars upstream to make the frozen split searchable. Returns {ticker: (ok, reason)}.
+    A cost optimization, not the correctness boundary (thin-but-eligible tickers that
+    die inside CV still park with their exact error)."""
+    import duckdb
+    thr = int((ctl or CONTROL_DEFAULTS)["min_train_bars"])
+    sp = P.PIPELINE_PARAMETERS["splits"]
+    con = duckdb.connect(seeds.upstream_path(), read_only=True)
+    try:
+        rows = con.execute(
+            "select symbol, count(*) filter (where ts >= ? and ts <= ?) as train_bars, "
+            "cast(min(ts) as varchar) as first_ts, count(*) as n_bars "
+            "from ohlcv_1h group by symbol",
+            [sp["train_start"], sp["train_end"]]).fetchall()
+    finally:
+        con.close()
+    stats = {s: (tb, f, n) for s, tb, f, n in rows}
+    out = {}
+    for t in tickers:
+        if t not in stats:
+            out[t] = (False, f"not found upstream ({seeds.upstream_path()})")
+            continue
+        tb, first_ts, n = stats[t]
+        if tb < thr:
+            out[t] = (False, f"train_bars={tb} < min_train_bars={thr} (first_ts={first_ts}, total_bars={n})")
+        else:
+            out[t] = (True, "")
+    return out
 
 
 def asset_row(con, t):
@@ -225,14 +335,12 @@ def cv_aucpr(df_b, bounds, names, seed):
 
 
 class TickerContext:
-    """Superset Output-B for one ticker, built once and cached for the round."""
+    """Superset Output-B for one ticker, built once and cached for the round.
+    Bars come seed-first-else-upstream (seeds.load_bars) — identical frames by the
+    seeds.py parity contract, so search results never depend on the source."""
 
     def __init__(self, ticker):
-        import pandas as pd
-        seed_path = ROOT / "data" / "seed" / f"{ticker}_ohlcv_1h.parquet"
-        if not seed_path.exists():
-            raise RuntimeError(f"missing seed {seed_path.name} (run `make ensure-seeds`)")
-        df = pd.read_parquet(seed_path)
+        df = seeds.load_bars(ticker)
         manifest = P.resolve_feature_manifest(ticker, overrides={})   # superset: all 56
         rec = P.derive_output_b(df, ticker, manifest)
         got = set(rec["manifest"]["effective_feature_ids"])
@@ -470,9 +578,17 @@ def round_order(con, universe, ctl):
     return prio + unsat + sat
 
 
-def ensure_db_inputs(universe):
-    """All seeds present (launcher exports them); rebuild liora.duckdb once if any ticker missing."""
-    missing_seed = [t for t in universe if not (ROOT / "data" / "seed" / f"{t}_ohlcv_1h.parquet").exists()]
+def ensure_db_inputs(universe, mode="list"):
+    """list mode: seeds precondition + rebuild liora.duckdb if a ticker is missing (as before).
+    universe mode: only assert the upstream store is readable — bars come upstream-direct;
+    seeds/liora.duckdb materialize at apply time (the batch-apply step owns them)."""
+    if mode == "universe":
+        import duckdb
+        con = duckdb.connect(seeds.upstream_path(), read_only=True)
+        con.execute("select 1 from ohlcv_1h limit 1").fetchone()
+        con.close()
+        return
+    missing_seed = [t for t in universe if not seeds.seed_path(t).exists()]
     if missing_seed:
         raise SystemExit(f"missing seeds {missing_seed} — run `make ensure-seeds` first")
     need_build = not (ROOT / "liora.duckdb").exists()
@@ -493,12 +609,15 @@ def ensure_db_inputs(universe):
 def run_loop():
     seed = P.seed_everything()
     P.validate_parameters()
-    universe = (os.environ.get("SEARCH_TICKERS") or DEFAULT_UNIVERSE).upper().split()
+    mode, universe, policy = resolve_mode()
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    ensure_db_inputs(universe)
+    ensure_db_inputs(universe, mode)
     con = db_connect()
-    db_init(con, universe)
-    log(f"worker up: universe={len(universe)} tickers, optional ids={len(OPTIONAL_IDS)}")
+    ctl = read_control()
+    db_init(con, universe, mode, policy, ctl)
+    mirror_apply_policy(policy)
+    log(f"worker up: mode={mode}, apply_policy={policy}, universe={len(universe)} tickers, "
+        f"optional ids={len(OPTIONAL_IDS)}")
     while True:
         ctl = read_control()
         if stop_requested(ctl):
@@ -541,12 +660,12 @@ def run_loop():
 
 def plan_next():
     """Print the next NEW (ticker, subset_key) without evaluating (determinism probe)."""
-    universe = (os.environ.get("SEARCH_TICKERS") or DEFAULT_UNIVERSE).upper().split()
+    mode, universe, policy = resolve_mode()
     if not DB_PATH.exists():
         print(f"{universe[0]}\t(db absent — first candidate is the 1h-only baseline: '')")
         return 0
     con = db_connect()
-    db_init(con, universe)
+    db_init(con, universe, mode, policy, read_control())
     ctl = read_control()
     order = round_order(con, universe, ctl)
     rnd = int(con.execute("SELECT value FROM meta WHERE key='rounds_completed'").fetchone()[0]) + 1
@@ -567,14 +686,35 @@ def status():
         print("no search_state.db yet — run `make search-on`")
         return 0
     con = db_connect(readonly=True)
-    print(f"{'ticker':7s} {'status':10s} {'round':>5s} {'evals':>6s} {'baseline':>9s} "
-          f"{'best_cv':>9s} {'applied':>9s} {'pend':>4s}  best_subset")
-    for r in con.execute("SELECT * FROM assets ORDER BY ticker"):
-        fmt = lambda v: f"{v:.4f}" if v is not None else "-"
-        print(f"{r['ticker']:7s} {r['status'] or '-':10s} {r['round'] or 0:5d} {r['evals_count'] or 0:6d} "
-              f"{fmt(r['baseline_ref']):>9s} {fmt(r['best_cv']):>9s} {fmt(r['applied_cv']):>9s} "
-              f"{r['pending_better'] or 0:4d}  {r['best_subset_key'] or '-'}")
     meta = dict(con.execute("SELECT key, value FROM meta"))
+    rows = list(con.execute("SELECT * FROM assets"))
+    counts = {}
+    for r in rows:
+        counts[r["status"] or "-"] = counts.get(r["status"] or "-", 0) + 1
+    eligible = [r for r in rows if r["status"] != "ineligible"]
+    triaged = sum(1 for r in eligible if r["baseline_ref"] is not None)
+    print(f"mode={meta.get('mode', 'list')}  apply_policy={meta.get('apply_policy', 'satisfied')}  "
+          f"counts: {' '.join(f'{k}={v}' for k, v in sorted(counts.items()))}  "
+          f"triage: {triaged}/{len(eligible)} eligible")
+
+    def gain(r):
+        if r["best_cv"] is None or r["baseline_ref"] is None:
+            return None
+        return r["best_cv"] - r["baseline_ref"]
+
+    rows.sort(key=lambda r: (-(gain(r) if gain(r) is not None else float("-inf")), r["ticker"]))
+    print(f"{'ticker':7s} {'status':10s} {'round':>5s} {'deep':>4s} {'evals':>6s} {'baseline':>9s} "
+          f"{'best_cv':>9s} {'gain':>8s} {'applied':>9s} {'pend':>4s}  best_subset")
+    for r in rows:
+        fmt = lambda v: f"{v:.4f}" if v is not None else "-"
+        g = gain(r)
+        has_v2 = "deep_rounds_done" in r.keys()   # readonly view of a not-yet-migrated v1 db
+        tail = (r["ineligible_reason"] if has_v2 and r["status"] == "ineligible"
+                else (r["best_subset_key"] or "-"))
+        deep = r["deep_rounds_done"] if has_v2 else 0
+        print(f"{r['ticker']:7s} {r['status'] or '-':10s} {r['round'] or 0:5d} {deep or 0:4d} "
+              f"{r['evals_count'] or 0:6d} {fmt(r['baseline_ref']):>9s} {fmt(r['best_cv']):>9s} "
+              f"{fmt(g):>8s} {fmt(r['applied_cv']):>9s} {r['pending_better'] or 0:4d}  {tail}")
     print(f"rounds_completed={meta.get('rounds_completed', '0')}  started_at={meta.get('started_at', '-')}")
     if HEARTBEAT.exists():
         age = int(time.time() - HEARTBEAT.stat().st_mtime)
