@@ -261,41 +261,57 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
 
 ## Kontrakt replikacji — S.1 per-asset feature search (continuous research plane)
 
-- **CEL:** continuously search, per asset, for a sensible subset of the OPTIONAL coarse
-  features (1d/1w/multi_tf) — the 1h namespace stays frozen — until the operator stops
-  the loop; selection is Train-only.
-- **INPUT:** the superset Output B (<!--na:n_features_total-->56<!--/na--> X) per ticker,
-  built once per round via `derive_output_b`; `search_control.json` (agent-tunable knobs);
-  the seed universe (`SEARCH_TICKERS`, default top-20 mcap).
-- **TRANSFORM:** `feature_search_worker.py` runs ROUNDS over the non-problematic tickers
-  forever: stage-1 baselines (1h-only, all-<!--na:n_features_total-->56<!--/na-->) +
-  8 namespace-block combos → stage-2 deterministic greedy forward/backward → stage-3
-  agent-suggested subsets (validated fail-closed) → deeper rounds pair-swap / restart
-  from k-th best / add-remove-2. Each candidate = a column slice of the shared superset,
-  scored by mean purged-WF CV AUC-PR (fixed `fallback_params`, k=4, seed 42); evaluations
-  are keyed in `search_state.db` (WAL, single writer) so a resume or later round never
-  re-evaluates a subset. An erroring ticker is PARKED (status + error + alert) and the
-  round continues over the healthy rest.
-- **OUTPUT:** on the FIRST time a ticker reaches `satisfied`
-  (`best_cv ≥ max(cv(1h-only), cv(all)) + min_gain`): the winner is written atomically to
-  the gitignored `config/per_asset_feature_overrides.json` and `run_asset.py` fires once
-  (full Optuna + the asset's SINGLE OOS read) → status `applied`. Later Train-CV
-  improvements only set `pending_better` — re-apply (a deliberate second OOS read) is
-  manual: `make search-apply TICKER=…`.
+- **CEL:** a sensible optional-feature subset for EVERY healthy asset (1d/1w/multi_tf;
+  the 1h namespace stays frozen), so a future UI user picking any asset for a portfolio
+  finds it already sensibly configured — not a ticker-ranking product; selection is
+  Train-only; the loop runs until the operator stops it.
+- **INPUT:** universe provider: `make feature-search-loop` ⇒ `SEARCH_UNIVERSE=all` = every
+  upstream symbol (symbol asc) filtered by eligibility (`min_train_bars` in the frozen Train
+  window; too-thin tickers become `ineligible` with a recorded reason, judged once at insert);
+  `make search-on` ⇒ explicit `SEARCH_TICKERS` list (legacy, apply-on-satisfied). Bars come
+  seed-first-else-upstream via `seeds.py` (byte-identical transform, parity asserted on every
+  seed write); the superset Output B (<!--na:n_features_total-->56<!--/na--> X) per ticker is
+  built once per pass via `derive_output_b`; `search_control.json` carries the agent-tunable knobs.
+- **TRANSFORM:** `feature_search_worker.py` runs ROUNDS forever over the non-parked,
+  non-ineligible tickers. Per ticker: TRIAGE first (stage-1 grid only — 1h-only and
+  all-<!--na:n_features_total-->56<!--/na--> baselines + 8 namespace-block combos; never
+  applies) until `baseline_ref` exists, then DEEP passes ordered by gain rank
+  (gain = best_cv − baseline_ref, tie ticker asc — compute ordering only, never selection):
+  first pass greedy forward/backward, later passes pair-swap / restart-from-k-th-best /
+  add-remove-2 with k from the ticker's OWN deep-pass count, plus agent-suggested subsets
+  (validated fail-closed). Each candidate = a column slice of the shared superset, scored by
+  mean purged-WF CV AUC-PR (fixed `fallback_params`, k=4, seed 42); evaluations are keyed in
+  `search_state.db` (WAL, single writer) so a resume or later round never re-evaluates a
+  subset. An erroring ticker is PARKED (status + error + alert) and the round continues.
+- **OUTPUT:** CONVERGED(t) := deep passes ≥ `min_deep_rounds` AND (the last completed pass
+  adopted nothing OR ended on a dead streak ≥ `no_improve_N`) — evaluated only after a
+  COMPLETED pass, purely from db state. Converged tickers are applied in ONE round-end BATCH:
+  export missing seeds (upstream → `data/seed/`, untracked until the user's batch commit) →
+  ONE `build_db` rebuild (L3 drop+recreate, once per round) → sequential `run_asset.py`
+  (each = the asset's SINGLE OOS read) → status `applied`. Best may equal a baseline — the
+  explicit override in the gitignored `config/per_asset_feature_overrides.json` IS the
+  product. Later Train-CV improvements only set `pending_better` — re-apply (a deliberate
+  second OOS read) is manual: `make search-apply TICKER=…`.
 - **INWARIANTY:** selection never reads OOS and an OOS result never reopens selection;
   overrides never touch ids 1–99 (three enforcement layers + `mandatory_core_feature_names`
-  backstop); the next candidate is a pure function of (state db, control file, round);
+  backstop); the next candidate is a pure function of (state db, control file, the ticker's
+  own pass count); triage never applies; a parked/ineligible ticker never stops the loop;
   the loop has NO completion condition — it stops only via STOP.flag / HALT.flag /
-  `make search-off`; results stay framed as research (survivorship, corp-actions deferred).
+  `make search-off`; a session running in one mode is never killed by launching the other
+  (MODE marker guard); results stay framed as research (survivorship, corp-actions deferred).
 - **KNOBS:** `search_control.json` (gitignored runtime, NOT in configurations.html):
-  epsilon=0.0005 · no_improve_N=8 · min_gain=0.002 · round_budget_evals=150 ·
+  epsilon=0.0005 · no_improve_N=8 · min_gain=0.002 (satisfied policy) · round_budget_evals=150 ·
+  min_deep_rounds=2 · min_train_bars=3000 (consumed once per new ticker) ·
+  apply_policy (env-owned: converged for feature-search-loop, satisfied for search-on;
+  the worker mirrors it for the agent to read and ignores file drift) ·
   priorities · paused_tickers · stage3_candidates · halt.
-- **TESTY AKCEPTACYJNE:** kill -9 of the worker mid-round resumes without re-evaluating
-  any stored subset key; an override containing a 1h id raises RuntimeError; a parked
-  ticker does not stop the round; `applied` status survives later rounds with no second
+- **TESTY AKCEPTACYJNE:** `feature_search_worker.py --selfcheck` (provider determinism,
+  eligibility, seed↔upstream parity, 4 convergence cases, batch success/failure paths);
+  kill -9 mid-pass resumes without re-evaluating any stored subset key; an override
+  containing a 1h id raises RuntimeError; `applied` survives later rounds with no second
   `run_asset` (pending_better only).
 - **DEPENDS:** upstream: L6 · downstream: L7 · scope: offline research plane
-  (`make search-on`, tmux-supervised, runs until interrupted).
+  (`make feature-search-loop` / `make search-on`, tmux-supervised, runs until interrupted).
 
 ## Kontrakt replikacji — L7 Optuna HPO + Kelly calibration
 

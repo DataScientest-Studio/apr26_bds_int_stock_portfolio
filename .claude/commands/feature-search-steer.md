@@ -34,11 +34,19 @@ tail -10 Project/Structure/logs/search/ALERTS.txt 2>/dev/null
 cat Project/Structure/logs/search/heartbeat.json 2>/dev/null
 ```
 
-Interpret: `baseline_ref` vs `best_cv` per ticker (satisfied bar = baseline_ref +
-min_gain); `no_improve_streak` vs `no_improve_N`; `parked` tickers + their `error`;
-`pending_better=1` (a Train-CV candidate now beats the applied subset); heartbeat age
-(`phase=run_asset` carries `grace_s` — a long silence there is normal); `round` and
-`rounds_completed` (are rounds still finding new evaluations?).
+Interpret: `baseline_ref` vs `best_cv` per ticker; `no_improve_streak` vs
+`no_improve_N`; `parked` tickers + their `error`; `ineligible` tickers (universe mode
+pre-filter; reason recorded, not your concern to fix); `pending_better=1` (a Train-CV
+candidate now beats the applied subset); heartbeat age (`phase` in `run_asset`,
+`batch_apply`, `build_db` carries `grace_s` — a long silence there is normal);
+`round`, `deep_rounds_done` and `rounds_completed` (are rounds still finding new
+evaluations?). Useful extra queries:
+`select status, count(*) from assets group by status` (universe progress);
+`select count(*) from assets where baseline_ref is not null and status != 'ineligible'`
+(triage progress); `select ticker, converged_at from assets where status='satisfied'`
+(converged, awaiting the round-end batch). Universe-mode rounds are LONG (a triage
+wave over ~500 tickers is hours; deep rounds can be days) — judge progress by new
+evaluations and heartbeat, not by `rounds_completed`.
 
 ## 2. Allowed actions — this list is EXHAUSTIVE
 
@@ -47,7 +55,8 @@ a) **Edit `Project/Structure/search_control.json`** — atomically (write `.tmp`
    - `priorities`: list of tickers to search first (reorder toward laggards).
    - `epsilon` ∈ [0.0001, 0.002] — adoption threshold for an improvement.
    - `no_improve_N` ∈ [4, 16] — greedy early-exit streak.
-   - `min_gain` ∈ [0.0005, 0.01] — the "sensible value" bar over baseline_ref.
+   - `min_gain` ∈ [0.0005, 0.01] — the "sensible value" bar (apply_policy=satisfied only).
+   - `min_deep_rounds` ∈ [2, 6] — convergence floor (apply_policy=converged).
    - `round_budget_evals` ∈ [50, 400] — per-ticker eval budget in deep rounds.
    - `stage3_candidates`: `{"TICKER": [[ids...], ...]}` — subset suggestions the
      worker will evaluate next round. ONLY optional ids (101-117, 201-217, 901-905);
@@ -63,8 +72,10 @@ b) **Append to `Project/Structure/logs/search/agent_journal.md`** — timestampe
 
 ## 3. Forbidden — never do any of these
 
-- Edit `pipeline.py`, `feature_search_worker.py`, the Makefile, anything under
-  `scripts/`, any git-tracked file under `config/`, the SOT, or the Plan/ pages.
+- Edit `pipeline.py`, `feature_search_worker.py`, `seeds.py`, the Makefile, anything
+  under `scripts/`, any git-tracked file under `config/`, the SOT, or the Plan/ pages.
+- Change `apply_policy` or `min_train_bars` in the control file — both are env/insert-time
+  owned; the worker ignores the drift and alerts (you may READ them).
 - Touch `config/per_asset_feature_overrides.json` (the worker owns it).
 - Read or reason from OOS results (`oos_metrics.db`, `Assets/*/README`) to steer
   selection — selection is Train-CV only; OOS is a one-shot verdict, not feedback.

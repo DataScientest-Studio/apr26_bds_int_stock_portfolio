@@ -312,12 +312,29 @@ def strip_markers_line(line):
     return MARKER_RE.sub(lambda m: '', line)
 
 
+def tracked_seed_count():
+    """n_assets_seed describes the COMMITTED data state, so count git-tracked seeds, not
+    on-disk files: the continuous feature-search loop (S.1) legitimately exports untracked
+    seeds at apply time; committing such a batch requires bumping n_assets_seed (+
+    duckdb_rows_bars_1h) in the same commit — which this gate then enforces. Falls back to
+    the on-disk glob when git is unavailable."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "ls-files", "data/seed/*_ohlcv_1h.parquet"],
+                             cwd=str(ROOT), capture_output=True, text=True, timeout=30)
+        if out.returncode == 0:
+            return len([l for l in out.stdout.splitlines() if l.strip()])
+    except Exception:
+        pass
+    return len(list((ROOT / 'data' / 'seed').glob('*_ohlcv_1h.parquet')))
+
+
 def cmd_check(marker_ctx, page_ctx):
     errors = []
 
-    n_seeds = len(list((ROOT / 'data' / 'seed').glob('*_ohlcv_1h.parquet')))
+    n_seeds = tracked_seed_count()
     if n_seeds != marker_ctx['n_assets_seed']:
-        errors.append('registry: n_assets_seed={} but data/seed/ holds {} seed parquet(s)'
+        errors.append('registry: n_assets_seed={} but git tracks {} seed parquet(s)'
                       .format(marker_ctx['n_assets_seed'], n_seeds))
 
     for p in md_files():
