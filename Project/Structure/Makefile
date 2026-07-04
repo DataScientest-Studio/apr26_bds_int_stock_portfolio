@@ -169,7 +169,15 @@ search-agent-on:
 	@echo "agent steering started in tmux window '$(SEARCH_SESSION):agent'"
 
 serve:
-	$(PY) -m http.server 8000 --directory ../../Plan
+	@if [ -f $(PID) ] && kill -0 $$(cat $(PID)) 2>/dev/null; then \
+	  echo "already served in the background on :$(PORT) (PID $$(cat $(PID))) -> http://localhost:$(PORT)/index.html"; \
+	  echo "  'make off' to stop it, then 'make serve' to run in the foreground; 'make logs' to tail."; \
+	elif ss -ltn 2>/dev/null | grep -q ':$(PORT) '; then \
+	  echo "port $(PORT) is already in use -> open http://localhost:$(PORT)/index.html (or free the port and retry)"; \
+	else \
+	  echo "serving Plan/ at http://localhost:$(PORT)/index.html  (Ctrl+C to stop)"; \
+	  $(PY) -m http.server $(PORT) --directory ../../Plan; \
+	fi
 
 app:
 	$(ST) run app.py --server.port $(APP_PORT)
