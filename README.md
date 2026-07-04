@@ -63,7 +63,13 @@ make deps                      # install requirements.txt into ../.venv
 make build-db                  # data/seed/*.parquet -> liora.duckdb
 make run-asset TICKER=AAPL     # run the notebook -> Assets/AAPL/ (7 files)
 make serve                     # static visualization: http://localhost:8000/index.html
+make app                       # ML Basket Simulator demo (Streamlit): http://localhost:8501
 ```
+
+The demo can also be launched directly from the repo root with
+`streamlit run Project/Structure/app.py` — pick tickers (each = a $1000 entry on the
+first OOS day) and see the basket outcome at the end of the fixed OOS window, read
+straight from `oos_metrics.db` (nothing is retrained at runtime).
 
 Run a whole universe in one go, then refresh the dashboard feed:
 

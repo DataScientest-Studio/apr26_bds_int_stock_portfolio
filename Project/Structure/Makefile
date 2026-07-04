@@ -18,6 +18,7 @@
 #   make search-apply TICKER=X   manual re-apply of the current Train-CV best (a SECOND OOS read)
 #   make search-agent-on         start the Claude Sonnet steering session (/feature-search-steer)
 #   make serve                   serve the static visualization (Plan/) on :8000 (foreground)
+#   make app                     ML Basket Simulator demo (Streamlit) on :8501 (foreground, Ctrl+C stops)
 #   make on                      serve Plan/ in the background + open the browser
 #   make off                     stop the background viz server
 #   make restart                 restart the background viz server (off + on)
@@ -25,7 +26,9 @@
 #   make clean                   remove generated assets + liora.duckdb
 PY := ../.venv/bin/python3
 PIP := ../.venv/bin/pip
+ST := ../.venv/bin/streamlit
 PORT ?= 8000
+APP_PORT ?= 8501
 PID := .viz.pid
 LOG := .viz.log
 # Upstream store path lives in seeds.py (single home); set SP500_DUCKDB only to override it.
@@ -50,7 +53,7 @@ SEARCH_SESSION := liora_feature_search
 SEARCH_LOG_DIR := logs/search
 SEARCH_SUP_PID := .search_supervisor.pid
 
-.PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help \
+.PHONY: deps build-db run-asset feature-search loop dashboard build check serve app on off restart logs clean help \
         ensure-seeds search-on feature-search-loop search-off search-status search-logs search-apply search-agent-on \
         search-install-cron search-uninstall-cron
 
@@ -172,6 +175,9 @@ search-agent-on:
 
 serve:
 	$(PY) -m http.server 8000 --directory ../../Plan
+
+app:
+	$(ST) run app.py --server.port $(APP_PORT)
 
 clean:
 	rm -rf Assets/*/ liora.duckdb oos_metrics.db ../../Plan/data/dashboard.json __pycache__ .ipynb_checkpoints

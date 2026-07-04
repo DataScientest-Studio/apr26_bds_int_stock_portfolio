@@ -13,3 +13,5 @@ scikit-learn==1.7.2
 nbconvert
 nbformat
 ipykernel
+# demo app only (app.py — ML Basket Simulator, reads oos_metrics.db read-only); not on the numeric path.
+streamlit==1.58.0
