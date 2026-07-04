@@ -272,6 +272,7 @@ def db_init(con, universe, mode="list", apply_policy="satisfied", ctl=None):
     CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT);
     """)
     _migrate_v2(con)
+    _migrate_v3(con)   # independent: _migrate_v2 early-returns on an already-v2 db, so call v3 here
     known = {r[0] for r in con.execute("SELECT ticker FROM assets")}
     new = [t for t in universe if t not in known]
     elig = eligibility_map(new, ctl) if (mode == "universe" and new) else {}
@@ -309,7 +310,6 @@ def _migrate_v2(con):
                 " WHERE e.ticker = assets.ticker AND e.round >= 2)")
     con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('schema', 'v2')")
     con.commit()
-    _migrate_v3(con)
 
 
 def _migrate_v3(con):
