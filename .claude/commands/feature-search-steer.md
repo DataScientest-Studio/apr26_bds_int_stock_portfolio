@@ -60,6 +60,11 @@ a) **Edit `Project/Structure/search_control.json`** — atomically (write `.tmp`
    - `no_improve_N` ∈ [4, 16] — greedy early-exit streak.
    - `min_gain` ∈ [0.0005, 0.01] — the "sensible value" bar (apply_policy=satisfied only).
    - `min_deep_rounds` ∈ [2, 6] — convergence floor (apply_policy=converged).
+   - `max_stale_rounds` ∈ [1, 10] — an applied ticker with this many consecutive no-improvement
+     deep passes is FROZEN (enough optimized, dropped from the loop). Lower ⇒ the loop finishes
+     sooner; higher ⇒ more polishing before freeze. When every ticker is frozen/parked/
+     ineligible the worker writes `DONE.flag` and the whole stack stops — `rm logs/search/DONE.flag`
+     (optionally after raising max_stale_rounds or adding stage3 candidates) to re-open the search.
    - `round_budget_evals` ∈ [50, 400] — per-ticker eval budget in deep rounds.
    - `stage3_candidates`: `{"TICKER": [[ids...], ...]}` — subset suggestions the
      worker will evaluate next round. ONLY optional ids (101-117, 201-217, 901-905);

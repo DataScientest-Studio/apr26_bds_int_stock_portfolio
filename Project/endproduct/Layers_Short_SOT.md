@@ -303,16 +303,27 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   `applied`. Best may equal a baseline — the explicit override in the gitignored
   `config/per_asset_feature_overrides.json` IS the product. Later Train-CV improvements only set
   `pending_better` — re-apply (a deliberate second OOS read) is manual: `make search-apply TICKER=…`.
+- **TERMINATION:** each completed deep pass tracks `stale_rounds` = consecutive passes with NO
+  Train-CV improvement (best_subset_key unchanged; reset to 0 on any adoption). An APPLIED
+  ticker whose `stale_rounds` reaches `max_stale_rounds` is FROZEN — "enough optimized",
+  terminal, excluded from `round_order` (like parked/ineligible). When no searchable/polishable
+  ticker remains AND the satisfied backlog is empty (every ticker frozen / parked / ineligible),
+  the worker logs "universe fully optimized", touches `logs/search/DONE.flag`, and exits 0; the
+  run-loop, supervisor and cron all stand down on DONE.flag (rm it — e.g. after lowering
+  `max_stale_rounds` or adding stage3 candidates — to re-open the search). A still-improving
+  ticker never freezes (epsilon-gated adoption keeps `stale_rounds` at 0).
 - **INWARIANTY:** selection never reads OOS and an OOS result never reopens selection;
   overrides never touch ids 1–99 (three enforcement layers + `mandatory_core_feature_names`
   backstop); the next candidate is a pure function of (state db, control file, the ticker's
-  own pass count); triage never applies; a parked/ineligible ticker never stops the loop;
-  the loop has NO completion condition — it stops only via STOP.flag / HALT.flag /
-  `make search-off`; a session running in one mode is never killed by launching the other
-  (MODE marker guard); results stay framed as research (survivorship, corp-actions deferred).
+  own pass count); triage never applies; a parked/ineligible/frozen ticker never stops the loop;
+  the loop stops on STOP.flag / HALT.flag / `make search-off` OR terminates itself once every
+  ticker is frozen/parked/ineligible (DONE.flag); a session running in one mode is never killed
+  by launching the other (MODE marker guard); results stay framed as research (survivorship,
+  corp-actions deferred).
 - **KNOBS:** `search_control.json` (gitignored runtime, NOT in configurations.html):
   epsilon=0.0005 · no_improve_N=8 · min_gain=0.002 (satisfied policy) · round_budget_evals=150 ·
-  min_deep_rounds=2 · min_train_bars=3000 (consumed once per new ticker) ·
+  min_deep_rounds=2 · max_stale_rounds=3 (freeze an enough-optimized applied ticker) ·
+  min_train_bars=3000 (consumed once per new ticker) ·
   apply_policy (env-owned: converged for feature-search-loop, satisfied for search-on;
   the worker mirrors it for the agent to read and ignores file drift) ·
   priorities · paused_tickers · stage3_candidates · halt. Parallelism knobs are env-owned
