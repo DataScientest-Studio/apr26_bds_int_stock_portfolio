@@ -151,9 +151,11 @@ def write_oos_metrics(db_path, row):
     cols = ["ticker", "start_capital", "end_capital", "net_pnl_usd", "return_pct", "profit_factor",
             "max_drawdown_pct", "win_rate_pct", "trades", "wins", "losses", "time_in_market_pct",
             "capital_depleted", "cv_auc_pr", "cv_folds", "oos_window"]
-    con = sqlite3.connect(str(db_path))
+    con = sqlite3.connect(str(db_path), timeout=10.0)
     try:
-        con.execute(
+        con.execute("PRAGMA journal_mode=WAL")      # concurrent run_asset finishes (parallel apply
+        con.execute("PRAGMA busy_timeout=10000")    # phase) UPSERT disjoint ticker rows -> brief
+        con.execute(                                 # serialized commits, not 'database is locked'
             "create table if not exists oos_metrics ("
             "ticker text primary key, start_capital real, end_capital real, net_pnl_usd real, return_pct real, "
             "profit_factor real, max_drawdown_pct real, win_rate_pct real, trades integer, wins integer, "
