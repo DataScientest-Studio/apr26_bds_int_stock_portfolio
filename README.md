@@ -1,31 +1,43 @@
 # liora-project-ml-engineering — minimal per-asset ML pipeline (S&P 500)
 
-A minimal, self-contained, reproducible ML trading pipeline. For a chosen ticker it
-computes layers **L1 → L9** in one notebook and leaves exactly **7 deliverable files** in
-`Assets/<TICKER>/`. The ML runtime stays minimal (no SHA / lineage / heavy QC scaffolding);
-the docs/viz plane is kept honest by one fail-closed gate (`make check`): every data-state
-number has a single home and the visualization derives from the SOT.
+A minimal, self-contained, reproducible ML trading pipeline with a client-facing
+demo on top. For a chosen ticker it computes layers **L1 → L9** in one notebook and
+leaves exactly **7 deliverable files** in `Assets/<TICKER>/`; the **ML Basket
+Simulator** (Streamlit) lets a client replay a basket of those results over the
+fixed OOS window. The ML runtime stays minimal (no SHA / lineage / heavy QC
+scaffolding); the docs/viz plane is kept honest by one fail-closed gate
+(`make check`): every data-state number has a single home and the visualization
+derives from the SOT.
+
+## Documentation tiers
+
+Every document in this repo has exactly one of three roles:
+
+| Tier | Role | Artifact | Audience | Entry point |
+|---|---|---|---|---|
+| 1 | Client app | ML Basket Simulator — `Project/Structure/app.py` | clients | `make app` → `http://localhost:8501` |
+| 2 | Backend explanation | `Plan/` pages: `index`, `configurations`, `glossary`, `dashboard` | reviewers / operators | `make serve` → `http://localhost:8000/index.html` |
+| 3 | Replication blueprint | `Plan/procedure_lego.html` + the "Kontrakt replikacji" blocks & PL PROMPTS in `Project/endproduct/Layers_Short_SOT.md` | engineers rebuilding an analogous app | the Procedure Lego link on the index page |
+
+Tier 3 is a data-processing blueprint (data science / data engineering / ML) —
+replicating the modules, not the frontend.
 
 ## Pillars
 
-- **`Plan/`** — **visualization**: static pages (`index.html` → `procedure_lego.html`,
-  `configurations.html`, `glossary.html`, `dashboard.html`). `procedure_lego.html` is the
-  Procedure Lego canvas (L1–L9 + guards G.1–G.3, drag&drop, per-block replication prompts),
-  generated from `procedure_lego.html.tmpl` by `make build` — edit the `.tmpl`, never the
+- **`Plan/`** — **visualization** (Tier 2; `procedure_lego.html` is Tier 3): static pages
+  (`index.html` → `procedure_lego.html`, `configurations.html`, `glossary.html`,
+  `dashboard.html`). `procedure_lego.html` is the Procedure Lego canvas (L1–L9 + guards
+  G.1–G.3, drag&drop, per-block replication prompts), generated from
+  `procedure_lego.html.tmpl` by `make build` — edit the `.tmpl`, never the
   generated `.html`. It shows only what the code actually computes.
 - **`Project/`** — the working project:
-  - `Structure/` — the operational root: `pipeline.py` (layers L1–L9),
-    `notebook_template.ipynb` (the per-asset runner), `build_db.py`, `run_asset.py`,
-    `build_dashboard.py`, `asset_writers.py`, `reports/` (e.g. `compare_xgb_vs_rf.py`),
-    `config/`, `Features/`, `data/seed/`, `Assets/` (empty at start), `Makefile`,
-    `requirements.txt`.
-  - `endproduct/` — the source-of-truth mirror (`Layers_Short_SOT.md`, `README.md`) plus a
-    symlink to `Assets/`.
-- **`Archive/`** — frozen material: `old-capstone-2026-06-29/` (the previous DuckDB/Streamlit
-  "Stocks Recommender" project) plus earlier `runs/` and `experiments/`.
-- **`Formalities/`** — course deliverables: `Timeline.md`, `DATA_AUDIT.md`, and the renderings
-  in `Rendering1/`. The Rendering-2 modeling write-up is `MODELING_REPORT_010726.md` at the
-  repo root.
+  - `Structure/` — the operational root: `app.py` (the Tier-1 client app),
+    `pipeline.py` (layers L1–L9), `notebook_template.ipynb` (the per-asset runner),
+    `build_db.py`, `run_asset.py`, `build_dashboard.py`, `asset_writers.py`,
+    `reports/` (e.g. `compare_xgb_vs_rf.py`), `config/`, `Features/`, `data/seed/`,
+    `Assets/` (empty at start), `Makefile`, `requirements.txt`.
+  - `endproduct/` — the Tier-3 source-of-truth mirror (`Layers_Short_SOT.md`,
+    `README.md`) plus a symlink to `Assets/`.
 
 ## Pipeline layers (L1 → L9)
 
@@ -54,6 +66,30 @@ Features are namespaced and concatenated in a deterministic order: `1h` (01–99
 5. `OPTUNAs_XGB_HPOs_best_params.json` — best hyper-parameters + Kelly fraction (L7)
 6. `strategy_<TICKER>.py` — self-contained strategy artifact (base64 model + selfcheck)
 7. `<TICKER>_README.md` — OOS summary + capital path + trade ledger
+
+## Document cross-match & dependencies
+
+```
+config/*.json + Features/*/feature_registry.json + config/frozen_data_state_numbers.json
+  │  make build (render) · make check (fail-closed audit)
+  ├─> Plan/configurations.html            ({{...}} tokens — Tier 2)
+  ├─> Plan/procedure_lego.html            ({{...}} tokens — Tier 3)
+  └─> README.md + Project/endproduct/*.md (inline na:KEY marker regions)
+
+Project/endproduct/Layers_Short_SOT.md — "Kontrakt replikacji" blocks (the Tier-3 source)
+  └─ derive 1:1, gate-crossmatched ─> procedure_lego.html [J1] MODULES
+                                      (rationale lives only in the [J1b] PL PROMPTS)
+
+make run-asset / make loop
+  ├─> Assets/<T>/ — the 7-file deliverable
+  └─> oos_metrics.db ── make dashboard ──> Plan/data/dashboard.json ──> dashboard.html (Tier 2)
+                    └── read-only ───────> app.py — ML Basket Simulator (Tier 1, make app)
+```
+
+Edit only the single homes — the config JSONs, the SOT, and the two `.tmpl`
+templates — never a generated `.html`. On divergence the SOT wins. `make check`
+fails closed on marker drift, stray data-state literals, and the lego↔SOT
+crossmatch.
 
 ## Quickstart
 

@@ -1,7 +1,10 @@
 # endproduct — SOT + final deliverable
 
 This folder presents the implemented minimal per-asset ML pipeline and the
-deliverable contract.
+deliverable contract. Together with the Procedure Lego canvas it is
+Tier 3 — Replication blueprint: the contract from which an analogous app can be
+rebuilt module by module — a data-processing product (data science / data
+engineering / ML), not a frontend one.
 
 - [`Layers_Short_SOT.md`](Layers_Short_SOT.md) — the source of truth for L1-L9 + guards
   (per-module "Kontrakt replikacji" blocks; the Procedure Lego MODULES derive from them).

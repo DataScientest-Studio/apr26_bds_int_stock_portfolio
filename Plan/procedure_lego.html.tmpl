@@ -15,6 +15,12 @@
   Project/Structure/config/data_state_numbers_gate.py (tokeny {{...}} w .tmpl);
   edytuj .tmpl, potem `make build` w Project/Structure — nigdy wygenerowanego .html.
 
+  TIER 3 — REPLICATION BLUEPRINT: ta strona + bloki "Kontrakt replikacji" w SOT
+  pokazują, jak zbudować analogiczną aplikację z akumulujących się modułów
+  przetwarzania danych (perspektywa data science / data engineering / ML — nie
+  frontend/design). Tier 1 = aplikacja kliencka (ML Basket Simulator, make app),
+  Tier 2 = strony statyczne Plan/ (index / configurations / glossary / dashboard).
+
   MAPA DLA AGENTÓW — edytuj we właściwej sekcji:
     CSS  [S1] tokeny kolorów      [S2] layout (workspace/panele)
          [S3] inventory (lewy)    [S4] canvas + klocki + separatory + sticky nagłówki torów
@@ -791,7 +797,7 @@
     }
     function parseKnob(v){const [a,...b]=v.split('=');return {key:a,value:b.join('=')||'required'}}
     function renderInspector(m){
-      if(!m){$('#inspectorContent').innerHTML='<div class="empty-state">Kliknij klocek lub wybierz go z inventory.<br><br>Canvas pokazuje identyfikator, nazwę i mini-wizualizację warstwy. Inspector pokazuje kontrakt procedury: input → transform → output → invariants → knobs.</div>';return;}
+      if(!m){$('#inspectorContent').innerHTML='<div class="empty-state">Kliknij klocek lub wybierz go z inventory.<br><br>Canvas pokazuje identyfikator, nazwę i mini-wizualizację warstwy. Inspector pokazuje kontrakt procedury: input → transform → output → invariants → knobs.<br><br>Tier 3 — Replication blueprint: klocki + prompty replikacyjne pokazują, jak zbudować analogiczną aplikację z akumulujących się modułów przetwarzania danych.</div>';return;}
       const c=color(m);
       /* zachowaj stan akordeonu i scroll promptu przez re-render (toggle, nowy kabel) */
       const prevAcc=$('#inspectorContent .prompt-acc');

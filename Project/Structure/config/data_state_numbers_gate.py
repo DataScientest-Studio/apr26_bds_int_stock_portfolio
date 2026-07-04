@@ -11,9 +11,7 @@ directory). Every other place those numbers appear is a *generated region*:
         (pipeline_parameters.json + xgboost_optuna_search_space.json + feature_namespaces.json
         registries) as a {{KEY}} token, so the page can never drift from config/.
 
-Deliberately NOT scanned: MODELING_REPORT_010726.md (a frozen, dated report — its numbers are
-historical claims that must not be rewritten when the universe grows) and anything under
-Assets/ (runtime artifacts).
+Deliberately NOT scanned: anything under Assets/ (runtime artifacts).
 
 Pure standard library (json/re/sys/pathlib). No third-party dependencies.
 

@@ -1,7 +1,9 @@
 # Layers Short SOT — Minimal Feature Namespace Pipeline
 
 This is the source of truth for the implemented per-asset pipeline. The scope is
-limited to `Plan/` and `Project/`.
+limited to `Plan/` and `Project/`. Within the documentation tiers this file is the
+Tier 3 — Replication blueprint source: the "Kontrakt replikacji" blocks below are
+the blueprint, mirrored 1:1 by the Procedure Lego MODULES.
 
 ## Layer Map
 

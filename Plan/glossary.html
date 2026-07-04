@@ -32,6 +32,16 @@
     <dd>Per-trade fraction <code>f = clip(lambda * (2p - 1), 0, KELLY_CAP)</code>, calibrated on Train out-of-fold growth.</dd>
     <dt>Dashboard</dt>
     <dd>Static page reading <code>Plan/data/dashboard.json</code>, exported from <code>Project/Structure/oos_metrics.db</code>.</dd>
+    <dt>ML Basket Simulator (client app)</dt>
+    <dd>Tier 1 — the Streamlit demo (<code>make app</code>, port 8501). Each picked ticker is
+    a $1000 entry on the first OOS day; the basket outcome comes read-only from
+    <code>oos_metrics.db</code>. Nothing is retrained at runtime.</dd>
+    <dt>Documentation tiers</dt>
+    <dd>Tier 1 — Client app (the simulator). Tier 2 — Backend explanation (these
+    <code>Plan/</code> pages). Tier 3 — Replication blueprint
+    (<code>procedure_lego.html</code> + the "Kontrakt replikacji" blocks in
+    <code>Project/endproduct/Layers_Short_SOT.md</code>): how to rebuild an analogous app
+    from accumulating data-processing modules.</dd>
   </dl>
 </main>
 </body>
