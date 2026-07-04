@@ -57,9 +57,6 @@ ALERTS = LOG_DIR / "ALERTS.txt"
 STOP_FLAG = LOG_DIR / "STOP.flag"
 HALT_FLAG = LOG_DIR / "HALT.flag"
 
-DEFAULT_UNIVERSE = ("AAPL MSFT NVDA AMZN GOOGL META TSLA AVGO LLY JPM "
-                    "V UNH XOM MA COST PG HD JNJ WMT NFLX")
-
 THREAD_ENV_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
                    "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
 PARALLEL_STALL_TIMEOUT_S = 1800   # no ticker completes in this window -> pool wedged -> recreate
@@ -87,14 +84,19 @@ CONTROL_DEFAULTS = {
 
 def resolve_mode():
     """Pure function of env -> (mode, universe, apply_policy).
-    SEARCH_UNIVERSE unset  -> 'list' mode: SEARCH_TICKERS (legacy, byte-identical behavior).
-    SEARCH_UNIVERSE='all'  -> 'universe' mode: every upstream symbol, ORDER BY symbol ASC.
+    SEARCH_UNIVERSE unset  -> 'list' mode: REQUIRES an explicit SEARCH_TICKERS (a testing
+                              primitive; there is no default universe — top-20 was retired).
+    SEARCH_UNIVERSE='all'  -> 'universe' mode: every upstream symbol, ORDER BY symbol ASC
+                              (the primary loop; `make feature-search-loop`).
     SEARCH_UNIVERSE='<T..>'-> 'universe' mode over an explicit list (integration subsets).
     SEARCH_UNIVERSE_LIMIT  -> truncate the universe (smoke tests only)."""
     u = (os.environ.get("SEARCH_UNIVERSE") or "").strip()
     if not u:
-        universe = (os.environ.get("SEARCH_TICKERS") or DEFAULT_UNIVERSE).upper().split()
-        return "list", universe, os.environ.get("SEARCH_APPLY_POLICY") or "satisfied"
+        t = (os.environ.get("SEARCH_TICKERS") or "").upper().split()
+        if not t:
+            raise SystemExit("list mode requires SEARCH_TICKERS=... (no default universe); "
+                             "for the full run use `make feature-search-loop`")
+        return "list", t, os.environ.get("SEARCH_APPLY_POLICY") or "satisfied"
     if u.lower() == "all":
         import duckdb
         con = duckdb.connect(seeds.upstream_path(), read_only=True)

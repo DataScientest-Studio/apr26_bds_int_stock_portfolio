@@ -44,7 +44,7 @@ echo "$REQ_MODE" > "$LOG_DIR/MODE"
 # Bake the mode env into the pane command line rather than relying on tmux's
 # environment snapshot (tmux captures the server's env at first-session
 # creation, which can be stale/empty for a later relaunch by the supervisor).
-MODE_ENV="SEARCH_TICKERS='${SEARCH_TICKERS:-}' SEARCH_UNIVERSE='${SEARCH_UNIVERSE:-}' SEARCH_APPLY_POLICY='${SEARCH_APPLY_POLICY:-}'"
+MODE_ENV="SEARCH_TICKERS='${SEARCH_TICKERS:-}' SEARCH_UNIVERSE='${SEARCH_UNIVERSE:-}' SEARCH_APPLY_POLICY='${SEARCH_APPLY_POLICY:-}' SEARCH_JOBS='${SEARCH_JOBS:-}' APPLY_JOBS='${APPLY_JOBS:-}'"
 tmux new-session -d -s "$SESSION" -n run "$MODE_ENV bash scripts/_search_run_loop.sh"
 tmux set-option -t "$SESSION" remain-on-exit on 2>/dev/null || true
 tmux new-window -t "$SESSION" -n watch "bash scripts/_search_watch.sh"

@@ -8,8 +8,8 @@
 #   make build                   regenerate Plan/*.html from *.tmpl + Markdown markers (single-home-per-fact)
 #   make check                   fail-closed gate: number drift / stray literals / lego<->SOT crossmatch
 #   make ensure-seeds            export any missing SEARCH_TICKERS seeds from SP500_DUCKDB
-#   make search-on               launch the search loop on an explicit list (SEARCH_TICKERS, apply-on-satisfied)
-#   make feature-search-loop     FULL-UNIVERSE search (503 upstream tickers, upstream-direct bars, triage -> deepen, apply-at-convergence)
+#   make feature-search-loop     PRIMARY loop: full-universe parallel search (503 tickers, SEARCH_JOBS workers, triage -> deepen, apply-at-convergence)
+#   make search-on SEARCH_TICKERS="AAPL XOM"   legacy sequential list mode for testing (requires an explicit list, apply-on-satisfied)
 #   make search-install-cron     install @reboot + */15 cron so the loop always runs on the server (survives reboot)
 #   make search-uninstall-cron   remove the cron entries
 #   make search-off              stop the search loop gracefully (STOP.flag) and its supervisor
@@ -41,8 +41,11 @@ ifeq (loop,$(firstword $(MAKECMDGOALS)))
 	@:
 endif
 
-SEARCH_TICKERS ?= AAPL MSFT NVDA AMZN GOOGL META TSLA AVGO LLY JPM V UNH XOM MA COST PG HD JNJ WMT NFLX
+# SEARCH_TICKERS: no default — list mode (make search-on) is an explicit-list testing primitive.
+SEARCH_TICKERS ?=
 SEARCH_UNIVERSE ?= all
+SEARCH_JOBS ?=              # parallel search workers (empty -> worker uses cpu_count-1; e.g. 3 on 4 cores)
+APPLY_JOBS ?=              # parallel run_asset in the apply phase (empty -> = SEARCH_JOBS)
 SEARCH_SESSION := liora_feature_search
 SEARCH_LOG_DIR := logs/search
 SEARCH_SUP_PID := .search_supervisor.pid
@@ -118,10 +121,11 @@ endef
 
 search-on: SEARCH_ENV = SEARCH_TICKERS="$(SEARCH_TICKERS)"
 search-on: ensure-seeds
+	@test -n "$(SEARCH_TICKERS)" || (echo "usage: make search-on SEARCH_TICKERS=\"AAPL XOM\"  (no default; for the full run use make feature-search-loop)" && exit 1)
 	@$(SEARCH_ENV) bash scripts/search_on.sh
 	$(SEARCH_SUP_START)
 
-feature-search-loop: SEARCH_ENV = SEARCH_UNIVERSE="$(SEARCH_UNIVERSE)"
+feature-search-loop: SEARCH_ENV = SEARCH_UNIVERSE="$(SEARCH_UNIVERSE)" SEARCH_JOBS="$(SEARCH_JOBS)" APPLY_JOBS="$(APPLY_JOBS)"
 feature-search-loop:
 	@$(SEARCH_ENV) bash scripts/search_on.sh
 	$(SEARCH_SUP_START)
