@@ -56,6 +56,7 @@ HEARTBEAT = LOG_DIR / "heartbeat.json"
 ALERTS = LOG_DIR / "ALERTS.txt"
 STOP_FLAG = LOG_DIR / "STOP.flag"
 HALT_FLAG = LOG_DIR / "HALT.flag"
+DONE_FLAG = LOG_DIR / "DONE.flag"   # success terminal: every ticker frozen/parked/ineligible
 
 THREAD_ENV_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
                    "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
@@ -72,6 +73,8 @@ CONTROL_DEFAULTS = {
     "min_gain": 0.002,
     "round_budget_evals": 150,
     "min_deep_rounds": 2,          # convergence floor (apply_policy=converged); agent-tunable [2,6]
+    "max_stale_rounds": 3,         # applied ticker with this many consecutive no-improvement deep
+                                   # passes is FROZEN (enough optimized) -> excluded so the loop ends
     "min_train_bars": 3000,        # universe eligibility threshold; consumed once per new ticker
     "apply_policy": "satisfied",   # mirrored from env by the worker; agent READ-ONLY (env wins)
     "priorities": [],
@@ -305,6 +308,18 @@ def _migrate_v2(con):
                 "(SELECT COUNT(DISTINCT round) FROM evaluations e "
                 " WHERE e.ticker = assets.ticker AND e.round >= 2)")
     con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('schema', 'v2')")
+    con.commit()
+    _migrate_v3(con)
+
+
+def _migrate_v3(con):
+    """Idempotent schema v3: stale_rounds = consecutive completed deep passes with NO Train-CV
+    improvement (used to freeze an already-enough-optimized applied ticker so the loop can end)."""
+    have = {r[1] for r in con.execute("PRAGMA table_info(assets)")}
+    if "stale_rounds" in have:
+        return
+    con.execute("ALTER TABLE assets ADD COLUMN stale_rounds INTEGER DEFAULT 0")
+    con.execute("INSERT OR REPLACE INTO meta(key, value) VALUES('schema', 'v3')")
     con.commit()
 
 
@@ -576,19 +591,31 @@ def deep_ticker(con, t, rnd, ctl, seed, counters):
 def finish_deep_pass(con, t, ctl, policy):
     """CONVERGED(t) := deep_rounds_done >= min_deep_rounds AND (the pass adopted nothing OR it
     ended on a dead streak). Evaluated ONLY after a COMPLETED deep pass, purely from db state.
-    A pass with 0 new evaluations (space exhausted) satisfies 'adopted nothing'."""
+    A pass with 0 new evaluations (space exhausted) satisfies 'adopted nothing'.
+
+    stale_rounds = consecutive completed deep passes that found NO Train-CV improvement
+    (best_subset_key unchanged). Reset to 0 on any adoption. For an APPLIED ticker being
+    polished, stale_rounds >= max_stale_rounds means "enough optimized" -> FROZEN (terminal,
+    excluded from the loop) so the universe eventually finishes."""
     a = asset_row(con, t)
     adopted = (a["best_subset_key"] or "") != (a["pass_start_best_key"] or "")
-    set_asset(con, t, deep_rounds_done=(a["deep_rounds_done"] or 0) + 1, pass_round=None)
-    if policy != "converged" or a["status"] not in ("pending", "searching"):
+    stale = 0 if adopted else (a["stale_rounds"] or 0) + 1
+    set_asset(con, t, deep_rounds_done=(a["deep_rounds_done"] or 0) + 1, pass_round=None,
+              stale_rounds=stale)
+    if policy != "converged":
         return
     a = asset_row(con, t)
-    converged = (a["deep_rounds_done"] >= int(ctl["min_deep_rounds"])
-                 and (not adopted or (a["no_improve_streak"] or 0) >= ctl["no_improve_N"]))
-    if converged:
-        set_asset(con, t, status="satisfied", converged_at=utcnow())
-        log(f"{t}: CONVERGED after {a['deep_rounds_done']} deep passes (adopted={adopted}) — "
-            f"best {a['best_subset_key'] or '(1h-only)'} queued for batch apply")
+    if a["status"] in ("pending", "searching"):
+        converged = (a["deep_rounds_done"] >= int(ctl["min_deep_rounds"])
+                     and (not adopted or (a["no_improve_streak"] or 0) >= ctl["no_improve_N"]))
+        if converged:
+            set_asset(con, t, status="satisfied", converged_at=utcnow())
+            log(f"{t}: CONVERGED after {a['deep_rounds_done']} deep passes (adopted={adopted}) — "
+                f"best {a['best_subset_key'] or '(1h-only)'} queued for batch apply")
+    elif a["status"] == "applied" and stale >= int(ctl["max_stale_rounds"]):
+        set_asset(con, t, status="frozen")
+        log(f"{t}: FROZEN (enough optimized — {stale} consecutive deep passes with no Train-CV "
+            f"improvement); dropped from the loop")
 
 
 # ------------------------------------------------------------- apply plane ---
@@ -633,7 +660,7 @@ def _finalize_apply(con, t, subset_key_val, cv, attempts_before, rc):
     run_assets never contend on assets rows."""
     if rc == 0:
         set_asset(con, t, status="applied", applied_subset_key=subset_key_val,
-                  applied_cv=cv, pending_better=0)
+                  applied_cv=cv, pending_better=0, stale_rounds=0)   # fresh polish counter
         log(f"{t}: applied + one-shot OOS done (subset {subset_key_val})")
         return True
     attempts = attempts_before + 1
@@ -760,7 +787,7 @@ def _run_apply_round(con, jobs=1):
 def round_order(con, universe, ctl, mode="list"):
     rows = {r["ticker"]: r for r in con.execute("SELECT * FROM assets")}
     healthy = [t for t in universe if rows.get(t)
-               and rows[t]["status"] not in ("parked", "ineligible")
+               and rows[t]["status"] not in ("parked", "ineligible", "frozen")
                and t not in ctl["paused_tickers"]]
     prio = [t for t in ctl["priorities"] if t in healthy]
     rest = [t for t in healthy if t not in prio]
@@ -950,25 +977,34 @@ def run_loop():
             heartbeat(phase="halted")
             log("halt/stop requested — exiting 3")
             return 3
+        # Drain any converged backlog FIRST (idempotent — acts only on status='satisfied'), so
+        # applied/deliverables flow immediately AND so "nothing left to do" is judged after applies.
+        if policy == "converged":
+            _run_apply_round(con, jobs)
         order = round_order(con, universe, ctl, mode)
         if not order:
-            alert("all tickers parked/paused/ineligible — sleeping 300s")
-            heartbeat(phase="all_parked")
-            time.sleep(300)
+            # Nothing searchable/polishable left. If no satisfied backlog remains either, every
+            # ticker is frozen (enough optimized) / parked / ineligible -> the loop is DONE.
+            sat = con.execute("SELECT COUNT(*) FROM assets WHERE status='satisfied'").fetchone()[0]
+            if sat == 0:
+                counts = dict(con.execute("SELECT status, COUNT(*) FROM assets GROUP BY status").fetchall())
+                log(f"universe fully optimized — no searchable tickers left ({counts}); loop DONE")
+                heartbeat(phase="done", **{k: counts.get(k, 0)
+                          for k in ("applied", "frozen", "parked", "ineligible")})
+                DONE_FLAG.touch()
+                return 0
+            alert("no searchable tickers but satisfied backlog remains — retrying apply in 60s")
+            heartbeat(phase="apply_retry")
+            time.sleep(60)
             continue
         rnd_done = int(con.execute("SELECT value FROM meta WHERE key='rounds_completed'").fetchone()[0])
         rnd = rnd_done + 1
         log(f"=== round {rnd}: {len(order)} tickers ===")
-        # Drain any converged backlog FIRST (idempotent — acts only on status='satisfied'), so
-        # applied/deliverables start flowing immediately instead of waiting for this whole round's
-        # search sweep to finish; then run the search phase, then apply what converged this round.
-        if policy == "converged":
-            _run_apply_round(con, jobs)
         total_new = _run_search_round(con, order, rnd, policy, seed, jobs)
         if stop_requested(read_control()):
             return 3
         if policy == "converged":
-            _run_apply_round(con, jobs)
+            _run_apply_round(con, jobs)   # apply this round's fresh convergences (don't wait a round)
         con.execute("UPDATE meta SET value=? WHERE key='rounds_completed'", (str(rnd),))
         con.commit()
         log(f"round {rnd} done: {total_new} new evaluations")
@@ -1016,9 +1052,10 @@ def status():
         counts[r["status"] or "-"] = counts.get(r["status"] or "-", 0) + 1
     eligible = [r for r in rows if r["status"] != "ineligible"]
     triaged = sum(1 for r in eligible if r["baseline_ref"] is not None)
+    done = " | COMPLETE (DONE.flag)" if DONE_FLAG.exists() else ""
     print(f"mode={meta.get('mode', 'list')}  apply_policy={meta.get('apply_policy', 'satisfied')}  "
           f"counts: {' '.join(f'{k}={v}' for k, v in sorted(counts.items()))}  "
-          f"triage: {triaged}/{len(eligible)} eligible")
+          f"triage: {triaged}/{len(eligible)} eligible{done}")
 
     def gain(r):
         if r["best_cv"] is None or r["baseline_ref"] is None:
@@ -1026,17 +1063,18 @@ def status():
         return r["best_cv"] - r["baseline_ref"]
 
     rows.sort(key=lambda r: (-(gain(r) if gain(r) is not None else float("-inf")), r["ticker"]))
-    print(f"{'ticker':7s} {'status':10s} {'round':>5s} {'deep':>4s} {'evals':>6s} {'baseline':>9s} "
-          f"{'best_cv':>9s} {'gain':>8s} {'applied':>9s} {'pend':>4s}  best_subset")
+    print(f"{'ticker':7s} {'status':10s} {'round':>5s} {'deep':>4s} {'stale':>5s} {'evals':>6s} "
+          f"{'baseline':>9s} {'best_cv':>9s} {'gain':>8s} {'applied':>9s} {'pend':>4s}  best_subset")
     for r in rows:
         fmt = lambda v: f"{v:.4f}" if v is not None else "-"
         g = gain(r)
-        has_v2 = "deep_rounds_done" in r.keys()   # readonly view of a not-yet-migrated v1 db
-        tail = (r["ineligible_reason"] if has_v2 and r["status"] == "ineligible"
+        keys = r.keys()
+        tail = (r["ineligible_reason"] if "ineligible_reason" in keys and r["status"] == "ineligible"
                 else (r["best_subset_key"] or "-"))
-        deep = r["deep_rounds_done"] if has_v2 else 0
+        deep = r["deep_rounds_done"] if "deep_rounds_done" in keys else 0
+        stale = r["stale_rounds"] if "stale_rounds" in keys else 0
         print(f"{r['ticker']:7s} {r['status'] or '-':10s} {r['round'] or 0:5d} {deep or 0:4d} "
-              f"{r['evals_count'] or 0:6d} {fmt(r['baseline_ref']):>9s} {fmt(r['best_cv']):>9s} "
+              f"{stale or 0:5d} {r['evals_count'] or 0:6d} {fmt(r['baseline_ref']):>9s} {fmt(r['best_cv']):>9s} "
               f"{fmt(g):>8s} {fmt(r['applied_cv']):>9s} {r['pending_better'] or 0:4d}  {tail}")
     print(f"rounds_completed={meta.get('rounds_completed', '0')}  started_at={meta.get('started_at', '-')}")
     if HEARTBEAT.exists():
@@ -1163,6 +1201,22 @@ def selfcheck():
     assert _resolve_jobs("universe", "satisfied") == 1   # satisfied policy -> sequential (no inline-apply race)
     os.environ.pop("SEARCH_JOBS", None)
     print("6. jobs resolution: universe=SEARCH_JOBS, list clamped to 1")
+
+    # 7. freeze: an applied ticker with max_stale_rounds no-improvement passes -> frozen
+    ctl7 = dict(CONTROL_DEFAULTS); ctl7["max_stale_rounds"] = 2
+    set_asset(con, "AAPL", status="applied", best_subset_key="101", pass_start_best_key="101",
+              stale_rounds=0)
+    finish_deep_pass(con, "AAPL", ctl7, "converged")           # no adoption -> stale 1
+    assert asset_row(con, "AAPL")["status"] == "applied" and asset_row(con, "AAPL")["stale_rounds"] == 1
+    set_asset(con, "AAPL", pass_start_best_key="101")
+    finish_deep_pass(con, "AAPL", ctl7, "converged")           # no adoption -> stale 2 -> FROZEN
+    assert asset_row(con, "AAPL")["status"] == "frozen", asset_row(con, "AAPL")["status"]
+    # adoption resets stale (a still-improving ticker never freezes)
+    set_asset(con, "AAPL", status="applied", best_subset_key="101", pass_start_best_key="101,201",
+              stale_rounds=5)
+    finish_deep_pass(con, "AAPL", ctl7, "converged")           # adopted (key changed) -> stale 0
+    assert asset_row(con, "AAPL")["stale_rounds"] == 0 and asset_row(con, "AAPL")["status"] == "applied"
+    print("7. freeze: applied ticker frozen after max_stale_rounds; adoption resets stale")
     print("SELFCHECK OK")
     return 0
 
