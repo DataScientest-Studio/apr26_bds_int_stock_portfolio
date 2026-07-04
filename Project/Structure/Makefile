@@ -25,7 +25,8 @@ PIP := ../.venv/bin/pip
 PORT ?= 8000
 PID := .viz.pid
 LOG := .viz.log
-SP500_DUCKDB := /opt/to_liora_school/qc-raw-ohlcv-data-sp500-alpaca/endproduct/ohlcv_1h_sp500_alpaca.duckdb
+# Upstream store path lives in seeds.py (single home); set SP500_DUCKDB only to override it.
+SP500_DUCKDB ?=
 
 LOOP_TICKERS := $(strip $(if $(TICKERS),$(TICKERS),$(filter-out loop,$(MAKECMDGOALS))))
 ifeq ($(strip $(LOOP_TICKERS)),)
@@ -82,39 +83,9 @@ export FEATURE_MANIFEST_PY
 feature-search:
 	@$(PY) -c "$$FEATURE_MANIFEST_PY"
 
-define ENSURE_SEEDS_PY
-import os
-from pathlib import Path
-import pandas as pd
-TICKERS = os.environ.get("LOOP_TICKERS", "AAPL TSLA XOM").split()
-SP500_DUCKDB = os.environ.get("SP500_DUCKDB", "")
-seed_dir = Path("data/seed")
-seed_dir.mkdir(parents=True, exist_ok=True)
-missing = [T for T in TICKERS if not (seed_dir / ("%s_ohlcv_1h.parquet" % T)).exists()]
-if missing:
-    if not SP500_DUCKDB or not Path(SP500_DUCKDB).exists():
-        raise SystemExit("missing seed(s) %s and SP500_DUCKDB unavailable (%s)" % (", ".join(missing), SP500_DUCKDB))
-    import duckdb
-    con = duckdb.connect(SP500_DUCKDB, read_only=True)
-    for T in missing:
-        out = seed_dir / ("%s_ohlcv_1h.parquet" % T)
-        d = con.execute("select ts as timestamp, open, high, low, close, volume from ohlcv_1h where symbol=? order by ts", [T]).fetchdf()
-        if d.empty:
-            raise SystemExit("ticker %s not found in %s" % (T, SP500_DUCKDB))
-        d["timestamp"] = pd.to_datetime(d["timestamp"]).dt.tz_localize("America/New_York", ambiguous="infer", nonexistent="shift_forward").dt.tz_convert("UTC")
-        d["volume"] = d["volume"].astype("float64")
-        d = d[["timestamp", "open", "high", "low", "close", "volume"]]
-        d.to_parquet(out, index=False)
-        print("exported seed %s (%d bars)" % (out, len(d)))
-    con.close()
-else:
-    print("all requested seeds already present")
-endef
-export ENSURE_SEEDS_PY
-
 loop:
 	@echo "loop tickers: $(LOOP_TICKERS)"
-	@LOOP_TICKERS="$(LOOP_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) -c "$$ENSURE_SEEDS_PY"
+	@LOOP_TICKERS="$(LOOP_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) seeds.py
 	$(PY) build_db.py
 	@for T in $(LOOP_TICKERS); do echo ">>> run-asset $$T"; $(PY) run_asset.py TICKER=$$T || exit 1; done
 	python3 build_dashboard.py
@@ -123,7 +94,7 @@ dashboard:
 	python3 build_dashboard.py
 
 ensure-seeds:
-	@LOOP_TICKERS="$(SEARCH_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) -c "$$ENSURE_SEEDS_PY"
+	@LOOP_TICKERS="$(SEARCH_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) seeds.py
 
 search-on: ensure-seeds
 	@SEARCH_TICKERS="$(SEARCH_TICKERS)" bash scripts/search_on.sh
