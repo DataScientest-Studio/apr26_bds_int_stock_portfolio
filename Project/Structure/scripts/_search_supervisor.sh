@@ -12,6 +12,7 @@ SESSION=liora_feature_search
 LOG_DIR=logs/search
 HALT_FLAG="$LOG_DIR/HALT.flag"
 STOP_FLAG="$LOG_DIR/STOP.flag"
+DONE_FLAG="$LOG_DIR/DONE.flag"
 MAX_RESTARTS=10
 restarts=0
 
@@ -24,6 +25,10 @@ while true; do
   if [ -f "$HALT_FLAG" ]; then
     log "HALT.flag present -> supervisor stopping"
     exit 1
+  fi
+  if [ -f "$DONE_FLAG" ]; then
+    log "DONE.flag present (universe fully optimized) -> supervisor stopping"
+    exit 0
   fi
   if [ -f "$STOP_FLAG" ]; then
     log "STOP.flag present -> supervisor stopping gracefully"

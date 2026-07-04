@@ -9,7 +9,8 @@
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."   # Project/Structure/
 mkdir -p logs/search
-# HALT.flag is a human stop — never auto-relaunch through it.
+# HALT.flag (human stop) / DONE.flag (universe fully optimized) — never auto-relaunch through either.
 [ -f logs/search/HALT.flag ] && { echo "[$(date -u +%FT%TZ)] HALT.flag present — cron stands down"; exit 0; }
+[ -f logs/search/DONE.flag ] && { echo "[$(date -u +%FT%TZ)] DONE.flag present (fully optimized) — cron stands down"; exit 0; }
 echo "[$(date -u +%FT%TZ)] cron tick -> make feature-search-loop"
 make feature-search-loop

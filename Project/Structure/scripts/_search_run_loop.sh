@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# tmux window "run": re-invoke the worker forever (continuous mode has no
-# completion condition — only STOP.flag / HALT.flag / search_control.json.halt
-# end it). Restarts on any non-halt exit; a crash-storm (>10 restarts inside
-# 10 minutes) trips HALT.flag itself so a human looks before it keeps burning
-# CPU into the same failure.
+# tmux window "run": re-invoke the worker until the universe is fully optimized
+# (worker rc=0 -> DONE.flag) or it is stopped (STOP.flag / HALT.flag /
+# search_control.json.halt). Restarts on any other (crash) exit; a crash-storm
+# (>10 restarts inside 10 minutes) trips HALT.flag itself so a human looks before
+# it keeps burning CPU into the same failure.
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."   # Project/Structure/
 PY=../.venv/bin/python3
@@ -15,13 +15,16 @@ restarts_window=()
 while true; do
   [ -f "$LOG_DIR/STOP.flag" ] && { echo "STOP.flag present -> exiting run loop"; break; }
   [ -f "$LOG_DIR/HALT.flag" ] && { echo "HALT.flag present -> exiting run loop"; break; }
+  [ -f "$LOG_DIR/DONE.flag" ] && { echo "DONE.flag present (universe fully optimized) -> exiting run loop"; break; }
 
   OMP_NUM_THREADS=1 "$PY" feature_search_worker.py 2>&1 | tee -a "$LOG_DIR/worker.log"
   rc=${PIPESTATUS[0]}
 
+  [ "$rc" -eq 0 ] && { echo "worker done (rc=0, universe fully optimized) -> exiting run loop"; break; }
   [ "$rc" -eq 3 ] && { echo "worker halted (rc=3) -> exiting run loop"; break; }
   [ -f "$LOG_DIR/STOP.flag" ] && { echo "STOP.flag present -> exiting run loop"; break; }
   [ -f "$LOG_DIR/HALT.flag" ] && { echo "HALT.flag present -> exiting run loop"; break; }
+  [ -f "$LOG_DIR/DONE.flag" ] && { echo "DONE.flag present -> exiting run loop"; break; }
 
   now=$(date +%s)
   restarts_window+=("$now")

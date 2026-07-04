@@ -21,6 +21,11 @@ if [ -f "$LOG_DIR/HALT.flag" ]; then
   echo "HALT.flag present at $LOG_DIR/HALT.flag — inspect logs, then rm it before restarting."
   exit 1
 fi
+if [ -f "$LOG_DIR/DONE.flag" ]; then
+  echo "DONE.flag present — universe already fully optimized. rm $LOG_DIR/DONE.flag to resume"
+  echo "(e.g. after lowering max_stale_rounds or adding stage3 candidates to re-open the search)."
+  exit 0
+fi
 
 # Requested mode: universe (SEARCH_UNIVERSE set) vs list (SEARCH_TICKERS).
 REQ_MODE=list
