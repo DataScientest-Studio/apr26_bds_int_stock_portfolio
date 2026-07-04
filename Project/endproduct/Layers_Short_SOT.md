@@ -396,16 +396,22 @@ lives only in the app's `[J1b]` PROMPTS, never here. The fail-closed crossmatch
   per t0 sorted by p, threshold 0.6, exact-tie skip, per-trade Kelly sizing
   `f=clip(λ·(2p−1),0,1)`, equity marked to close per held bar, capital-depletion halt; summary =
   end capital, PF (None when gross loss is 0 — `not_rankable`), MDD, win rate, TIM, counters.
+  HODL fallback: if the model produced ZERO OOS trades, `hodl_fallback` replaces the verdict
+  with ONE long buy-and-hold trade (buy the first OOS bar's open, sell the last OOS bar's
+  close, same fill/cost model, all-in) — honestly labeled
+  (`capital_mode=hodl_fallback_no_model_trades`, exit reason `HODL_FALLBACK_EXIT`, an explicit
+  OOS_MODE note in the README) so the benchmark path is never mistaken for model trades.
   `asset_writers.write_readme`: capital path + ROI/365 + the feature table + the Triple Barrier
   ledger (first 50 trades). `asset_writers.write_oos_metrics`: UPSERT of the 16 result columns
   into `oos_metrics.db` (side store OUTSIDE the 7 files).
 - **OUTPUT:** `<TICKER>_README.md` (deliverable file #7) + the `oos_metrics` row; with the
   executed notebook (file #1) the 7-file contract is complete.
 - **INWARIANTY:** OOS is scanned exactly once, at the end — no parameter, threshold or feature
-  choice reads it; the engine is the same code path as Train acceptance; results are framed as a
-  correctness/research result, not an edge claim (`MIN_OOS_TRADES_FOR_INTERPRETATION=null`,
-  `CORP_ACTIONS_POLICY=deferred` ⇒ raw unadjusted prices,
-  `UNIVERSE_MODE=current_constituents_research` ⇒ survivorship caveat).
+  choice reads it (the HODL fallback reads the SAME already-scanned window and only when the
+  model traded zero times); the engine is the same code path as Train acceptance; results are
+  framed as a correctness/research result, not an edge claim
+  (`MIN_OOS_TRADES_FOR_INTERPRETATION=null`, `CORP_ACTIONS_POLICY=deferred` ⇒ raw unadjusted
+  prices, `UNIVERSE_MODE=current_constituents_research` ⇒ survivorship caveat).
 - **KNOBS:** oos 2024-01-02→2026-05-29 · `INITIAL_CAPITAL_USD=1000` ·
   `CAPITAL_MODE=kelly_fractional_compounding` · `POSITION_POLICY=one_open_position_per_asset` ·
   `SIMULTANEOUS_SETUP_POLICY=highest_probability_then_skip_on_exact_tie`.

@@ -107,7 +107,12 @@ def write_readme(path, s, ledger, manifest):
     L = [f"# {s['ticker']} — OOS report (current cycle)", "",
          "- EXECUTION_SCOPE: SIMPLE_FEATURES_TRIPLE_BARRIER",
          "- RESULT_INTERPRETATION: historical behaviour under this fill / cost / Triple Barrier / position-sizing / "
-         "compounding model; not broker-specific execution proof.", "",
+         "compounding model; not broker-specific execution proof."]
+    if s.get("hodl_fallback"):
+        L.append("- OOS_MODE: the model produced 0 trades in the OOS window -> HODL fallback: one long "
+                 "buy-and-hold trade (buy the first OOS bar's open, sell the last OOS bar's close, same "
+                 "fill/cost model). The ledger below is that benchmark trade, NOT a model trade.")
+    L += ["",
          f"## Capital path ({cap_mode})", "",
          f"- ROI/365: {roi_per_365:.2f}%",
          f"- data range: {sp['oos_start']} → {sp['oos_end']} ({oos_days} days)",
@@ -127,9 +132,11 @@ def write_readme(path, s, ledger, manifest):
           "## Triple Barrier trade ledger (ORDER BY trade_id ASC)", "",
           "| # | dir | entry_fill_timestamp | entry | target | stop | exit_fill_timestamp | exit | reason | acct_net | cap_after |",
           "|--|--|--|--|--|--|--|--|--|--|--|"]
+    import math
+    fmt4 = lambda v: "—" if (v is None or (isinstance(v, float) and math.isnan(v))) else f"{v:.4f}"
     for l in ledger[:50]:
         L.append(f"| {l['trade_id']} | {l['direction']} | {l['entry_fill_timestamp']} | {l['entry_fill']:.4f} "
-                 f"| {l['target_level']:.4f} | {l['stop_level']:.4f} | {l['exit_fill_timestamp']} | {l['exit_fill']:.4f} "
+                 f"| {fmt4(l['target_level'])} | {fmt4(l['stop_level'])} | {l['exit_fill_timestamp']} | {l['exit_fill']:.4f} "
                  f"| {l['market_exit_reason']} | {l['account_net_pnl_usd']:.2f} | {l['capital_after']:.2f} |")
     if len(ledger) > 50:
         L.append(f"| … | | {len(ledger)-50} more | | | | | | | | |")

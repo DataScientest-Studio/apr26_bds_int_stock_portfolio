@@ -941,6 +941,71 @@ def run_engine(df, scored, start_idx, end_idx, threshold, kelly_fraction=None):
     return summary, ledger, equity_events
 
 
+def hodl_fallback(df, start_idx, end_idx):
+    """OOS verdict fallback when the model produced ZERO trades: one long buy-and-hold
+    trade — buy at the first OOS bar's open, sell at the last OOS bar's close, the same
+    fill/cost model as the engine (slippage both ways, commission both sides), all-in
+    from INITIAL_CAPITAL_USD. Returns (summary, ledger, equity_events) in the exact
+    run_engine shape. Honestly labeled: capital_mode=hodl_fallback_no_model_trades,
+    exit reason HODL_FALLBACK_EXIT, summary flag hodl_fallback=True — the README and
+    the dashboard row then describe a benchmark path, never model trades."""
+    p = PIPELINE_PARAMETERS
+    E0 = p["INITIAL_CAPITAL_USD"]
+    fee = p["COMMISSION_BPS"] * 1e-4
+    slip = p["SLIPPAGE_BPS"] * 1e-4
+    o, c = df["open"].to_numpy(), df["close"].to_numpy()
+    entry_fill = float(o[start_idx] * (1 + slip))
+    exit_fill = float(c[end_idx] * (1 - slip))
+    q = E0 / (entry_fill * (1 + fee))
+    entry_fee, exit_fee = q * entry_fill * fee, q * exit_fill * fee
+    net = q * (exit_fill - entry_fill) - entry_fee - exit_fee
+    E = E0 + net
+    equity_events = [{"event_type": "initial_capital", "bar_index": -1, "trade_id": 0, "equity": E0},
+                     {"event_type": "entry_fee_mark", "bar_index": int(start_idx), "trade_id": 1,
+                      "equity": max(0.0, E0 - entry_fee)}]
+    for t in range(start_idx, end_idx + 1):
+        liq = c[t] * (1 - slip)
+        equity_events.append({"event_type": "held_close_mark", "bar_index": int(t), "trade_id": 1,
+                              "equity": max(0.0, E0 + q * (liq - entry_fill) - entry_fee - q * liq * fee)})
+    equity_events.append({"event_type": "exit_fill", "bar_index": int(end_idx), "trade_id": 1,
+                          "equity": float(E)})
+    nan = float("nan")
+    ledger = [{"trade_id": 1, "direction": 1,
+               "setup_t0_index": int(start_idx), "signal_bar_index": int(start_idx),
+               "decision_bar_index": int(start_idx),
+               "entry_fill_index": int(start_idx), "exit_trigger_index": -1,
+               "exit_fill_index": int(end_idx),
+               "signal_open_timestamp": str(bar_open_timestamp(df, start_idx)),
+               "decision_timestamp": str(bar_open_timestamp(df, start_idx)),
+               "entry_fill_timestamp": str(bar_open_timestamp(df, start_idx)),
+               "exit_trigger_timestamp": "",
+               "exit_fill_timestamp": str(bar_close_timestamp(df, end_idx)),
+               "entry_fill": entry_fill, "exit_fill": exit_fill,
+               "target_level": nan, "stop_level": nan, "barrier_width_pct": nan,
+               "model_prob": nan, "kelly_fraction_applied": 1.0,
+               "quantity": float(q), "market_exit_reason": "HODL_FALLBACK_EXIT",
+               "capital_state": "ACTIVE", "capital_before": E0,
+               "raw_net_pnl_usd": float(net), "account_net_pnl_usd": float(net),
+               "uncovered_loss_usd": 0.0, "capital_after": float(E)}]
+    eq = np.array([ev["equity"] for ev in equity_events])
+    peak = np.maximum.accumulate(eq)
+    mdd = float(np.max((peak - eq) / np.maximum(EPS, peak)) * 100)
+    summary = {"start_capital": E0, "end_capital": float(E), "net_pnl_usd": float(net),
+               "return_pct": float((E / E0 - 1) * 100),
+               "profit_factor": None if net > 0 else 0.0,   # single trade: win => no gross loss
+               "max_drawdown_pct": mdd,
+               "win_rate_pct": 100.0 if net > 0 else 0.0, "trades": 1,
+               "wins": int(net > 0), "losses": int(net <= 0),
+               "time_in_market_pct": 100.0, "forced_oos_exits": 0,
+               "capital_depleted": bool(E <= 0),
+               "uncovered_loss_total_usd": 0.0, "max_uncovered_loss_usd": 0.0,
+               "signals_total": 0, "threshold_rejects": 0, "not_selected": 0,
+               "simultaneous_tie_skip": 0, "gap_invalidated_skip": 0,
+               "invalid_barrier_skip": 0, "ignored_while_open": 0, "entered": 1,
+               "capital_mode": "hodl_fallback_no_model_trades", "hodl_fallback": True}
+    return summary, ledger, equity_events
+
+
 # ============================ orchestration helpers ============================
 
 def derive_output_b(df, ticker, manifest=None):
