@@ -7,6 +7,13 @@
 #   make dashboard               refresh Dashboard feed: oos_metrics.db -> Plan/data/dashboard.json
 #   make build                   regenerate Plan/*.html from *.tmpl + Markdown markers (single-home-per-fact)
 #   make check                   fail-closed gate: number drift / stray literals / lego<->SOT crossmatch
+#   make ensure-seeds            export any missing SEARCH_TICKERS seeds from SP500_DUCKDB
+#   make search-on               launch the continuous per-asset feature-search loop (S.1, tmux, supervised)
+#   make search-off              stop the search loop gracefully (STOP.flag) and its supervisor
+#   make search-status           one-shot per-ticker search status (sqlite, read-only)
+#   make search-logs             tail the search worker log
+#   make search-apply TICKER=X   manual re-apply of the current Train-CV best (a SECOND OOS read)
+#   make search-agent-on         start the Claude Sonnet steering session (/feature-search-steer)
 #   make serve                   serve the static visualization (Plan/) on :8000 (foreground)
 #   make on                      serve Plan/ in the background + open the browser
 #   make off                     stop the background viz server
@@ -30,7 +37,13 @@ ifeq (loop,$(firstword $(MAKECMDGOALS)))
 	@:
 endif
 
-.PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help
+SEARCH_TICKERS ?= AAPL MSFT NVDA AMZN GOOGL META TSLA AVGO LLY JPM V UNH XOM MA COST PG HD JNJ WMT NFLX
+SEARCH_SESSION := liora_feature_search
+SEARCH_LOG_DIR := logs/search
+SEARCH_SUP_PID := .search_supervisor.pid
+
+.PHONY: deps build-db run-asset feature-search loop dashboard build check serve on off restart logs clean help \
+        ensure-seeds search-on search-off search-status search-logs search-apply search-agent-on
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -108,6 +121,50 @@ loop:
 
 dashboard:
 	python3 build_dashboard.py
+
+ensure-seeds:
+	@LOOP_TICKERS="$(SEARCH_TICKERS)" SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) -c "$$ENSURE_SEEDS_PY"
+
+search-on: ensure-seeds
+	@SEARCH_TICKERS="$(SEARCH_TICKERS)" bash scripts/search_on.sh
+	@if [ -f $(SEARCH_SUP_PID) ] && kill -0 $$(cat $(SEARCH_SUP_PID)) 2>/dev/null; then \
+	  echo "supervisor already running (PID $$(cat $(SEARCH_SUP_PID)))"; \
+	else \
+	  mkdir -p $(SEARCH_LOG_DIR); \
+	  SEARCH_TICKERS="$(SEARCH_TICKERS)" nohup bash scripts/_search_supervisor.sh >> $(SEARCH_LOG_DIR)/supervisor.log 2>&1 & \
+	  echo $$! > $(SEARCH_SUP_PID); \
+	  echo "supervisor started (PID $$(cat $(SEARCH_SUP_PID)))"; \
+	fi
+	@echo "monitor: tmux attach -t $(SEARCH_SESSION)   (windows: run, watch)"
+	@echo "or:      make search-status / make search-logs"
+
+search-off:
+	@mkdir -p $(SEARCH_LOG_DIR)
+	@touch $(SEARCH_LOG_DIR)/STOP.flag
+	@echo "STOP.flag set; waiting up to 20s for the loop to exit gracefully..."
+	@for i in $$(seq 1 20); do tmux has-session -t $(SEARCH_SESSION) 2>/dev/null || break; sleep 1; done
+	@tmux kill-session -t $(SEARCH_SESSION) 2>/dev/null || true
+	@if [ -f $(SEARCH_SUP_PID) ]; then kill $$(cat $(SEARCH_SUP_PID)) 2>/dev/null || true; rm -f $(SEARCH_SUP_PID); fi
+	@echo "search loop stopped"
+
+search-status:
+	@$(PY) feature_search_worker.py --status
+
+search-logs:
+	@test -f $(SEARCH_LOG_DIR)/worker.log && tail -f $(SEARCH_LOG_DIR)/worker.log || echo "no log; try 'make search-on'"
+
+search-apply:
+	@test -n "$(TICKER)" || (echo "usage: make search-apply TICKER=AAPL" && exit 1)
+	$(PY) feature_search_worker.py --apply $(TICKER)
+
+search-agent-on:
+	@tmux has-session -t $(SEARCH_SESSION) 2>/dev/null || (echo "run 'make search-on' first" && exit 1)
+	@tmux list-windows -t $(SEARCH_SESSION) -F '#W' | grep -qx agent || \
+	  tmux new-window -t $(SEARCH_SESSION) -n agent -c $(CURDIR)/../..
+	tmux send-keys -t $(SEARCH_SESSION):agent 'claude --model sonnet' Enter
+	@sleep 15
+	tmux send-keys -t $(SEARCH_SESSION):agent '/loop 15m /feature-search-steer' Enter
+	@echo "agent steering started in tmux window '$(SEARCH_SESSION):agent'"
 
 serve:
 	$(PY) -m http.server 8000 --directory ../../Plan
