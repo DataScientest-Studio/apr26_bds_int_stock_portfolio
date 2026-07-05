@@ -101,6 +101,25 @@ the number you would have gotten standing on the first OOS day (2024-01-02) with
 built the strategy on that data**. No OOS value ever flows back into any choice (enforced by asserts;
 independently audited).
 
+## Honest full-universe result — v2's strategy levers did NOT beat the baseline
+
+Reported transparently, because the research discipline is the point. On a small dev sample (~18
+tickers) v2 looked like a clear win (e.g. AAPL profit factor 1.21 → 1.89). But the **one-shot OOS over
+the full ~400-asset universe** — the real test — tells a different, honest story: **v2 does not improve
+the aggregate.** Median profit factor fell (0.87 → 0.57) and the fraction abstaining to the buy-and-hold
+benchmark jumped (≈32% → ≈67%), because the **asymmetric 2:1 barrier** makes wins rare enough that most
+assets never clear the entry threshold. On the assets that *do* trade in both versions, v2 is a slight
+improvement (median PF 0.87 → 0.92), but that does not offset the mass abstention. The small dev sample
+simply flattered the result — which is exactly why the honest test is the whole universe, read once.
+
+**What stands:** the *methodological* fixes are correct and worth keeping — Optuna now optimizes
+tradeable **log-growth** instead of AUC-PR (the fix for `OPTUNA_OBJECTIVE`), the generalized Kelly is
+mathematically exact (`2p−1` at `b=1`, byte-identical to the old rows), regularization (`reg_alpha`,
+`gamma`) is wired, and the pipeline is audited leak-free. **What did not earn its keep:** the *strategy*
+levers (the 2:1 barrier + the entry gate) over-fit the small sample and do not generalize. The sealed
+results below are the honest v2 numbers as-produced; the `data/*OLD*` backup and the `main` /
+`preparing_to_present` branches retain the prior baseline for comparison.
+
 ## Pipeline layers (L1 → L9)
 
 | Layer | What it does |
