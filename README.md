@@ -1,150 +1,79 @@
-# liora-project-ml-engineering — minimal per-asset ML pipeline (S&P 500)
+# liora-project-ml-engineering — per-asset XGBoost pipeline (S&P 500)
 
-**Run & use (from the repo root or `Project/Structure`):**
+A self-contained, **presentation-ready** per-asset **XGBoost** trading study over S&P 500 bars,
+with a client-facing **ML Basket Simulator** on top. Clone it and the app + dashboard render
+immediately from the sealed results — nothing to train.
+
+## Run it — two commands
 
 ```bash
-make app         # Tier 1 client app (Streamlit) -> http://localhost:8501 : click tickers (each = $1000), Calculate basket
-make on          # Tier 2+3 Plan site, background -> http://localhost:8000/index.html (refreshes the dashboard feed; make off stops)
-make dashboard   # refresh the OOS table feed only (oos_metrics.db -> Plan/data/dashboard.json); open it via the Plan site -> Dashboard
+make deps      # once: .venv + pinned requirements
+make app       # the demo: Streamlit basket simulator on :8501, already showing the sealed results
 ```
 
-A minimal, reproducible ML trading pipeline with a client-facing demo on top. Raw
-1h bars are read verbatim from an external upstream S&P 500 DuckDB store (not
-committed to this repo); for a chosen ticker the pipeline computes layers
-**L1 → L9** in one notebook and leaves exactly **7 deliverable files** in
-`Assets/<TICKER>/`; the **ML Basket Simulator** (Streamlit) lets a client replay a
-basket of those results over the fixed OOS window. The ML runtime stays minimal (no SHA / lineage / heavy QC
-scaffolding); the docs/viz plane is kept honest by one fail-closed gate
-(`make check`): every data-state number has a single home and the visualization
-derives from the SOT.
+Every other surface is read-only and instant:
 
-## Documentation tiers
+| command | what it does |
+|---|---|
+| `make app` | ML Basket Simulator — pick tickers (each = $1000), see the basket over the OOS window (:8501) |
+| `make on` | the **Plan** site (index, configurations, glossary, dashboard, Procedure-Lego) on :8000 (`make off` stops) |
+| `make dashboard` | refresh the OOS feed → `plan/data/dashboard.json` |
+| `make verify` | reproduce the demo tickers from the bundled mini-bars — matches the sealed rows |
+| `make run-asset TICKER=AAPL` | re-run one asset's L1–L9 notebook → `Assets/AAPL/` (7 files) + a results row |
 
-Every document in this repo has exactly one of three roles:
+## What ships sealed (clone → show)
 
-| Tier | Role | Artifact | Audience | Entry point |
-|---|---|---|---|---|
-| 1 | Client app | ML Basket Simulator — `Project/Structure/app.py` | clients | `make app` → `http://localhost:8501` |
-| 2 | Backend explanation | `Plan/` pages: `index`, `configurations`, `glossary`, `dashboard` | reviewers / operators | `make on` → `http://localhost:8000/index.html` |
-| 3 | Replication blueprint | `Plan/procedure_lego.html` + the "Kontrakt replikacji" blocks & PL PROMPTS in `Project/endproduct/Layers_Short_SOT.md` | engineers rebuilding an analogous app | the Procedure Lego link on the index page |
+The results are committed, so a fresh clone shows the app + dashboard with zero training:
 
-Tier 3 is a data-processing blueprint (data science / data engineering / ML) —
-replicating the modules, not the frontend.
+| path | what it is |
+|---|---|
+| `data/oos_metrics.db` | the one-shot OOS result row per asset (395) — read by the app & dashboard |
+| `data/per_asset_feature_overrides.json` | the per-asset feature subset the search selected |
+| `data/bars_demo.duckdb` | **mini bars** (15 recognizable tickers) so `make verify` reproduces on a clone |
+| `plan/data/dashboard.json` | the prebuilt dashboard feed |
 
-## Pillars
+The **full** bars store (`data/liora.duckdb`, 160 MB, all 503 tickers) is **not** committed — it is
+built from an external upstream S&P 500 store and exceeds GitHub's limit. So the app shows all 395
+sealed results standalone; `make verify` reproduces the 15 demo tickers from the bundled mini-bars;
+and the full universe needs the upstream store: `make build-db` (set `SP500_DUCKDB=...` to point at it).
 
-- **`Plan/`** — **visualization** (Tier 2; `procedure_lego.html` is Tier 3): static pages
-  (`index.html` → `procedure_lego.html`, `configurations.html`, `glossary.html`,
-  `dashboard.html`). `procedure_lego.html` is the Procedure Lego canvas (L1–L9 + guards
-  G.1–G.3, drag&drop, per-block replication prompts), generated from
-  `procedure_lego.html.tmpl` by `make build` — edit the `.tmpl`, never the
-  generated `.html`. It shows only what the code actually computes.
-- **`Project/`** — the working project:
-  - `Structure/` — the operational root: `app.py` (the Tier-1 client app),
-    `pipeline.py` (layers L1–L9), `notebook_template.ipynb` (the per-asset runner),
-    `build_db.py`, `run_asset.py`, `build_dashboard.py`, `asset_writers.py`,
-    `reports/` (e.g. `compare_xgb_vs_rf.py`), `config/`, `Features/`, `bars.py`
-    (canonical upstream read), `Assets/` (empty at start), `Makefile`, `requirements.txt`.
-  - `endproduct/` — the Tier-3 source-of-truth mirror (`Layers_Short_SOT.md`,
-    `README.md`) plus a symlink to `Assets/`.
+## Repo layout
+
+```
+data/     sealed store — oos_metrics.db + per-asset selections + mini demo bars (+ full liora.duckdb, ignored)
+src/      the ML engine — pipeline (L1–L9), run_asset (notebook runner), notebook_template.ipynb,
+          build_db, build_dashboard, bars, asset_writers  +  config/ (JSON)  +  Features/ (registries)
+app/      the Streamlit basket simulator (app.py)
+plan/     the static presentation site (index / configurations / glossary / dashboard / procedure_lego)
+docs/     Layers_Short_SOT.md — the Tier-3 replication blueprint
+tools/    build_demo_bars.py (mini-bars builder) + verify_repro.py
+```
+
+## Research integrity — OOS is read once, never optimized
+
+Every choice — the XGBoost hyper-parameters (Optuna), the per-asset feature subset, and the operating
+point (entry threshold, Kelly fraction) — is made on the **Train** window alone, scored by purged
+walk-forward cross-validation. The **OOS** window is read **exactly once per asset**, at the verdict
+step, and reported as-is; it never feeds back into any decision. Optimizing against OOS would be
+research nonsense (fitting the test set). The pipeline is deterministic (`seed_everything`,
+`XGBOOST_N_JOBS=1`), so the same input reproduces the same OOS row — which is what `make verify` checks.
 
 ## Pipeline layers (L1 → L9)
 
-| Layer | Name | What it does |
-|---|---|---|
-| L1 | Alpaca OHLCV download | Upstream provenance — raw 1h OHLCV came from the Alpaca Market Data API. |
-| L2 | Upstream store | The upstream SP500 DuckDB is the frozen input; `bars.load_bars` is the canonical read transform (this repo commits no raw bars). |
-| L3 | DuckDB build | `build_db.py` copies the full upstream universe into `liora.duckdb` (table `bars_1h`). |
-| L4 | Parquet 1h / 1d / 1w | The notebook reads DuckDB, writes clean 1h OHLCV, then deterministic 1d and 1w roll-ups. |
-| L5 | Time split | Warmup / Train / OOS split with purge and embargo; OOS stays unread until the verdict step. |
-| L6 | Features + Triple-Barrier Y | Candidate side = `sign(log_return_5)`; <!--na:n_features_total-->56<!--/na--> namespaced features; label = symmetric ATR Triple Barrier (`H=24`). |
-| L7 | Optuna HPO + Kelly | Optuna tunes XGBoost on Train CV AUC-PR; the Kelly fraction is calibrated on Train out-of-fold log-growth. |
-| L8 | XGB strategy artifact | XGBoost trains on the full Train set and is embedded as base64 in `strategy_<TICKER>.py`. |
-| L9 | OOS endproduct | OOS verdict, dashboard row, README, and the final seven-file asset folder. |
+| Layer | What it does |
+|---|---|
+| L1–L3 | Raw 1h OHLCV (Alpaca) → external upstream DuckDB → `data/liora.duckdb` (`bars_1h`), verbatim |
+| L4 | Clean 1h OHLCV + deterministic 1d / 1w roll-ups (parquet) |
+| L5 | Warmup / Train / OOS split with purge + embargo (OOS unread until the verdict) |
+| L6 | Candidate side = `sign(log_return_5)`; 56 namespaced features; symmetric ATR Triple-Barrier label (H=24) |
+| L7 | Optuna tunes XGBoost on Train CV AUC-PR; Kelly fraction on Train out-of-fold log-growth |
+| L8 | XGBoost trains on full Train, embedded as base64 in `strategy_<TICKER>.py` |
+| L9 | One-shot OOS verdict → results row, README, and the 7-file `Assets/<TICKER>/` folder |
 
-Features are namespaced and concatenated in a deterministic order: `1h` (01–99),
-`1d` (101–199), `1w` (201–299), `multi_tf` (901–999). The active manifest is resolved from
-`config/feature_namespaces.json`. Full contract: `Project/endproduct/Layers_Short_SOT.md`.
+Features are namespaced and concatenated in a deterministic order (`1h` 01–99, `1d` 101–199,
+`1w` 201–299, `multi_tf` 901–999), resolved from `src/config/feature_namespaces.json`. Full contract:
+`docs/Layers_Short_SOT.md`. Per-asset deliverable = 7 files (executed notebook, 1h/1d/1w parquet,
+Optuna best-params, base64 strategy artifact + selfcheck, OOS README).
 
-## 7 files per asset (`Project/Structure/Assets/<TICKER>/`)
-
-1. `<TICKER>__L4_to_L9.ipynb` — the executed copy of the runner notebook
-2. `<TICKER>_ohlcv_1h.parquet` — clean 1h OHLCV (L4)
-3. `<TICKER>_ohlcv_1d.parquet` — materialized 1d
-4. `<TICKER>_ohlcv_1w.parquet` — materialized 1w
-5. `OPTUNAs_XGB_HPOs_best_params.json` — best hyper-parameters + Kelly fraction (L7)
-6. `strategy_<TICKER>.py` — self-contained strategy artifact (base64 model + selfcheck)
-7. `<TICKER>_README.md` — OOS summary + capital path + trade ledger
-
-## Document cross-match & dependencies
-
-```
-config/*.json + Features/*/feature_registry.json   (feature counts + config values, derived live)
-  │  make build (render) · make check (fail-closed audit)
-  ├─> Plan/configurations.html            ({{...}} tokens — Tier 2)
-  ├─> Plan/procedure_lego.html            ({{...}} tokens — Tier 3)
-  └─> README.md + Project/endproduct/*.md (inline na:KEY marker regions)
-
-upstream SP500 DuckDB ── bars.load_bars (canonical transform) ──> build_db.py ─> liora.duckdb
-  (the full universe, read verbatim; no raw bars committed to this repo)
-
-Project/endproduct/Layers_Short_SOT.md — "Kontrakt replikacji" blocks (the Tier-3 source)
-  └─ derive 1:1, gate-crossmatched ─> procedure_lego.html [J1] MODULES
-                                      (rationale lives only in the [J1b] PL PROMPTS)
-
-make run-asset / make loop  (reads liora.duckdb)
-  ├─> Assets/<T>/ — the 7-file deliverable
-  └─> oos_metrics.db ── make dashboard ──> Plan/data/dashboard.json ──> dashboard.html (Tier 2)
-                    └── read-only ───────> app.py — ML Basket Simulator (Tier 1, make app)
-```
-
-Edit only the single homes — the config JSONs, the SOT, and the two `.tmpl`
-templates — never a generated `.html`. On divergence the SOT wins. `make check`
-fails closed on marker drift, stray data-state literals, and the lego↔SOT
-crossmatch.
-
-## Quickstart
-
-```bash
-cd Project/Structure
-make deps                      # install requirements.txt into ../.venv
-make build-db                  # upstream SP500 DuckDB -> liora.duckdb (full universe)
-make run-asset TICKER=AAPL     # run the notebook -> Assets/AAPL/ (7 files)
-make on                        # static visualization (background): http://localhost:8000/index.html; make off stops
-make app                       # ML Basket Simulator demo (Streamlit): http://localhost:8501
-```
-
-The demo can also be launched directly from the repo root with
-`streamlit run Project/Structure/app.py` — pick tickers (each = a $1000 entry on the
-first OOS day) and see the basket outcome at the end of the fixed OOS window, read
-straight from `oos_metrics.db` (nothing is retrained at runtime).
-
-Run a whole universe in one go, then refresh the dashboard feed:
-
-```bash
-make loop "AAPL TSLA XOM"      # build-db (if missing) -> run each ticker -> dashboard
-make dashboard                 # oos_metrics.db -> Plan/data/dashboard.json
-make build                     # regenerate Plan/*.html from *.tmpl + Markdown markers
-make check                     # fail-closed gate: drift / stray literals / lego<->SOT crossmatch
-```
-
-The continuous per-asset feature search (S.1) runs detached in tmux and keeps going
-until you stop it — see the S.1 block in `Project/endproduct/Layers_Short_SOT.md`:
-
-```bash
-make feature-search-loop       # PRIMARY: supervised full-universe search (runs until every ticker is optimized)
-make search-status             # per-ticker status / best CV / pending_better
-make search-agent-on           # optional: Claude Sonnet steering via /loop
-make search-apply TICKER=AAPL  # manual re-apply (a deliberate second OOS read)
-make search-off                # graceful stop
-# legacy/testing: make search-on SEARCH_TICKERS="AAPL XOM"  (explicit list, apply-on-satisfied)
-```
-
-The XGBoost-vs-RandomForest model comparison (boosting vs bagging) lives in
-`reports/compare_xgb_vs_rf.py`. Run `make help` for the full operator surface.
-
-The universe is the full upstream SP500 store: `make build-db` copies every ticker into
-`liora.duckdb`, and you materialize as many `Assets/` as you want with `make run-asset` /
-`make loop`. `Assets/` starts empty — you decide how many assets to create. The
-pipeline is deterministic (`seed_everything`, `XGBOOST_N_JOBS=1`), so OOS results are
-reproducible.
+MIT-style coursework demo. `main` / `preparing_to_present` keep the full research apparatus (the
+continuous feature-search loop, the build/check doc-gate); this `show_able` branch is the trimmed exhibit.
