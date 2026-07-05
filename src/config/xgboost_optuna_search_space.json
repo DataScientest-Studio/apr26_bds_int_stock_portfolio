@@ -11,10 +11,13 @@
     {"name": "colsample_bytree", "suggest": "float", "low": 0.6, "high": 1.0},
     {"name": "min_child_weight", "suggest": "float", "low": 1.0, "high": 10.0},
     {"name": "reg_lambda", "suggest": "float", "low": 0.5, "high": 5.0},
+    {"name": "reg_alpha", "suggest": "float", "low": 0.0, "high": 5.0},
+    {"name": "gamma", "suggest": "float", "low": 0.0, "high": 5.0},
     {"name": "n_estimators", "suggest": "int", "low": 40, "high": 300}
   ],
   "objective": {
-    "metric": "auc_pr",
+    "metric": "train_oof_log_growth",
+    "note": "L7 maximizes mean Train OOF trading log-growth (deployed engine over HPO_OP_GRID), not auc_pr; cv_auc_pr is reported only. reg_lambda/reg_alpha/gamma provide regularization.",
     "direction": "maximize",
     "sampler": "TPE",
     "pruner": "MedianPruner",
@@ -30,6 +33,8 @@
     "colsample_bytree": 0.9,
     "min_child_weight": 1.0,
     "reg_lambda": 1.0,
+    "reg_alpha": 0.0,
+    "gamma": 0.0,
     "n_estimators": 100
   }
 }

@@ -104,7 +104,7 @@ def validate_parameters(p=PIPELINE_PARAMETERS):
              "POSITION_POLICY": {"one_open_position_per_asset"},
              "CORP_ACTIONS_POLICY": {"deferred", "A_adjusted", "B_raw_exclude"},
              "UNIVERSE_MODE": {"current_constituents_research", "point_in_time_constituents"},
-             "OPTUNA_OBJECTIVE": {"auc_pr"}, "CV_SCHEME": {"purged_walk_forward"},
+             "OPTUNA_OBJECTIVE": {"auc_pr", "train_oof_log_growth"}, "CV_SCHEME": {"purged_walk_forward"},
              "PF_ZERO_GROSS_LOSS_POLICY": {"not_rankable"},
              "SIGNAL_ZERO_POLICY": {"skip"}}
     for k, allowed in enums.items():
@@ -118,11 +118,11 @@ def validate_parameters(p=PIPELINE_PARAMETERS):
             errs.append(f"{k} must be a positive int")
     if p["MACD_FAST"] >= p["MACD_SLOW"]:
         errs.append("MACD_FAST must be < MACD_SLOW")
-    for k in ("COMMISSION_BPS", "SLIPPAGE_BPS", "SIMULTANEOUS_SETUP_TIE_EPS", "TB_ATR_MULTIPLIER", "BB_K"):
+    for k in ("COMMISSION_BPS", "SLIPPAGE_BPS", "SIMULTANEOUS_SETUP_TIE_EPS", "TB_ATR_TP", "TB_ATR_SL", "BB_K"):
         if not (isinstance(p[k], (int, float)) and p[k] >= 0):
             errs.append(f"{k} must be >= 0")
-    if p["TB_ATR_MULTIPLIER"] <= 0:
-        errs.append("TB_ATR_MULTIPLIER must be > 0")
+    if p["TB_ATR_TP"] <= 0 or p["TB_ATR_SL"] <= 0:
+        errs.append("TB_ATR_TP and TB_ATR_SL must be > 0")
     if not (p["INITIAL_CAPITAL_USD"] > 0):
         errs.append("INITIAL_CAPITAL_USD must be > 0")
     if not (isinstance(p.get("KELLY_CAP"), (int, float)) and 0 < p["KELLY_CAP"] <= 1):
@@ -550,24 +550,37 @@ def core_feature_eligibility(values, manifest):
 # ============================ L6 — candidates, features, Triple Barrier ============================
 
 def generate_candidate_events(df, scan_mask, feature_context=None):
+    """Meta-labeling primary: the momentum-direction entry, with an asymmetric ATR Triple Barrier
+    (TP = TB_ATR_TP*ATR, SL = TB_ATR_SL*ATR) and a fixed causal ENTRY_GATE. All inputs are read at
+    t0 (data <= close[t0]). TB_ATR_TP==TB_ATR_SL and ENTRY_GATE.enabled=false reproduce the v1 set."""
     ctx = feature_context or build_feature_context(df)
     feats = ctx["features"]
     atr = feats["__atr_14_abs"].to_numpy(float)
     momentum = feats[PIPELINE_PARAMETERS["SIGNAL_MOMENTUM_FEATURE"]].to_numpy(float)
+    tp_mult, sl_mult = float(PIPELINE_PARAMETERS["TB_ATR_TP"]), float(PIPELINE_PARAMETERS["TB_ATR_SL"])
+    eg = PIPELINE_PARAMETERS.get("ENTRY_GATE", {})
+    gate_on = bool(eg.get("enabled", False))
+    vfloor = (feats[eg["vol_floor_feature"]].to_numpy(float)
+              if gate_on and float(eg.get("vol_floor_k", 0.0)) > 0 else None)
+    vk = float(eg.get("vol_floor_k", 0.0))
     idx = np.where(scan_mask)[0]
     events = []
     for t0 in idx:
         if t0 + 1 >= len(df):
             continue
-        mom = momentum[t0]
-        width = atr[t0] * PIPELINE_PARAMETERS["TB_ATR_MULTIPLIER"]
-        if not (math.isfinite(mom) and math.isfinite(width) and width > EPS):
+        mom, w = momentum[t0], atr[t0]
+        width_tp, width_sl = w * tp_mult, w * sl_mult
+        if not (math.isfinite(mom) and math.isfinite(w) and width_tp > EPS and width_sl > EPS):
             continue
         direction = 1 if mom > 0 else (-1 if mom < 0 else 0)
         if direction == 0:
             continue
+        if gate_on and vfloor is not None:              # significant-move filter (causal, at t0)
+            vf = vfloor[t0]
+            if not (math.isfinite(vf) and abs(mom) >= vk * vf):
+                continue
         events.append({"direction": int(direction), "t0": int(t0), "atr_t0": float(atr[t0]),
-                       "barrier_width": float(width)})
+                       "width_tp": float(width_tp), "width_sl": float(width_sl)})
     return events, {"candidates": len(events)}
 
 
@@ -581,11 +594,11 @@ def simulate_trade(df, event, end_idx):
     if t_fill > end_idx:
         return {"skip": "GAP_INVALIDATED_SKIP"}
     entry_fill = o[t_fill] * (1 + s * slip)
-    width = float(event["barrier_width"])
-    if not (math.isfinite(width) and width > EPS):
+    width_tp, width_sl = float(event["width_tp"]), float(event["width_sl"])
+    if not (math.isfinite(width_tp) and width_tp > EPS and math.isfinite(width_sl) and width_sl > EPS):
         return {"skip": "INVALID_BARRIER_SKIP"}
-    tp = entry_fill + s * width
-    sl = entry_fill - s * width
+    tp = entry_fill + s * width_tp
+    sl = entry_fill - s * width_sl
     t_deadline = t0 + H
     t_sched = min(t_deadline, end_idx)
     exit_idx = exit_fill = reason = kind = trig = None
@@ -607,7 +620,8 @@ def simulate_trade(df, event, end_idx):
     return {"skip": None, "t_fill": t_fill, "entry_fill": float(entry_fill), "exit_idx": int(exit_idx),
             "exit_fill": float(exit_fill), "market_exit_reason": reason, "exit_kind": kind,
             "trigger_idx": int(trig), "local_per_unit_net_return": float(per_unit),
-            "target_level": float(tp), "stop_level": float(sl), "barrier_width": float(width)}
+            "target_level": float(tp), "stop_level": float(sl),
+            "barrier_width": float(width_sl), "barrier_width_tp": float(width_tp)}
 
 
 def _uniqueness_weights(actionable):
@@ -701,16 +715,29 @@ def _xgb_train(X, y, w, params, seed, feature_names=None):
     p = {"objective": "binary:logistic", "eval_metric": "aucpr", "seed": seed, "booster": "gbtree",
          "nthread": PIPELINE_PARAMETERS["XGBOOST_N_JOBS"], "max_depth": params["max_depth"], "eta": params["eta"],
          "subsample": params["subsample"], "colsample_bytree": params["colsample_bytree"],
-         "min_child_weight": params["min_child_weight"], "lambda": params["reg_lambda"], "verbosity": 0}
+         "min_child_weight": params["min_child_weight"], "lambda": params["reg_lambda"],
+         "alpha": params.get("reg_alpha", 0.0), "gamma": params.get("gamma", 0.0), "verbosity": 0}
     return xgb.train(p, d, num_boost_round=params["n_estimators"])
 
 
-def layer7_optuna(df_b, bounds, seed, manifest=None, trials=None):
+def layer7_optuna(df, df_b, train_events, bounds, seed, manifest=None, trials=None):
+    """L7: Optuna selects the XGBoost hyper-parameters by MAXIMIZING mean per-fold Train OOF
+    LOG-GROWTH — the deployed trade engine over a coarse (theta, lambda) grid — instead of AUC-PR,
+    so the search serves PROFIT (the stated STRATEGY_OBJECTIVE), the fix for the OPTUNA_OBJECTIVE
+    miscalibration. Reuses calibrate_kelly's exact OOF->run_engine machinery on the same purged
+    walk-forward folds; regularization (reg_lambda/reg_alpha/gamma) is in the search space. A
+    fail-closed assert keeps every fold's engine window strictly pre-OOS (mirrors calibrate_kelly).
+    The winning trial's mean AUC-PR is still returned (cv_auc_pr) for continuity.
+    Returns (best_params, cv_auc_pr, n_folds)."""
     import optuna
     import xgboost as xgb
     names = feature_names_of(manifest)
     trials = n_trials() if trials is None else int(trials)
     optuna.logging.set_verbosity(optuna.logging.WARNING)
+    E0, thr = PIPELINE_PARAMETERS["INITIAL_CAPITAL_USD"], PIPELINE_PARAMETERS["THRESHOLD_ENTRY"]
+    hg = PIPELINE_PARAMETERS.get("HPO_OP_GRID", {"theta": [0.50, 0.55, 0.60], "lambda": [0.5, 1.0]})
+    thetas = [float(t) for t in hg["theta"]]
+    lambdas = [float(x) for x in hg["lambda"]]
     X = df_b[names].to_numpy(float)
     y = df_b["Y_outcome"].to_numpy(int)
     w = df_b["label_uniqueness_weight"].to_numpy(float)
@@ -718,6 +745,19 @@ def layer7_optuna(df_b, bounds, seed, manifest=None, trials=None):
     folds = purged_wf_folds(t0s, bounds["train_start_idx"], bounds["train_end_idx"])
     if not folds or len(np.unique(y)) < 2:
         return dict(XGBOOST_OPTUNA_SEARCH_SPACE["fallback_params"]), 0.0, len(folds)
+    ticker = str(df_b["asset_id"].iloc[0])
+    by_sid = {f"{ticker}:{s['t0']}:{s['direction']}": s for s in train_events}
+    # ENFORCE the one-way OOS boundary for every fold's engine window (mirrors calibrate_kelly:777).
+    assert all(max(t0s[j] for j in va) < bounds["oos_start_idx"] for _, va in folds if va), \
+        "layer7_optuna: a CV val fold reaches OOS (purge invariant violated)"
+
+    def fold_best_log_growth(scored, lo, hi):
+        best = None
+        for th in thetas:
+            for lam in lambdas:
+                g = math.log(max(run_engine(df, scored, lo, hi, th, kelly_fraction=lam)[0]["end_capital"], EPS) / E0)
+                best = g if best is None else max(best, g)
+        return best if best is not None else 0.0
 
     def objective(trial):
         params = {}
@@ -727,40 +767,56 @@ def layer7_optuna(df_b, bounds, seed, manifest=None, trials=None):
                 params[nm] = trial.suggest_int(nm, sp["low"], sp["high"])
             else:
                 params[nm] = trial.suggest_float(nm, sp["low"], sp["high"], log=bool(sp.get("log", False)))
-        aps = []
+        gs, aps = [], []
         for step, (tr, va) in enumerate(folds):
             if len(np.unique(y[tr])) < 2:
                 continue
             bst = _xgb_train(X[tr], y[tr], w[tr], params, seed, feature_names=names)
             p = bst.predict(xgb.DMatrix(X[va], feature_names=names))
+            scored = [(by_sid[df_b["setup_id"].iloc[j]], float(p[k])) for k, j in enumerate(va)]
+            vt0 = [t0s[j] for j in va]
+            gs.append(fold_best_log_growth(scored, min(vt0), max(vt0)))
             aps.append(average_precision(y[va], p))
-            trial.report(float(np.mean(aps)), step)
+            trial.report(float(np.mean(gs)), step)
             if trial.should_prune():
                 raise optuna.TrialPruned()
-        return float(np.mean(aps)) if aps else 0.0
+        if not gs:
+            return -1e9
+        trial.set_user_attr("cv_auc_pr", float(np.mean(aps)))
+        return float(np.mean(gs))
 
-    study = optuna.create_study(direction=XGBOOST_OPTUNA_SEARCH_SPACE["objective"]["direction"],
+    study = optuna.create_study(direction="maximize",
                                 sampler=optuna.samplers.TPESampler(seed=seed),
                                 pruner=optuna.pruners.MedianPruner(n_warmup_steps=MEDIAN_PRUNER_WARMUP))
     study.optimize(objective, n_trials=trials, show_progress_bar=False)
     best = dict(study.best_params)
-    return best, float(study.best_value), len(folds)
+    cv_ap = float(study.best_trial.user_attrs.get("cv_auc_pr", 0.0))
+    return best, cv_ap, len(folds)
 
 
 def calibrate_kelly(df, df_b, train_events, bounds, best_params, seed, manifest=None):
-    import optuna
+    """L8: choose the per-asset operating point (entry threshold theta, Kelly fraction lambda) JOINTLY
+    on Train out-of-fold log-growth — the same OOF->run_engine machinery as L7. A FIXED theta was too
+    strict for the asymmetric 2:1 barrier (wins are rarer -> lower p -> few trades cross theta=0.6 ->
+    HODL fallback); calibrating theta per asset (like the LSTM sibling) lets each asset find a
+    tradeable point. Ties resolve to the most conservative point (higher theta, then smaller lambda).
+    A fail-closed assert keeps every fold's engine window strictly pre-OOS. Deterministic per seed.
+    Returns {'theta_entry': float, 'kelly_fraction': float}."""
     import xgboost as xgb
     kc = PIPELINE_PARAMETERS["KELLY_CALIBRATION"]
-    E0, thr = PIPELINE_PARAMETERS["INITIAL_CAPITAL_USD"], PIPELINE_PARAMETERS["THRESHOLD_ENTRY"]
-    grid = [float(x) for x in np.linspace(kc["low"], kc["high"], int(kc["grid_points"]))]
+    og = PIPELINE_PARAMETERS.get("OP_CALIBRATION", {"theta": [0.50, 0.52, 0.54, 0.56, 0.58, 0.60]})
+    E0 = PIPELINE_PARAMETERS["INITIAL_CAPITAL_USD"]
+    thetas = [float(t) for t in og["theta"]]
+    lambdas = [float(x) for x in np.linspace(kc["low"], kc["high"], int(kc["grid_points"]))]
     names = feature_names_of(manifest)
     X = df_b[names].to_numpy(float)
     y = df_b["Y_outcome"].to_numpy(int)
     w = df_b["label_uniqueness_weight"].to_numpy(float)
     t0s = [int(sid.split(":")[1]) for sid in df_b["setup_id"]]
     folds = purged_wf_folds(t0s, bounds["train_start_idx"], bounds["train_end_idx"])
+    default = {"theta_entry": float(max(thetas)), "kelly_fraction": float(min(lambdas))}
     if not folds:
-        return float(kc["low"])
+        return default
     ticker = str(df_b["asset_id"].iloc[0])
     by_sid = {f"{ticker}:{s['t0']}:{s['direction']}": s for s in train_events}
     fold_data = []
@@ -773,24 +829,20 @@ def calibrate_kelly(df, df_b, train_events, bounds, best_params, seed, manifest=
         vt0 = [t0s[j] for j in va]
         fold_data.append((scored, min(vt0), max(vt0)))
     if not fold_data:
-        return float(kc["low"])
-    assert all(hi < bounds["oos_start_idx"] for _, _, hi in fold_data), "Kelly calibration must not reach OOS"
-
-    def objective(trial):
-        lam = trial.suggest_float("kelly_fraction", kc["low"], kc["high"])
-        g = 0.0
-        for scored, lo, hi in fold_data:
-            summ, _, _ = run_engine(df, scored, lo, hi, thr, kelly_fraction=lam)
-            g += math.log(max(summ["end_capital"], EPS) / E0)
-        return g
-
-    optuna.logging.set_verbosity(optuna.logging.WARNING)
-    study = optuna.create_study(direction="maximize",
-                                sampler=optuna.samplers.GridSampler({"kelly_fraction": grid}))
-    study.optimize(objective, n_trials=len(grid), show_progress_bar=False)
-    bv = study.best_value
-    tied = [t.params["kelly_fraction"] for t in study.trials if t.value is not None and t.value >= bv - 1e-12]
-    return float(min(tied)) if tied else float(study.best_params["kelly_fraction"])
+        return default
+    assert all(hi < bounds["oos_start_idx"] for _, _, hi in fold_data), \
+        "operating-point calibration must not reach OOS"
+    grid = []
+    for th in thetas:
+        for lam in lambdas:
+            g = sum(math.log(max(run_engine(df, sc, lo, hi, th, kelly_fraction=lam)[0]["end_capital"], EPS) / E0)
+                    for sc, lo, hi in fold_data)
+            grid.append((g, th, lam))
+    gmax = max(g for g, *_ in grid)
+    tied = [(th, lam) for g, th, lam in grid if g >= gmax - 1e-12]
+    tied.sort(key=lambda x: (-x[0], x[1]))            # conservative: higher theta, then smaller lambda
+    th, lam = tied[0]
+    return {"theta_entry": float(th), "kelly_fraction": float(lam)}
 
 
 # ============================ L8 — model + strategy ============================
@@ -824,10 +876,11 @@ def strategy_meta(booster, df_b, ticker, best_params, lineage, train_window, man
                                    "slippage_bps": PIPELINE_PARAMETERS["SLIPPAGE_BPS"],
                                    "capital_mode": PIPELINE_PARAMETERS["CAPITAL_MODE"],
                                    "barrier_mode": PIPELINE_PARAMETERS["BARRIER_MODE"],
-                                   "triple_barrier_width": f"ATR{PIPELINE_PARAMETERS['W_ATR']} * "
-                                                           f"{PIPELINE_PARAMETERS['TB_ATR_MULTIPLIER']}",
+                                   "triple_barrier_tp": f"ATR{PIPELINE_PARAMETERS['W_ATR']} * {PIPELINE_PARAMETERS['TB_ATR_TP']}",
+                                   "triple_barrier_sl": f"ATR{PIPELINE_PARAMETERS['W_ATR']} * {PIPELINE_PARAMETERS['TB_ATR_SL']}",
+                                   "reward_risk_b": float(PIPELINE_PARAMETERS["TB_ATR_TP"]) / float(PIPELINE_PARAMETERS["TB_ATR_SL"]),
                                    "kelly_cap": PIPELINE_PARAMETERS["KELLY_CAP"],
-                                   "kelly_basis": "per_trade_fractional_kelly_symmetric_b1"},
+                                   "kelly_basis": "per_trade_fractional_kelly_f=lambda*(p-(1-p)/b)"},
             "golden_vectors": gv.tolist() if len(gv) else [], "golden_pred": gp, **lineage}
 
 
@@ -857,6 +910,9 @@ def run_engine(df, scored, start_idx, end_idx, threshold, kelly_fraction=None):
     fee = PIPELINE_PARAMETERS["COMMISSION_BPS"] * 1e-4
     slip = PIPELINE_PARAMETERS["SLIPPAGE_BPS"] * 1e-4
     kelly_cap = PIPELINE_PARAMETERS["KELLY_CAP"]
+    # Barrier reward:risk b = TP/SL width ratio → generalized fractional Kelly f = λ·(p − (1−p)/b).
+    # For a symmetric barrier (b=1) this is exactly λ·(2p−1), the original even-money sizing.
+    b_payoff = float(PIPELINE_PARAMETERS["TB_ATR_TP"]) / float(PIPELINE_PARAMETERS["TB_ATR_SL"])
     tie_eps = PIPELINE_PARAMETERS["SIMULTANEOUS_SETUP_TIE_EPS"]
     c = df["close"].to_numpy()
     groups = {}
@@ -894,7 +950,8 @@ def run_engine(df, scored, start_idx, end_idx, threshold, kelly_fraction=None):
             continue
         s = chosen["direction"]
         entry_fill, exit_fill, exit_idx = sim["entry_fill"], sim["exit_fill"], sim["exit_idx"]
-        f_size = 1.0 if kelly_fraction is None else min(max(kelly_fraction * (2.0 * chosen_p - 1.0), 0.0), kelly_cap)
+        kelly_edge = chosen_p - (1.0 - chosen_p) / b_payoff      # Kelly edge for a b:1 payoff (=2p−1 at b=1)
+        f_size = 1.0 if kelly_fraction is None else min(max(kelly_fraction * kelly_edge, 0.0), kelly_cap)
         if f_size <= 0.0:
             counters["not_selected"] += 1
             continue
