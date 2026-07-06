@@ -112,6 +112,23 @@ three stages:
 3. **Recommendation** — map the user's questionnaire to a target risk profile, pick the
    relevant clusters, and return top-*N* stocks per cluster, with a sector-concentration cap.
 
+> **Note on delivery vs. plan.** This original 3-stage framing (and the
+> 12-month horizon in §1.3 below) evolved once modelling started, and both
+> changes were deliberate, evidence-based decisions rather than scope
+> creep: no unsupervised clustering stage was built — it was replaced with a
+> per-asset classifier and a full-universe regression recommender — and the
+> shipped horizon was shortened from 12 months to **63 trading days**
+> (≈ 1 quarter). A genuine 12-month-ahead target needs years of
+> *non-overlapping* forward windows to validate reliably, and with only
+> 5–6 years of usable history per ticker (§2.4, §3.3) — shorter still for
+> recent entrants — a 12-month label would have left too few independent
+> out-of-sample observations to trust. 63 days keeps three to four times more
+> independent test windows in the same history, at the cost of a shorter
+> look-ahead — a trade the team judged worth making for a methodologically
+> honest result over an ambitious but unverifiable one. The Modeling section
+> explains what was built instead and is the up-to-date statement of what the
+> app actually does.
+
 ## 1.3 Scope and assumptions
 
 - **Universe:** S&P 500 only (503 tickers in the current extract). DAX 40 deferred to a stretch goal.
@@ -525,11 +542,10 @@ table is materialised.
 
 # 8. Modeling
 
-> \textcolor{red}{Two modeling tracks were built against the same S\&P 500 universe: a
+> Two modeling tracks were built against the same S\&P 500 universe: a
 > per-asset intraday classifier, and a full-universe regression recommender
-> now wired to the risk questionnaire.}
+> now wired to the risk questionnaire.
 
-\begingroup\color{red}
 ## 8.1 Two modeling tracks, explored in parallel
 
 The team pursued two complementary tracks rather than a single pipeline:
@@ -543,8 +559,13 @@ The team pursued two complementary tracks rather than a single pipeline:
   cap.
 
 Neither implements the unsupervised clustering originally proposed; both
-replaced it with a supervised or rule-based layer.
-\endgroup
+replaced it with a supervised or rule-based layer. Both also trade the
+original **12-month-ahead** target (§1.2) for shorter horizons — Track A is
+intraday, Track B ranks stocks 63 trading days out — because with only
+5–6 years of usable history per ticker (§2.4), a 12-month label leaves too
+few independent forward windows to validate; the shorter horizons keep
+several times more non-overlapping test windows in the same span, trading
+look-ahead length for a trustworthy out-of-sample sample size.
 
 ## 8.2 Problem framing and the learning target
 
@@ -775,7 +796,6 @@ re-training at runtime** (Timeline Step 5) and, together with fixed seeding
 and pinned libraries, makes the OOS results reproducible. The artifact is a
 frozen predictor, not a notebook to re-run.
 
-\begingroup\color{red}
 ## 8.9 Track B — Full-universe regression recommender
 
 **Dataset.** The full six-year Alpaca IEX window available at run time: 503
@@ -800,7 +820,11 @@ date.](figures/08_trackb_forward_target.png){ width=85% }
 **Target and split.** The target is `target_63d_return` — the forward return
 roughly three market months out (63 trading days), ranking stocks rather than
 predicting an exact price. A fixed time-based split (train 2020-10-20 →
-2024-12-31, test 2025-01-02 → 2026-03-09) compares five candidate models:
+2024-12-31, test 2025-01-02 → 2026-03-09) compares five candidate models.
+*Naming note:* "Random Forest" here is a **different, independently trained
+model** from the RandomForest bagging baseline in §8.5 — that one is a
+Track A classifier that underperforms XGBoost; this one is a Track B
+regressor that turns out to be the practical winner of its own comparison.
 
 ![The golden rule of financial ML — chronology cannot be shuffled. Training
 uses only past data, testing uses only unseen, later
@@ -866,7 +890,6 @@ the simpler baselines on this universe.
 forward targets → chronological train/test split → model inference →
 predicted returns → risk/sector-constrained portfolio
 funnel.](figures/13_trackb_pipeline_overview.png){ width=85% }
-\endgroup
 
 \newpage
 
@@ -906,7 +929,6 @@ and the project's disclaimer stands.
   confound, but worth stating plainly.
 - The **with-vs.-without-outlier study** the mentor asked for (§5.2, §7.6,
   the SNDK protocol) was **not run** on either track's universe.
-\begingroup\color{red}
 - **Universe scope.** Track A runs on a 10-asset subset; Track B runs on the
   **full 503-ticker S&P 500 universe**.
 
@@ -928,24 +950,28 @@ original proposal end to end:
   wired to the questionnaire, as the beginner-facing recommender; Track A
   stands on its own as a separate exploration of short-horizon trading
   signals on a subset of names.
-\endgroup
 
 \newpage
 
-# 10. Conclusion and Opening [PLACEHOLDER — Final Report]
+# 10. Conclusion and Opening
 
-> *This section will be added in the final report (2026-07-08).*
+## 10.1 What we built
 
-<!--
-  Internal outline (NOT rendered to PDF):
-
-  - What we built, in two paragraphs.
-  - What worked, what didn't, what we'd do differently.
-  - Three concrete extensions:
-      (a) DAX 40 via a second provider,
-      (b) historical-constituent panel to remove survivorship bias,
-      (c) paper-trading loop via Alpaca.
--->
+The project set out to turn a beginner's questionnaire into a small,
+diversified S&P 500 portfolio, justified by transparent risk metrics. The
+original plan — cluster the universe, rank within clusters, recommend — was
+revised twice under mentor guidance and evidence from the data: the
+unsupervised clustering stage was dropped in favour of supervised models,
+and the 12-month prediction horizon was shortened to 63 trading days
+because the available history (5–6 years, less for recent entrants, §2.4)
+could not support enough independent 12-month test windows to validate that
+target honestly (§1.2). What shipped instead is **two complementary
+tracks**: Track A, a per-asset intraday classifier on a 10-stock subset with
+Triple-Barrier labelling, Optuna tuning and fractional-Kelly sizing; and
+Track B, a full-universe (503-ticker) regression recommender that ranks
+63-day forward returns and feeds a sector-and-volatility-constrained
+portfolio layer, now wired end-to-end to the 9-question risk questionnaire in
+the running Streamlit app.
 
 \newpage
 
