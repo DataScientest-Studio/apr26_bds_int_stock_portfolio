@@ -784,10 +784,27 @@ S&P 500 tickers, 2020-07-27 → 2026-06-08 (5.86 years, 1,474 trading dates),
 constituents: `SNDK`, `PSKY`, `Q`, plus newer entrants `FDXF`, `GEV`, `SOLV`,
 `VLTO`, `KVUE`, `GEHC` and `WBD`.
 
+Each row is a backward-looking feature window (e.g. `ret_60d`,
+`volatility_60d`, `drawdown_252d`) paired with a forward target computed only
+once the outcome is known:
+
+![Backward-looking feature engineering: for every stock and date, a fixed
+lookback window (T−60 → T0) is summarised into features such as `ret_60d`,
+`volatility_60d`, `log_avg_volume_20d` and
+`drawdown_252d`.](figures/07_trackb_backward_features.png){ width=85% }
+
+![Forward target definition: `target_63d_return = (Price at T+63 / Price at
+T0) − 1`, i.e. the realised return 63 trading days after the feature
+date.](figures/08_trackb_forward_target.png){ width=85% }
+
 **Target and split.** The target is `target_63d_return` — the forward return
 roughly three market months out (63 trading days), ranking stocks rather than
 predicting an exact price. A fixed time-based split (train 2020-10-20 →
 2024-12-31, test 2025-01-02 → 2026-03-09) compares five candidate models:
+
+![The golden rule of financial ML — chronology cannot be shuffled. Training
+uses only past data, testing uses only unseen, later
+data.](figures/09_trackb_chronological_split.png){ width=85% }
 
 | Model                              | MAE   | RMSE  | Spearman rank corr. | Top-5 avg. actual return |
 | ----------------------------------- | ----: | ----: | -------------------: | ------------------------: |
@@ -801,6 +818,18 @@ predicting an exact price. A fixed time-based split (train 2020-10-20 →
 is deliberately dropped from the two "no `history_days`" variants and from the
 production candidate.
 
+![Removing the `history_days` shortcut: the Random Forest initially leaned on
+a listing-recency feature as a spurious predictor; it is quarantined so the
+model is forced to learn genuine price
+patterns.](figures/10_trackb_rf_shortcut_removal.png){ width=85% }
+
+![Model evaluation summary — Ridge (simple, high rank correlation but linear
+only), the ROCm PyTorch MLP (highest complexity, highest error, negative rank
+correlation) and the no-history Random Forest (the practical winner: handles
+non-linear patterns, stays explainable, and is validated walk-forward).
+This is the same comparison behind the "deep learning tested, not selected"
+conclusion in §8.6.](figures/11_trackb_model_comparison.png){ width=85% }
+
 **Walk-forward validation.** The no-`history_days` Random Forest, retrained on
 expanding history across 13 rolling 63-day folds, beat the universe average
 return on **9 of 13 folds** (mean top-5 return 18.2% vs. mean universe return
@@ -809,6 +838,11 @@ return on **9 of 13 folds** (mean top-5 return 18.2% vs. mean universe return
 **Portfolio construction.** Rankings from the no-`history_days` Random Forest
 feed a rule-based portfolio layer: 10 stocks, equal-weighted, **≤30% per
 sector**.
+
+![From model rankings to diversified portfolios: predicted 63-day returns and
+60-day volatility feed a funnel of business rules (sector cap, volatility cap,
+fixed 10-stock sizing) that produces Conservative / Balanced / Aggressive
+portfolios.](figures/12_trackb_portfolio_funnel.png){ width=85% }
 
 | Profile      | Expected 63-day return | Avg. 60-day volatility | Sectors | Max sector weight |
 | ------------ | -----------------------: | ------------------------: | ------: | ------------------: |
@@ -827,6 +861,11 @@ Forest is used in the running app because it balances performance,
 explainability and walk-forward robustness better than the alternatives — not
 because it topped every metric. Neither XGBoost nor the ROCm PyTorch MLP beat
 the simpler baselines on this universe.
+
+![The complete Track B temporal pipeline: raw prices → backward features and
+forward targets → chronological train/test split → model inference →
+predicted returns → risk/sector-constrained portfolio
+funnel.](figures/13_trackb_pipeline_overview.png){ width=85% }
 \endgroup
 
 \newpage
