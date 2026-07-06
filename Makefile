@@ -1,8 +1,12 @@
-# 10000-xgb-lstm-liora — unified operator surface for the two vendored pipelines.
+# LSTM_XGB_DONE — unified operator surface for the two sealed pipelines + the unified Streamlit app.
 #   make deps          one .venv at the root + pinned requirements (serves xgb/ + lstm/ + the app)
-#   make app           the shared ML Basket Simulator (Streamlit) on :8503 — dropdown XGBoost/LSTM
+#   make app           the UNIFIED multi-page app (Streamlit :8503): Report / Data Explorer /
+#                      Risk Profile / Recommender (Track B) / Basket Simulator (Track A) / Methodology
+#   make test-app      correctness gates + AppTest smoke of every page (run before presenting)
 #   make verify-xgb    reproduce the XGBoost demo tickers from xgb/'s bundled mini-bars == sealed rows
 #   make verify-lstm   reproduce a diverse LSTM sample from lstm/'s committed manifest == sealed rows
+#   make preoos        regenerate app/data/preoos_inputs.csv (pre-OOS vol/momentum; fail-closed)
+#   make seal-xgb-hodl re-seal the XGB buy-and-hold feed into xgb/plan/data/dashboard.json
 #   make clean         remove per-asset run scratch in both subprojects (keeps the sealed data)
 #   --- WO-FS feature-selection study (fs/); UNIVERSE=demo (default) | full ---
 #   make fs-test       run all WO-FS gates (anti-lookahead, scaler leak, purge/embargo, CPCV, unit)
@@ -21,7 +25,7 @@ UNIVERSE ?= demo
 FS_PID := logs/fs-search.pid
 FS_LOG := logs/fs-search.log
 
-.PHONY: deps app verify-xgb verify-lstm clean help \
+.PHONY: deps app test-app preoos seal-xgb-hodl verify-xgb verify-lstm clean help \
         fs-test fs-study1 fs-xgb fs-lstm fs-holdout-xgb fs-holdout-lstm fs-all \
         fs-warm fs-search-on fs-search-off fs-search-status
 help:
@@ -36,6 +40,15 @@ deps:
 
 app:
 	$(ST) run app/app.py --server.port $(APP_PORT)
+
+test-app:
+	$(PY) tools/test_app.py
+
+preoos:
+	$(PY) tools/make_preoos_inputs.py
+
+seal-xgb-hodl:
+	$(PY) tools/seal_xgb_hodl.py
 
 verify-xgb:
 	@cd xgb && ../$(PY) tools/verify_repro.py $(TICKERS)

@@ -14,8 +14,11 @@ scikit-learn==1.7.2
 nbconvert
 nbformat
 ipykernel
-# the shared demo app (app/app.py — read-only over both oos_metrics.db stores).
+# the unified app (app/app.py — read-only over both oos_metrics.db stores + vendored Track-B CSVs).
 streamlit==1.58.0
+# Data Explorer + Recommender plots (the parent project's validated EDA figures).
+matplotlib==3.11.0
+seaborn==0.13.2
 # WO-FS study (fs/): scipy is already pulled in by scikit-learn (PBO/DSR + hierarchical clustering).
 # WO-FS-LSTM §5 asks for `shap` (GradientExplainer) as the primary SHAP method, with a permutation
 # fallback. shap's hard dep `numba` currently caps NumPy at < 2.5, which conflicts with the pinned
