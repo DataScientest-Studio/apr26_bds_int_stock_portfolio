@@ -1,0 +1,34 @@
+{
+  "pi": {
+    "adx_signed_1d": 0.85,
+    "alignment_score": 0.15,
+    "atr_pct_1d": 0.85,
+    "day_range_pos_1h": 0.9,
+    "dist_pivot_1d": 0.3,
+    "dist_swing_high_1w": 0.55,
+    "dist_swing_low_1w": 0.55,
+    "divergence_flag": 0.15,
+    "ma_slope_1w": 0.55,
+    "rsi_1d": 0.85,
+    "rsi_1h": 0.9,
+    "rsi_spread_1h_1d": 0.9,
+    "vol_ratio_1h_1d": 1.0,
+    "vol_regime_1w": 0.15,
+    "vol_z_1h": 1.0,
+    "zscore_1h_ma1d": 0.85,
+    "zscore_1h_ma1w": 0.85
+  },
+  "run_id": "wofs-demo-t41",
+  "selected": [
+    "rsi_1h",
+    "vol_z_1h",
+    "day_range_pos_1h",
+    "adx_signed_1d",
+    "rsi_1d",
+    "atr_pct_1d",
+    "zscore_1h_ma1d",
+    "zscore_1h_ma1w",
+    "rsi_spread_1h_1d",
+    "vol_ratio_1h_1d"
+  ]
+}

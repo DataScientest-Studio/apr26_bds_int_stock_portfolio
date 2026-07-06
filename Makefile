@@ -1,104 +1,89 @@
-# liora-project-ml-engineering — presentation build. One operator surface.
-#   make deps                    create .venv + install pinned requirements
-#   make app                     ML Basket Simulator (Streamlit) on :8501 — shows the sealed results
-#   make on / make off           background Plan site on :8000 (index + dashboard) / stop it
-#   make dashboard               refresh the OOS feed: data/oos_metrics.db -> plan/data/dashboard.json
-#   make verify                  reproduce the demo tickers from the bundled mini-bars == sealed rows
-#   make run-asset TICKER=AAPL   run the notebook pipeline -> Assets/AAPL/ (7 files) + a results row
-#   make feature-search          print the active feature manifest (read-only)
-#   make build-db                FULL universe: external upstream store -> data/liora.duckdb (needs SP500_DUCKDB)
-#   make loop "AAPL TSLA XOM"    run each ticker, then refresh the dashboard feed
-#   make serve                   serve plan/ on :8000 (foreground)
-#   make clean                   remove run scratch (Assets/*/ __pycache__) — keeps the sealed data/
+# 10000-xgb-lstm-liora — unified operator surface for the two vendored pipelines.
+#   make deps          one .venv at the root + pinned requirements (serves xgb/ + lstm/ + the app)
+#   make app           the shared ML Basket Simulator (Streamlit) on :8503 — dropdown XGBoost/LSTM
+#   make verify-xgb    reproduce the XGBoost demo tickers from xgb/'s bundled mini-bars == sealed rows
+#   make verify-lstm   reproduce a diverse LSTM sample from lstm/'s committed manifest == sealed rows
+#   make clean         remove per-asset run scratch in both subprojects (keeps the sealed data)
+#   --- WO-FS feature-selection study (fs/); UNIVERSE=demo (default) | full ---
+#   make fs-test       run all WO-FS gates (anti-lookahead, scaler leak, purge/embargo, CPCV, unit)
+#   make fs-study1     calibrate + freeze the shared 3-class labels (Optuna Study 1)
+#   make fs-xgb        XGBoost loop: elimination -> stability -> Study 2 -> CPCV -> SHAP
+#   make fs-lstm       LSTM loop: channel elimination -> stability -> Study 2 -> CPCV -> SHAP
+#   make fs-holdout-xgb / fs-holdout-lstm   the ONE holdout read per model (guarded)
+#   make fs-all        study1 + fs-xgb + fs-lstm (no holdout — run that deliberately)
+#   make fs-warm       parallel feature-cache warm-up (all cores) for the whole universe
+#   make fs-search-on  DETACHED convergence optimizer over the FULL universe (survives logout)
+#   make fs-search-off / fs-search-status   stop / inspect the detached optimizer
 PY := .venv/bin/python3
-PIP := .venv/bin/pip
 ST := .venv/bin/streamlit
-PORT ?= 8000
-APP_PORT ?= 8501
-PID := .viz.pid
-LOG := .viz.log
-# Full-universe bars come from an external upstream store (single-homed in src/bars.py; override here).
-SP500_DUCKDB ?=
+APP_PORT ?= 8503
+UNIVERSE ?= demo
+FS_PID := logs/fs-search.pid
+FS_LOG := logs/fs-search.log
 
-LOOP_TICKERS := $(strip $(if $(TICKERS),$(TICKERS),$(filter-out loop,$(MAKECMDGOALS))))
-ifeq ($(strip $(LOOP_TICKERS)),)
-LOOP_TICKERS := AAPL TSLA XOM
-endif
-LOOP_TICKERS := $(shell printf '%s' "$(LOOP_TICKERS)" | tr '[:lower:]' '[:upper:]')
-ifeq (loop,$(firstword $(MAKECMDGOALS)))
-%:
-	@:
-endif
-
-.PHONY: deps app on off restart logs dashboard verify run-asset feature-search build-db loop serve clean help
-
+.PHONY: deps app verify-xgb verify-lstm clean help \
+        fs-test fs-study1 fs-xgb fs-lstm fs-holdout-xgb fs-holdout-lstm fs-all \
+        fs-warm fs-search-on fs-search-off fs-search-status
 help:
-	@grep -E '^#   make' Makefile | sed 's/^#   //'
+	@grep -E '^#   make|^#   ---' Makefile | sed 's/^#   //'
 
 deps:
 	test -d .venv || python3 -m venv .venv
-	$(PIP) install -r requirements.txt
+	.venv/bin/pip install -r requirements.txt
+	@# make the shared venv visible to each subproject (their Makefiles expect a local .venv)
+	@ln -sfn ../.venv xgb/.venv 2>/dev/null || true
+	@ln -sfn ../.venv lstm/.venv 2>/dev/null || true
 
 app:
 	$(ST) run app/app.py --server.port $(APP_PORT)
 
-dashboard:
-	$(PY) src/build_dashboard.py
+verify-xgb:
+	@cd xgb && ../$(PY) tools/verify_repro.py $(TICKERS)
 
-verify:
-	@$(PY) tools/verify_repro.py $(TICKERS)
+verify-lstm:
+	@cd lstm && ../$(PY) tools/verify_repro.py $(TICKERS)
 
-run-asset:
-	@test -n "$(TICKER)" || (echo "usage: make run-asset TICKER=AAPL" && exit 1)
-	$(PY) src/run_asset.py TICKER=$(TICKER)
+fs-test:
+	$(PY) -m fs.tests
 
-define FEATURE_MANIFEST_PY
-import sys
-sys.path.insert(0, "src")
-import pipeline as P
-m = P.resolve_feature_manifest(None)
-print("Active feature manifest")
-print("schema:", m["schema_version"])
-print("namespaces:", ", ".join(m["active_namespaces"]))
-for block in m["per_namespace"]:
-    print("%s %s: %d features" % (block["namespace"], block["id_range"], block["feature_count"]))
-endef
-export FEATURE_MANIFEST_PY
+fs-study1:
+	$(PY) -m fs.xgb_loop --universe $(UNIVERSE) --stage study1
 
-feature-search:
-	@$(PY) -c "$$FEATURE_MANIFEST_PY"
+fs-xgb:
+	$(PY) -m fs.xgb_loop --universe $(UNIVERSE) --stage all
 
-build-db:
-	SP500_DUCKDB="$(SP500_DUCKDB)" $(PY) src/build_db.py
+fs-lstm:
+	$(PY) -m fs.lstm_loop --universe $(UNIVERSE) --stage all
 
-loop:
-	@echo "loop tickers: $(LOOP_TICKERS)"
-	@for T in $(LOOP_TICKERS); do echo ">>> run-asset $$T"; $(PY) src/run_asset.py TICKER=$$T || exit 1; done
-	$(PY) src/build_dashboard.py
+fs-holdout-xgb:
+	$(PY) -m fs.xgb_loop --universe $(UNIVERSE) --stage holdout
 
-serve:
-	@if [ -f $(PID) ] && kill -0 $$(cat $(PID)) 2>/dev/null; then \
-	  echo "already served in the background on :$(PORT) (PID $$(cat $(PID))) -> http://localhost:$(PORT)/index.html"; \
-	  echo "  'make off' to stop it, then 'make serve' to run in the foreground."; \
-	elif ss -ltn 2>/dev/null | grep -q ':$(PORT) '; then \
-	  echo "port $(PORT) already in use -> open http://localhost:$(PORT)/index.html"; \
-	else \
-	  echo "serving plan/ at http://localhost:$(PORT)/index.html  (Ctrl+C to stop)"; \
-	  $(PY) -m http.server $(PORT) --directory plan; \
-	fi
+fs-holdout-lstm:
+	$(PY) -m fs.lstm_loop --universe $(UNIVERSE) --stage holdout
 
-on:
-	@$(PY) src/build_dashboard.py >/dev/null 2>&1 || true
-	@if [ -f $(PID) ] && kill -0 $$(cat $(PID)) 2>/dev/null; then echo "already running: http://localhost:$(PORT)/index.html (PID $$(cat $(PID)))"; else rm -f $(PID) $(LOG); nohup $(PY) -m http.server $(PORT) --directory plan > $(LOG) 2>&1 & echo $$! > $(PID); sleep 1; kill -0 $$(cat $(PID)) 2>/dev/null && echo "http://localhost:$(PORT)/index.html (PID $$(cat $(PID)))" || { echo "failed to start:"; tail -n 20 $(LOG); rm -f $(PID); exit 1; }; fi
-	@xdg-open "http://localhost:$(PORT)/index.html" >/dev/null 2>&1 || true
+fs-all: fs-study1 fs-xgb fs-lstm
 
-off:
-	@if [ -f $(PID) ]; then kill $$(cat $(PID)) 2>/dev/null && echo "stopped"; rm -f $(PID); else echo "not running"; fi
+fs-warm:
+	$(PY) -m fs.warm --universe $(UNIVERSE)
 
-restart: off on
+# Detached 8h optimizer: setsid+nohup so it survives the terminal closing; PID in a file for stop.
+fs-search-on:
+	@mkdir -p logs
+	@if [ -f $(FS_PID) ] && kill -0 $$(cat $(FS_PID)) 2>/dev/null; then \
+		echo "already running (PID $$(cat $(FS_PID))) — make fs-search-off first"; exit 1; fi
+	@setsid nohup $(PY) -m fs.supervise --universe $(UNIVERSE) >> $(FS_LOG) 2>&1 & echo $$! > $(FS_PID)
+	@sleep 1; echo "fs-search started (PID $$(cat $(FS_PID))), UNIVERSE=$(UNIVERSE) -> $(FS_LOG)"
 
-logs:
-	@test -f $(LOG) && tail -f $(LOG) || echo "no log; try 'make on'"
+fs-search-off:
+	@if [ -f $(FS_PID) ]; then kill -- -$$(cat $(FS_PID)) 2>/dev/null; kill $$(cat $(FS_PID)) 2>/dev/null; \
+		rm -f $(FS_PID); echo "stopped"; else echo "not running"; fi
+
+fs-search-status:
+	@if [ -f $(FS_PID) ] && kill -0 $$(cat $(FS_PID)) 2>/dev/null; then \
+		echo "RUNNING (PID $$(cat $(FS_PID)))"; else echo "not running"; fi
+	@test -f fs/artifacts/$(UNIVERSE)/supervisor_progress.json && \
+		$(PY) -c "import json;p=json.load(open('fs/artifacts/$(UNIVERSE)/supervisor_progress.json'));print('last:',p.get('last'))" || true
+	@echo "--- tail $(FS_LOG) ---"; tail -n 12 $(FS_LOG) 2>/dev/null || echo "(no log yet)"
 
 clean:
-	rm -rf Assets/*/ __pycache__ src/__pycache__ app/__pycache__ tools/__pycache__ .ipynb_checkpoints
+	rm -rf xgb/Assets/*/ lstm/Assets/*/ */__pycache__ */*/__pycache__ .ipynb_checkpoints

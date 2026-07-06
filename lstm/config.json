@@ -1,0 +1,87 @@
+{
+  "_meta": {
+    "purpose": "Single home of every pipeline parameter. Code reads values from here only; no number is duplicated in code or docs.",
+    "splits_note": "Calendar-round boundaries on purpose: warmup = all of 2016 (indicator/window warm-up only), train = 2017..2023, OOS = 2024-01-01..2026-04-30 (full months). OOS is read exactly once, at the end of run_asset."
+  },
+  "splits": {
+    "warmup_start": "2016-01-01",
+    "warmup_end": "2016-12-31",
+    "train_start": "2017-01-01",
+    "train_end": "2023-12-31",
+    "oos_start": "2024-01-01",
+    "oos_end": "2026-04-30"
+  },
+  "H": 10,
+  "PURGE_BARS": 10,
+  "EMBARGO_BARS": 10,
+  "SEQ_LEN": 60,
+  "W_ATR": 14,
+  "_barrier_note": "Asymmetric ATR Triple Barrier from the momentum-direction entry: TP = TB_ATR_TP*ATR14, SL = TB_ATR_SL*ATR14. Reward:risk b = TB_ATR_TP/TB_ATR_SL feeds the generalized Kelly f=clip(lambda*(p-(1-p)/b),0,cap). TB_ATR_TP==TB_ATR_SL reproduces the symmetric v1 label (b=1 => f=2p-1) byte-for-byte.",
+  "TB_ATR_TP": 2.0,
+  "TB_ATR_SL": 1.0,
+  "BARRIER_MODE": "close",
+  "SIGNAL_MOMENTUM_FEATURE": "log_return_5",
+  "ENTRY_GATE": {
+    "_note": "Meta-labeling PRIMARY filter — a fixed, Train-only, causal (features at t0) rule that keeps only higher-conviction setups so the LSTM secondary is not flooded with noise. (a) trend agreement: the momentum-direction entry must agree in sign with the trend proxy; (b) significant move: |momentum| >= vol_floor_k * realized_volatility_20. enabled=false reproduces the original every-bar candidate set byte-for-byte. Parameters are NOT per-asset tuned (no gate overfitting).",
+    "enabled": true,
+    "require_trend_agreement": false,
+    "trend_feature": "sma_20_sma_50_ratio",
+    "vol_floor_feature": "realized_volatility_20",
+    "vol_floor_k": 0.15
+  },
+  "COMMISSION_BPS": 1,
+  "SLIPPAGE_BPS": 2,
+  "THRESHOLD_ENTRY": 0.6,
+  "SIMULTANEOUS_SETUP_TIE_EPS": 1e-9,
+  "INITIAL_CAPITAL_USD": 1000.0,
+  "KELLY_CAP": 1.0,
+  "GATE_CALIBRATION": {
+    "_note": "Per-asset operating point chosen jointly on Train out-of-fold log-growth: entry threshold theta, Kelly fraction lambda (geometric grid — linear degenerated to the floor), and direction_mode. Ties resolve to the most conservative point (smaller lambda, higher theta, both-sided).",
+    "theta_grid": [0.50, 0.52, 0.54, 0.56, 0.58, 0.60],
+    "lambda_low": 0.05, "lambda_high": 1.0, "lambda_points": 10,
+    "direction_modes": ["both", "long_only"]
+  },
+  "W_SMA_FAST": 20,
+  "W_SMA_SLOW": 50,
+  "W_VOL": 20,
+  "W_RSI": 14,
+  "W_BB": 20,
+  "BB_K": 2.0,
+  "MACD_FAST": 12,
+  "MACD_SLOW": 26,
+  "MACD_SIGNAL": 9,
+  "CV_FOLDS": 4,
+  "FEATURE_SEARCH": {
+    "_note": "S.1-LSTM per-asset feature selection with an OVERFIT GATE. A light FIXED arch scores subsets on ONE common event set/fold partition (superset-eligible) by 'metric' (default oof_log_growth: the best out-of-fold log-growth over the coarse HPO (theta,lambda) grid via run_engine, so features are picked for TRADEABILITY, consistent with the profit-aligned HPO; 'auc_pr' is the ranking-metric fallback). Each fold's score is averaged over eval_seeds independent weight inits, so a subset's score reflects the FEATURES not one lucky seed. A feature is a candidate only if its marginal gain >= min_feature_gain AND it helps in >= min_fold_win_frac of folds (robust edge). Forward selection maximizes a COMPLEXITY-PENALIZED score (mean - complexity_penalty*n_added). A subset is APPLIED only if it beats core by min_gain. max_select caps additions.",
+    "metric": "oof_log_growth",
+    "eval_hidden": 16, "eval_dropout": 0.2, "eval_lr": 0.005, "eval_epochs": 8,
+    "eval_seeds": 2,
+    "min_gain": 0.005, "max_select": 6,
+    "min_feature_gain": 0.008, "complexity_penalty": 0.004, "min_fold_win_frac": 0.5
+  },
+  "HPO": {
+    "_note": "D7 selects the LSTM architecture by TRADEABLE Train OOF log-growth (objective below), not AUC-PR, so the searched hyper-parameters serve profit. weight_decay (Adam L2) + num_layers are the regularization/capacity levers that most reduce the Train->OOS gap. hpo_theta_grid/hpo_lambda_grid = the COARSE operating-point grid used to score each trial's OOF tradeability (the FINE point is chosen at D8).",
+    "objective": "oof_log_growth",
+    "n_trials": 20,
+    "hidden_choices": [16, 32, 64],
+    "lr_low": 0.0001,
+    "lr_high": 0.01,
+    "dropout_low": 0.0,
+    "dropout_high": 0.5,
+    "weight_decay_low": 1e-6,
+    "weight_decay_high": 1e-2,
+    "num_layers_choices": [1, 2],
+    "hpo_theta_grid": [0.50, 0.55, 0.60],
+    "hpo_lambda_grid": [0.5, 1.0],
+    "pruner_warmup_steps": 2
+  },
+  "TRAIN": {
+    "max_epochs": 25,
+    "patience": 4,
+    "batch_size": 128,
+    "min_delta": 0.0001,
+    "torch_threads": 2
+  },
+  "RANDOM_SEED": 42,
+  "EPS": 1e-9
+}

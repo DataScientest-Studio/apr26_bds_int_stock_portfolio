@@ -1,0 +1,11 @@
+# CPU-only runtime, pinned for reproducible OOS numbers. Torch comes from the
+# PyTorch CPU wheel index; everything else from PyPI.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.9.1+cpu
+duckdb==1.5.4
+optuna==4.8.0
+numpy==2.5.0
+pandas==2.2.3
+pyarrow==24.0.0
+# demo app only (reads oos_metrics.db read-only); not on the numeric path.
+streamlit==1.58.0

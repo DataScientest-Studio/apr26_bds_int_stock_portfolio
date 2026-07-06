@@ -1,0 +1,17 @@
+# Minimal per-asset pipeline runtime. Versions pinned to the proven set so OOS results are reproducible
+# (Optuna TPE + XGBoost are deterministic per seed, but only within a fixed library set).
+duckdb==1.5.4
+xgboost==3.3.0
+optuna==4.8.0
+numpy==2.5.0
+pandas==2.2.3
+pyarrow==24.0.0
+# RandomForest (bagging) baseline for the Modeling Report XGB-vs-RF comparison
+# (reports/compare_xgb_vs_rf.py); not on the per-asset OOS numeric path.
+scikit-learn==1.7.2
+# notebook runner (run_asset.py executes notebook_template.ipynb); not on the numeric path, unpinned.
+nbconvert
+nbformat
+ipykernel
+# demo app only (app.py — ML Basket Simulator, reads oos_metrics.db read-only); not on the numeric path.
+streamlit==1.58.0

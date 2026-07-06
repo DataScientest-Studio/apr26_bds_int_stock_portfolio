@@ -1,17 +1,24 @@
-# Minimal per-asset pipeline runtime. Versions pinned to the proven set so OOS results are reproducible
-# (Optuna TPE + XGBoost are deterministic per seed, but only within a fixed library set).
-duckdb==1.5.4
+# 10000-xgb-lstm-liora — union of the xgb/ (XGBoost, 1h) and lstm/ (LSTM, daily) runtimes.
+# Pinned to the proven set so the sealed OOS numbers reproduce (deterministic per seed within a fixed
+# library set). Torch is the CPU wheel; everything else from PyPI. One .venv serves both subprojects.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.9.1+cpu
 xgboost==3.3.0
+duckdb==1.5.4
 optuna==4.8.0
 numpy==2.5.0
 pandas==2.2.3
 pyarrow==24.0.0
-# RandomForest (bagging) baseline for the Modeling Report XGB-vs-RF comparison
-# (reports/compare_xgb_vs_rf.py); not on the per-asset OOS numeric path.
 scikit-learn==1.7.2
-# notebook runner (run_asset.py executes notebook_template.ipynb); not on the numeric path, unpinned.
+# XGBoost run_asset executes a notebook (nbconvert); not on the numeric path, unpinned.
 nbconvert
 nbformat
 ipykernel
-# demo app only (app.py — ML Basket Simulator, reads oos_metrics.db read-only); not on the numeric path.
+# the shared demo app (app/app.py — read-only over both oos_metrics.db stores).
 streamlit==1.58.0
+# WO-FS study (fs/): scipy is already pulled in by scikit-learn (PBO/DSR + hierarchical clustering).
+# WO-FS-LSTM §5 asks for `shap` (GradientExplainer) as the primary SHAP method, with a permutation
+# fallback. shap's hard dep `numba` currently caps NumPy at < 2.5, which conflicts with the pinned
+# numpy==2.5.0 the sealed pipelines reproduce against — so shap is intentionally NOT pinned here and
+# the LSTM loop uses the sanctioned zero-dep `perm` fallback (same table schema, method='perm'). To
+# enable GradientExplainer, install into a separate env with numpy<2.5:  pip install shap numba .

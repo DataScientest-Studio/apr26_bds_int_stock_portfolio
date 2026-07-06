@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1000-LSTM-Liora — OOS Dashboard</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:1120px;margin:0 auto;padding:36px 20px}
+    h1{margin:0 0 6px}
+    p{line-height:1.55;color:#5a6572}
+    table{width:100%;border-collapse:collapse;background:white;border:1px solid #dfe5ec;margin-top:18px}
+    th,td{text-align:right;border-bottom:1px solid #e8edf3;padding:10px}
+    th:first-child,td:first-child{text-align:left}
+    th{background:#eef2f6;cursor:pointer;user-select:none}
+    .empty{background:white;border:1px solid #dfe5ec;border-radius:8px;padding:18px;margin-top:18px}
+    .pos{color:#0a7d33}.neg{color:#b3261e}
+    code{background:#eef2f6;border-radius:5px;padding:2px 5px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>1000-LSTM-Liora — OOS Dashboard</h1>
+  <p>Per-asset out-of-sample results written by <code>run_asset.py</code> (one row per ticker,
+  the same store the Basket Simulator reads), shown next to <code>hodl_return_pct</code> — the
+  transparent buy-and-hold benchmark over the same OOS window. Click a column header to sort.</p>
+  <div id="app" class="empty">Loading dashboard data...</div>
+</main>
+<script>
+fetch('data/dashboard.json').then(r => r.ok ? r.json() : {assets: []}).catch(() => ({assets: []})).then(data => {
+  const assets = data.assets || [];
+  const app = document.getElementById('app');
+  if (!assets.length) {
+    app.textContent = 'No OOS rows yet. Run make run-asset TICKER=AAPL, then make dashboard.';
+    return;
+  }
+  const cols = ['ticker','end_capital','return_pct','hodl_return_pct','profit_factor','max_drawdown_pct','win_rate_pct','trades','time_in_market_pct','cv_auc_pr'];
+  let dir = 1, sortCol = 'ticker';
+  const fmt = (c, v) => {
+    if (v === null || v === undefined) return '';
+    if (typeof v !== 'number') return v;
+    return Number.isInteger(v) ? v : v.toFixed(c === 'end_capital' ? 2 : 3);
+  };
+  const cls = (c, v) => (c === 'return_pct' && typeof v === 'number') ? (v >= 0 ? 'pos' : 'neg') : '';
+  function render() {
+    const rows = [...assets].sort((a, b) => {
+      const x = a[sortCol], y = b[sortCol];
+      if (typeof x === 'string' || typeof y === 'string') return dir * String(x).localeCompare(String(y));
+      return dir * ((x ?? -Infinity) - (y ?? -Infinity));
+    });
+    app.className = '';
+    app.innerHTML = '<table><thead><tr>' +
+      cols.map(c => `<th data-c="${c}">${c}${c === sortCol ? (dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('') +
+      '</tr></thead><tbody>' +
+      rows.map(a => '<tr>' + cols.map(c => `<td class="${cls(c, a[c])}">${fmt(c, a[c])}</td>`).join('') + '</tr>').join('') +
+      '</tbody></table>';
+    app.querySelectorAll('th').forEach(th => th.onclick = () => {
+      const c = th.dataset.c;
+      dir = (c === sortCol) ? -dir : (c === 'ticker' ? 1 : -1);
+      sortCol = c;
+      render();
+    });
+  }
+  render();
+});
+</script>
+</body>
+</html>

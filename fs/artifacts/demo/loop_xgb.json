@@ -1,0 +1,116 @@
+{
+  "one_se_choice": [
+    "rsi_1h",
+    "vol_z_1h",
+    "day_range_pos_1h",
+    "adx_signed_1d",
+    "rsi_1d",
+    "atr_pct_1d",
+    "dist_pivot_1d",
+    "zscore_1h_ma1d",
+    "zscore_1h_ma1w",
+    "rsi_spread_1h_1d",
+    "vol_ratio_1h_1d"
+  ],
+  "run_id": "wofs-demo-t41",
+  "trajectory": [
+    {
+      "features": [
+        "rsi_1h",
+        "vol_z_1h",
+        "day_range_pos_1h",
+        "adx_signed_1d",
+        "rsi_1d",
+        "atr_pct_1d",
+        "dist_pivot_1d",
+        "ma_slope_1w",
+        "vol_regime_1w",
+        "dist_swing_high_1w",
+        "dist_swing_low_1w",
+        "zscore_1h_ma1d",
+        "zscore_1h_ma1w",
+        "rsi_spread_1h_1d",
+        "vol_ratio_1h_1d",
+        "alignment_score",
+        "divergence_flag"
+      ],
+      "mean": 0.39004606093234656,
+      "se": 0.008679882647135229
+    },
+    {
+      "features": [
+        "rsi_1h",
+        "vol_z_1h",
+        "day_range_pos_1h",
+        "adx_signed_1d",
+        "rsi_1d",
+        "atr_pct_1d",
+        "dist_pivot_1d",
+        "ma_slope_1w",
+        "dist_swing_high_1w",
+        "dist_swing_low_1w",
+        "zscore_1h_ma1d",
+        "zscore_1h_ma1w",
+        "rsi_spread_1h_1d",
+        "vol_ratio_1h_1d",
+        "alignment_score",
+        "divergence_flag"
+      ],
+      "mean": 0.39268197228392,
+      "se": 0.00729897692369413
+    },
+    {
+      "features": [
+        "rsi_1h",
+        "vol_z_1h",
+        "day_range_pos_1h",
+        "adx_signed_1d",
+        "rsi_1d",
+        "atr_pct_1d",
+        "dist_pivot_1d",
+        "ma_slope_1w",
+        "dist_swing_high_1w",
+        "dist_swing_low_1w",
+        "zscore_1h_ma1d",
+        "zscore_1h_ma1w",
+        "rsi_spread_1h_1d",
+        "vol_ratio_1h_1d"
+      ],
+      "mean": 0.3950730455910822,
+      "se": 0.0064733250614393695
+    },
+    {
+      "features": [
+        "rsi_1h",
+        "vol_z_1h",
+        "day_range_pos_1h",
+        "adx_signed_1d",
+        "rsi_1d",
+        "atr_pct_1d",
+        "dist_pivot_1d",
+        "zscore_1h_ma1d",
+        "zscore_1h_ma1w",
+        "rsi_spread_1h_1d",
+        "vol_ratio_1h_1d"
+      ],
+      "mean": 0.3906094211368155,
+      "se": 0.004788041384714938
+    },
+    {
+      "features": [
+        "rsi_1h",
+        "vol_z_1h",
+        "day_range_pos_1h",
+        "adx_signed_1d",
+        "rsi_1d",
+        "dist_pivot_1d",
+        "zscore_1h_ma1d",
+        "zscore_1h_ma1w",
+        "rsi_spread_1h_1d",
+        "vol_ratio_1h_1d"
+      ],
+      "mean": 0.3868309338791695,
+      "se": 0.003868246949517379
+    }
+  ]
+}

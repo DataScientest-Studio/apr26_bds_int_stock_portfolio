@@ -1,0 +1,120 @@
+{
+  "_meta": "WO-FS shared config — the single home for both feature-selection loops (docs/XGB-ZLECENIE-LOOP.md + docs/LSTM-ZLECENIE-LOOP.md). Keys starting with _ are documentation and are stripped by the loader.",
+  "SEED": 42,
+  "XGB_NTHREAD": 8,
+  "TORCH_THREADS": 2,
+  "PARALLEL": {
+    "_note": "Full-resources use: each XGB/LSTM training saturates its thread count; cache-warm fans out over `warm_workers` processes. Counts are CAPPED at os.cpu_count()-1 at runtime and overridable via FS_NTHREAD/FS_TORCH_THREADS, so moving to a smaller server auto-adapts. Fixed thread count -> reproducible at that count. demo stays light so gates are fast. `torch_threads` = threads PER WORKER in fan-out LSTM stages (cpcv/loop/study2: many workers, few threads each); `torch_threads_single` = threads for a SINGLE-training LSTM stage (strategy/holdout: one heavy fit, take the whole box) -- see BEST_PRACTICE_FOR_ML_LOOPS_ON_THIS_SERVER.md sec.4/8.",
+    "demo": {"xgb_nthread": 8, "torch_threads": 2, "torch_threads_single": 8, "warm_workers": 8, "batch": 256},
+    "full": {"xgb_nthread": 15, "torch_threads": 2, "torch_threads_single": 15, "warm_workers": 15, "batch": 512}
+  },
+  "SUPERVISOR": {
+    "_note": "Detached CONVERGENCE optimizer (make fs-search-on UNIVERSE=full) — NO wall-clock budget. Freezes labels ONCE, then optimizes XGB to convergence, then LSTM to convergence, then writes all_converged.flag and EXITS. A model has converged when the best CV macro-F1 stops improving by > min_gain for `patience` rounds AND the selected feature set is unchanged AND no new Sonnet feature was accepted. Resumable across a server change (skips converged models). NEVER reads the holdout.",
+    "study1_trials": {"full": 80},
+    "study2_trials_step": 20,
+    "min_gain": 0.001,
+    "patience": 3,
+    "max_rounds": 200,
+    "pbo_max": 0.5,
+    "coverage_min": 0.8
+  },
+  "STORES": {
+    "_note": "1h from the xgb store (FS_BARS_1H env overrides; demo fallback), 1d NATIVE from the lstm store (WO-XGB §1 forbids 1h->1d resampling), 1w aggregated from native 1d.",
+    "bars_1h_full": "xgb/data/liora.duckdb",
+    "bars_1h_demo": "xgb/data/bars_demo.duckdb",
+    "bars_1d": "lstm/data/sp500_1d.duckdb"
+  },
+  "SPLITS": {
+    "_note": "warmup = indicator lookbacks only; CV = the only window any decision may use; holdout read exactly once (guarded by artifacts/<universe>/holdout_used.flag). Same holdout window as the sealed v2 pipelines.",
+    "warmup_end": "2016-12-30",
+    "cv_start": "2017-01-03",
+    "cv_end": "2023-12-29",
+    "holdout_start": "2024-01-02",
+    "holdout_end": "2026-05-29"
+  },
+  "CV": {"k": 5, "embargo_frac": 0.01},
+  "CPCV": {"n_groups": 6, "n_test_groups": 2},
+  "STUDY1": {
+    "_note": "Label calibration (shared truth for BOTH models): CUSUM threshold, EWMA vol span, barrier multiples, horizon. Objective = mean macro-F1 of the fixed reference XGB on Purged K-Fold. min_class_frac prunes degenerate label geometries.",
+    "n_trials": {"demo": 50, "full": 100},
+    "ticker_subsample_full": 60,
+    "min_class_frac": 0.05,
+    "space": {
+      "cusum_mult": {"type": "float", "low": 1.0, "high": 6.0},
+      "ewma_span": {"type": "int", "low": 20, "high": 200},
+      "pt": {"type": "float", "low": 0.5, "high": 3.0},
+      "sl": {"type": "float", "low": 0.5, "high": 3.0},
+      "h_bars": {"type": "int", "low": 6, "high": 48}
+    },
+    "ref_xgb": {"max_depth": 4, "eta": 0.05, "subsample": 0.8, "colsample_bytree": 0.8,
+                "min_child_weight": 5, "lambda": 1.0, "alpha": 0.0, "n_estimators": 120}
+  },
+  "XGB_LOOP": {
+    "_note": "Backward elimination with correlation clustering + clustered MDA (decision) and treeshap (agreement control). Stop rules per WO §4.6; selected set = smallest within 1 SE, then stability pi >= 0.7 over bootstraps. ECONOMY: feature SELECTION (loop + stability) runs on a representative ticker subsample (select_ticker_subsample) — the clustered-MDA permutations over the full 503-asset panel are the cost, and a subsample gives the same feature ranking; Study 2 / CPCV / SHAP / holdout then use ALL tickers.",
+    "corr_cluster_threshold": 0.7,
+    "mda_repeats": 2,
+    "stop_no_improve_rounds": 3,
+    "min_features": 4,
+    "select_ticker_subsample": {"full": 100},
+    "stability_bootstraps": 20,
+    "stability_ticker_frac": 0.75,
+    "stability_pi": 0.7
+  },
+  "XGB_STUDY2": {
+    "_note": "Ranges copied from xgb/src/config/xgboost_optuna_search_space.json (the audited v2 space); objective becomes multi:softprob num_class=3, trial metric = mean fold macro-F1, pruning on fold mlogloss.",
+    "n_trials": {"demo": 60, "full": 120},
+    "pruner_warmup": 2,
+    "space": {
+      "max_depth": {"type": "int", "low": 2, "high": 5},
+      "eta": {"type": "float", "low": 0.02, "high": 0.3, "log": true},
+      "subsample": {"type": "float", "low": 0.6, "high": 1.0},
+      "colsample_bytree": {"type": "float", "low": 0.6, "high": 1.0},
+      "min_child_weight": {"type": "int", "low": 1, "high": 10},
+      "reg_lambda": {"type": "float", "low": 0.5, "high": 5.0},
+      "reg_alpha": {"type": "float", "low": 0.0, "high": 5.0},
+      "gamma": {"type": "float", "low": 0.0, "high": 5.0},
+      "n_estimators": {"type": "int", "low": 40, "high": 300}
+    }
+  },
+  "LSTM": {
+    "_note": "Fixed base architecture for the channel-elimination loop (WO-LSTM §3); Study 2 tunes it afterwards. ECONOMY mode (WO §4.2): channel selection runs on a representative ticker subsample with few epochs; the FINALIST (Study-2 refit / CPCV / holdout) trains on all tickers, full epochs, >=3 seeds (WO §6). seq_len_max fixes event eligibility so every Study-2 L stays on the same event set.",
+    "seq_len": 64,
+    "seq_len_max": 128,
+    "hidden": 32,
+    "num_layers": 1,
+    "dropout": 0.3,
+    "lr": 0.001,
+    "batch": 256,
+    "weight_decay": 0.0001,
+    "epochs_economy": 5,
+    "epochs_full": 25,
+    "patience": 5,
+    "seeds": [42, 10049, 20056],
+    "start_top_k": 10,
+    "max_channels": 8,
+    "min_channels": 4,
+    "perm_repeats": 5,
+    "ablation_candidates": 2,
+    "stop_no_improve_rounds": 3,
+    "stability_repeats": 10,
+    "stability_pi": 0.7,
+    "ticker_subsample_full": 40,
+    "shap_max_sequences_per_ticker": 256
+  },
+  "LSTM_STUDY2": {
+    "n_trials": {"demo": 30, "full": 60},
+    "pruner_warmup": 2,
+    "space": {
+      "seq_len": {"type": "int", "low": 32, "high": 128},
+      "hidden": {"type": "int", "low": 16, "high": 64},
+      "num_layers": {"type": "int", "low": 1, "high": 2},
+      "dropout": {"type": "float", "low": 0.2, "high": 0.5},
+      "lr": {"type": "float", "low": 0.0001, "high": 0.01, "log": true},
+      "batch": {"type": "cat", "choices": [128, 256, 512]},
+      "weight_decay": {"type": "float", "low": 0.000001, "high": 0.001, "log": true}
+    }
+  },
+  "PSTAR": {"low": 0.34, "high": 0.60, "step": 0.02},
+  "PBO_SLICES": 8,
+  "TRADING": {"_note": "event returns bucketed by exit day for the Sharpe/DSR final evaluation", "periods_per_year": 252}
+}

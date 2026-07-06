@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liora ML Engineering Plan</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:1040px;margin:0 auto;padding:40px 20px}
+    h1{font-size:34px;margin:0 0 10px}
+    p{line-height:1.55}
+    nav{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}
+    a{color:#0b5cab;text-decoration:none;font-weight:650}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+    .card{background:white;border:1px solid #dfe5ec;border-radius:8px;padding:18px}
+    code{background:#eef2f6;border-radius:5px;padding:2px 5px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Liora minimal per-asset ML pipeline</h1>
+  <p>Tier 2 — Backend explanation: these pages explain the backend behind the ML Basket Simulator. One per-asset pipeline: Alpaca OHLCV provenance, upstream store, DuckDB, 1h/1d/1w parquets, split, feature namespaces, Triple Barrier labels, Optuna, XGB artifact, and OOS endproduct.</p>
+  <nav>
+    <a href="procedure_lego.html">Procedure Lego</a>
+    <a href="configurations.html">Configurations</a>
+    <a href="glossary.html">Glossary</a>
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+  <section class="card">
+    <h2>Documentation tiers</h2>
+    <p><b>Tier 1 — Client app:</b> ML Basket Simulator (Streamlit) — from
+    <code>Project/Structure</code> run <code>make app</code> → <code>http://localhost:8501</code>.
+    Clients pick tickers and see the basket outcome over the fixed OOS window, read-only
+    from <code>oos_metrics.db</code>.</p>
+    <p><b>Tier 2 — Backend explanation:</b> this site —
+    <a href="configurations.html">Configurations</a> (live config values),
+    <a href="dashboard.html">Dashboard</a> (the OOS rows the app reads),
+    <a href="glossary.html">Glossary</a>.</p>
+    <p><b>Tier 3 — Replication blueprint:</b>
+    <a href="procedure_lego.html">Procedure Lego</a> + the "Kontrakt replikacji" blocks in
+    <code>Project/endproduct/Layers_Short_SOT.md</code> — how an analogous app is built from
+    accumulating data-processing modules (a data science / data engineering / ML product,
+    not a frontend one).</p>
+  </section>
+  <section class="grid">
+    <div class="card"><h2>L1-L4 Data</h2><p>Upstream Alpaca data lives in the source store, read verbatim by <code>bars.load_bars</code>. DuckDB becomes the shared input, then each asset writes clean 1h plus 1d/1w roll-ups.</p></div>
+    <div class="card"><h2>L5-L6 Model Rows</h2><p>Train/OOS split is index-based. Candidate bars use 1h momentum for side. Features are resolved by namespace and Y is an ATR Triple Barrier label.</p></div>
+    <div class="card"><h2>L7-L9 Output</h2><p>Optuna tunes XGB, Kelly is calibrated on Train out-of-fold growth, the model is embedded as base64, and every asset keeps the seven-file contract.</p></div>
+  </section>
+  <p>Run it from <code>Project/Structure</code>: <code>make build-db &amp;&amp; make run-asset TICKER=AAPL</code>.</p>
+</main>
+</body>
+</html>

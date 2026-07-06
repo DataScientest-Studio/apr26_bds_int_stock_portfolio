@@ -1,0 +1,59 @@
+{
+  "_next_id": 515,
+  "downside_upside_vol_ratio_20": {
+    "expr": "rolling_std(clip(log(c/shift(c,1)), -1, 0), 20) / (rolling_std(clip(log(c/shift(c,1)), 0, 1), 20) + 0.001)",
+    "id": 509
+  },
+  "downside_vol_20": {
+    "expr": "rolling_std(clip(log(c/shift(c,1)), -1, 0), 20)",
+    "id": 504
+  },
+  "illiquidity_amihud_20": {
+    "expr": "rolling_mean(abs(log(c/shift(c,1))) / log(v + 2), 20)",
+    "id": 510
+  },
+  "momentum_acceleration_10": {
+    "expr": "log(c/shift(c,10)) - log(shift(c,10)/shift(c,20))",
+    "id": 511
+  },
+  "overnight_intraday_spread_20": {
+    "expr": "rolling_mean(o/shift(c,1) - 1, 20) - rolling_mean(c/o - 1, 20)",
+    "id": 503
+  },
+  "overnight_vol_20": {
+    "expr": "rolling_std(o/shift(c,1) - 1, 20)",
+    "id": 508
+  },
+  "price_volume_rank_divergence": {
+    "expr": "rank(c, 40) - rank(v, 40)",
+    "id": 502
+  },
+  "range_compression_60": {
+    "expr": "rank(h - l, 60)",
+    "id": 505
+  },
+  "sma_slope_50_20": {
+    "expr": "log(rolling_mean(c, 50) / shift(rolling_mean(c, 50), 20))",
+    "id": 514
+  },
+  "stochastic_k_20": {
+    "expr": "(c - rolling_min(l, 20)) / (rolling_max(h, 20) - rolling_min(l, 20) + 0.0001)",
+    "id": 512
+  },
+  "trend_efficiency_20": {
+    "expr": "abs(c - shift(c,20)) / rolling_mean(abs(c - shift(c,1)), 20)",
+    "id": 506
+  },
+  "vol_of_vol_20": {
+    "expr": "rolling_std(rolling_std(log(c/shift(c,1)), 10), 20)",
+    "id": 507
+  },
+  "vol_regime_20_60": {
+    "expr": "rolling_std(log(c/shift(c,1)), 20) / rolling_std(log(c/shift(c,1)), 60)",
+    "id": 501
+  },
+  "vol_scaled_momentum_20": {
+    "expr": "log(c/shift(c,20)) / (rolling_std(log(c/shift(c,1)), 20) + 0.001)",
+    "id": 513
+  }
+}

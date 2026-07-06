@@ -1,0 +1,31 @@
+{
+  "best_params": {
+    "colsample_bytree": 0.9238618218294782,
+    "eta": 0.03374996449585913,
+    "gamma": 1.5947201779893945,
+    "max_depth": 5,
+    "min_child_weight": 8,
+    "n_estimators": 136,
+    "reg_alpha": 3.0180062101363934,
+    "reg_lambda": 4.922087705500121,
+    "subsample": 0.7285934250772302
+  },
+  "cv_macro_f1": 0.3935530927356051,
+  "cv_se": 0.006593503096656123,
+  "n_trials": 60,
+  "pstar": 0.34,
+  "pstar_macro_f1": 0.3932634564331008,
+  "run_id": "wofs-demo-t41",
+  "selected": [
+    "rsi_1h",
+    "vol_z_1h",
+    "day_range_pos_1h",
+    "adx_signed_1d",
+    "rsi_1d",
+    "atr_pct_1d",
+    "zscore_1h_ma1d",
+    "zscore_1h_ma1w",
+    "rsi_spread_1h_1d",
+    "vol_ratio_1h_1d"
+  ]
+}

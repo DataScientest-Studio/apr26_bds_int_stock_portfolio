@@ -1,0 +1,14 @@
+{
+  "n": 496,
+  "mean_return_pct": 13.17,
+  "median_return_pct": 0.03,
+  "q25": -0.46,
+  "q75": 7.03,
+  "min": -70.95,
+  "max": 800.68,
+  "positive": 262,
+  "hodl_fallbacks": 191,
+  "flat_pm05pct": 191,
+  "mean_cv_auc_pr": 0.5558,
+  "code": "post-audit-fix baseline (commit 60cee0a); pre-improvement"
+}

@@ -1,45 +1,53 @@
-# --- SEALED presentation artifacts ship COMMITTED (NOT ignored) ---
-#   data/oos_metrics.db  data/per_asset_feature_overrides.json  data/bars_demo.duckdb
-#   plan/data/dashboard.json
-# so a fresh clone renders the app + dashboard instantly and reproduces the demo tickers.
+# --- clone-and-show: sealed results + demo/daily bars ship COMMITTED ---
+#   xgb/data/oos_metrics.db  xgb/data/bars_demo.duckdb  xgb/data/per_asset_feature_overrides.json
+#   xgb/plan/data/dashboard.json  lstm/oos_metrics.db  lstm/data/sp500_1d.duckdb
+#   lstm/per_asset_feature_overrides.json  lstm/dashboard/data/dashboard.json
+# so a fresh clone renders the app + both dashboards instantly (each subproject keeps its own .gitignore).
 
-# The FULL bars store (160 MB, built from the external upstream) stays out of git; the mini
-# demo store data/bars_demo.duckdb (a few tickers) is committed for clone-and-reproduce.
-data/liora.duckdb
-data/*.tmp
-data/verify_scratch.db*
-# SQLite WAL/SHM side-files of the committed results store
-data/oos_metrics.db-wal
-data/oos_metrics.db-shm
-# Dashboard feed ships committed; ignore only the atomic temp
-plan/data/*.tmp
-
-# Per-asset run scratch (make run-asset regenerates it; Assets/ ships empty)
-Assets/*/
-
-# Python / venv
+# One shared virtualenv at the repo root; the per-subproject .venv are symlinks to it (make deps).
 .venv/
-venv/
-env/
+xgb/.venv
+lstm/.venv
+
+# The FULL XGB 1h bars (160 MB) stay LOCAL; the committed mini bars_demo.duckdb cover demo verify.
+xgb/data/liora.duckdb
+
+# Per-asset run scratch (regenerable; the sealed rows ship committed).
+xgb/Assets/*/
+lstm/Assets/*/
+lstm/cache/
+xgb/data/verify_scratch.db*
+lstm/data/verify_scratch.db*
+# SQLite WAL/SHM side-files of the committed results stores.
+*.db-wal
+*.db-shm
+
+# Python / OS / IDE
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-
-# Feature-search runtime (only if run against the external store) — regenerable
-search_state.db*
-search_control.json
-logs/
-
-# Background viz server (make on / make off)
-.viz.pid
-.viz.log
-
-# OS / IDE
 .DS_Store
-Thumbs.db
 .vscode/
 .idea/
 
-# Background Streamlit
-.streamlit.pid
-.streamlit.log
+# Background/scratch runtime (regenerable).
+*.pid
+*.log
+logs/
+search_state.db*
+search_control.json
+.overrides.lock
+
+# --- WO-FS study (fs/artifacts) ---
+# Commit the SMALL demo artifacts so a fresh clone renders the study pages instantly:
+#   fs/artifacts/demo/*.json  fs/artifacts/demo/optuna.db  fs/artifacts/demo/fs_results.duckdb
+# Ignore the regenerable feature cache, per-fold scalers, DB side-files, and the FULL universe run.
+fs/artifacts/cache/
+fs/artifacts/pcache/
+fs/artifacts/**/scalers/
+fs/artifacts/full/
+*.duckdb.tmp
+fs/artifacts/**/*.parquet.tmp
+fs/artifacts/**/supervisor_progress.json
+fs/artifacts/**/supervisor_DONE.flag
+fs/features_proposed.lock

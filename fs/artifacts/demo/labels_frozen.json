@@ -1,0 +1,36 @@
+{
+  "best_macro_f1_cv": 0.39004606093234656,
+  "class_frac": {
+    "-1": 0.3912725944860325,
+    "0": 0.2606353843344897,
+    "1": 0.3480920211794778
+  },
+  "n_events_study1": 10954,
+  "n_trials": 50,
+  "params": {
+    "cusum_mult": 4.549926126691406,
+    "ewma_span": 20,
+    "h_bars": 12,
+    "pt": 2.512613194801229,
+    "sl": 1.9084092258648349
+  },
+  "run_id": "wofs-demo-t41",
+  "study1_tickers": [
+    "AAPL",
+    "AMZN",
+    "GOOGL",
+    "HD",
+    "JNJ",
+    "JPM",
+    "KO",
+    "META",
+    "MSFT",
+    "NVDA",
+    "PG",
+    "TSLA",
+    "V",
+    "WMT",
+    "XOM"
+  ],
+  "universe": "demo"
+}

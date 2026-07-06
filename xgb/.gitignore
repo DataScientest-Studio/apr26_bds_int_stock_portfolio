@@ -1,0 +1,45 @@
+# --- SEALED presentation artifacts ship COMMITTED (NOT ignored) ---
+#   data/oos_metrics.db  data/per_asset_feature_overrides.json  data/bars_demo.duckdb
+#   plan/data/dashboard.json
+# so a fresh clone renders the app + dashboard instantly and reproduces the demo tickers.
+
+# The FULL bars store (160 MB, built from the external upstream) stays out of git; the mini
+# demo store data/bars_demo.duckdb (a few tickers) is committed for clone-and-reproduce.
+data/liora.duckdb
+data/*.tmp
+data/verify_scratch.db*
+# SQLite WAL/SHM side-files of the committed results store
+data/oos_metrics.db-wal
+data/oos_metrics.db-shm
+# Dashboard feed ships committed; ignore only the atomic temp
+plan/data/*.tmp
+
+# Per-asset run scratch (make run-asset regenerates it; Assets/ ships empty)
+Assets/*/
+
+# Python / venv
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Feature-search runtime (only if run against the external store) — regenerable
+search_state.db*
+search_control.json
+logs/
+
+# Background viz server (make on / make off)
+.viz.pid
+.viz.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Background Streamlit
+.streamlit.pid
+.streamlit.log

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OOS Dashboard</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;margin:0;background:#f7f8fa;color:#17202a}
+    main{max-width:1120px;margin:0 auto;padding:36px 20px}
+    a{color:#0b5cab;text-decoration:none;font-weight:650}
+    table{width:100%;border-collapse:collapse;background:white;border:1px solid #dfe5ec;margin-top:18px}
+    th,td{text-align:right;border-bottom:1px solid #e8edf3;padding:10px}
+    th:first-child,td:first-child{text-align:left}
+    th{background:#eef2f6}
+    .empty{background:white;border:1px solid #dfe5ec;border-radius:8px;padding:18px;margin-top:18px}
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="index.html">Back</a></p>
+  <h1>OOS Dashboard</h1>
+  <p>Tier 2 — Backend explanation: per-asset OOS results exported from
+  <code>Project/Structure/oos_metrics.db</code> by <code>make dashboard</code> — the same
+  store the Tier-1 client app (ML Basket Simulator) reads.</p>
+  <div id="app" class="empty">Loading dashboard data...</div>
+</main>
+<script>
+fetch('data/dashboard.json').then(r => r.ok ? r.json() : {assets: []}).catch(() => ({assets: []})).then(data => {
+  const assets = data.assets || [];
+  const app = document.getElementById('app');
+  if (!assets.length) {
+    app.textContent = 'No OOS rows yet. Run make dashboard after one or more assets finish.';
+    return;
+  }
+  const cols = ['ticker','end_capital','return_pct','profit_factor','max_drawdown_pct','win_rate_pct','trades','time_in_market_pct','cv_auc_pr'];
+  app.className = '';
+  app.innerHTML = '<table><thead><tr>' + cols.map(c => '<th>'+c+'</th>').join('') + '</tr></thead><tbody>' +
+    assets.map(a => '<tr>' + cols.map(c => '<td>' + (a[c] === null || a[c] === undefined ? '' : a[c]) + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table>';
+});
+</script>
+</body>
+</html>

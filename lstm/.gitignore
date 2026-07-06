@@ -1,0 +1,34 @@
+# DuckDB artifacts are regenerable — EXCEPT the bundled daily store (the D1 input)
+*.duckdb
+!data/sp500_1d.duckdb
+# Per-asset run scratch (make run-asset regenerates it). The SEALED OOS results store ships
+# COMMITTED so a fresh clone shows the app/dashboard instantly — only its SQLite WAL/SHM
+# side-files are ignored.
+Assets/*/
+oos_metrics.db-wal
+oos_metrics.db-shm
+# Dashboard feed ships COMMITTED (fresh clone renders instantly); ignore only the atomic temp.
+dashboard/data/*.tmp
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+# Background dashboard server (make on / make off)
+.dash.pid
+.dash.log
+# Background universe loop (make universe-on / universe-off)
+.universe.pid
+.universe.log
+# Baseline snapshot (before/after story; the summary JSON is committed, the db is not)
+baseline/
+# RAM feature cache (make build-cache; regenerable, gitignored)
+cache/
+.overrides.lock
+# Feature-search runtime state (regenerable). The SEALED feature bank + per-asset selections
+# (features_proposed.json, per_asset_feature_overrides.json) ship COMMITTED instead — they are
+# the frozen artifact a fresh clone reproduces each per-asset model from.
+search_state.db*
+search_control.json
+agent_journal.md
+logs/
+.search.pid
