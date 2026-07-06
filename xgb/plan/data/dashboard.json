@@ -16,7 +16,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4103516264428728,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -16.82,
+      "beats_hodl": true
     },
     {
       "ticker": "AAPL",
@@ -34,7 +36,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4348418238328893,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 64.17,
+      "beats_hodl": false
     },
     {
       "ticker": "ABBV",
@@ -52,7 +56,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35219420218704706,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 39.29,
+      "beats_hodl": false
     },
     {
       "ticker": "ABNB",
@@ -70,7 +76,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37938023703707646,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -1.41,
+      "beats_hodl": false
     },
     {
       "ticker": "ABT",
@@ -88,7 +96,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38883478852310827,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -20.22,
+      "beats_hodl": true
     },
     {
       "ticker": "ACGL",
@@ -106,7 +116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42216967324299903,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 29.32,
+      "beats_hodl": false
     },
     {
       "ticker": "ACN",
@@ -124,7 +136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40114134937271007,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -48.5,
+      "beats_hodl": true
     },
     {
       "ticker": "ADBE",
@@ -142,7 +156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.43534258441561186,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -58.62,
+      "beats_hodl": false
     },
     {
       "ticker": "ADI",
@@ -160,7 +176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3662017056989566,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 103.52,
+      "beats_hodl": false
     },
     {
       "ticker": "ADM",
@@ -178,7 +196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38550344356725363,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.15,
+      "beats_hodl": false
     },
     {
       "ticker": "ADP",
@@ -196,7 +216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4011368140853707,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -3.23,
+      "beats_hodl": false
     },
     {
       "ticker": "ADSK",
@@ -214,7 +236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4481491059172364,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.08,
+      "beats_hodl": false
     },
     {
       "ticker": "AEE",
@@ -232,7 +256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3835712093056776,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 54.28,
+      "beats_hodl": false
     },
     {
       "ticker": "AEP",
@@ -250,7 +276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4291459216198823,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 64.08,
+      "beats_hodl": false
     },
     {
       "ticker": "AES",
@@ -268,7 +296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4077256624637306,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -23.22,
+      "beats_hodl": false
     },
     {
       "ticker": "AFL",
@@ -286,7 +316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37560817314202305,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 43.16,
+      "beats_hodl": false
     },
     {
       "ticker": "AIG",
@@ -304,7 +336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39068259349198475,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.81,
+      "beats_hodl": false
     },
     {
       "ticker": "AIZ",
@@ -322,7 +356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37263316074185915,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.22,
+      "beats_hodl": false
     },
     {
       "ticker": "AJG",
@@ -340,7 +376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3870867515591619,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -9.12,
+      "beats_hodl": false
     },
     {
       "ticker": "AKAM",
@@ -358,7 +396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.423637042768524,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 25.54,
+      "beats_hodl": false
     },
     {
       "ticker": "ALB",
@@ -376,7 +416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4261806771708999,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 20.64,
+      "beats_hodl": false
     },
     {
       "ticker": "ALGN",
@@ -394,7 +436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39569353775577876,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -39.55,
+      "beats_hodl": false
     },
     {
       "ticker": "ALL",
@@ -412,7 +456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38698767065938233,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 54.84,
+      "beats_hodl": false
     },
     {
       "ticker": "ALLE",
@@ -430,7 +476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3783529023553519,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 3.55,
+      "beats_hodl": false
     },
     {
       "ticker": "AMAT",
@@ -448,7 +496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42631003883204116,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 171.29,
+      "beats_hodl": false
     },
     {
       "ticker": "AMCR",
@@ -466,7 +516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.34635630276118845,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 297.77,
+      "beats_hodl": false
     },
     {
       "ticker": "AMD",
@@ -484,7 +536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42492981530143215,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 223.89,
+      "beats_hodl": false
     },
     {
       "ticker": "AME",
@@ -502,7 +556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36341341810065997,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 37.12,
+      "beats_hodl": false
     },
     {
       "ticker": "AMGN",
@@ -520,7 +576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3668022192854662,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 17.98,
+      "beats_hodl": false
     },
     {
       "ticker": "AMP",
@@ -538,7 +596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3655536404896716,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.47,
+      "beats_hodl": false
     },
     {
       "ticker": "AMT",
@@ -556,7 +616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37706897930583594,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.28,
+      "beats_hodl": false
     },
     {
       "ticker": "AMZN",
@@ -574,7 +636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4192789211807265,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 76.77,
+      "beats_hodl": false
     },
     {
       "ticker": "ANET",
@@ -592,7 +656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4188986767929922,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -33.89,
+      "beats_hodl": true
     },
     {
       "ticker": "AON",
@@ -610,7 +676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39351732137542017,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 11.43,
+      "beats_hodl": false
     },
     {
       "ticker": "AOS",
@@ -628,7 +696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.394552428645662,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -29.9,
+      "beats_hodl": false
     },
     {
       "ticker": "APA",
@@ -646,7 +716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3910208305048294,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.74,
+      "beats_hodl": false
     },
     {
       "ticker": "APD",
@@ -664,7 +736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37546728587014894,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.25,
+      "beats_hodl": false
     },
     {
       "ticker": "APH",
@@ -682,7 +756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4222643677545165,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 35.46,
+      "beats_hodl": false
     },
     {
       "ticker": "APO",
@@ -700,7 +776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39680008245599874,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 38.88,
+      "beats_hodl": false
     },
     {
       "ticker": "APP",
@@ -718,7 +796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4137619766540609,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1129.03,
+      "beats_hodl": false
     },
     {
       "ticker": "APTV",
@@ -736,7 +816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3957202635239765,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -35.63,
+      "beats_hodl": false
     },
     {
       "ticker": "ARE",
@@ -754,7 +836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38694874594034423,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -62.02,
+      "beats_hodl": true
     },
     {
       "ticker": "ARES",
@@ -772,7 +856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38990259494426754,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 5.63,
+      "beats_hodl": false
     },
     {
       "ticker": "ATO",
@@ -790,7 +876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3753666095900408,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 53.68,
+      "beats_hodl": false
     },
     {
       "ticker": "AVB",
@@ -808,7 +896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3713009330834186,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.06,
+      "beats_hodl": false
     },
     {
       "ticker": "AVGO",
@@ -826,7 +916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3946540297831892,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -62.35,
+      "beats_hodl": false
     },
     {
       "ticker": "AVY",
@@ -844,7 +936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38396561233406806,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -19.63,
+      "beats_hodl": false
     },
     {
       "ticker": "AWK",
@@ -862,7 +956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42163337522165717,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.57,
+      "beats_hodl": false
     },
     {
       "ticker": "AXON",
@@ -880,7 +976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4059371108061331,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.69,
+      "beats_hodl": false
     },
     {
       "ticker": "AXP",
@@ -898,7 +996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42041054580232984,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 67.66,
+      "beats_hodl": false
     },
     {
       "ticker": "AZO",
@@ -916,7 +1016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3925627413626065,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 31.43,
+      "beats_hodl": false
     },
     {
       "ticker": "BA",
@@ -934,7 +1036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4020553165619127,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.77,
+      "beats_hodl": false
     },
     {
       "ticker": "BAC",
@@ -952,7 +1056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3817951817670125,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 55.34,
+      "beats_hodl": false
     },
     {
       "ticker": "BALL",
@@ -970,7 +1076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4063724887742841,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.61,
+      "beats_hodl": true
     },
     {
       "ticker": "BAX",
@@ -988,7 +1096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36706955555919113,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -50.14,
+      "beats_hodl": false
     },
     {
       "ticker": "BBY",
@@ -1006,7 +1116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38923600951739373,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -20.78,
+      "beats_hodl": false
     },
     {
       "ticker": "BDX",
@@ -1024,7 +1136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3860438743306055,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -39.3,
+      "beats_hodl": false
     },
     {
       "ticker": "BEN",
@@ -1042,7 +1156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3749341953614426,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.0,
+      "beats_hodl": false
     },
     {
       "ticker": "BF.B",
@@ -1060,7 +1176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3744621875054867,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -54.01,
+      "beats_hodl": false
     },
     {
       "ticker": "BG",
@@ -1078,7 +1196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37918403798618355,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.59,
+      "beats_hodl": false
     },
     {
       "ticker": "BIIB",
@@ -1096,7 +1216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3507468906185406,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -24.73,
+      "beats_hodl": false
     },
     {
       "ticker": "BK",
@@ -1114,7 +1236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37966487060992476,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 163.77,
+      "beats_hodl": false
     },
     {
       "ticker": "BKNG",
@@ -1132,7 +1256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4151618684369689,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -95.42,
+      "beats_hodl": true
     },
     {
       "ticker": "BKR",
@@ -1150,7 +1276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3907474499575434,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 91.95,
+      "beats_hodl": false
     },
     {
       "ticker": "BLDR",
@@ -1168,7 +1296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42813593429938973,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -54.76,
+      "beats_hodl": true
     },
     {
       "ticker": "BLK",
@@ -1186,7 +1316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3694640557236864,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 33.46,
+      "beats_hodl": false
     },
     {
       "ticker": "BMY",
@@ -1204,7 +1336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37611518151298484,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 15.63,
+      "beats_hodl": false
     },
     {
       "ticker": "BR",
@@ -1222,7 +1356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37452358954158593,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -26.34,
+      "beats_hodl": false
     },
     {
       "ticker": "BRK.B",
@@ -1240,7 +1376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36582988645855496,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 37.16,
+      "beats_hodl": false
     },
     {
       "ticker": "BRO",
@@ -1258,7 +1396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38663181738191776,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.6,
+      "beats_hodl": false
     },
     {
       "ticker": "BSX",
@@ -1276,7 +1416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36918694207045044,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.35,
+      "beats_hodl": false
     },
     {
       "ticker": "BX",
@@ -1294,7 +1436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4303433890639866,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -8.68,
+      "beats_hodl": true
     },
     {
       "ticker": "BXP",
@@ -1312,7 +1456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38633935448248363,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.53,
+      "beats_hodl": false
     },
     {
       "ticker": "C",
@@ -1330,7 +1476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3863206223029752,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 144.41,
+      "beats_hodl": false
     },
     {
       "ticker": "CAG",
@@ -1348,7 +1496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3720633958871304,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -52.95,
+      "beats_hodl": false
     },
     {
       "ticker": "CAH",
@@ -1366,7 +1516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38181750157759353,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 99.32,
+      "beats_hodl": false
     },
     {
       "ticker": "CARR",
@@ -1384,7 +1536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39512801156309413,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 10.93,
+      "beats_hodl": false
     },
     {
       "ticker": "CASY",
@@ -1402,7 +1556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35830163291559924,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 201.72,
+      "beats_hodl": false
     },
     {
       "ticker": "CAT",
@@ -1420,7 +1576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40728590693492495,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 200.26,
+      "beats_hodl": false
     },
     {
       "ticker": "CB",
@@ -1438,7 +1596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36178691974707033,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 44.84,
+      "beats_hodl": false
     },
     {
       "ticker": "CBOE",
@@ -1456,7 +1616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3613922468615385,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 102.24,
+      "beats_hodl": false
     },
     {
       "ticker": "CBRE",
@@ -1474,7 +1636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3914359210515977,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 41.41,
+      "beats_hodl": false
     },
     {
       "ticker": "CCI",
@@ -1492,7 +1656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.382003135559174,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -20.14,
+      "beats_hodl": false
     },
     {
       "ticker": "CCL",
@@ -1510,7 +1676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4080107594436958,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 41.91,
+      "beats_hodl": false
     },
     {
       "ticker": "CDNS",
@@ -1528,7 +1696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4463482608686188,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 38.61,
+      "beats_hodl": false
     },
     {
       "ticker": "CDW",
@@ -1546,7 +1716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40623816040664906,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -51.01,
+      "beats_hodl": true
     },
     {
       "ticker": "CEG",
@@ -1564,7 +1736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3971990960712387,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 152.65,
+      "beats_hodl": false
     },
     {
       "ticker": "CF",
@@ -1582,7 +1756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3684630911370445,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 52.25,
+      "beats_hodl": false
     },
     {
       "ticker": "CFG",
@@ -1600,7 +1776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3766791742342027,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 92.18,
+      "beats_hodl": false
     },
     {
       "ticker": "CHD",
@@ -1618,7 +1796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4131439744707014,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1.98,
+      "beats_hodl": false
     },
     {
       "ticker": "CHRW",
@@ -1636,7 +1816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3968210050486821,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 101.59,
+      "beats_hodl": false
     },
     {
       "ticker": "CHTR",
@@ -1654,7 +1836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39221867547540845,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -62.46,
+      "beats_hodl": false
     },
     {
       "ticker": "CI",
@@ -1672,7 +1856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3834432085405117,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.57,
+      "beats_hodl": false
     },
     {
       "ticker": "CIEN",
@@ -1690,7 +1876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36881093840096024,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1210.69,
+      "beats_hodl": false
     },
     {
       "ticker": "CINF",
@@ -1708,7 +1896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37862099936518523,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 62.62,
+      "beats_hodl": false
     },
     {
       "ticker": "CL",
@@ -1726,7 +1916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3508632943685109,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.35,
+      "beats_hodl": false
     },
     {
       "ticker": "CLX",
@@ -1744,7 +1936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37550162949190435,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -32.98,
+      "beats_hodl": true
     },
     {
       "ticker": "CMCSA",
@@ -1762,7 +1956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3683718778729544,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -42.08,
+      "beats_hodl": false
     },
     {
       "ticker": "CME",
@@ -1780,7 +1976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3762676960502137,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 37.94,
+      "beats_hodl": false
     },
     {
       "ticker": "CMG",
@@ -1798,7 +1996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40233703879843963,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -98.56,
+      "beats_hodl": true
     },
     {
       "ticker": "CMI",
@@ -1816,7 +2016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37329566538436076,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 167.14,
+      "beats_hodl": false
     },
     {
       "ticker": "CMS",
@@ -1834,7 +2036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39468841749795014,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 28.87,
+      "beats_hodl": false
     },
     {
       "ticker": "CNC",
@@ -1852,7 +2056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38038430590493333,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -21.04,
+      "beats_hodl": false
     },
     {
       "ticker": "CNP",
@@ -1870,7 +2076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35961934201735146,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 50.14,
+      "beats_hodl": false
     },
     {
       "ticker": "COF",
@@ -1888,7 +2096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40287043643687737,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 43.92,
+      "beats_hodl": false
     },
     {
       "ticker": "COHR",
@@ -1906,7 +2116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3833740399879012,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 785.75,
+      "beats_hodl": false
     },
     {
       "ticker": "COIN",
@@ -1924,7 +2136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38795766099920587,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 4.51,
+      "beats_hodl": false
     },
     {
       "ticker": "COO",
@@ -1942,7 +2156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3703767655361366,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -83.28,
+      "beats_hodl": false
     },
     {
       "ticker": "COP",
@@ -1960,7 +2176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3783897344221412,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 2.83,
+      "beats_hodl": false
     },
     {
       "ticker": "COR",
@@ -1978,7 +2196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36827805889022047,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 34.36,
+      "beats_hodl": false
     },
     {
       "ticker": "COST",
@@ -1996,7 +2216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4370416643430335,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.39,
+      "beats_hodl": false
     },
     {
       "ticker": "CPAY",
@@ -2014,7 +2236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3861757166687419,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 23.66,
+      "beats_hodl": false
     },
     {
       "ticker": "CPB",
@@ -2032,7 +2256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.383643197609105,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -52.38,
+      "beats_hodl": true
     },
     {
       "ticker": "CPRT",
@@ -2050,7 +2276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42863191261052874,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -30.7,
+      "beats_hodl": true
     },
     {
       "ticker": "CPT",
@@ -2068,7 +2296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3662004106925818,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.44,
+      "beats_hodl": false
     },
     {
       "ticker": "CRH",
@@ -2086,7 +2316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3894558886150393,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 47.66,
+      "beats_hodl": false
     },
     {
       "ticker": "CRL",
@@ -2104,7 +2336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4106570934909242,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -31.68,
+      "beats_hodl": false
     },
     {
       "ticker": "CRM",
@@ -2122,7 +2356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.43646834619889474,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -30.81,
+      "beats_hodl": true
     },
     {
       "ticker": "CRWD",
@@ -2140,7 +2376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.44457607549402983,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 163.44,
+      "beats_hodl": false
     },
     {
       "ticker": "CSCO",
@@ -2158,7 +2396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3728209235688834,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 138.99,
+      "beats_hodl": false
     },
     {
       "ticker": "CSGP",
@@ -2176,7 +2416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39686060665797385,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -60.97,
+      "beats_hodl": false
     },
     {
       "ticker": "CSX",
@@ -2194,7 +2436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3712889071784845,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 31.76,
+      "beats_hodl": false
     },
     {
       "ticker": "CTAS",
@@ -2212,7 +2456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42661971523728726,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -71.22,
+      "beats_hodl": true
     },
     {
       "ticker": "CTSH",
@@ -2230,7 +2476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3722605039516352,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -30.18,
+      "beats_hodl": false
     },
     {
       "ticker": "CTVA",
@@ -2248,7 +2496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37567720631606,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 66.72,
+      "beats_hodl": false
     },
     {
       "ticker": "CVNA",
@@ -2266,7 +2516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39958797770922505,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 31.28,
+      "beats_hodl": false
     },
     {
       "ticker": "CVS",
@@ -2284,7 +2536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3798855375183439,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 18.48,
+      "beats_hodl": false
     },
     {
       "ticker": "CVX",
@@ -2302,7 +2556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3713870107388518,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.38,
+      "beats_hodl": false
     },
     {
       "ticker": "D",
@@ -2320,7 +2576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3797077051106103,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 44.52,
+      "beats_hodl": false
     },
     {
       "ticker": "DAL",
@@ -2338,7 +2596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38094687520822795,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 91.43,
+      "beats_hodl": false
     },
     {
       "ticker": "DASH",
@@ -2356,7 +2616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3854638661120992,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 64.11,
+      "beats_hodl": false
     },
     {
       "ticker": "DD",
@@ -2374,7 +2636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37039151645214596,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -37.1,
+      "beats_hodl": false
     },
     {
       "ticker": "DDOG",
@@ -2392,7 +2656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3743687069713191,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 86.77,
+      "beats_hodl": false
     },
     {
       "ticker": "DE",
@@ -2410,7 +2676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3896421986435322,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.86,
+      "beats_hodl": false
     },
     {
       "ticker": "DECK",
@@ -2428,7 +2696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38312653130548596,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -83.96,
+      "beats_hodl": false
     },
     {
       "ticker": "DELL",
@@ -2446,7 +2716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.44436518847378925,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 291.25,
+      "beats_hodl": false
     },
     {
       "ticker": "DG",
@@ -2464,7 +2736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37728007128212104,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -22.5,
+      "beats_hodl": false
     },
     {
       "ticker": "DGX",
@@ -2482,7 +2756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35650241089449075,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 41.24,
+      "beats_hodl": false
     },
     {
       "ticker": "DHI",
@@ -2500,7 +2776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3818759456234584,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.26,
+      "beats_hodl": false
     },
     {
       "ticker": "DHR",
@@ -2518,7 +2796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3775927384522607,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -25.18,
+      "beats_hodl": false
     },
     {
       "ticker": "DIS",
@@ -2536,7 +2816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.371814775415823,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.83,
+      "beats_hodl": false
     },
     {
       "ticker": "DLR",
@@ -2554,7 +2836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39114298294493,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 43.56,
+      "beats_hodl": false
     },
     {
       "ticker": "DLTR",
@@ -2572,7 +2856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3827403345769902,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -33.21,
+      "beats_hodl": false
     },
     {
       "ticker": "DOC",
@@ -2590,7 +2876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3875560490331363,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.28,
+      "beats_hodl": false
     },
     {
       "ticker": "DOV",
@@ -2608,7 +2896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40455279973857816,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 36.97,
+      "beats_hodl": false
     },
     {
       "ticker": "DOW",
@@ -2626,7 +2916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37599241347268714,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -34.24,
+      "beats_hodl": false
     },
     {
       "ticker": "DPZ",
@@ -2644,7 +2936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3876786570710005,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -22.61,
+      "beats_hodl": true
     },
     {
       "ticker": "DRI",
@@ -2662,7 +2956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40001776169122716,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 23.87,
+      "beats_hodl": false
     },
     {
       "ticker": "DTE",
@@ -2680,7 +2976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37364628752510687,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.3,
+      "beats_hodl": false
     },
     {
       "ticker": "DUK",
@@ -2698,7 +2996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3855375297760022,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 30.18,
+      "beats_hodl": false
     },
     {
       "ticker": "DVA",
@@ -2716,7 +3016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38996280804298267,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 89.46,
+      "beats_hodl": false
     },
     {
       "ticker": "DVN",
@@ -2734,7 +3036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4003495976270066,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 3.28,
+      "beats_hodl": false
     },
     {
       "ticker": "DXCM",
@@ -2752,7 +3056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39930474560693285,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -41.68,
+      "beats_hodl": false
     },
     {
       "ticker": "EA",
@@ -2770,7 +3076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3708069621608843,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 47.93,
+      "beats_hodl": false
     },
     {
       "ticker": "EBAY",
@@ -2788,7 +3096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3757685913182286,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 167.57,
+      "beats_hodl": false
     },
     {
       "ticker": "ECL",
@@ -2806,7 +3116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37985672099930007,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 28.94,
+      "beats_hodl": false
     },
     {
       "ticker": "ED",
@@ -2824,7 +3136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37980789020067596,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.65,
+      "beats_hodl": false
     },
     {
       "ticker": "EFX",
@@ -2842,7 +3156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4153187805807446,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -32.84,
+      "beats_hodl": true
     },
     {
       "ticker": "EG",
@@ -2860,7 +3176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36814581566976506,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.65,
+      "beats_hodl": false
     },
     {
       "ticker": "EIX",
@@ -2878,7 +3196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4082381236360102,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.1,
+      "beats_hodl": false
     },
     {
       "ticker": "EL",
@@ -2896,7 +3216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3907765003455125,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -38.61,
+      "beats_hodl": false
     },
     {
       "ticker": "ELV",
@@ -2914,7 +3236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3977161620639043,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -16.3,
+      "beats_hodl": true
     },
     {
       "ticker": "EME",
@@ -2932,7 +3256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3536817695275388,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 297.28,
+      "beats_hodl": false
     },
     {
       "ticker": "EMR",
@@ -2950,7 +3276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3624229496040843,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 42.51,
+      "beats_hodl": false
     },
     {
       "ticker": "EOG",
@@ -2968,7 +3296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39486073619016526,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 15.56,
+      "beats_hodl": false
     },
     {
       "ticker": "EPAM",
@@ -2986,7 +3316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4409563086277705,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -65.19,
+      "beats_hodl": true
     },
     {
       "ticker": "EQIX",
@@ -3004,7 +3336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38927020937874823,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 34.63,
+      "beats_hodl": false
     },
     {
       "ticker": "EQR",
@@ -3022,7 +3356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37537243919268115,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.61,
+      "beats_hodl": false
     },
     {
       "ticker": "EQT",
@@ -3040,7 +3376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38675256785652967,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 48.07,
+      "beats_hodl": false
     },
     {
       "ticker": "ERIE",
@@ -3058,7 +3396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3814013725856252,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -32.5,
+      "beats_hodl": false
     },
     {
       "ticker": "ES",
@@ -3076,7 +3416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4252192572036931,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.3,
+      "beats_hodl": false
     },
     {
       "ticker": "ESS",
@@ -3094,7 +3436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3723336746575924,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 11.49,
+      "beats_hodl": false
     },
     {
       "ticker": "ETN",
@@ -3112,7 +3456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3952159323384876,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 63.84,
+      "beats_hodl": false
     },
     {
       "ticker": "ETR",
@@ -3130,7 +3476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.383690242295792,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 11.58,
+      "beats_hodl": false
     },
     {
       "ticker": "EVRG",
@@ -3148,7 +3496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3737685499478673,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 60.36,
+      "beats_hodl": false
     },
     {
       "ticker": "EW",
@@ -3166,7 +3516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39247500200213886,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 13.33,
+      "beats_hodl": false
     },
     {
       "ticker": "EXC",
@@ -3184,7 +3536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4014370245522566,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 29.68,
+      "beats_hodl": false
     },
     {
       "ticker": "EXE",
@@ -3202,7 +3556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40256393902713467,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 25.84,
+      "beats_hodl": false
     },
     {
       "ticker": "EXPD",
@@ -3220,7 +3576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41746228057201373,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 25.47,
+      "beats_hodl": false
     },
     {
       "ticker": "EXPE",
@@ -3238,7 +3596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38729077245958443,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 41.27,
+      "beats_hodl": false
     },
     {
       "ticker": "EXR",
@@ -3256,7 +3616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3847942061284598,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.4,
+      "beats_hodl": false
     },
     {
       "ticker": "F",
@@ -3274,7 +3636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39740673952569494,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 24.02,
+      "beats_hodl": false
     },
     {
       "ticker": "FANG",
@@ -3292,7 +3656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3874923906497041,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 28.48,
+      "beats_hodl": false
     },
     {
       "ticker": "FAST",
@@ -3310,7 +3676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4159801482047637,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -32.03,
+      "beats_hodl": true
     },
     {
       "ticker": "FCX",
@@ -3328,7 +3696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37524426695482793,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 47.85,
+      "beats_hodl": false
     },
     {
       "ticker": "FDS",
@@ -3346,7 +3716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42983685206205385,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -50.03,
+      "beats_hodl": true
     },
     {
       "ticker": "FDX",
@@ -3364,7 +3736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3965629616581128,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.61,
+      "beats_hodl": false
     },
     {
       "ticker": "FE",
@@ -3382,7 +3756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3755733991446443,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 26.95,
+      "beats_hodl": false
     },
     {
       "ticker": "FFIV",
@@ -3400,7 +3776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3926212470778974,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 120.98,
+      "beats_hodl": false
     },
     {
       "ticker": "FICO",
@@ -3418,7 +3796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3873284879804777,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.58,
+      "beats_hodl": false
     },
     {
       "ticker": "FIS",
@@ -3436,7 +3816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3650082947754998,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -27.17,
+      "beats_hodl": false
     },
     {
       "ticker": "FISV",
@@ -3454,7 +3836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3911879277814895,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -56.84,
+      "beats_hodl": false
     },
     {
       "ticker": "FITB",
@@ -3472,7 +3856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37294943332232633,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 45.2,
+      "beats_hodl": false
     },
     {
       "ticker": "FIX",
@@ -3490,7 +3876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3719081755727635,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 794.54,
+      "beats_hodl": false
     },
     {
       "ticker": "FOX",
@@ -3508,7 +3896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38116434868451177,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 106.12,
+      "beats_hodl": false
     },
     {
       "ticker": "FOXA",
@@ -3526,7 +3916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.397338681412043,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 115.42,
+      "beats_hodl": false
     },
     {
       "ticker": "FRT",
@@ -3544,7 +3936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3781238601676121,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 16.67,
+      "beats_hodl": false
     },
     {
       "ticker": "FSLR",
@@ -3562,7 +3956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.376866560490528,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.52,
+      "beats_hodl": false
     },
     {
       "ticker": "FTNT",
@@ -3580,7 +3976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42226996221498914,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 130.09,
+      "beats_hodl": false
     },
     {
       "ticker": "FTV",
@@ -3598,7 +3996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3993606399542505,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.44,
+      "beats_hodl": true
     },
     {
       "ticker": "GD",
@@ -3616,7 +4016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3733391161263241,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.1,
+      "beats_hodl": false
     },
     {
       "ticker": "GDDY",
@@ -3634,7 +4036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38960398020159526,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.05,
+      "beats_hodl": false
     },
     {
       "ticker": "GE",
@@ -3652,7 +4056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3952837630974014,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 138.39,
+      "beats_hodl": false
     },
     {
       "ticker": "GEHC",
@@ -3670,7 +4076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4035635707034856,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -16.29,
+      "beats_hodl": false
     },
     {
       "ticker": "GEN",
@@ -3688,7 +4096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.399602804409003,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 9.26,
+      "beats_hodl": false
     },
     {
       "ticker": "GILD",
@@ -3706,7 +4116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3557705739971345,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 65.92,
+      "beats_hodl": false
     },
     {
       "ticker": "GIS",
@@ -3724,7 +4136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41470223246701693,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -48.15,
+      "beats_hodl": true
     },
     {
       "ticker": "GL",
@@ -3742,7 +4156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.362942273012667,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 28.22,
+      "beats_hodl": false
     },
     {
       "ticker": "GLW",
@@ -3760,7 +4176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3658484602365741,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 548.76,
+      "beats_hodl": false
     },
     {
       "ticker": "GM",
@@ -3778,7 +4196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4004312363029462,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 121.21,
+      "beats_hodl": false
     },
     {
       "ticker": "GNRC",
@@ -3796,7 +4216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3913185119804199,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 112.16,
+      "beats_hodl": false
     },
     {
       "ticker": "GOOG",
@@ -3814,7 +4236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42999117987333124,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 171.8,
+      "beats_hodl": false
     },
     {
       "ticker": "GOOGL",
@@ -3832,7 +4256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41317778973238123,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 176.71,
+      "beats_hodl": false
     },
     {
       "ticker": "GPC",
@@ -3850,7 +4276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37408296713261663,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -29.17,
+      "beats_hodl": false
     },
     {
       "ticker": "GPN",
@@ -3868,7 +4296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3852132933287814,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -41.97,
+      "beats_hodl": false
     },
     {
       "ticker": "GRMN",
@@ -3886,7 +4316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3894751099206587,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 88.31,
+      "beats_hodl": false
     },
     {
       "ticker": "GS",
@@ -3904,7 +4336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4082177236295953,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 160.3,
+      "beats_hodl": false
     },
     {
       "ticker": "GWW",
@@ -3922,7 +4356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3717010043454121,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.96,
+      "beats_hodl": false
     },
     {
       "ticker": "HAL",
@@ -3940,7 +4376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38126174530724694,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 13.78,
+      "beats_hodl": false
     },
     {
       "ticker": "HAS",
@@ -3958,7 +4396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39209734398535234,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 75.37,
+      "beats_hodl": false
     },
     {
       "ticker": "HBAN",
@@ -3976,7 +4416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3695291929719706,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 25.53,
+      "beats_hodl": false
     },
     {
       "ticker": "HCA",
@@ -3994,7 +4436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3967021914878561,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 46.22,
+      "beats_hodl": false
     },
     {
       "ticker": "HD",
@@ -4012,7 +4456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3937149078425091,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -9.17,
+      "beats_hodl": false
     },
     {
       "ticker": "HIG",
@@ -4030,7 +4476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3610247062633437,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 68.71,
+      "beats_hodl": false
     },
     {
       "ticker": "HII",
@@ -4048,7 +4496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37351249702652234,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 23.7,
+      "beats_hodl": false
     },
     {
       "ticker": "HLT",
@@ -4066,7 +4516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41712491595846624,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 77.08,
+      "beats_hodl": false
     },
     {
       "ticker": "HON",
@@ -4084,7 +4536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37399130591385127,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 9.21,
+      "beats_hodl": false
     },
     {
       "ticker": "HOOD",
@@ -4102,7 +4556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3994995628842702,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 477.49,
+      "beats_hodl": false
     },
     {
       "ticker": "HPE",
@@ -4120,7 +4576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38468176459873615,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 122.47,
+      "beats_hodl": false
     },
     {
       "ticker": "HPQ",
@@ -4138,7 +4596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4277944609905997,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -15.41,
+      "beats_hodl": true
     },
     {
       "ticker": "HRL",
@@ -4156,7 +4616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3673084834987823,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -33.78,
+      "beats_hodl": false
     },
     {
       "ticker": "HSIC",
@@ -4174,7 +4636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4180968146877466,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -1.37,
+      "beats_hodl": false
     },
     {
       "ticker": "HST",
@@ -4192,7 +4656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38740129968006554,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 12.55,
+      "beats_hodl": false
     },
     {
       "ticker": "HSY",
@@ -4210,7 +4676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36275565496164486,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 4.71,
+      "beats_hodl": false
     },
     {
       "ticker": "HUBB",
@@ -4228,7 +4696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37747509061922163,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 45.22,
+      "beats_hodl": false
     },
     {
       "ticker": "HUM",
@@ -4246,7 +4716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40333335994890446,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -33.07,
+      "beats_hodl": true
     },
     {
       "ticker": "HWM",
@@ -4264,7 +4736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3562117710968673,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 376.45,
+      "beats_hodl": false
     },
     {
       "ticker": "IBKR",
@@ -4282,7 +4756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3926677926806124,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -1.94,
+      "beats_hodl": false
     },
     {
       "ticker": "IBM",
@@ -4300,7 +4776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3731604799200814,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 55.9,
+      "beats_hodl": false
     },
     {
       "ticker": "ICE",
@@ -4318,7 +4796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3822452098102256,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.49,
+      "beats_hodl": false
     },
     {
       "ticker": "IDXX",
@@ -4336,7 +4816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3970998591563796,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 2.01,
+      "beats_hodl": false
     },
     {
       "ticker": "IEX",
@@ -4354,7 +4836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3665280850906857,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -2.93,
+      "beats_hodl": true
     },
     {
       "ticker": "IFF",
@@ -4372,7 +4856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.379438392464828,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -6.3,
+      "beats_hodl": false
     },
     {
       "ticker": "INCY",
@@ -4390,7 +4876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38246704248048224,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 55.25,
+      "beats_hodl": false
     },
     {
       "ticker": "INTC",
@@ -4408,7 +4896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37057115576668376,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 143.55,
+      "beats_hodl": false
     },
     {
       "ticker": "INTU",
@@ -4426,7 +4916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41671576860696824,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -48.56,
+      "beats_hodl": true
     },
     {
       "ticker": "INVH",
@@ -4444,7 +4936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3778842451038709,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.52,
+      "beats_hodl": false
     },
     {
       "ticker": "IP",
@@ -4462,7 +4956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37115738558584643,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -13.68,
+      "beats_hodl": false
     },
     {
       "ticker": "IQV",
@@ -4480,7 +4976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40765101928215663,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -26.89,
+      "beats_hodl": true
     },
     {
       "ticker": "IR",
@@ -4498,7 +4996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4219181130370826,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -7.92,
+      "beats_hodl": true
     },
     {
       "ticker": "IRM",
@@ -4516,7 +5016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41085120823534943,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 80.71,
+      "beats_hodl": false
     },
     {
       "ticker": "ISRG",
@@ -4534,7 +5036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4226646443965035,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 31.67,
+      "beats_hodl": false
     },
     {
       "ticker": "IT",
@@ -4552,7 +5056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37999156877318113,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -64.2,
+      "beats_hodl": false
     },
     {
       "ticker": "ITW",
@@ -4570,7 +5076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3561525389680742,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -3.72,
+      "beats_hodl": false
     },
     {
       "ticker": "IVZ",
@@ -4588,7 +5096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36661825110413027,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 52.68,
+      "beats_hodl": false
     },
     {
       "ticker": "J",
@@ -4606,7 +5116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3963226779274326,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -11.12,
+      "beats_hodl": true
     },
     {
       "ticker": "JBHT",
@@ -4624,7 +5136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3779984405992243,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 29.62,
+      "beats_hodl": false
     },
     {
       "ticker": "JBL",
@@ -4642,7 +5156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37800528682947687,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 189.23,
+      "beats_hodl": false
     },
     {
       "ticker": "JCI",
@@ -4660,7 +5176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3601906969824755,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 140.09,
+      "beats_hodl": false
     },
     {
       "ticker": "JKHY",
@@ -4678,7 +5196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.369142726364264,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.09,
+      "beats_hodl": false
     },
     {
       "ticker": "JNJ",
@@ -4696,7 +5216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37610370295233353,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 49.53,
+      "beats_hodl": false
     },
     {
       "ticker": "JPM",
@@ -4714,7 +5236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.380377023778535,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 81.28,
+      "beats_hodl": false
     },
     {
       "ticker": "KDP",
@@ -4732,7 +5256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37384001773803965,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -12.63,
+      "beats_hodl": false
     },
     {
       "ticker": "KEY",
@@ -4750,7 +5276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37417773140225785,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.47,
+      "beats_hodl": false
     },
     {
       "ticker": "KEYS",
@@ -4768,7 +5296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42165645430186766,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 120.17,
+      "beats_hodl": false
     },
     {
       "ticker": "KHC",
@@ -4786,7 +5316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36745775245688694,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -35.6,
+      "beats_hodl": false
     },
     {
       "ticker": "KIM",
@@ -4804,7 +5336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3929667803701824,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 13.72,
+      "beats_hodl": false
     },
     {
       "ticker": "KKR",
@@ -4822,7 +5356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4342331492880333,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.66,
+      "beats_hodl": false
     },
     {
       "ticker": "KLAC",
@@ -4840,7 +5376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41831813282220365,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 229.6,
+      "beats_hodl": false
     },
     {
       "ticker": "KMB",
@@ -4858,7 +5396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35671143366451047,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.06,
+      "beats_hodl": false
     },
     {
       "ticker": "KMI",
@@ -4876,7 +5416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3783803963600345,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 90.69,
+      "beats_hodl": false
     },
     {
       "ticker": "KO",
@@ -4894,7 +5436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36339238140621477,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 38.85,
+      "beats_hodl": false
     },
     {
       "ticker": "KR",
@@ -4912,7 +5456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36152653202952234,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 47.34,
+      "beats_hodl": false
     },
     {
       "ticker": "KVUE",
@@ -4930,7 +5476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.32171777799627543,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.43,
+      "beats_hodl": false
     },
     {
       "ticker": "L",
@@ -4948,7 +5496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36745768039805926,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.31,
+      "beats_hodl": false
     },
     {
       "ticker": "LDOS",
@@ -4966,7 +5516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36497385416631156,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 17.43,
+      "beats_hodl": false
     },
     {
       "ticker": "LEN",
@@ -4984,7 +5536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3760373129647246,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -39.91,
+      "beats_hodl": false
     },
     {
       "ticker": "LH",
@@ -5002,7 +5556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35837332750921846,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.77,
+      "beats_hodl": false
     },
     {
       "ticker": "LHX",
@@ -5020,7 +5576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39848393961017925,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 48.66,
+      "beats_hodl": false
     },
     {
       "ticker": "LII",
@@ -5038,7 +5596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37605451649027016,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 9.5,
+      "beats_hodl": false
     },
     {
       "ticker": "LIN",
@@ -5056,7 +5616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3723942428179761,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 26.64,
+      "beats_hodl": false
     },
     {
       "ticker": "LITE",
@@ -5074,7 +5636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39446817637613973,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1721.02,
+      "beats_hodl": false
     },
     {
       "ticker": "LLY",
@@ -5092,7 +5656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4149719581136196,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 83.78,
+      "beats_hodl": false
     },
     {
       "ticker": "LMT",
@@ -5110,7 +5676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3864736165052911,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 17.44,
+      "beats_hodl": false
     },
     {
       "ticker": "LNT",
@@ -5128,7 +5696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38757371066144763,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 45.84,
+      "beats_hodl": false
     },
     {
       "ticker": "LOW",
@@ -5146,7 +5716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4081025272281152,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -2.26,
+      "beats_hodl": true
     },
     {
       "ticker": "LRCX",
@@ -5164,7 +5736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3956192656477757,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -60.18,
+      "beats_hodl": true
     },
     {
       "ticker": "LULU",
@@ -5182,7 +5756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.44905434280727524,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -74.94,
+      "beats_hodl": true
     },
     {
       "ticker": "LUV",
@@ -5200,7 +5776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3883391792218405,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 43.84,
+      "beats_hodl": false
     },
     {
       "ticker": "LVS",
@@ -5218,7 +5796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39352700311763283,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.98,
+      "beats_hodl": false
     },
     {
       "ticker": "LYB",
@@ -5236,7 +5816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38664359624583844,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -26.4,
+      "beats_hodl": false
     },
     {
       "ticker": "LYV",
@@ -5254,7 +5836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3655393487433251,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 78.46,
+      "beats_hodl": false
     },
     {
       "ticker": "MA",
@@ -5272,7 +5856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.381745704848072,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 17.55,
+      "beats_hodl": false
     },
     {
       "ticker": "MAA",
@@ -5290,7 +5876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3622457010173323,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -1.79,
+      "beats_hodl": false
     },
     {
       "ticker": "MAR",
@@ -5308,7 +5896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42962766243264827,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 63.9,
+      "beats_hodl": false
     },
     {
       "ticker": "MAS",
@@ -5326,7 +5916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39666211065837675,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1.4,
+      "beats_hodl": false
     },
     {
       "ticker": "MCD",
@@ -5344,7 +5936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.397497010378838,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.33,
+      "beats_hodl": true
     },
     {
       "ticker": "MCHP",
@@ -5362,7 +5956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39056630618336907,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 4.57,
+      "beats_hodl": true
     },
     {
       "ticker": "MCK",
@@ -5380,7 +5976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3740797271204387,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 65.6,
+      "beats_hodl": false
     },
     {
       "ticker": "MCO",
@@ -5398,7 +5996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4463038842394984,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 16.39,
+      "beats_hodl": false
     },
     {
       "ticker": "MDLZ",
@@ -5416,7 +6016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36074794735665683,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.75,
+      "beats_hodl": false
     },
     {
       "ticker": "MDT",
@@ -5434,7 +6036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39765221442609794,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.5,
+      "beats_hodl": true
     },
     {
       "ticker": "MET",
@@ -5452,7 +6056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36162737201417805,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.0,
+      "beats_hodl": false
     },
     {
       "ticker": "META",
@@ -5470,7 +6076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37337075183143487,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 74.05,
+      "beats_hodl": false
     },
     {
       "ticker": "MGM",
@@ -5488,7 +6096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4168495759452888,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -13.32,
+      "beats_hodl": false
     },
     {
       "ticker": "MKC",
@@ -5506,7 +6116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3817142899275115,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -29.89,
+      "beats_hodl": false
     },
     {
       "ticker": "MLM",
@@ -5524,7 +6136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3628254952463078,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.62,
+      "beats_hodl": false
     },
     {
       "ticker": "MMM",
@@ -5542,7 +6156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3789461362036498,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 40.49,
+      "beats_hodl": false
     },
     {
       "ticker": "MNST",
@@ -5560,7 +6176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36764169652834616,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 50.97,
+      "beats_hodl": false
     },
     {
       "ticker": "MO",
@@ -5578,7 +6196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3911581319616423,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 83.4,
+      "beats_hodl": false
     },
     {
       "ticker": "MOS",
@@ -5596,7 +6216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37482542162110216,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -36.47,
+      "beats_hodl": false
     },
     {
       "ticker": "MPC",
@@ -5614,7 +6236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3986897295965276,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 70.84,
+      "beats_hodl": false
     },
     {
       "ticker": "MPWR",
@@ -5632,7 +6256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42802941894837954,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 156.28,
+      "beats_hodl": false
     },
     {
       "ticker": "MRK",
@@ -5650,7 +6276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38014095406156634,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 12.51,
+      "beats_hodl": false
     },
     {
       "ticker": "MRNA",
@@ -5668,7 +6296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3998693871000055,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -52.51,
+      "beats_hodl": false
     },
     {
       "ticker": "MRSH",
@@ -5686,7 +6316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38158868746636715,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -13.32,
+      "beats_hodl": false
     },
     {
       "ticker": "MS",
@@ -5704,7 +6336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3854632373223079,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 117.79,
+      "beats_hodl": false
     },
     {
       "ticker": "MSCI",
@@ -5722,7 +6356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4233386887507655,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 5.1,
+      "beats_hodl": false
     },
     {
       "ticker": "MSFT",
@@ -5740,7 +6376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3817148138320663,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 12.04,
+      "beats_hodl": false
     },
     {
       "ticker": "MSI",
@@ -5758,7 +6396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40190557677448574,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 28.84,
+      "beats_hodl": false
     },
     {
       "ticker": "MTB",
@@ -5776,7 +6416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3478464244094,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.13,
+      "beats_hodl": false
     },
     {
       "ticker": "MTD",
@@ -5794,7 +6436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4116344079339856,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -8.1,
+      "beats_hodl": true
     },
     {
       "ticker": "MU",
@@ -5812,7 +6456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4034802975832799,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 793.58,
+      "beats_hodl": false
     },
     {
       "ticker": "NCLH",
@@ -5830,7 +6476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4125576122152297,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -17.63,
+      "beats_hodl": false
     },
     {
       "ticker": "NDAQ",
@@ -5848,7 +6496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4174457412820784,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.93,
+      "beats_hodl": false
     },
     {
       "ticker": "NDSN",
@@ -5866,7 +6516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3879659451501907,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 10.63,
+      "beats_hodl": false
     },
     {
       "ticker": "NEE",
@@ -5884,7 +6536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.392510470762522,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 46.71,
+      "beats_hodl": false
     },
     {
       "ticker": "NEM",
@@ -5902,7 +6556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3908827704644201,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 160.54,
+      "beats_hodl": false
     },
     {
       "ticker": "NFLX",
@@ -5920,7 +6576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4109420872019085,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -81.65,
+      "beats_hodl": true
     },
     {
       "ticker": "NI",
@@ -5938,7 +6596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3799210689027557,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 81.09,
+      "beats_hodl": false
     },
     {
       "ticker": "NKE",
@@ -5956,7 +6616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40122975097493874,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -58.58,
+      "beats_hodl": false
     },
     {
       "ticker": "NOC",
@@ -5974,7 +6636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35692228979642804,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 18.41,
+      "beats_hodl": false
     },
     {
       "ticker": "NOW",
@@ -5992,7 +6656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4274589874326282,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -85.35,
+      "beats_hodl": true
     },
     {
       "ticker": "NRG",
@@ -6010,7 +6676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37866905383005167,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 167.42,
+      "beats_hodl": false
     },
     {
       "ticker": "NSC",
@@ -6028,7 +6696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41711544095843234,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 33.51,
+      "beats_hodl": false
     },
     {
       "ticker": "NTAP",
@@ -6046,7 +6716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3934372426755831,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 59.72,
+      "beats_hodl": false
     },
     {
       "ticker": "NTRS",
@@ -6064,7 +6736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37264963974904297,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 99.58,
+      "beats_hodl": false
     },
     {
       "ticker": "NUE",
@@ -6082,7 +6756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3810248758364061,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 33.63,
+      "beats_hodl": false
     },
     {
       "ticker": "NVDA",
@@ -6100,7 +6776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39959238147831166,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -56.34,
+      "beats_hodl": false
     },
     {
       "ticker": "NVR",
@@ -6118,7 +6796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4164953457198093,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -12.52,
+      "beats_hodl": true
     },
     {
       "ticker": "NWS",
@@ -6136,7 +6816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3863338663931477,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 15.67,
+      "beats_hodl": false
     },
     {
       "ticker": "NWSA",
@@ -6154,7 +6836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.377669098582954,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.24,
+      "beats_hodl": false
     },
     {
       "ticker": "NXPI",
@@ -6172,7 +6856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.390250799418376,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 39.6,
+      "beats_hodl": false
     },
     {
       "ticker": "O",
@@ -6190,7 +6876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37063446230328956,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.62,
+      "beats_hodl": false
     },
     {
       "ticker": "ODFL",
@@ -6208,7 +6896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4142805076188868,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -47.84,
+      "beats_hodl": true
     },
     {
       "ticker": "OKE",
@@ -6226,7 +6916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42537039525229603,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 33.29,
+      "beats_hodl": false
     },
     {
       "ticker": "OMC",
@@ -6244,7 +6936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3519556042510719,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -13.11,
+      "beats_hodl": false
     },
     {
       "ticker": "ON",
@@ -6262,7 +6956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4101311996762982,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 41.52,
+      "beats_hodl": false
     },
     {
       "ticker": "ORCL",
@@ -6280,7 +6976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38144227702306394,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 83.67,
+      "beats_hodl": false
     },
     {
       "ticker": "ORLY",
@@ -6298,7 +6996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3735459575253513,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -90.33,
+      "beats_hodl": false
     },
     {
       "ticker": "OTIS",
@@ -6316,7 +7016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36864374787599236,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.0,
+      "beats_hodl": false
     },
     {
       "ticker": "OXY",
@@ -6334,7 +7036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37838433526357146,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -2.62,
+      "beats_hodl": false
     },
     {
       "ticker": "PANW",
@@ -6352,7 +7056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39079068844737275,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.58,
+      "beats_hodl": false
     },
     {
       "ticker": "PAYX",
@@ -6370,7 +7076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3888820523723235,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.55,
+      "beats_hodl": true
     },
     {
       "ticker": "PCAR",
@@ -6388,7 +7096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3777378474002028,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 12.18,
+      "beats_hodl": false
     },
     {
       "ticker": "PCG",
@@ -6406,7 +7116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.394711079957952,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -8.03,
+      "beats_hodl": false
     },
     {
       "ticker": "PEG",
@@ -6424,7 +7136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4182359034490988,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 30.64,
+      "beats_hodl": false
     },
     {
       "ticker": "PEP",
@@ -6442,7 +7156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38298179395726173,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -11.31,
+      "beats_hodl": true
     },
     {
       "ticker": "PFE",
@@ -6460,7 +7176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37010538908217616,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.07,
+      "beats_hodl": false
     },
     {
       "ticker": "PFG",
@@ -6478,7 +7196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39075341655576956,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.37,
+      "beats_hodl": false
     },
     {
       "ticker": "PG",
@@ -6496,7 +7216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40359855249108006,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -1.07,
+      "beats_hodl": false
     },
     {
       "ticker": "PGR",
@@ -6514,7 +7236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40967909460755125,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 24.86,
+      "beats_hodl": false
     },
     {
       "ticker": "PH",
@@ -6532,7 +7256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38539731515595127,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 89.01,
+      "beats_hodl": false
     },
     {
       "ticker": "PHM",
@@ -6550,7 +7276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38475055468583724,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.32,
+      "beats_hodl": false
     },
     {
       "ticker": "PKG",
@@ -6568,7 +7296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3597678923066987,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.5,
+      "beats_hodl": false
     },
     {
       "ticker": "PLD",
@@ -6586,7 +7316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42425249976197077,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 9.84,
+      "beats_hodl": false
     },
     {
       "ticker": "PLTR",
@@ -6604,7 +7336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42223988107982624,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 708.03,
+      "beats_hodl": false
     },
     {
       "ticker": "PM",
@@ -6622,7 +7356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4148077971381009,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 101.52,
+      "beats_hodl": false
     },
     {
       "ticker": "PNC",
@@ -6640,7 +7376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3841096033970239,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 42.41,
+      "beats_hodl": false
     },
     {
       "ticker": "PNR",
@@ -6658,7 +7396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3722104103498385,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 2.92,
+      "beats_hodl": false
     },
     {
       "ticker": "PNW",
@@ -6676,7 +7416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38498996171523925,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 42.97,
+      "beats_hodl": false
     },
     {
       "ticker": "PODD",
@@ -6694,7 +7436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4235849678428604,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -27.67,
+      "beats_hodl": true
     },
     {
       "ticker": "POOL",
@@ -6712,7 +7456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3795066755026551,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -53.14,
+      "beats_hodl": false
     },
     {
       "ticker": "PPG",
@@ -6730,7 +7476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3723723210636078,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -27.06,
+      "beats_hodl": false
     },
     {
       "ticker": "PPL",
@@ -6748,7 +7496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36740856359046625,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 34.56,
+      "beats_hodl": false
     },
     {
       "ticker": "PRU",
@@ -6766,7 +7516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38086534847685416,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.62,
+      "beats_hodl": false
     },
     {
       "ticker": "PSA",
@@ -6784,7 +7536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38984782119191586,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 0.39,
+      "beats_hodl": false
     },
     {
       "ticker": "PSX",
@@ -6802,7 +7556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39268869737214346,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 33.09,
+      "beats_hodl": false
     },
     {
       "ticker": "PTC",
@@ -6820,7 +7576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.44644425259250975,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -14.79,
+      "beats_hodl": true
     },
     {
       "ticker": "PWR",
@@ -6838,7 +7596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4078955933477525,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 238.79,
+      "beats_hodl": false
     },
     {
       "ticker": "PYPL",
@@ -6856,7 +7616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3911252152753373,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -27.57,
+      "beats_hodl": false
     },
     {
       "ticker": "QCOM",
@@ -6874,7 +7636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3855359504486181,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 67.5,
+      "beats_hodl": false
     },
     {
       "ticker": "RCL",
@@ -6892,7 +7656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3954119990028997,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 100.35,
+      "beats_hodl": false
     },
     {
       "ticker": "REG",
@@ -6910,7 +7676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3811295461026495,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 17.9,
+      "beats_hodl": false
     },
     {
       "ticker": "REGN",
@@ -6928,7 +7696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3679179029726209,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -26.66,
+      "beats_hodl": false
     },
     {
       "ticker": "RF",
@@ -6946,7 +7716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37414243359521693,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 45.38,
+      "beats_hodl": false
     },
     {
       "ticker": "RJF",
@@ -6964,7 +7736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4259891176171211,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 36.3,
+      "beats_hodl": false
     },
     {
       "ticker": "RL",
@@ -6982,7 +7756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36867724057083207,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 162.96,
+      "beats_hodl": false
     },
     {
       "ticker": "RMD",
@@ -7000,7 +7776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41955489459855855,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 18.91,
+      "beats_hodl": false
     },
     {
       "ticker": "ROK",
@@ -7018,7 +7796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4163358967842527,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 47.19,
+      "beats_hodl": false
     },
     {
       "ticker": "ROL",
@@ -7036,7 +7816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4030121755972183,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 21.81,
+      "beats_hodl": false
     },
     {
       "ticker": "ROP",
@@ -7054,7 +7836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3943591325775229,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -39.72,
+      "beats_hodl": true
     },
     {
       "ticker": "ROST",
@@ -7072,7 +7856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3744969079463155,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 70.4,
+      "beats_hodl": false
     },
     {
       "ticker": "RSG",
@@ -7090,7 +7876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40626387257422125,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.64,
+      "beats_hodl": false
     },
     {
       "ticker": "RTX",
@@ -7108,7 +7896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38470565690523334,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 110.79,
+      "beats_hodl": false
     },
     {
       "ticker": "RVTY",
@@ -7126,7 +7916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42855301281424296,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.95,
+      "beats_hodl": true
     },
     {
       "ticker": "SATS",
@@ -7144,7 +7936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40038161790160737,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 662.49,
+      "beats_hodl": false
     },
     {
       "ticker": "SBAC",
@@ -7162,7 +7956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3890484063553733,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.37,
+      "beats_hodl": true
     },
     {
       "ticker": "SBUX",
@@ -7180,7 +7976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39998539241386377,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.83,
+      "beats_hodl": true
     },
     {
       "ticker": "SCHW",
@@ -7198,7 +7996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3862622815149951,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 31.93,
+      "beats_hodl": false
     },
     {
       "ticker": "SHW",
@@ -7216,7 +8016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4142277441778428,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 1.16,
+      "beats_hodl": false
     },
     {
       "ticker": "SJM",
@@ -7234,7 +8036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3732565527021452,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -18.24,
+      "beats_hodl": false
     },
     {
       "ticker": "SLB",
@@ -7252,7 +8056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38067197610552056,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.99,
+      "beats_hodl": false
     },
     {
       "ticker": "SMCI",
@@ -7270,7 +8076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4054397824649925,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -87.32,
+      "beats_hodl": false
     },
     {
       "ticker": "SNA",
@@ -7288,7 +8096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3806223165996426,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 26.94,
+      "beats_hodl": false
     },
     {
       "ticker": "SNPS",
@@ -7306,7 +8116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.43726031274930677,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 3.31,
+      "beats_hodl": false
     },
     {
       "ticker": "SO",
@@ -7324,7 +8136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37202100270524635,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 35.73,
+      "beats_hodl": false
     },
     {
       "ticker": "SPG",
@@ -7342,7 +8156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38306102050180657,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 44.02,
+      "beats_hodl": false
     },
     {
       "ticker": "SPGI",
@@ -7360,7 +8176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42745551469185183,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -5.07,
+      "beats_hodl": true
     },
     {
       "ticker": "SRE",
@@ -7378,7 +8196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38987351426671046,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 24.53,
+      "beats_hodl": false
     },
     {
       "ticker": "STE",
@@ -7396,7 +8216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.421863723696015,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.92,
+      "beats_hodl": true
     },
     {
       "ticker": "STLD",
@@ -7414,7 +8236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36703875865098856,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 103.72,
+      "beats_hodl": false
     },
     {
       "ticker": "STT",
@@ -7432,7 +8256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38076358680963174,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 98.9,
+      "beats_hodl": false
     },
     {
       "ticker": "STX",
@@ -7450,7 +8276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42785885394957407,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 855.73,
+      "beats_hodl": false
     },
     {
       "ticker": "STZ",
@@ -7468,7 +8296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.399435464255366,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -37.86,
+      "beats_hodl": true
     },
     {
       "ticker": "SW",
@@ -7486,7 +8316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3795028082649083,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -8.01,
+      "beats_hodl": false
     },
     {
       "ticker": "SWK",
@@ -7504,7 +8336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40381716570056503,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -20.91,
+      "beats_hodl": false
     },
     {
       "ticker": "SWKS",
@@ -7522,7 +8356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37987561988367197,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -25.86,
+      "beats_hodl": false
     },
     {
       "ticker": "SYF",
@@ -7540,7 +8376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37585390669346264,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 89.39,
+      "beats_hodl": false
     },
     {
       "ticker": "SYK",
@@ -7558,7 +8396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41686411672878143,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.35,
+      "beats_hodl": false
     },
     {
       "ticker": "SYY",
@@ -7576,7 +8416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39984126084403626,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 4.55,
+      "beats_hodl": false
     },
     {
       "ticker": "T",
@@ -7594,7 +8436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37865673854181453,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 50.18,
+      "beats_hodl": false
     },
     {
       "ticker": "TAP",
@@ -7612,7 +8456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3919274424830125,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -30.35,
+      "beats_hodl": false
     },
     {
       "ticker": "TDG",
@@ -7630,7 +8476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39006673035483846,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 20.67,
+      "beats_hodl": false
     },
     {
       "ticker": "TDY",
@@ -7648,7 +8496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4107289449968576,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 40.46,
+      "beats_hodl": false
     },
     {
       "ticker": "TECH",
@@ -7666,7 +8516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3926026875778024,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -36.86,
+      "beats_hodl": false
     },
     {
       "ticker": "TEL",
@@ -7684,7 +8536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.43853467836341126,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 45.63,
+      "beats_hodl": false
     },
     {
       "ticker": "TER",
@@ -7702,7 +8556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4002733817646252,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 235.31,
+      "beats_hodl": false
     },
     {
       "ticker": "TFC",
@@ -7720,7 +8576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3798710152207531,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 32.61,
+      "beats_hodl": false
     },
     {
       "ticker": "TGT",
@@ -7738,7 +8596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.383654564624747,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -11.51,
+      "beats_hodl": false
     },
     {
       "ticker": "TJX",
@@ -7756,7 +8616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3821609213544037,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 69.99,
+      "beats_hodl": false
     },
     {
       "ticker": "TKO",
@@ -7774,7 +8636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3786775205527677,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 135.66,
+      "beats_hodl": false
     },
     {
       "ticker": "TMO",
@@ -7792,7 +8656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4169312234393994,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -15.43,
+      "beats_hodl": true
     },
     {
       "ticker": "TMUS",
@@ -7810,7 +8676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3754156931989598,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.61,
+      "beats_hodl": false
     },
     {
       "ticker": "TPL",
@@ -7828,7 +8696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4014997871783944,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -74.77,
+      "beats_hodl": false
     },
     {
       "ticker": "TPR",
@@ -7846,7 +8716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3812766274257991,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 273.05,
+      "beats_hodl": false
     },
     {
       "ticker": "TRGP",
@@ -7864,7 +8736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38953233720293406,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 216.99,
+      "beats_hodl": false
     },
     {
       "ticker": "TRMB",
@@ -7882,7 +8756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4225634998922526,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.13,
+      "beats_hodl": false
     },
     {
       "ticker": "TROW",
@@ -7900,7 +8776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4033742800821819,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.01,
+      "beats_hodl": true
     },
     {
       "ticker": "TRV",
@@ -7918,7 +8796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37461438440796174,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 61.16,
+      "beats_hodl": false
     },
     {
       "ticker": "TSCO",
@@ -7936,7 +8816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38873011228596144,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -85.19,
+      "beats_hodl": false
     },
     {
       "ticker": "TSLA",
@@ -7954,7 +8836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4503279362328585,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 69.88,
+      "beats_hodl": false
     },
     {
       "ticker": "TSN",
@@ -7972,7 +8856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3761610294340214,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 21.34,
+      "beats_hodl": false
     },
     {
       "ticker": "TT",
@@ -7990,7 +8876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4298255748228327,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 86.91,
+      "beats_hodl": false
     },
     {
       "ticker": "TTD",
@@ -8008,7 +8896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4263329159238986,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -68.48,
+      "beats_hodl": true
     },
     {
       "ticker": "TTWO",
@@ -8026,7 +8916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36472589787595716,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 42.21,
+      "beats_hodl": false
     },
     {
       "ticker": "TXN",
@@ -8044,7 +8936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38015295029121243,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 83.8,
+      "beats_hodl": false
     },
     {
       "ticker": "TXT",
@@ -8062,7 +8956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3948155930765558,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 14.2,
+      "beats_hodl": false
     },
     {
       "ticker": "TYL",
@@ -8080,7 +8976,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3865795155254202,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -24.48,
+      "beats_hodl": false
     },
     {
       "ticker": "UAL",
@@ -8098,7 +8996,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.37938622285997525,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 145.0,
+      "beats_hodl": false
     },
     {
       "ticker": "UBER",
@@ -8116,7 +9016,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3887916741013586,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 18.04,
+      "beats_hodl": false
     },
     {
       "ticker": "UDR",
@@ -8134,7 +9036,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38512969034218286,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -0.54,
+      "beats_hodl": false
     },
     {
       "ticker": "UHS",
@@ -8152,7 +9056,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3801259042822165,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 3.22,
+      "beats_hodl": false
     },
     {
       "ticker": "ULTA",
@@ -8170,7 +9076,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3736067828911166,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 5.76,
+      "beats_hodl": false
     },
     {
       "ticker": "UNH",
@@ -8188,7 +9096,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.35938938353932265,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -26.24,
+      "beats_hodl": false
     },
     {
       "ticker": "UNP",
@@ -8206,7 +9116,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3633859396684451,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 8.26,
+      "beats_hodl": false
     },
     {
       "ticker": "UPS",
@@ -8224,7 +9136,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3766320215421397,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -35.61,
+      "beats_hodl": false
     },
     {
       "ticker": "URI",
@@ -8242,7 +9156,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4014448372126048,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 65.07,
+      "beats_hodl": false
     },
     {
       "ticker": "USB",
@@ -8260,7 +9176,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38240398845086515,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.92,
+      "beats_hodl": false
     },
     {
       "ticker": "V",
@@ -8278,7 +9196,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40511083234903406,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.03,
+      "beats_hodl": false
     },
     {
       "ticker": "VEEV",
@@ -8296,7 +9216,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4104237059936684,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -16.14,
+      "beats_hodl": true
     },
     {
       "ticker": "VICI",
@@ -8314,7 +9236,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4188855998400144,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.6,
+      "beats_hodl": true
     },
     {
       "ticker": "VLO",
@@ -8332,7 +9256,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39700302573152324,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 88.39,
+      "beats_hodl": false
     },
     {
       "ticker": "VLTO",
@@ -8350,7 +9276,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.49602421613806813,
       "cv_folds": 3,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 5.57,
+      "beats_hodl": false
     },
     {
       "ticker": "VMC",
@@ -8368,7 +9296,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3719663766162439,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 15.7,
+      "beats_hodl": false
     },
     {
       "ticker": "VRSK",
@@ -8386,7 +9316,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41939061865157,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -28.09,
+      "beats_hodl": true
     },
     {
       "ticker": "VRSN",
@@ -8404,7 +9336,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.413914523148753,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 51.68,
+      "beats_hodl": false
     },
     {
       "ticker": "VRT",
@@ -8422,7 +9356,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38597926741369526,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 596.17,
+      "beats_hodl": false
     },
     {
       "ticker": "VRTX",
@@ -8440,7 +9376,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36861998851441796,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.49,
+      "beats_hodl": false
     },
     {
       "ticker": "VST",
@@ -8458,7 +9396,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3956571245837485,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 308.12,
+      "beats_hodl": false
     },
     {
       "ticker": "VTR",
@@ -8476,7 +9416,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3908210273321929,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 77.0,
+      "beats_hodl": false
     },
     {
       "ticker": "VTRS",
@@ -8494,7 +9436,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3790253508980352,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 54.47,
+      "beats_hodl": false
     },
     {
       "ticker": "VZ",
@@ -8512,7 +9456,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36614559079349573,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 27.9,
+      "beats_hodl": false
     },
     {
       "ticker": "WAB",
@@ -8530,7 +9476,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.41145302298128017,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 103.54,
+      "beats_hodl": false
     },
     {
       "ticker": "WAT",
@@ -8548,7 +9496,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3659356411284381,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 4.52,
+      "beats_hodl": false
     },
     {
       "ticker": "WBD",
@@ -8566,7 +9516,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39996399378839853,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 139.49,
+      "beats_hodl": false
     },
     {
       "ticker": "WDAY",
@@ -8584,7 +9536,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4198467319485796,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -53.25,
+      "beats_hodl": true
     },
     {
       "ticker": "WDC",
@@ -8602,7 +9556,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.40206248919074217,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 836.83,
+      "beats_hodl": false
     },
     {
       "ticker": "WEC",
@@ -8620,7 +9576,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4040121537826806,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 35.0,
+      "beats_hodl": false
     },
     {
       "ticker": "WELL",
@@ -8638,7 +9596,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38795181385167576,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 139.6,
+      "beats_hodl": false
     },
     {
       "ticker": "WFC",
@@ -8656,7 +9616,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3760820896469965,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 56.4,
+      "beats_hodl": false
     },
     {
       "ticker": "WM",
@@ -8674,7 +9636,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4161407973062217,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 22.5,
+      "beats_hodl": false
     },
     {
       "ticker": "WMB",
@@ -8692,7 +9656,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.36853352503316117,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 123.85,
+      "beats_hodl": false
     },
     {
       "ticker": "WMT",
@@ -8710,7 +9676,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3771115697212254,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -23.58,
+      "beats_hodl": false
     },
     {
       "ticker": "WRB",
@@ -8728,7 +9696,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.38494104413673913,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.58,
+      "beats_hodl": true
     },
     {
       "ticker": "WSM",
@@ -8746,7 +9716,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3969065826601297,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -4.56,
+      "beats_hodl": true
     },
     {
       "ticker": "WST",
@@ -8764,7 +9736,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4393117215424524,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -9.47,
+      "beats_hodl": false
     },
     {
       "ticker": "WTW",
@@ -8782,7 +9756,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.39063682385601317,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 6.89,
+      "beats_hodl": false
     },
     {
       "ticker": "WY",
@@ -8800,7 +9776,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3786362774347515,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -31.56,
+      "beats_hodl": false
     },
     {
       "ticker": "WYNN",
@@ -8818,7 +9796,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3929914653037008,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 7.66,
+      "beats_hodl": false
     },
     {
       "ticker": "XEL",
@@ -8836,7 +9816,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.42275696941571506,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 30.97,
+      "beats_hodl": false
     },
     {
       "ticker": "XOM",
@@ -8854,7 +9836,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4008906494731202,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 53.51,
+      "beats_hodl": false
     },
     {
       "ticker": "XYL",
@@ -8872,7 +9856,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4098566661514107,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -2.53,
+      "beats_hodl": false
     },
     {
       "ticker": "XYZ",
@@ -8890,7 +9876,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3998848152898895,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -10.68,
+      "beats_hodl": false
     },
     {
       "ticker": "YUM",
@@ -8908,7 +9896,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4008015525344194,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": 19.71,
+      "beats_hodl": false
     },
     {
       "ticker": "ZBH",
@@ -8926,7 +9916,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4104079202605776,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -27.85,
+      "beats_hodl": true
     },
     {
       "ticker": "ZBRA",
@@ -8944,7 +9936,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.4023717501784774,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -5.49,
+      "beats_hodl": true
     },
     {
       "ticker": "ZTS",
@@ -8962,7 +9956,9 @@
       "capital_depleted": 0,
       "cv_auc_pr": 0.3801902143906595,
       "cv_folds": 4,
-      "oos_window": "2024-01-02 -> 2026-05-29"
+      "oos_window": "2024-01-02 -> 2026-05-29",
+      "hodl_return_pct": -58.45,
+      "beats_hodl": false
     }
   ]
 }
