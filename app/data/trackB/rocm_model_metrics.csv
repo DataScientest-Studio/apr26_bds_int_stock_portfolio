@@ -1,0 +1,2 @@
+model,device,train_start,train_end,test_start,test_end,train_rows,test_rows,test_tickers,final_train_mse,mae,rmse,spearman_rank_corr,test_universe_avg_actual_return,top5_avg_actual_return
+pytorch_mlp_rocm,AMD Radeon(TM) 8060S Graphics,2020-10-20,2024-12-31,2025-01-02,2026-03-09,520036,147525,502,0.01722686951096947,0.3416670840002816,0.4303176340289566,-0.02031094400461312,0.04278728619612864,0.1786158934389241
