@@ -708,12 +708,11 @@ error-correction (boosting) extracts the faint signal better than
 variance-averaging (bagging) — which, combined with the native missing-value
 handling above, is why boosting is the model family used here.
 
-## 8.6 Deep Learning — not implemented
+## 8.6 Deep Learning — tested, not selected
 
-There is **no deep learning** in this project: `requirements.txt` pins
-`xgboost==3.3.0` and contains no PyTorch, TensorFlow or Keras. This departs
-from the Liora Step 3.3 checklist, which names Deep Learning explicitly, so we
-record the reasoning rather than silently skip it:
+**Track A** (the 10-asset per-ticker classifier described in this section)
+has **no deep learning**: `requirements.txt` pins `xgboost==3.3.0` and
+contains no PyTorch, TensorFlow or Keras. Reasoning for this track:
 
 - The 56 features are already engineered, tabular indicators — gradient-boosted
   trees typically outperform neural nets on this kind of input.
@@ -724,6 +723,20 @@ record the reasoning rather than silently skip it:
   GPU-trained neural net.
 - The project's minimalism value favours a small, regularized tree ensemble
   and a small dependency surface over an additional model family.
+
+A deep-learning model **was** implemented and tested, however, on **Track B**
+(the full 503-ticker regression recommender, §8.9): `models/train_rocm_model.py`
+trains a small PyTorch MLP (`Linear(64) → ReLU → Dropout(0.10) → Linear(32) →
+ReLU → Linear(1)`) on an AMD ROCm GPU, and the script is committed to the
+project's GitHub repository. It satisfies the Liora Step 3.3 checklist's
+Deep Learning requirement, but **it was not selected** for the deployed
+recommender: on the fixed test split it scored MAE 0.342 / RMSE 0.430 /
+Spearman rank corr. −0.020, clearly worse than Ridge, Random Forest or
+XGBoost on the same features (Table in §8.9) — larger average errors and a
+slightly *negative* rank correlation, i.e. its stock ranking was no better
+than random. In this dataset, the extra model capacity did not translate into
+better recommendation quality, so the app's Model Comparison page reports the
+result transparently rather than hiding a negative finding.
 
 ## 8.7 Interpretability
 
