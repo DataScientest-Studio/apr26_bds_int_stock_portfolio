@@ -5,6 +5,9 @@ Run:
     streamlit run app.py
 """
 
+import runpy
+from pathlib import Path
+
 import streamlit as st
 
 from src.data_loader import load_prices, load_tickers
@@ -17,9 +20,16 @@ from src.plots import (
     plot_risk_return_scatter,
     plot_correlation_heatmap,
 )
+from src.risk_assessment import render_questionnaire
 
 st.set_page_config(page_title="Stocks Recommender Based on User Profile", layout="wide")
 st.title("Stocks Recommender Based on User Profile")
+
+BASE_DIR = Path(__file__).resolve().parent
+FINAL_APP_DIR = BASE_DIR / "mac-2026-06-09-full-6y"
+FINAL_APP_FILE = FINAL_APP_DIR / "app.py"
+FINAL_APP_PAGE = "Final App: Full Recommender"
+MENU_DIVIDER = "──────── Final app ────────"
 
 
 @st.cache_data
@@ -29,11 +39,45 @@ def get_data():
     return tickers, prices
 
 
+def render_final_app() -> None:
+    """Render the full recommender app from the experiment folder in this process."""
+    if not FINAL_APP_FILE.exists():
+        st.error(f"Could not find final app at `{FINAL_APP_FILE}`.")
+        return
+
+    st.divider()
+    st.markdown("## Final app")
+
+    original_set_page_config = st.set_page_config
+
+    try:
+        # The parent app has already configured the Streamlit page.
+        # The embedded app can still render its title, widgets, charts, and tables.
+        st.set_page_config = lambda *args, **kwargs: None
+        runpy.run_path(str(FINAL_APP_FILE), run_name="__embedded_final_streamlit_app__")
+    except Exception as exc:
+        st.error("The final app could not be rendered inside the main app.")
+        st.exception(exc)
+    finally:
+        st.set_page_config = original_set_page_config
+
+
 tickers, prices = get_data()
 
-page = st.sidebar.radio("Page", ["Exploration", "DataViz"])
+page = st.sidebar.radio(
+    "Main menu",
+    ["Exploration", "DataViz", "Risk Assessment", MENU_DIVIDER, FINAL_APP_PAGE],
+    key="main_app_page",
+)
 
-if page == "Exploration":
+if page == MENU_DIVIDER:
+    st.sidebar.info("Choose the final app entry below the divider.")
+    st.info("Choose **Final App: Full Recommender** in the sidebar to show the complete app.")
+
+elif page == FINAL_APP_PAGE:
+    render_final_app()
+
+elif page == "Exploration":
     st.subheader("1. Exploration")
     st.write("First rows of the metadata table:")
     st.dataframe(tickers.head(10))
@@ -145,3 +189,16 @@ elif page == "DataViz":
         st.markdown("**Validation method:** Pearson Correlation between Annualized Volatility and Annualized Expected Return.\n\n**Interpretation:** We mathematically aggregated all 503 stocks into a single (Risk, Return) tuple and calculated their linear correlation. A strong positive correlation (e.g., > 0.7) would mean 'more risk always equals more reward'.")
         st.write(f"**Calculated Pearson correlation:** `{pearson_corr:.4f}`")
         st.markdown(f"Because the correlation is so close to 0 (`{pearson_corr:.4f}`), we statistically validate the core observation from the scatterplot: taking blind risk does **not** guarantee proportionally higher returns. This definitively proves the business need for a smart recommender that seeks the 'efficient frontier' (high return for a given risk) rather than just picking randomly.")
+
+elif page == "Risk Assessment":
+    st.subheader("3. Risk Assessment")
+    st.write(
+        "Answer the questions below so the recommender can later match the "
+        "portfolio to your risk profile. After submitting, open "
+        "**Final App: Full Recommender** and its recommendation preferences "
+        "will be prefilled from these answers."
+    )
+    result = render_questionnaire()
+    if result:
+        st.success("Thanks — your answers were recorded for this session.")
+        st.write(result)
