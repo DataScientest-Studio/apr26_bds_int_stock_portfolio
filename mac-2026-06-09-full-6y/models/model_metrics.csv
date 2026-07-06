@@ -1,0 +1,2 @@
+train_start,train_end,test_start,test_end,test_rows,test_tickers,mae,rmse,spearman_rank_corr,test_universe_avg_actual_return,top5_avg_actual_return
+2020-10-20,2024-12-31,2025-01-02,2026-03-09,147525,502,0.13398348871619975,0.20306781756694411,0.16365754507293115,0.04278728619612864,0.3427285598461572

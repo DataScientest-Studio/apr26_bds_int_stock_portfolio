@@ -51,3 +51,16 @@ fs/artifacts/**/*.parquet.tmp
 fs/artifacts/**/supervisor_progress.json
 fs/artifacts/**/supervisor_DONE.flag
 fs/features_proposed.lock
+
+# --- parent project's data plane (fetch_data.py outputs; regenerable) ---
+data/*.csv
+data/by_ticker/
+# Report PDFs (regenerate locally via reports/build_pdf.sh)
+reports/*.pdf
+# ...but keep the versioned milestone deliverables under version control
+!reports/report_v*.pdf
+# Secrets
+.env.local
+.env
+# Internal working drafts — never a deliverable, must never be committed
+reports/_internal_drafts/

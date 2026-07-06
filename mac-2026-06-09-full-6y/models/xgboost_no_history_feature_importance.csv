@@ -1,0 +1,21 @@
+feature,importance
+sector_Energy,0.10538032
+sector_Consumer Discretionary,0.09020778
+sector_Consumer Staples,0.07437517
+volatility_60d,0.06387814
+log_avg_volume_20d,0.06114771
+drawdown_252d,0.059193708
+sector_Health Care,0.056766987
+mean_return_60d,0.05394401
+sector_Information Technology,0.05187937
+volatility_20d,0.04297918
+sector_Financials,0.041736297
+ret_60d,0.039165333
+mean_return_20d,0.038276833
+ret_20d,0.037676696
+sector_Industrials,0.036861185
+sector_Utilities,0.036603794
+sector_Communication Services,0.034546126
+ret_5d,0.029143041
+sector_Real Estate,0.026514346
+sector_Materials,0.019724019

@@ -25,3 +25,11 @@ seaborn==0.13.2
 # numpy==2.5.0 the sealed pipelines reproduce against — so shap is intentionally NOT pinned here and
 # the LSTM loop uses the sanctioned zero-dep `perm` fallback (same table schema, method='perm'). To
 # enable GradientExplainer, install into a separate env with numpy<2.5:  pip install shap numba .
+# Parent project's data producers (fetch_data.py: Alpaca OHLCV + Wikipedia constituents) and the
+# report toolchain (reports/make_figures.py uses scipy via scikit-learn). Unpinned, as on main —
+# not on the sealed numeric path.
+alpaca-py>=0.28
+python-dotenv>=1.0
+lxml>=4.9
+html5lib>=1.1
+requests>=2.31
