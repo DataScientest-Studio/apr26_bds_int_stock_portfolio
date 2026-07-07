@@ -103,6 +103,45 @@ presented as an *illustration of a fixed rule* — not a new out-of-sample claim
   next to Track-A baskets. Until it runs, the tracks are presented as non-comparable by design
   (and even then it lands on an already-published window — post-hoc, and must be labeled so).
 
+## The Pipeline Blueprint — lessons learned as documentation
+
+The end-of-project documentary of Track A is a **single-file, sealed HTML exhibit**
+(`learning_by_doing_OHLCV_data_processing_pipeline.html`, repo root) embedded as the **Pipeline
+Blueprint** page directly under the Basket Simulator. It exists because the most durable way to
+remember a learning-by-doing build is to pin each lesson to the exact block of the pipeline where
+it was paid for: 17 procedure bricks, bottom -> top = the data flow, order welded by declaration
+(no drag & drop, no persistence, no hidden state), an **XGBoost (1h) | LSTM (daily)** view switch
+that flips only the model-specific bricks, and a per-brick *HOW WE THOUGHT · WHAT WE LEARNED*
+record, copyable as a prompt.
+
+**The five lessons it teaches** (each anchored to its brick):
+
+1. *Optimize the thing you will be judged on* (C1) — the HPO objective moved from AUC-PR to
+   Train-out-of-fold trading **log-growth** replayed through the real engine.
+2. *Degrees of freedom are earned, not granted* (C2) — per-asset threshold calibration overfit
+   (OOS profit factor 1.89 -> 0.99 on the probe asset) and was pinned; the LSTM's joint
+   calibration validated out-of-fold and kept its freedom.
+3. *Purge and embargo are not optional* (A4, G.1) — with horizon labels the naive split leaks by
+   construction.
+4. *An honest negative from a trustworthy method beats a positive from a leaky one* (D1) — the
+   full-universe one-shot verdict reversed a flattering ~18-ticker dev read.
+5. *Byte-identity replaces trust* (D2, G.3) — reproduction gates, including one for the honesty
+   feature itself (the buy-and-hold feed).
+
+**Scalable thinking patterns it encodes** — the transferable data-science engineering ideas:
+one uniform procedure per asset (scale by repetition, never per-asset special-casing); contracts
+plus fail-closed guards between stages (small gates compose, WARN tiers do not); a registry entry
+per model (adding a method = one dict entry); shared procedure with per-model knob variants (the
+{xgb, lstm} resolver — one logic, two views); clone-and-show artifact strategy (seal results,
+demo data, gitignore bulk); determinism designed in from acquisition to verdict.
+
+**Algorithms on display**, each in its block: gradient-boosted trees (XGBoost) and recurrent
+networks (LSTM) as per-asset meta-labelers; Triple-Barrier labeling and purged/embargoed
+walk-forward CV (Lopez de Prado); Optuna TPE hyper-parameter search with a profit-aligned
+objective; the generalized fractional Kelly criterion f = clip(lambda(p-(1-p)/b), 0, cap);
+forward feature selection behind a seed-averaged noise gate; ATR-based barrier geometry;
+z-score-normalized selection objectives.
+
 ## Run & verify
 
 ```bash

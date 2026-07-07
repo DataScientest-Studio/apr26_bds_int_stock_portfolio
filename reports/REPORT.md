@@ -1079,4 +1079,12 @@ explicit evidence tiers:
   `make verify-xgb` / `make verify-lstm` (byte-identical re-runs) and `make test-app` (gates +
   per-page smoke tests).
 
+- **Pipeline Blueprint:** the application embeds a sealed single-file HTML documentary
+  (`learning_by_doing_OHLCV_data_processing_pipeline.html`) — 17 procedure bricks in the pipeline
+  order (welded, non-editable) with an XGBoost/LSTM view switch and a per-brick "how we thought /
+  what we learned" record: the lessons-learned map of the Track-A build (profit-aligned objective,
+  earned degrees of freedom, purge/embargo discipline, honest negatives, byte-reproducibility) and
+  the data-science algorithms in context (boosted trees, LSTMs, Triple-Barrier labeling, purged
+  walk-forward CV, Optuna TPE, generalized Kelly sizing, forward feature selection).
+
 Design rationale, the full methodology ladder and known limitations: `docs/UNIFIED_APP.md`.

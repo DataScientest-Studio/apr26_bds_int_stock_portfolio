@@ -314,6 +314,39 @@ than hiding it; the monotone deterioration from Conservative to Aggressive is it
   volatility-cap and relax-path checks, benchmark-feed consistency, and a scripted walk of every
   page including the full simulator flow.
 
+## The Pipeline Blueprint — lessons learned, sealed as documentation
+
+The build itself is documented by a **single-file HTML exhibit**
+(`learning_by_doing_OHLCV_data_processing_pipeline.html`) embedded in the application as the
+**Pipeline Blueprint** page. It renders Track A as a ladder of **17 procedure bricks** (bottom →
+top = the data flow: S1 DATA → S2 SIGNAL+LABEL+FEATURES → S3 TRAINING → S4 OOS+PRODUCT, with a
+fail-closed GUARDS lane), an **XGBoost (1h) | LSTM (daily)** switch that flips only the
+model-specific bricks, and — per brick — the procedure contract plus a *HOW WE THOUGHT · WHAT WE
+LEARNED* record. The brick order is welded by declaration: no drag & drop, no persistence — a
+documentary, not an editor. The design goal is didactic: the most durable way to remember a
+learning-by-doing build is to pin each lesson to the exact block where it was paid for.
+
+**Lessons learned** (each anchored to its brick): optimize the criterion you deploy on — the HPO
+objective moved from AUC-PR to Train-out-of-fold trading log-growth (C1); degrees of freedom are
+earned — per-asset threshold calibration overfit and was pinned, the LSTM's joint calibration
+validated and kept its freedom (C2); purge and embargo are not optional with horizon labels (A4,
+G.1); an honest negative from a trustworthy method beats a positive from a leaky one (D1);
+byte-identity replaces trust — reproduction gates guard even the honesty features themselves
+(D2, G.3).
+
+**Scalable thinking** — the transferable engineering patterns the blueprint encodes: one uniform
+procedure per asset (scale by repetition, never special-casing); contracts with fail-closed gates
+between stages; a registry entry per model (adding a method is one entry); one shared procedure
+with per-model knob variants; the clone-and-show artifact strategy (seal results, demo data,
+gitignore bulk); determinism designed in end-to-end.
+
+**Algorithms in the data-science toolbox**, each shown in its block: gradient-boosted trees
+(XGBoost) and recurrent networks (LSTM) as per-asset meta-labelers; Triple-Barrier labeling with
+ATR-based geometry and purged + embargoed walk-forward cross-validation (López de Prado); Optuna
+TPE hyper-parameter search with a profit-aligned objective; the generalized fractional Kelly
+criterion $f=\mathrm{clip}(\lambda(p-\tfrac{1-p}{b}),0,\text{cap})$; forward feature selection
+behind a seed-averaged noise gate; z-score-normalized selection objectives.
+
 # Conclusions and limitations
 
 ## What the project demonstrates
