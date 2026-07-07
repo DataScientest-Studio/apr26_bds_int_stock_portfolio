@@ -3,6 +3,7 @@ title: "Unified Project Report"
 subtitle: "Two Research Tracks, One Application — the Merged State of the Stock Portfolio Recommender"
 author: "Gabriel Marchesan Almeida\\break Paweł Flak\\break Marcus Schürstedt"
 author-meta: "Gabriel Marchesan Almeida, Paweł Flak, Marcus Schürstedt"
+footer-left: "Gabriel Marchesan Almeida, Paweł Flak, Marcus Schürstedt"
 date: "2026-07-07"
 lang: en
 ---
