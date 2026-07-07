@@ -142,6 +142,7 @@ def main():
     run_page("Data Explorer", "page_explorer", timeout=300)
     run_page("Risk Profile", "page_risk")
     run_page("Methodology & Integrity", "page_methodology")
+    run_page("Pipeline Blueprint", "page_blueprint")
     at = run_page("Recommender (Track B)", "page_recommender")
     if not at.exception:
         rec = next((d.value for d in at.dataframe

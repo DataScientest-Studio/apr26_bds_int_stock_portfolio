@@ -30,12 +30,15 @@
                        be a shared value OR a {xgb:..., lstm:...} variant)
          [J1b] LEARNING - per-block {goal, decisions, lessons, principles}
          [J2] VIZ    - mini-visualization registry: 1 key = 1 brick kind
-         [J3] LAYOUT - bottom-up ladder from ORDER; canvas size derived
-         [J4] STATE  - localStorage (order + model)
-         [J5] ORDER+DND - insert-with-shift reorder (applies instantly)
-         [J6] CANVAS - brick render, sticky lane heads, pan/zoom, drag&drop
+         [J3] LAYOUT - bottom-up ladder; ORDER = MODULES declaration order,
+                       SEALED (this is documentation - blocks cannot be moved)
+         [J6] CANVAS - brick render, sticky lane heads, pan/zoom (read-only)
          [J7] INVENTORY + INSPECTOR - side panels, learning accordion
          [J8] BOOT   - start
+
+  SEALED DOCUMENTATION: the ladder order IS the pipeline order, fixed by
+  declaration. There is no drag&drop, no persistence, no hidden state -
+  a reload always shows the canonical flow, bottom to top.
 
   Content provenance: docs/PROJECT_STATE.md + the sealed stores
   (xgb/data/oos_metrics.db 498 rows, lstm/oos_metrics.db 496 rows) and the
@@ -89,7 +92,7 @@
     .module-list{overflow:auto;min-height:0;padding:5px 0}
     .inventory-group{padding:5px 7px 3px;color:var(--muted);font-size:9px;letter-spacing:.08em;border-top:1px solid var(--line-soft)}
     .inventory-group:first-child{border-top:0}
-    .inventory-row{height:28px;display:grid;grid-template-columns:33px 1fr;align-items:center;gap:6px;padding:0 8px;cursor:grab;border-left:3px solid transparent;color:#C7D0D8}
+    .inventory-row{height:28px;display:grid;grid-template-columns:33px 1fr;align-items:center;gap:6px;padding:0 8px;cursor:pointer;border-left:3px solid transparent;color:#C7D0D8}
     .inventory-row:hover,.inventory-row.selected{background:#111820;color:var(--text)}
     .inventory-row.selected{border-left-color:var(--amber)}
     .inventory-id{font-size:10px;color:var(--text)}
@@ -100,14 +103,11 @@
     .flow-viewport{position:relative;overflow:hidden;flex:1;background-color:var(--bg-root);background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:20px 20px}
     .flow-canvas{position:relative;width:1400px;height:2600px;transform-origin:0 0;will-change:transform;cursor:grab} /* size overridden by [J8] BOOT */
     .flow-canvas.panning{cursor:grabbing}
-    .flow-canvas.drag-over{box-shadow:inset 0 0 0 1px var(--amber)}
     .lane-sep{position:absolute;top:0;bottom:0;width:1px;background:var(--line);pointer-events:none}
-    .insert-line{position:absolute;background:var(--amber);box-shadow:0 0 6px rgba(255,160,40,.45);pointer-events:none;z-index:9}
     .lane-heads{position:absolute;top:0;left:0;right:0;height:26px;pointer-events:none;z-index:8;overflow:hidden}
     .lane-head{position:absolute;top:0;height:26px;line-height:26px;padding:0 4px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(180deg,var(--bg-root) 30%,rgba(8,10,13,.72) 65%,transparent)}
 
-    .lego{position:absolute;width:184px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:15px 8px 6px;cursor:grab;user-select:none;box-shadow:4px 4px 0 rgba(0,0,0,.18);transition:top .15s ease,left .15s ease}
-    .lego:active{cursor:grabbing}
+    .lego{position:absolute;width:184px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:15px 8px 6px;cursor:pointer;user-select:none;box-shadow:4px 4px 0 rgba(0,0,0,.18);transition:top .15s ease,left .15s ease}
     .lego:hover{border-color:#8A96A3;z-index:5}
     .lego.selected{outline:1px solid var(--amber);outline-offset:2px;z-index:6}
     .studs{position:absolute;top:-5px;left:9px;display:flex;gap:7px}
@@ -223,8 +223,7 @@
 
       <section class="panel flow-panel">
         <div class="flow-viewport" id="flowViewport">
-          <div class="flow-canvas" id="flowCanvas" aria-label="Drag and drop procedure canvas">
-            <div class="insert-line" id="insertLine" hidden></div>
+          <div class="flow-canvas" id="flowCanvas" aria-label="Sealed procedure ladder (read-only)">
           </div>
           <div class="lane-heads" id="laneHeads" aria-hidden="true"></div>
         </div>
@@ -850,57 +849,28 @@
       order.forEach(id=>{const m=mod(id);if(!m)return;y-=VIZ[m.viz].h;pos[id]={x:LANE_X[m.group],y};y-=GAP;});return pos;}
 
     /* ==================================================================
-       [J4] STATE - localStorage: order + model (own key, no collision
-       with the per-subproject procedure-lego apps)
+       [J4] STATE - SEALED: the ladder order is the MODULES declaration
+       order, constant. No localStorage, no persistence, no hidden state.
        ================================================================== */
-    const STORAGE='learning-by-doing-ohlcv/v1';
+    const ORDER=MODULES.map(m=>m.id);
     const $=q=>document.querySelector(q);
-    let selectedId=null, inventoryFilter='all', draggedId=null;
+    let selectedId=null, inventoryFilter='all';
 
     function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
     function group(id){return GROUPS.find(g=>g.id===id)}
     function mod(id){return MODULES.find(m=>m.id===id)}
     function blockH(id){const m=mod(id);return m?VIZ[m.viz].h:54}
-    function sanitizeOrder(order){const ids=new Set(MODULES.map(m=>m.id));
-      const out=(Array.isArray(order)?order:[]).filter((id,i,a)=>ids.has(id)&&a.indexOf(id)===i);
-      MODULES.forEach(m=>{if(!out.includes(m.id))out.push(m.id);});return out;}
-    let _state=null;
-    function loadState(){
-      try{const raw=JSON.parse(localStorage.getItem(STORAGE));
-        if(raw){if(raw.model==='xgb'||raw.model==='lstm')MODEL=raw.model;
-          return {order:sanitizeOrder(raw.order),model:MODEL};}}catch(e){}
-      return {order:MODULES.map(m=>m.id),model:MODEL};}
-    function getState(){return _state||(_state=loadState());}
-    function saveState(s){_state=s;localStorage.setItem(STORAGE,JSON.stringify(s));}
     function color(m){return group(m.group).color}
 
     /* ==================================================================
-       [J5] ORDER + DND - static depends from MODULES[].depends +
-       insert-with-shift: a drop computes the insertion index from the
-       ladder Y; blocks above slide by themselves. Applies instantly.
+       [J6] CANVAS - bricks, sticky lane heads, pan / zoom (read-only)
        ================================================================== */
     let zoom=1,panX=0,panY=0,panning=null,panMoved=false;
 
     function depsOf(id){const m=mod(id);return m&&m.depends?m.depends.slice():[];}
     function dependentsOf(id){return MODULES.filter(m=>(m.depends||[]).includes(id)).map(m=>m.id);}
-    function canvasPoint(ev){const r=$('#flowCanvas').getBoundingClientRect();return {x:(ev.clientX-r.left)/zoom,y:(ev.clientY-r.top)/zoom};}
-    function insertIndexAt(cy,order,pos){return order.filter(id=>pos[id].y+blockH(id)/2>cy).length;}
-    function gapY(k,order,pos){
-      if(!order.length)return CANVAS_H-BOTTOM_PAD;
-      if(k===0){const id=order[0];return pos[id].y+blockH(id)+GAP/2;}
-      return pos[order[k-1]].y-GAP/2;}
-
-    let lastGapK=-1;
-    function showInsertLine(k,order,pos){if(k===lastGapK)return;lastGapK=k;const el=$('#insertLine');
-      el.hidden=false;el.style.left=MARGIN_X+'px';el.style.width=(CANVAS_W-2*MARGIN_X)+'px';
-      el.style.height=Math.max(2,2/zoom)+'px';el.style.top=(gapY(k,order,pos)-1)+'px';}
-    function hideInsertLine(){lastGapK=-1;const el=$('#insertLine');if(el)el.hidden=true;}
-
-    /* ==================================================================
-       [J6] CANVAS - bricks, sticky lane heads, pan / zoom / drag&drop
-       ================================================================== */
     function applyTransform(){const c=$('#flowCanvas');if(c)c.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;const v=$('#flowViewport');if(v){const s=20*zoom;v.style.backgroundSize=s+'px '+s+'px';v.style.backgroundPosition=panX+'px '+panY+'px';}syncLaneHeads();}
-    function contentBox(){const pos=layoutFor(getState().order);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    function contentBox(){const pos=layoutFor(ORDER);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       MODULES.forEach(m=>{const p=pos[m.id];x0=Math.min(x0,p.x);y0=Math.min(y0,p.y);x1=Math.max(x1,p.x+BLOCK_W);y1=Math.max(y1,p.y+blockH(m.id));});
       return {x:x0-40,y:y0-70,w:x1-x0+80,h:y1-y0+120};}
     function fitView(){const vp=$('#flowViewport');if(!vp)return;const vw=vp.clientWidth||1000,vh=vp.clientHeight||700;const b=contentBox();
@@ -910,13 +880,11 @@
       const g=group(m.group);
       const el=document.createElement('article');
       el.className=`lego ${selectedId===m.id?'selected':''}`;
-      el.dataset.id=m.id;el.draggable=true;
+      el.dataset.id=m.id;
       el.style.setProperty('--accent',g.color);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.height=blockH(m.id)+'px';
       el.innerHTML=`<div class="studs"><i class="stud"></i><i class="stud"></i><i class="stud"></i><i class="stud"></i></div>`+
         `<div class="lego-top"><span class="lego-id">${m.id}</span><span class="lego-title">${safe(pick(m.title))}</span>${hasVariants(m)?`<span class="lego-variant" title="model-specific block">[${MM().bars}]</span>`:''}</div>${vizCard(m)}`;
       el.addEventListener('click',e=>{e.stopPropagation();select(m.id)});
-      el.addEventListener('dragstart',e=>{draggedId=m.id;e.dataTransfer.setData('text/plain',m.id);e.dataTransfer.effectAllowed='move';setTimeout(()=>el.style.opacity='.25',0)});
-      el.addEventListener('dragend',()=>{el.style.opacity='';draggedId=null;$('#flowCanvas').classList.remove('drag-over');hideInsertLine();});
       return el;
     }
     function renderLaneHeads(){const c=$('#laneHeads');if(!c)return;
@@ -931,37 +899,12 @@
       DIVX.forEach(x=>{const d=document.createElement('div');d.className='lane-sep';d.style.left=x+'px';c.appendChild(d);});}
     function renderCanvas(){
       const canvas=$('#flowCanvas'); canvas.querySelectorAll('.lego').forEach(n=>n.remove());
-      const s=getState(),pos=layoutFor(s.order);
-      s.order.forEach(id=>{const m=mod(id);if(m)canvas.appendChild(lego(m,pos[id]));});
+      const pos=layoutFor(ORDER);
+      ORDER.forEach(id=>{const m=mod(id);if(m)canvas.appendChild(lego(m,pos[id]));});
     }
-    function repositionBlocks(){const s=getState(),pos=layoutFor(s.order);
-      document.querySelectorAll('#flowCanvas .lego').forEach(el=>{const p=pos[el.dataset.id];if(p){el.style.left=p.x+'px';el.style.top=p.y+'px';}});}
     function select(id){selectedId=id;renderInventory();renderCanvas();renderInspector(mod(id));}
     function clearSelect(){selectedId=null;renderInventory();renderCanvas();renderInspector(null);}
 
-    $('#flowCanvas').addEventListener('dragover',e=>{
-      if(!draggedId)return;
-      e.preventDefault();e.dataTransfer.dropEffect='move';
-      $('#flowCanvas').classList.add('drag-over');
-      const s=getState(),pos=layoutFor(s.order);
-      showInsertLine(insertIndexAt(canvasPoint(e).y,s.order,pos),s.order,pos);});
-    $('#flowCanvas').addEventListener('dragleave',e=>{
-      if(e.target===$('#flowCanvas')){$('#flowCanvas').classList.remove('drag-over');hideInsertLine();}});
-    $('#flowCanvas').addEventListener('drop',e=>{
-      e.preventDefault();$('#flowCanvas').classList.remove('drag-over');hideInsertLine();
-      const id=e.dataTransfer.getData('text/plain')||draggedId;if(!id||!mod(id))return;
-      const s=getState();const k=insertIndexAt(canvasPoint(e).y,s.order,layoutFor(s.order));
-      const old=s.order.indexOf(id);
-      if(old>=0&&(k===old||k===old+1)){select(id);return;}          // adjacent gap = no-op
-      const newOrder=s.order.slice();let kk=k;
-      if(old>=0){newOrder.splice(old,1);if(kk>old)kk--;}
-      newOrder.splice(kk,0,id);
-      s.order=newOrder;saveState(s);
-      selectedId=id;
-      document.querySelectorAll('#flowCanvas .lego').forEach(el=>el.classList.toggle('selected',el.dataset.id===id));
-      repositionBlocks();renderInventory();renderInspector(mod(id));
-      toast(id+' MOVED');
-    });
     $('#flowCanvas').addEventListener('click',e=>{if(e.target===$('#flowCanvas')){if(panMoved){panMoved=false;return;}clearSelect();}});
     $('#flowViewport').addEventListener('wheel',e=>{e.preventDefault();const vp=$('#flowViewport').getBoundingClientRect();const mx=e.clientX-vp.left,my=e.clientY-vp.top;const f=e.deltaY<0?1.12:1/1.12;const nz=Math.max(0.15,Math.min(3,zoom*f));const cx=(mx-panX)/zoom,cy=(my-panY)/zoom;panX=mx-cx*nz;panY=my-cy*nz;zoom=nz;applyTransform();},{passive:false});
     $('#flowCanvas').addEventListener('pointerdown',e=>{if(e.button!==0)return;if(e.target!==$('#flowCanvas'))return;panning={sx:e.clientX,sy:e.clientY,px:panX,py:panY};panMoved=false;$('#flowCanvas').classList.add('panning');});
@@ -978,7 +921,6 @@
       document.querySelectorAll('.model-btn').forEach(b=>b.onclick=()=>{
         if(MODEL===b.dataset.model)return;
         MODEL=b.dataset.model;
-        const s=getState();s.model=MODEL;saveState(s);
         renderModelSwitch();renderInventory();renderCanvas();
         renderInspector(selectedId?mod(selectedId):null);
         toast('MODEL: '+MODEL_META[MODEL].noun);
@@ -994,13 +936,11 @@
       GROUPS.filter(g=>inventoryFilter==='all'||inventoryFilter===g.id).forEach(g=>{
         const items=MODULES.filter(m=>m.group===g.id);
         html+=`<div class="inventory-group" style="color:${g.color}">${g.name}</div>`;
-        html+=items.map(m=>`<div class="inventory-row ${selectedId===m.id?'selected':''}" data-id="${m.id}" draggable="true" style="--accent:${g.color}"><span class="inventory-id">${m.id}</span><span class="inventory-name">${safe(pick(m.title))}</span></div>`).join('');
+        html+=items.map(m=>`<div class="inventory-row ${selectedId===m.id?'selected':''}" data-id="${m.id}" style="--accent:${g.color}"><span class="inventory-id">${m.id}</span><span class="inventory-name">${safe(pick(m.title))}</span></div>`).join('');
       });
       list.innerHTML=html;
       list.querySelectorAll('.inventory-row').forEach(row=>{
         row.addEventListener('click',()=>select(row.dataset.id));
-        row.addEventListener('dragstart',e=>{draggedId=row.dataset.id;e.dataTransfer.setData('text/plain',draggedId);e.dataTransfer.effectAllowed='move';});
-        row.addEventListener('dragend',()=>{draggedId=null;$('#flowCanvas').classList.remove('drag-over');hideInsertLine();});
       });
     }
     function parseKnob(v){const [a,...b]=v.split('=');return {key:a,value:b.join('=')||'required'}}
@@ -1051,7 +991,6 @@
     /* ==================================================================
        [J8] BOOT
        ================================================================== */
-    getState();                                  // resolves MODEL from storage before first render
     (function sizeCanvas(){const fc=$('#flowCanvas');if(fc){fc.style.width=CANVAS_W+'px';fc.style.height=CANVAS_H+'px';}})();
     renderLaneSeps();renderLaneHeads();
     renderModelSwitch();renderFilters();renderInventory();renderCanvas();renderInspector(null);

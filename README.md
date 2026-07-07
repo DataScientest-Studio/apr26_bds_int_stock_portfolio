@@ -33,12 +33,12 @@ make test-app           # correctness gates + AppTest smoke of every page
 ```
 
 Pages: **Project Report · Data Explorer · Risk Profile · Recommender (Track B) ·
-Basket Simulator (Track A) · Methodology & Integrity** — read-only over committed artifacts,
-nothing trains at runtime.
+Basket Simulator (Track A) · Pipeline Blueprint (Track A) · Methodology & Integrity** — read-only
+over committed artifacts, nothing trains at runtime.
 
-Interactive Track-A pipeline map (what we built, how we thought, what we learned — with an
-XGBoost/LSTM view switch): [`learning_by_doing_OHLCV_data_processing_pipeline.html`](learning_by_doing_OHLCV_data_processing_pipeline.html)
-— open locally in a browser.
+Sealed Track-A pipeline map (what we built, how we thought, what we learned — with an
+XGBoost/LSTM view switch): the **Pipeline Blueprint** page inside the app, or standalone
+[`learning_by_doing_OHLCV_data_processing_pipeline.html`](learning_by_doing_OHLCV_data_processing_pipeline.html).
 
 Repo layout added by the unified branch: `app/` (the app), `xgb/` + `lstm/` (sealed pipelines),
 `fs/` (feature-selection study engine, not mounted), `tools/`, `docs/`, root `Makefile`.

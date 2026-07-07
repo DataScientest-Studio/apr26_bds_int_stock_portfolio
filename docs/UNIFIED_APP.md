@@ -41,7 +41,11 @@ their numbers in one table.
    ($1000 each), read the basket's **realized one-shot OOS** outcome against the same basket's
    buy-and-hold. New: **preset packages** — the same profile rule as Track B, but computed from
    **strictly pre-OOS inputs** (see below), pre-selecting the grid; manual clicking still works.
-6. **Methodology & Integrity** — why "sealed" means something, what the exploratory tier lacks,
+6. **Pipeline Blueprint (Track A)** — the sealed lego map embedded as end-of-project
+   documentation: 17 procedure blocks (bottom→top = the pipeline order, welded by declaration),
+   an XGBoost/LSTM view switch, and a per-block "HOW WE THOUGHT · WHAT WE LEARNED" record —
+   the lessons-learned way to remember the whole build.
+7. **Methodology & Integrity** — why "sealed" means something, what the exploratory tier lacks,
    shared limitations (survivorship, raw prices/splits, IEX volumes, bull OOS window), and the
    rules of engagement the app enforces.
 

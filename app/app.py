@@ -22,6 +22,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))    # app/ modules import as flat names
 
+import page_blueprint
 import page_explorer
 import page_methodology
 import page_recommender
@@ -37,6 +38,7 @@ pg = st.navigation([
     st.Page(page_risk.render, title="Risk Profile", icon="🧭", url_path="risk-profile"),
     st.Page(page_recommender.render, title="Recommender (Track B)", icon="📈", url_path="recommender"),
     st.Page(page_simulator.render, title="Basket Simulator (Track A)", icon="🧺", url_path="simulator"),
+    st.Page(page_blueprint.render, title="Pipeline Blueprint (Track A)", icon="🧱", url_path="blueprint"),
     st.Page(page_methodology.render, title="Methodology & Integrity", icon="🔬", url_path="methodology"),
 ])
 pg.run()
