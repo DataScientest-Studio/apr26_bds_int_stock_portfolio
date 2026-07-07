@@ -105,12 +105,20 @@ build_once() {
     date_flag="date:$(date '+%Y-%m-%d')"
   fi
 
+  # Shared layout defaults (pdf_style.yaml) keep config noise out of the human-readable
+  # markdown; a report's own YAML block always takes precedence over these defaults.
+  local style_flag=""
+  if [[ -f "${SCRIPT_DIR}/pdf_style.yaml" ]]; then
+    style_flag="${SCRIPT_DIR}/pdf_style.yaml"
+  fi
+
   pandoc "$input" \
     --from=markdown+yaml_metadata_block+tex_math_dollars+pipe_tables+grid_tables+raw_tex \
     --to=pdf \
     --pdf-engine="$PDF_ENGINE" \
     --template="$TEMPLATE_NAME" \
     --toc \
+    ${style_flag:+--metadata-file="$style_flag"} \
     ${date_flag:+--metadata="$date_flag"} \
     --output="$output"
 

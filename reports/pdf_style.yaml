@@ -1,0 +1,19 @@
+# Shared eisvogel/pandoc layout defaults for report PDF builds (build_pdf.sh passes this via
+# --metadata-file). Values here are DEFAULTS ONLY: any key defined in a report's own YAML block
+# takes precedence, so REPORT.md / MODELING_REPORT keep their own settings untouched.
+titlepage: true
+toc-own-page: true
+toc-depth: 3
+papersize: a4
+geometry:
+  - top=25mm
+  - bottom=25mm
+  - left=25mm
+  - right=25mm
+fontsize: 11pt
+mainfont: "DejaVu Sans"
+monofont: "DejaVu Sans Mono"
+linkcolor: "NavyBlue"
+urlcolor: "NavyBlue"
+toccolor: "NavyBlue"
+listings: true

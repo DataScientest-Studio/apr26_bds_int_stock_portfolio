@@ -6,29 +6,7 @@ author:
   - Paweł Flak
   - Marcus Schürstedt
 date: "2026-07-07"
-keywords: [machine learning, finance, portfolio, S&P 500, XGBoost, LSTM, random forest, triple-barrier, purged walk-forward, Kelly, Streamlit]
-subject: "Liora APR26 BDS INT — Data Scientist Capstone Project"
-description: "Frozen milestone report on the unified project state: the exploratory ranking recommender (Track B) and the sealed per-asset trading pipelines (Track A) presented under explicit evidence tiers inside one Streamlit application, with honest verdicts, the anti-look-ahead package rule, and full reproducibility."
 lang: en
-
-titlepage: true
-
-toc-own-page: true
-toc-depth: 3
-
-papersize: a4
-geometry:
-  - top=25mm
-  - bottom=25mm
-  - left=25mm
-  - right=25mm
-fontsize: 11pt
-mainfont: "DejaVu Sans"
-monofont: "DejaVu Sans Mono"
-linkcolor: "NavyBlue"
-urlcolor: "NavyBlue"
-toccolor: "NavyBlue"
-listings: true
 ---
 
 # Executive summary
