@@ -11,9 +11,8 @@ lang: en
 
 # Executive summary
 
-This report freezes the **unified state** of the capstone project as of 2026-07-07 (branch
-`two_merged_solutions` on the upstream repository; `main` on the working fork). The repository now
-contains, side by side and without any loss of the original corpus:
+This report freezes the **unified state** of the capstone project as of 2026-07-07, on `main`.
+The repository now contains, side by side and without any loss of the original corpus:
 
 - **Track B — the ranking recommender** (the project's original Stages 1–7): a cross-sectional
   regression experiment that ranks S&P 500 stocks by predicted 63-trading-day return and wraps the
@@ -284,7 +283,7 @@ than hiding it; the monotone deterioration from Conservative to Aggressive is it
   it was recomputed with the LSTM feed's exact convention (first open → last close over the OOS
   window) from the committed daily store: 498/498.
 - **Pre-OOS inputs table** with a fail-closed date assert (`tools/make_preoos_inputs.py`).
-- **Zero-loss merge** of the unified branch with the current `main` (Section 2).
+- **Zero-loss unification** with the existing project corpus (Section 2).
 - **Robust root launcher** — `streamlit run app.py` works even when the `streamlit` binary on the
   operator's `PATH` belongs to a different environment (the repository venv's packages are appended
   as a fallback, host packages keeping priority).
@@ -366,12 +365,9 @@ make verify-xgb  # re-run demo tickers from committed bars  == sealed rows, byte
 make verify-lstm # re-run a diverse sample from the manifest == sealed rows, byte-identical
 ```
 
-- **Branches.** Working fork: `main` = `LSTM_XGB_DONE` (this state). Upstream
-  (`DataScientest-Studio/apr26_bds_int_stock_portfolio`): branch `two_merged_solutions` carries the
-  identical commit; the upstream `main` is untouched.
-- **Corpus integrity.** The merge that produced this state passed a zero-loss gate (all 1,159
-  pre-merge `main` paths present; the only corpus change is the appended Appendix F in
-  `REPORT.md`).
+- **Corpus integrity.** The unification passed a zero-loss gate: all 1,159 pre-existing project
+  paths are present; the only change to the original corpus is the appended Appendix F in
+  `REPORT.md`.
 - **Documents.** `docs/UNIFIED_APP.md` — the application design and tier rationale;
   `docs/PROJECT_STATE.md` — the sealed-tier handoff (audits, re-seal history);
   `reports/REPORT.md` — the team's growing final report (Rendering 1 + 2 + Appendix F);

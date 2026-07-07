@@ -40,7 +40,7 @@ Sealed Track-A pipeline map (what we built, how we thought, what we learned — 
 XGBoost/LSTM view switch): the **Pipeline Blueprint** page inside the app, or standalone
 [`learning_by_doing_OHLCV_data_processing_pipeline.html`](learning_by_doing_OHLCV_data_processing_pipeline.html).
 
-Repo layout added by the unified branch: `app/` (the app), `xgb/` + `lstm/` (sealed pipelines),
+Repo layout of the unified part: `app/` (the app), `xgb/` + `lstm/` (sealed pipelines),
 `fs/` (feature-selection study engine, not mounted), `tools/`, `docs/`, root `Makefile`.
 The original project corpus (`mac-*`, `reports/`, `src/`, `fetch_data.py`, meeting notes) is intact below.
 

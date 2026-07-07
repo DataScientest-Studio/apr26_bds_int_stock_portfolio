@@ -1,8 +1,7 @@
 # The Unified Streamlit App — one project, two evaluation tiers
 
-*Prepared on branch `LSTM_XGB_DONE` as the presentation deliverable; written to slot into the final
-report's Streamlit appendix at merge time. All UI and documentation in English. Nothing trains at
-runtime — the app is a viewer over committed artifacts.*
+*The project's presentation deliverable, on `main`. All UI and documentation in English. Nothing
+trains at runtime — the app is a viewer over committed artifacts.*
 
 ## What it unifies
 
