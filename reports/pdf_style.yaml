@@ -2,6 +2,10 @@
 # --metadata-file). Values here are DEFAULTS ONLY: any key defined in a report's own YAML block
 # takes precedence, so REPORT.md / MODELING_REPORT keep their own settings untouched.
 titlepage: true
+titlepage-color: "0B3D91"
+titlepage-text-color: "FFFFFF"
+titlepage-rule-color: "FFFFFF"
+titlepage-rule-height: 2
 toc-own-page: true
 toc-depth: 3
 papersize: a4
