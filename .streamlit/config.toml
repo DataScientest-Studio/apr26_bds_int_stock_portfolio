@@ -1,0 +1,7 @@
+# Streamlit config for the unified S&P 500 ML portfolio app.
+# enableStaticServing lets the app serve files under app/static/ at the URL /app/static/<file>
+# — used by the Final Presentation intro to link SNDK's raw price CSV (shows its late start date).
+[server]
+enableStaticServing = true
+runOnSave = true
+headless = true

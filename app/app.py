@@ -44,3 +44,36 @@ pg = st.navigation([
     st.Page(page_final_presentation.render, title="Final Presentation", icon="🎤", url_path="final-presentation"),
 ])
 pg.run()
+
+# ── Keyboard shortcut: Ctrl / ⌘ + B hides/shows the navigation menu (sidebar) ────────
+# Streamlit exposes no sidebar hotkey, so we click its own collapse/expand control from
+# a 0-height component. The listener is bound to the PARENT document exactly once (a flag
+# survives reruns); typing in inputs/textarea is ignored so it never fights form entry.
+st.sidebar.caption("⌨️  **⌘ / Ctrl + B** — hide / show this menu")
+st.iframe(
+    """
+    <script>
+    (function () {
+      const doc = window.parent.document;
+      if (doc.__sbToggleBound) return;               // bind once across Streamlit reruns
+      doc.__sbToggleBound = true;
+      function toggleSidebar() {
+        const pick = (sel) => doc.querySelector(sel + ' button') || doc.querySelector(sel);
+        const collapse = pick('[data-testid="stSidebarCollapseButton"]');
+        const expand   = pick('[data-testid="stExpandSidebarButton"]');
+        if (collapse && collapse.offsetParent !== null) collapse.click();   // menu open -> hide
+        else if (expand) expand.click();                                    // menu hidden -> show
+      }
+      doc.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+          const t = e.target, tag = ((t && t.tagName) || '').toLowerCase();
+          if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable)) return;
+          e.preventDefault();
+          toggleSidebar();
+        }
+      }, true);
+    })();
+    </script>
+    """,
+    height=1,
+)
