@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))    # app/ modules impor
 
 import page_blueprint
 import page_explorer
+import page_final_presentation
 import page_methodology
 import page_recommender
 import page_report
@@ -40,5 +41,6 @@ pg = st.navigation([
     st.Page(page_simulator.render, title="Basket Simulator (Track A)", icon="🧺", url_path="simulator"),
     st.Page(page_blueprint.render, title="Pipeline Blueprint (Track A)", icon="🧱", url_path="blueprint"),
     st.Page(page_methodology.render, title="Methodology & Integrity", icon="🔬", url_path="methodology"),
+    st.Page(page_final_presentation.render, title="Final Presentation", icon="🎤", url_path="final-presentation"),
 ])
 pg.run()
