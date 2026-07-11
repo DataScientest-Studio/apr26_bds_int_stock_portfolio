@@ -1,6 +1,6 @@
 """Methodology & Integrity: how the sealed tier earns trust, what the exploratory tier lacks, and
-the limitations we state instead of hiding. Distilled from docs/PROJECT_STATE.md (Track A) and the
-parent project's model reports (Track B).
+the limitations we state instead of hiding. Distilled from docs/PROJECT_STATE.md (Track B) and the
+parent project's model reports (Track A).
 """
 import streamlit as st
 
@@ -10,7 +10,7 @@ from common import track_a_badge, track_b_badge
 def render() -> None:
     st.title("Methodology & Integrity")
 
-    st.subheader("Why 'sealed' means something (Track A)")
+    st.subheader("Why 'sealed' means something (Track B)")
     track_a_badge()
     st.markdown(
         """
@@ -35,7 +35,7 @@ def render() -> None:
         """
     )
 
-    st.subheader("What the exploratory tier lacks (Track B) — stated, not hidden")
+    st.subheader("What the exploratory tier lacks (Track A) — stated, not hidden")
     track_b_badge()
     st.markdown(
         """
@@ -57,7 +57,7 @@ def render() -> None:
         """
 - **Survivorship bias.** The universe is today's S&P 500 constituents applied backward; delisted
   losers are absent, which flatters every 'universe' benchmark. Acknowledged, not mitigated.
-- **Raw prices (Track A store).** Corporate actions are deferred: a split appears as a price cliff.
+- **Raw prices (Track B store).** Corporate actions are deferred: a split appears as a price cliff.
   The sealed engine trades those raw paths consistently, and the buy-and-hold benchmark uses the
   same raw store, so comparisons are internally consistent — but a split-crossing ticker's absolute
   numbers (e.g. NVDA 2024) are not economically meaningful, and pre-OOS volatility near a split is
@@ -74,7 +74,7 @@ def render() -> None:
     st.markdown(
         """
 1. **Tier badges everywhere.** Any number's evidential standard is visible where the number is.
-2. **No cross-tier tables.** Track-A and Track-B results never share a results table or chart.
+2. **No cross-tier tables.** Track-B and Track-A results never share a results table or chart.
 3. **No look-ahead package selection.** Preset packages for the sealed tier use only pre-OOS inputs
    (Train-CV score, ≤ 2023-12-29 risk stats, static sectors) — verified fail-closed by
    `tools/make_preoos_inputs.py`.
@@ -85,6 +85,6 @@ def render() -> None:
    the rule is never tuned against the displayed outcomes.
         """
     )
-    st.caption("Deeper dives: docs/UNIFIED_APP.md (this app), docs/PROJECT_STATE.md (Track-A "
+    st.caption("Deeper dives: docs/UNIFIED_APP.md (this app), docs/PROJECT_STATE.md (Track-B "
                "handoff, audits, re-seal history), xgb/README.md and lstm/README.md (research "
                "integrity sections).")

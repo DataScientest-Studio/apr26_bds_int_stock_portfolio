@@ -8,7 +8,7 @@ trains at runtime — the app is a viewer over committed artifacts.*
 The project produced two research tracks that answer **different questions under different
 standards of evidence**:
 
-| | **Track A — sealed per-asset pipelines** | **Track B — ranking recommender** |
+| | **Track B — sealed per-asset pipelines** | **Track A — ranking recommender** |
 |---|---|---|
 | Question | Will *this* proposed trade net positive? | Which stocks rank best on 63-day forward return? |
 | Models | XGBoost (1h, multi-timeframe) + LSTM (daily), per asset | Ridge / RF / **RF-no-history** (selected) / XGBoost / PyTorch MLP |
@@ -31,16 +31,16 @@ their numbers in one table.
 3. **Risk Profile** — the 9-question investor questionnaire (ported 1:1). Submitting stores
    `st.session_state["risk_answers"]`; an additive score maps to Conservative / Balanced /
    Aggressive plus portfolio size and sector exclusions.
-4. **Recommender (Track B)** — the parent's recommendation page over the **vendored** CSVs
+4. **Recommender (Track A)** — the parent's recommendation page over the **vendored** CSVs
    (`app/data/trackB/`): preference controls prefilled from the questionnaire, the verbatim
    selection rule on `predicted_63d_return`, model metric tiles, walk-forward table, feature
    importances, the five-model comparison ("deep learning tested, not selected"), CSV export.
    The tier badge marks everything as exploratory; package returns are predictions, not backtests.
-5. **Basket Simulator (Track A)** — the sealed demo: pick a model (XGBoost / LSTM), pick tickers
+5. **Basket Simulator (Track B)** — the sealed demo: pick a model (XGBoost / LSTM), pick tickers
    ($1000 each), read the basket's **realized one-shot OOS** outcome against the same basket's
-   buy-and-hold. New: **preset packages** — the same profile rule as Track B, but computed from
+   buy-and-hold. New: **preset packages** — the same profile rule as Track A, but computed from
    **strictly pre-OOS inputs** (see below), pre-selecting the grid; manual clicking still works.
-6. **Pipeline Blueprint (Track A)** — the sealed lego map embedded as end-of-project
+6. **Pipeline Blueprint (Track B)** — the sealed lego map embedded as end-of-project
    documentation: 17 procedure blocks (bottom→top = the pipeline order, welded by declaration),
    an XGBoost/LSTM view switch, and a per-block "HOW WE THOUGHT · WHAT WE LEARNED" record —
    the lessons-learned way to remember the whole build.
@@ -50,7 +50,7 @@ their numbers in one table.
 
 ## The look-ahead problem, and how the app avoids it
 
-Track B's rankings are dated **2026-06-08** — the *end* of Track A's OOS window
+Track A's rankings are dated **2026-06-08** — the *end* of Track B's OOS window
 (2024-01-02 → 2026-05-29/04-30). Selecting tickers by those rankings and then displaying their
 sealed OOS results would be **look-ahead selection** — the exact failure mode the sealed tier was
 built to prevent. The preset packages therefore use only inputs knowable before the OOS window:
@@ -77,7 +77,7 @@ presented as an *illustration of a fixed rule* — not a new out-of-sample claim
   buy-and-hold on 64/498 (honest: a strong bull window).
 - **Pre-OOS inputs table** (`tools/make_preoos_inputs.py` → `app/data/preoos_inputs.csv`):
   498 tickers, volatility/momentum as of ≤ 2023-12-29, fail-closed assert.
-- **Vendored Track-B artifacts** (~150 KB): tickers.csv + rankings/metrics/walk-forward/feature-
+- **Vendored Track-A artifacts** (~150 KB): tickers.csv + rankings/metrics/walk-forward/feature-
   importance CSVs, taken verbatim from the parent project's 6-year export.
 - **App restructured** into `st.navigation` multipage (defense requirement: multi-tab, aesthetic,
   no runtime training). The WO-FS feature-selection study (Polish) is no longer mounted in the
@@ -85,26 +85,26 @@ presented as an *illustration of a fixed rule* — not a new out-of-sample claim
 
 ## Known limitations (stated, not hidden)
 
-- **Raw prices** in the Track-A store: corporate actions deferred; a split-crossing ticker's
+- **Raw prices** in the Track-B store: corporate actions deferred; a split-crossing ticker's
   absolute numbers (e.g. NVDA 2024) are path arithmetic, not economics. Engine and benchmark use
   the same store, so comparisons are internally consistent.
 - **Survivorship**: today's constituents applied backward — flatters every universe benchmark.
-- **Track B evaluation holes** (no purge/embargo, gross, overlapping labels, test-split selection)
+- **Track A evaluation holes** (no purge/embargo, gross, overlapping labels, test-split selection)
   are described on the Methodology page and badged on the Recommender page.
-- **Fold significance**: Track B's 9/13 walk-forward "wins" are not significant at conventional
+- **Fold significance**: Track A's 9/13 walk-forward "wins" are not significant at conventional
   levels; the app words it as exploratory evidence.
 
 ## Future work (documented, not built)
 
-- **The discipline bridge:** re-run the RF ranking under Track-A discipline — 63-trading-day purge
+- **The discipline bridge:** re-run the RF ranking under Track-B discipline — 63-trading-day purge
   in the walk-forward, embargo, the branch cost model, baskets simulated over the sealed OOS
   window against a universe-HODL benchmark. That would produce the one line honestly placeable
-  next to Track-A baskets. Until it runs, the tracks are presented as non-comparable by design
+  next to Track-B baskets. Until it runs, the tracks are presented as non-comparable by design
   (and even then it lands on an already-published window — post-hoc, and must be labeled so).
 
 ## The Pipeline Blueprint — lessons learned as documentation
 
-The end-of-project documentary of Track A is a **single-file, sealed HTML exhibit**
+The end-of-project documentary of Track B is a **single-file, sealed HTML exhibit**
 (`learning_by_doing_OHLCV_data_processing_pipeline.html`, repo root) embedded as the **Pipeline
 Blueprint** page directly under the Basket Simulator. It exists because the most durable way to
 remember a learning-by-doing build is to pin each lesson to the exact block of the pipeline where

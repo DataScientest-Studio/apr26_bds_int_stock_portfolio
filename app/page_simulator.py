@@ -1,4 +1,4 @@
-"""Basket Simulator (Track A — sealed tier): the stage-machine demo over the two sealed OOS stores,
+"""Basket Simulator (Track B — sealed tier): the stage-machine demo over the two sealed OOS stores,
 extended with rule-based PRESET PACKAGES (the parent project's questionnaire -> profile -> selection
 rule), computed on strictly pre-OOS inputs so the displayed sealed results stay honest one-shot reads.
 """

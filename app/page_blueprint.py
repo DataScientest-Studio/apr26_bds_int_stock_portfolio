@@ -1,4 +1,4 @@
-"""Pipeline Blueprint (Track A): the sealed plan behind the Basket Simulator, embedded as
+"""Pipeline Blueprint (Track B): the sealed plan behind the Basket Simulator, embedded as
 end-of-project documentation. Renders the repository's single-file lego map
 (learning_by_doing_OHLCV_data_processing_pipeline.html) - a read-only ladder of 17 procedure
 blocks with an XGBoost/LSTM view switch and a per-block "HOW WE THOUGHT · WHAT WE LEARNED"
@@ -42,7 +42,7 @@ def _load_blueprint(mtime: float) -> str:
 
 
 def render() -> None:
-    st.title("Pipeline Blueprint — Learning by Doing (Track A)")
+    st.title("Pipeline Blueprint — Learning by Doing (Track B)")
     track_a_badge()
     st.write(
         "The sealed plan behind the **Basket Simulator**: end-of-project documentation of how the "
@@ -68,4 +68,4 @@ def render() -> None:
     components.html(_load_blueprint(BLUEPRINT.stat().st_mtime), height=780, scrolling=False)
     st.markdown(LESSONS)
     st.caption("Standalone file: learning_by_doing_OHLCV_data_processing_pipeline.html (repo root) · "
-               "design rationale: docs/UNIFIED_APP.md · Track-A internals: docs/PROJECT_STATE.md.")
+               "design rationale: docs/UNIFIED_APP.md · Track-B internals: docs/PROJECT_STATE.md.")

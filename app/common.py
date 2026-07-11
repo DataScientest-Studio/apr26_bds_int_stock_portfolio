@@ -1,7 +1,7 @@
 """Shared paths, method registry and cached loaders for the unified Streamlit app.
 
-Everything here is READ-ONLY over committed artifacts: the two sealed OOS stores (Track A),
-the vendored Track-B CSVs, the committed daily bar store and the pre-OOS inputs table.
+Everything here is READ-ONLY over committed artifacts: the two sealed OOS stores (Track B),
+the vendored Track-A CSVs, the committed daily bar store and the pre-OOS inputs table.
 Nothing trains, trades or writes at runtime.
 """
 import json
@@ -130,15 +130,15 @@ def load_bars() -> pd.DataFrame:
 
 
 def track_a_badge() -> None:
-    st.success("**Track A — sealed tier.** Purged + embargoed walk-forward CV, net of costs, "
+    st.success("**Track B — sealed tier.** Purged + embargoed walk-forward CV, net of costs, "
                "Kelly-sized, one-shot OOS read exactly once per asset, audited leak-free, "
                "byte-reproducible (`make verify-*`).", icon="✅")
 
 
 def track_b_badge() -> None:
-    st.warning("**Track B — exploratory tier.** Cross-sectional ranking experiment vendored from the "
+    st.warning("**Track A — exploratory tier.** Cross-sectional ranking experiment vendored from the "
                "parent project, shown for transparency: fixed split + walk-forward **without purge or "
                "embargo** (63-day labels overlap every boundary), **gross** returns (no costs, no "
                "sizing), overlapping horizons (pooled Spearman overstates the effective sample), "
                "survivor-only universe. Package returns on this page are **model predictions, not "
-               "backtests**. Numbers here must not be compared 1:1 with Track A results.", icon="⚠️")
+               "backtests**. Numbers here must not be compared 1:1 with Track B results.", icon="⚠️")

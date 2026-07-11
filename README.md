@@ -11,19 +11,19 @@ A beginner-friendly stock portfolio recommender that turns a short questionnaire
 The repository now ships **one multi-page Streamlit application** that unifies the project's two
 research tracks — full write-up in [`docs/UNIFIED_APP.md`](docs/UNIFIED_APP.md):
 
-- **Track A — sealed per-asset pipelines** (`xgb/` 1h multi-timeframe XGBoost, `lstm/` daily LSTM):
+- **Track B — sealed per-asset pipelines** (`xgb/` 1h multi-timeframe XGBoost, `lstm/` daily LSTM):
   Triple-Barrier meta-labeling, purged + embargoed walk-forward CV, net of costs, generalized Kelly,
   **one-shot OOS 2024→2026** read exactly once per asset, audited leak-free, byte-reproducible
   (`make verify-xgb` / `make verify-lstm`). Honest verdict: strategy-v2 did **not** beat its baseline
   (see `docs/PROJECT_STATE.md`) — the demonstrated product is the *method*.
-- **Track B — ranking recommender** (this project's original stages 1–7, `mac-*` folders):
+- **Track A — ranking recommender** (this project's original stages 1–7, `mac-*` folders):
   the 9-question risk questionnaire → profile → rule-based portfolio packages over Random-Forest
   63-day-return rankings — presented as the **exploratory tier** (fixed split + un-purged
   walk-forward, gross returns; package returns are model predictions, not backtests).
 
 The two tiers never share a results table; every number carries its tier badge. The bridge is the
 **portfolio rule, not the model scores**: preset packages on the sealed tier are built from strictly
-**pre-OOS inputs** (Train-CV score, ≤ 2023-12-29 risk stats, static sectors), because Track B's
+**pre-OOS inputs** (Train-CV score, ≤ 2023-12-29 risk stats, static sectors), because Track A's
 rankings are dated at the *end* of the sealed OOS window.
 
 ```bash
@@ -32,11 +32,11 @@ make app                # the unified app on :8503   (equivalently: streamlit ru
 make test-app           # correctness gates + AppTest smoke of every page
 ```
 
-Pages: **Project Report · Data Explorer · Risk Profile · Recommender (Track B) ·
-Basket Simulator (Track A) · Pipeline Blueprint (Track A) · Methodology & Integrity** — read-only
+Pages: **Project Report · Data Explorer · Risk Profile · Recommender (Track A) ·
+Basket Simulator (Track B) · Pipeline Blueprint (Track B) · Methodology & Integrity** — read-only
 over committed artifacts, nothing trains at runtime.
 
-Sealed Track-A pipeline map (what we built, how we thought, what we learned — with an
+Sealed Track-B pipeline map (what we built, how we thought, what we learned — with an
 XGBoost/LSTM view switch): the **Pipeline Blueprint** page inside the app, or standalone
 [`learning_by_doing_OHLCV_data_processing_pipeline.html`](learning_by_doing_OHLCV_data_processing_pipeline.html).
 

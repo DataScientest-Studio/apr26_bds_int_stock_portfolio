@@ -8,26 +8,26 @@ from common import METHODS, load_metrics, parse_window, track_a_badge, track_b_b
 
 LADDER = pd.DataFrame([
     {"Dimension": "Question asked",
-     "Track A — sealed pipelines": "Will THIS proposed trade on this asset net positive?",
-     "Track B — ranking recommender": "Which stocks rank best on 63-day forward return?"},
+     "Track B — sealed pipelines": "Will THIS proposed trade on this asset net positive?",
+     "Track A — ranking recommender": "Which stocks rank best on 63-day forward return?"},
     {"Dimension": "Label / target",
-     "Track A — sealed pipelines": "Triple-Barrier (TP 2×ATR / SL 1×ATR), Y = net>0 after costs",
-     "Track B — ranking recommender": "Continuous 63-trading-day forward return (regression)"},
+     "Track B — sealed pipelines": "Triple-Barrier (TP 2×ATR / SL 1×ATR), Y = net>0 after costs",
+     "Track A — ranking recommender": "Continuous 63-trading-day forward return (regression)"},
     {"Dimension": "Models",
-     "Track A — sealed pipelines": "XGBoost (1h, multi-timeframe) and LSTM (daily), per asset",
-     "Track B — ranking recommender": "Ridge / RF / RF-no-history (selected) / XGBoost / PyTorch MLP"},
+     "Track B — sealed pipelines": "XGBoost (1h, multi-timeframe) and LSTM (daily), per asset",
+     "Track A — ranking recommender": "Ridge / RF / RF-no-history (selected) / XGBoost / PyTorch MLP"},
     {"Dimension": "Validation",
-     "Track A — sealed pipelines": "Purged + embargoed walk-forward CV; ONE-SHOT OOS 2024→2026 read once",
-     "Track B — ranking recommender": "Fixed split + 13-fold walk-forward WITHOUT purge/embargo"},
+     "Track B — sealed pipelines": "Purged + embargoed walk-forward CV; ONE-SHOT OOS 2024→2026 read once",
+     "Track A — ranking recommender": "Fixed split + 13-fold walk-forward WITHOUT purge/embargo"},
     {"Dimension": "Costs & sizing",
-     "Track A — sealed pipelines": "1bp fee + 2bp slippage per side; generalized Kelly",
-     "Track B — ranking recommender": "Gross returns; equal-weight top-N; no execution model"},
+     "Track B — sealed pipelines": "1bp fee + 2bp slippage per side; generalized Kelly",
+     "Track A — ranking recommender": "Gross returns; equal-weight top-N; no execution model"},
     {"Dimension": "Benchmark",
-     "Track A — sealed pipelines": "Per-asset buy & hold over the same OOS window",
-     "Track B — ranking recommender": "Universe average forward return per fold"},
+     "Track B — sealed pipelines": "Per-asset buy & hold over the same OOS window",
+     "Track A — ranking recommender": "Universe average forward return per fold"},
     {"Dimension": "Result status",
-     "Track A — sealed pipelines": "Realized, sealed, byte-reproducible (make verify-*)",
-     "Track B — ranking recommender": "Exploratory; package returns are model predictions"},
+     "Track B — sealed pipelines": "Realized, sealed, byte-reproducible (make verify-*)",
+     "Track A — ranking recommender": "Exploratory; package returns are model predictions"},
 ])
 
 
@@ -48,7 +48,7 @@ def render() -> None:
     st.subheader("What each track concluded — honestly")
     a, b = st.columns(2)
     with a:
-        st.markdown("#### Track A (sealed)")
+        st.markdown("#### Track B (sealed)")
         for name, cfg in METHODS.items():
             df = load_metrics(cfg["db"])
             if df.empty:
@@ -75,7 +75,7 @@ def render() -> None:
             "A negative, trustworthy answer — reported as-is."
         )
     with b:
-        st.markdown("#### Track B (exploratory)")
+        st.markdown("#### Track A (exploratory)")
         st.markdown(
             "- Five model families compared on one fixed split; **Ridge** actually won the fixed-split "
             "metrics; the practical recommender uses **RF without `history_days`** (a shortcut feature "
@@ -100,8 +100,8 @@ The bridge between the tracks is the **portfolio rule, not the model scores**:
 
 1. The **Risk Profile** questionnaire maps your answers to a profile (additive score → Conservative /
    Balanced / Aggressive), a portfolio size and sector exclusions — identical mapping on both tracks.
-2. On **Track B** the rule ranks by the RF's predicted 63-day return — a *prediction*, shown as such.
-3. On **Track A** the same rule builds preset packages from **pre-OOS inputs only** — the Train-CV
+2. On **Track A** the rule ranks by the RF's predicted 63-day return — a *prediction*, shown as such.
+3. On **Track B** the same rule builds preset packages from **pre-OOS inputs only** — the Train-CV
    score sealed in each row, volatility/momentum as of 2023-12-29, and static sector data. The
    parent's prediction rankings are dated at the **end** of the sealed OOS window, so using them
    there would be look-ahead; they are not used.
@@ -110,5 +110,5 @@ That way the *design* (one form, one rule, three risk profiles) is coherent acro
 while every displayed number keeps its own evaluation tier.
         """
     )
-    st.caption("Full write-up: docs/UNIFIED_APP.md · Track-A internals: docs/PROJECT_STATE.md · "
+    st.caption("Full write-up: docs/UNIFIED_APP.md · Track-B internals: docs/PROJECT_STATE.md · "
                "reproduce: make verify-xgb / make verify-lstm.")

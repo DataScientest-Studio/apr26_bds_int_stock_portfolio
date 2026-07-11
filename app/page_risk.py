@@ -1,7 +1,7 @@
 """Risk Profile page: the parent project's 9-question investor questionnaire (ported 1:1).
 
 Submitting stores the answers in st.session_state["risk_answers"]; both downstream consumers
-(the Track-B Recommender's preference controls and the Track-A simulator's preset packages)
+(the Track-A Recommender's preference controls and the Track-B simulator's preset packages)
 prefill from that one dict — the same score -> profile mapping either way.
 """
 import streamlit as st
@@ -14,8 +14,8 @@ def render() -> None:
     st.title("Risk Profile")
     st.write(
         "Answer the questions below so the app can match portfolios to your risk profile. "
-        "After submitting, both the **Recommender (Track B)** preference controls and the "
-        "**Basket Simulator (Track A)** preset packages are prefilled from these answers."
+        "After submitting, both the **Recommender (Track A)** preference controls and the "
+        "**Basket Simulator (Track B)** preset packages are prefilled from these answers."
     )
     result = render_questionnaire()
     if result:

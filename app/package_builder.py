@@ -3,11 +3,11 @@
 Two rule variants share the same skeleton (filters -> objective score -> greedy pick under a
 per-sector cap -> equal weight, relax-only-the-volatility-cap-if-underfilled):
 
-* ``apply_recommendation_preferences`` — the Track-B original, VERBATIM from
+* ``apply_recommendation_preferences`` — the Track-A original, VERBATIM from
   ``mac-2026-06-09-full-6y/app.py``: ranks by the Random-Forest ``predicted_63d_return``.
   Used ONLY on the Recommender page, where results are model predictions (exploratory tier).
 
-* ``build_package`` — the Track-A adaptation for the Basket Simulator. The sealed OOS rows it
+* ``build_package`` — the Track-B adaptation for the Basket Simulator. The sealed OOS rows it
   pre-selects are REAL one-shot results, so every input must be knowable before the OOS window:
     - ranking score  = ``cv_auc_pr``   (Train-CV metric sealed in each row — decided pre-OOS)
     - volatility / recent return       = as of <= 2023-12-29 (app/data/preoos_inputs.csv)
@@ -152,7 +152,7 @@ def apply_recommendation_preferences(
     min_recent_return: float,
     ranking_objective: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, bool]:
-    """Track-B original (verbatim port): rule over the RF predicted-return rankings."""
+    """Track-A original (verbatim port): rule over the RF predicted-return rankings."""
     filtered = rankings.copy()
     filtered = filtered[~filtered["sector"].isin(excluded_sectors)]
     filtered = filtered[filtered["predicted_63d_return"] >= min_predicted_return]
@@ -197,7 +197,7 @@ def build_package(
     min_recent_return: float,
     ranking_objective: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, bool]:
-    """Track-A preset: the same rule skeleton over STRICTLY PRE-OOS inputs.
+    """Track-B preset: the same rule skeleton over STRICTLY PRE-OOS inputs.
 
     ``pool`` columns: ticker, sector, industry, cv_auc_pr, volatility_60d, ret_60d — the merge of
     the selected method's sealed store (Train-CV score only) with the pre-OOS risk table and the

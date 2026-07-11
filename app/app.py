@@ -5,12 +5,12 @@ Pages (st.navigation):
   1. Project Report          — the two-track narrative + methodology ladder
   2. Data Explorer           — Exploration + 6 mentor-validated plots (committed daily store)
   3. Risk Profile            — the 9-question investor questionnaire (feeds both tracks)
-  4. Recommender (Track B)   — exploratory ranking recommender over vendored CSVs
-  5. Basket Simulator (Track A) — sealed one-shot OOS results + rule-based preset packages
+  4. Recommender (Track A)   — exploratory ranking recommender over vendored CSVs
+  5. Basket Simulator (Track B) — sealed one-shot OOS results + rule-based preset packages
   6. Methodology & Integrity — what separates the tiers; limitations stated openly
 
 READ-ONLY by design: every page renders committed artifacts (sealed oos_metrics stores, HODL
-feeds, vendored Track-B CSVs, the daily bar store, the pre-OOS inputs table). Nothing trains,
+feeds, vendored Track-A CSVs, the daily bar store, the pre-OOS inputs table). Nothing trains,
 optimizes or writes at runtime.
 
 Run:  make app    (Streamlit on :8503)
@@ -37,9 +37,9 @@ pg = st.navigation([
     st.Page(page_report.render, title="Project Report", icon="📋", url_path="report", default=True),
     st.Page(page_explorer.render, title="Data Explorer", icon="🔎", url_path="explorer"),
     st.Page(page_risk.render, title="Risk Profile", icon="🧭", url_path="risk-profile"),
-    st.Page(page_recommender.render, title="Recommender (Track B)", icon="📈", url_path="recommender"),
-    st.Page(page_simulator.render, title="Basket Simulator (Track A)", icon="🧺", url_path="simulator"),
-    st.Page(page_blueprint.render, title="Pipeline Blueprint (Track A)", icon="🧱", url_path="blueprint"),
+    st.Page(page_recommender.render, title="Recommender (Track A)", icon="📈", url_path="recommender"),
+    st.Page(page_simulator.render, title="Basket Simulator (Track B)", icon="🧺", url_path="simulator"),
+    st.Page(page_blueprint.render, title="Pipeline Blueprint (Track B)", icon="🧱", url_path="blueprint"),
     st.Page(page_methodology.render, title="Methodology & Integrity", icon="🔬", url_path="methodology"),
     st.Page(page_final_presentation.render, title="Final Presentation", icon="🎤", url_path="final-presentation"),
 ])

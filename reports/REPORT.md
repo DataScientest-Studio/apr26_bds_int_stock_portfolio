@@ -44,6 +44,12 @@ listings: true
 listings-no-page-break: true
 code-block-font-size: \footnotesize
 
+# Tighten justification so dense lines stay within the margins (protrusion; fast + heading-safe)
+header-includes: |
+  ```{=latex}
+  \usepackage{microtype}
+  ```
+
 # Header / footer
 header-left: "Stock Portfolio Recommender"
 header-right: "Liora APR26 BDS INT"
@@ -65,19 +71,10 @@ questionnaire about an investor (experience, time horizon, loss tolerance, month
 budget, sector preferences) into a small, diversified portfolio of 5–10 stocks
 picked from the S&P 500, accompanied by the risk metrics that justify each pick.
 
-This document is the **single growing report** for the project. It is updated at
-each Liora milestone:
-
-| Milestone     | Deadline      | Sections covered             | Status        |
-| ------------- | ------------- | ---------------------------- | ------------- |
-| Rendering 1   | 2026-06-03    | §2 – §7                      | **Delivered** |
-| Rendering 2   | 2026-07-01    | §8 – §9                      | **Delivered** — content merged below from [`MODELING_REPORT_010726.md`](MODELING_REPORT_010726.md) (submitted, not further modified) |
-| Final report  | 2026-07-08    | §1, §10 + revisions of all   | **In progress** |
-
-This first rendering documents how we acquired the dataset, what it
-contains, the exploratory analysis we ran, the data-quality issues and biases we
-found, and the pre-processing plan that turns the raw bars into an ML-ready table.
-All figures and statistics are reproduced directly from the local
+This report documents how we acquired the dataset, what it contains, the
+exploratory analysis we ran, the data-quality issues and biases we found, the
+pre-processing that turns the raw bars into an ML-ready table, the modelling, and
+the conclusions. All figures and statistics are reproduced directly from the local
 dataset by `reports/make_figures.py`.
 
 > **Disclaimer:** This project is decision support for a beginner investor, **not**
@@ -113,14 +110,14 @@ three stages:
    relevant clusters, and return top-*N* stocks per cluster, with a sector-concentration cap.
 
 > **Note on delivery vs. plan.** This original 3-stage framing (and the
-> 12-month horizon in §1.3 below) evolved once modelling started, and both
+> 12-month horizon below) evolved once modelling started, and both
 > changes were deliberate, evidence-based decisions rather than scope
 > creep: no unsupervised clustering stage was built — it was replaced with a
 > per-asset classifier and a full-universe regression recommender — and the
 > shipped horizon was shortened from 12 months to **63 trading days**
 > (≈ 1 quarter). A genuine 12-month-ahead target needs years of
 > *non-overlapping* forward windows to validate reliably, and with only
-> 5–6 years of usable history per ticker (§2.4, §3.3) — shorter still for
+> 5–6 years of usable history per ticker — shorter still for
 > recent entrants — a 12-month label would have left too few independent
 > out-of-sample observations to trust. 63 days keeps three to four times more
 > independent test windows in the same history, at the cost of a shorter
@@ -245,12 +242,16 @@ counts below were re-verified against the local CSVs while preparing this report
 
 ## 3.1 Datasets and schemas
 
+\footnotesize
+
 | File                              | Rows    | Columns                          | Notes                         |
 | --------------------------------- | ------- | -------------------------------- | ----------------------------- |
 | `tickers.csv`                     | 503     | ticker, name, sector, industry, index, country | Wikipedia → enriched          |
-| `prices_long.csv`                 | 726,018 | ticker, date, open, high, low, close, adj\_close, volume | Long format for feature eng. |
+| `prices_long.csv`                 | 726,018 | ticker, date, OHLCV, adj\_close | Long format for feature eng. |
 | `prices_close_wide.csv`           | 1,723 × 503 | date × ticker (adj\_close)   | Wide format for correlations |
 | `failed_tickers.csv`              | 0       | ticker, reason                   | Empty after the last run     |
+
+\normalsize
 
 The price panel is **unbalanced**: 503 distinct symbols across 1,723 trading dates,
 but not every symbol trades on every date (listing-date heterogeneity).
@@ -422,8 +423,7 @@ Because the metadata (sector/industry) reflects *current* GICS labels and the
 adjusted prices fold in *all* historical corporate actions, careless feature
 construction can leak future information into the past. Our discipline: features at
 time *t* use only data available at *t*, and cross-validation is **`TimeSeriesSplit`,
-never random k-fold**. This is a design rule for Rendering 2, stated here
-so the EDA choices that feed it are on record.
+never random k-fold**.
 
 \newpage
 
@@ -550,253 +550,24 @@ table is materialised.
 
 The team pursued two complementary tracks rather than a single pipeline:
 
-- **Track A — Per-asset intraday classifier.** A supervised binary classifier
-  on 1-hour bars with Triple-Barrier labelling, tuned with Optuna, sized with
-  fractional Kelly, built on a 10-asset subset and evaluated out-of-sample.
-- **Track B — Full-universe regression recommender.** A regression-ranking
+- **Track A — Full-universe regression recommender.** A regression-ranking
   approach across the full 503-ticker universe, targeting a 63-trading-day
   forward return, feeding a profile-based portfolio layer with a 30% sector
   cap.
+- **Track B — Per-asset intraday classifier.** A supervised binary classifier
+  on 1-hour bars with Triple-Barrier labelling, tuned with Optuna, sized with
+  fractional Kelly, built on a 10-asset subset and evaluated out-of-sample.
 
 Neither implements the unsupervised clustering originally proposed; both
 replaced it with a supervised or rule-based layer. Both also trade the
-original **12-month-ahead** target (§1.2) for shorter horizons — Track A is
-intraday, Track B ranks stocks 63 trading days out — because with only
-5–6 years of usable history per ticker (§2.4), a 12-month label leaves too
+original **12-month-ahead** target for shorter horizons — Track A ranks
+stocks 63 trading days out, Track B is intraday — because with only
+5–6 years of usable history per ticker, a 12-month label leaves too
 few independent forward windows to validate; the shorter horizons keep
 several times more non-overlapping test windows in the same span, trading
 look-ahead length for a trustworthy out-of-sample sample size.
 
-## 8.2 Problem framing and the learning target
-
-**From price bars to a supervised label (Triple-Barrier).** Every eligible 1h
-bar `t0` is a candidate trade. Its side is taken from 1h momentum,
-`direction = sign(log_return_5[t0])` (a zero-momentum bar is skipped). The
-trade is simulated under the **ATR Triple-Barrier** contract
-(`TripleBarrier.ATR.v1`, implemented in `pipeline.py: generate_candidate_events`,
-`simulate_trade`): entry fills at the next bar open,
-`entry = open[t0+1] · (1 + side · slippage)`; barriers are symmetric,
-half-width `= ATR14[t0] · 1.0` (target `= entry + side · width`, stop
-`= entry − side · width`); a **24-bar time barrier** closes the trade at a
-scheduled close (`scheduled_moc_close`) if neither side is touched; commission
-(1 bp) and slippage (2 bp) are charged. The label `Y = 1` if the net-of-cost
-return is positive, else `0` — this is **binary classification**, and because
-positive rates run ≈ 0.47–0.52 per asset, **AUC-PR** (not accuracy) is the
-honest metric.
-
-**Feature space.** The model sees **56 numeric features**, namespaced by
-timeframe and concatenated in a deterministic order (`config/feature_namespaces.json`):
-
-| Namespace  | IDs     | Count | Content                                            |
-| ---------- | ------- | ----- | --------------------------------------------------- |
-| `1h`       | 1–17    | 17    | 1-hour indicators (the decision clock)               |
-| `1d`       | 101–117 | 17    | Daily indicators, projected as-of the 1h decision    |
-| `1w`       | 201–217 | 17    | Weekly indicators, projected as-of the 1h decision   |
-| `multi_tf` | 901–905 | 5     | Cross-timeframe alignment / spread features          |
-
-Families repeat per timeframe: **returns** (`log_return_1/5/20`), **trend**
-(`dist_to_sma_20/50`, `sma_20_sma_50_ratio`, `close_z_score_20`), **momentum**
-(`rsi_14`, MACD line/signal/hist), **volatility** (`atr_pct_14`,
-`realized_volatility_20`, Bollinger %b + bandwidth), **volume**
-(`volume_z_score_20`) and the `direction` sign; the five `multi_tf` features
-are `momentum_alignment_multi`, `rsi_spread_1h_1d`, `volatility_ratio_1h_1d`,
-`macd_hist_alignment_multi` and `price_vs_sma_alignment_multi`. All features
-are numeric — no categorical encoding is needed, unlike the plan in §7.4 —
-and XGBoost's native missing-value handling absorbs the NaNs that
-daily/weekly projections legitimately produce early in a series.
-
-**Leakage control.** The series is split strictly by time
-(`config/pipeline_parameters.json`): warmup (2016-01-04 → 2016-10-14), train
-(2016-10-17 → 2023-12-29) and a never-touched **OOS window**
-(2024-01-02 → 2026-05-29). A purge step (`purge_train_setups`) drops any
-training setup whose label horizon reaches into OOS, and cross-validation
-inside Train (`purged_wf_folds`) uses **4 purged walk-forward folds** with a
-35-bar embargo (`EMBARGO_BARS`) — never a random k-fold, consistent with the
-leakage discipline set out in §5.5. With a 24-bar horizon and a 35-bar
-embargo, the combined no-peek span between a label and the next usable bar is
-**59 bars**.
-
-## 8.3 Baseline models
-
-Two baselines frame how much the model adds: the **no-skill floor** (AUC-PR
-equal to each asset's positive rate, ≈ 0.47–0.52) and an **untuned XGBoost**
-with a fixed, honest first-iteration hyperparameter set (`max_depth 3, eta
-0.1, subsample 0.9, colsample_bytree 0.9, min_child_weight 1.0, reg_lambda
-1.0, n_estimators 100`). The untuned model
-already clears the prevalence floor on most assets, and Optuna tuning (§8.4)
-adds a further, modest lift on **10 / 10** assets — the realistic ceiling is
-low (`cv_auc_pr` tops out around 0.55), which sets honest expectations for the
-OOS economics in §8.4.3.
-
-## 8.4 Metrics, optimization and model comparison
-
-### 8.4.1 Metrics
-
-Training/selection metric is **AUC-PR** (`eval_metric = "aucpr"`; Optuna
-direction `maximize` — more informative than ROC-AUC for a near-balanced,
-economically asymmetric target). A trade fires only when the model's
-probability `p ≥ THRESHOLD_ENTRY = 0.6` (`run_engine`) — a conservative gate
-that trades recall for precision. OOS economic metrics (profit factor,
-return %, max drawdown %, win rate %, trade count, time-in-market %) rank
-strategies by `STRATEGY_OBJECTIVE`: **PF (max) → drawdown (min) →
-time-in-market (min)**, with win rate informational.
-
-### 8.4.2 Hyper-parameter optimization
-
-XGBoost is tuned with **Optuna**: a TPE sampler (seed 42), a MedianPruner (2
-warmup steps), 200 trials, maximizing the mean AUC-PR over the 4 purged
-walk-forward folds (`layer7_optuna`). The search space
-(`config/xgboost_optuna_search_space.json`):
-
-| Hyper-parameter    | XGBoost name                       | Type  | Range        | Scale   |
-| ------------------ | ----------------------------------- | ----- | ------------ | ------- |
-| `max_depth`        | `max_depth`                         | int   | [2, 5]       | linear  |
-| learning rate      | `eta`                                | float | [0.02, 0.30] | log     |
-| row subsample      | `subsample`                          | float | [0.6, 1.0]   | linear  |
-| column subsample   | `colsample_bytree`                   | float | [0.6, 1.0]   | linear  |
-| `min_child_weight` | `min_child_weight`                   | float | [1.0, 10.0]  | linear  |
-| L2 regularization  | `reg_lambda` → `lambda`              | float | [0.5, 5.0]   | linear  |
-| number of trees    | `n_estimators` → `num_boost_round`   | int   | [40, 300]    | linear  |
-
-*Example fitted model (AAPL):* `max_depth 5, eta 0.192, subsample 0.748,
-colsample_bytree 0.965, min_child_weight 9.15, reg_lambda 3.88,
-n_estimators 115`, giving `cv_auc_pr = 0.541`.
-
-A second, nested optimization (`calibrate_kelly`) calibrates the **Kelly
-fraction** λ on a 20-point grid in [0.05, 1.0], maximizing train out-of-fold
-log-growth; live sizing is `f = clip(λ · (2p − 1), 0, KELLY_CAP = 1.0)`.
-Neither optimization reads OOS.
-
-### 8.4.3 Cross-asset OOS results
-
-| Ticker | Trades | Win % | PF   | Return %   | Max DD % | Time-in-mkt % | CV AUC-PR |
-| ------ | ------ | ----- | ---- | ---------- | -------- | ------------- | --------- |
-| XOM    | 263    | 48.67 | 0.88 | −5.16      | 7.55     | 36.85         | 0.514     |
-| AAPL   | 236    | 48.73 | 0.88 | −5.63      | 15.68    | 39.12         | 0.541     |
-| TSLA   | 74     | 59.46 | 1.55 | **+10.36** | 4.13     | 11.02         | 0.554     |
-| JPM    | 71     | 64.79 | 1.76 | +0.23      | 0.05     | 11.60         | 0.513     |
-| AMZN   | 6      | 33.33 | 0.23 | −0.73      | 0.83     | 1.46          | 0.532     |
-| GOOGL  | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.533     |
-| JNJ    | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.506     |
-| META   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.507     |
-| MSFT   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.521     |
-| NVDA   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.523     |
-
-One shared recipe, ten independent per-asset fits: **5 of 10 assets trade**,
-5 hold cash (their best probabilities never reach the 0.6 gate). Of the five
-that trade, two are profitable (TSLA, JPM), two lose ≈ 5 % (XOM, AAPL), and
-AMZN is marginally negative on 6 low-exposure trades.
-
-## 8.5 Bagging vs Boosting
-
-XGBoost is **gradient-boosted trees** — shallow trees added sequentially, each
-fitted to the residual errors of the ensemble so far
-(`pipeline.py: _xgb_train`; `objective="binary:logistic"`,
-`booster="gbtree"`). It is not a bagging method, but `subsample` and
-`colsample_bytree` (both tuned in §8.4.2) borrow bagging's row/feature
-randomization inside the boosting loop, making it a **stochastic gradient
-booster**.
-
-To answer the mentor's explicit request (2026-05-28) for a bagging-vs-boosting
-comparison, a **RandomForest** (bagging, 300 trees, seed 42) baseline was
-trained against the tuned XGBoost on identical features and identical purged
-walk-forward folds:
-
-| Ticker | Setups | Pos-rate | Baseline XGB | **Tuned XGB** | RandomForest | Δ (XGB − RF) |
-| ------ | ------ | -------- | ------------ | ------------- | ------------ | ------------ |
-| AAPL   | 12 565 | 0.500    | 0.521        | **0.541**     | 0.504        | +0.037       |
-| AMZN   | 12 573 | 0.514    | 0.521        | **0.532**     | 0.514        | +0.018       |
-| GOOGL  | 12 573 | 0.491    | 0.502        | **0.533**     | 0.494        | +0.039       |
-| JNJ    | 12 526 | 0.482    | 0.491        | **0.506**     | 0.499        | +0.008       |
-| JPM    | 12 541 | 0.483    | 0.505        | **0.513**     | 0.491        | +0.022       |
-| META   | 12 564 | 0.487    | 0.485        | **0.507**     | 0.490        | +0.017       |
-| MSFT   | 12 551 | 0.473    | 0.486        | **0.521**     | 0.469        | +0.052       |
-| NVDA   | 12 569 | 0.502    | 0.509        | **0.523**     | 0.506        | +0.017       |
-| TSLA   | 12 570 | 0.522    | 0.546        | **0.554**     | 0.516        | +0.039       |
-| XOM    | 12 531 | 0.493    | 0.492        | **0.514**     | 0.498        | +0.016       |
-
-**Boosting beats bagging on all 10 assets** (mean advantage **+0.027** AUC-PR).
-RandomForest sits at each asset's prevalence floor — it extracts almost no
-signal — while tuned XGBoost shows a small but consistent edge. One asymmetry
-is itself a finding: RandomForest cannot consume `NaN`, so the daily/weekly
-gaps were median-imputed (fit on the training fold only), whereas XGBoost
-needed no imputation — its native missing-value handling is a practical
-advantage on top of the accuracy edge. As an internal cross-check, the
-**Tuned XGB** column above reproduces the stored `cv_auc_pr` from §8.4.3 to
-three decimals on every asset, confirming this comparison uses the production
-CV exactly. On small, noisy, tabular financial tables, sequential
-error-correction (boosting) extracts the faint signal better than
-variance-averaging (bagging) — which, combined with the native missing-value
-handling above, is why boosting is the model family used here.
-
-## 8.6 Deep Learning — tested, not selected
-
-**Track A** (the 10-asset per-ticker classifier described in this section)
-has **no deep learning**: `requirements.txt` pins `xgboost==3.3.0` and
-contains no PyTorch, TensorFlow or Keras. Reasoning for this track:
-
-- The 56 features are already engineered, tabular indicators — gradient-boosted
-  trees typically outperform neural nets on this kind of input.
-- With `cv_auc_pr` barely above 0.5, extra model capacity is far more likely to
-  overfit noise than to find new signal.
-- Determinism and reproducibility are project hard-constraints (`seed_everything`,
-  single-threaded XGBoost, pinned libraries), easier to guarantee without a
-  GPU-trained neural net.
-- The project's minimalism value favours a small, regularized tree ensemble
-  and a small dependency surface over an additional model family.
-
-A deep-learning model **was** implemented and tested, however, on **Track B**
-(the full 503-ticker regression recommender, §8.9): `models/train_rocm_model.py`
-trains a small PyTorch MLP (`Linear(64) → ReLU → Dropout(0.10) → Linear(32) →
-ReLU → Linear(1)`) on an AMD ROCm GPU, and the script is committed to the
-project's GitHub repository. It satisfies the Liora Step 3.3 checklist's
-Deep Learning requirement, but **it was not selected** for the deployed
-recommender: on the fixed test split it scored MAE 0.342 / RMSE 0.430 /
-Spearman rank corr. −0.020, clearly worse than Ridge, Random Forest or
-XGBoost on the same features (Table in §8.9) — larger average errors and a
-slightly *negative* rank correlation, i.e. its stock ranking was no better
-than random. In this dataset, the extra model capacity did not translate into
-better recommendation quality, so the app's Model Comparison page reports the
-result transparently rather than hiding a negative finding.
-
-## 8.7 Interpretability
-
-In keeping with the project's minimalism value, interpretability is presented
-as a **menu** of methods applicable to a gradient-boosted tree model, alongside
-what the model already provides. No importance numbers are computed in this
-rendering.
-
-| # | Method                                        | New dependency         | Cost                  | Output                                                              |
-| - | ---------------------------------------------- | ----------------------- | ---------------------- | -------------------------------------------------------------------- |
-| 1 | Native XGBoost importance (gain/cover/weight) | none                    | trivial, no retrain    | global feature ranking                                              |
-| 2 | TreeSHAP (global + local)                     | `shap`                  | moderate                | global + per-setup attributions                                     |
-| 3 | Permutation importance (on OOS)               | `scikit-learn`          | moderate (re-scores)   | model-agnostic global ranking                                       |
-| 4 | Partial dependence / ICE                      | `scikit-learn` + plots  | moderate                | shape of a feature's effect                                         |
-| 5 | By-construction interpretability              | none                    | free                    | explicit label / side / sizing rules + documented feature formulas |
-
-Two of these need nothing new: **native importance** (option 1) is essentially
-free — the per-asset booster is already embedded in the frozen strategy file,
-so `gain`/`cover`/`weight` rankings can be read off without retraining or new
-dependencies — and **by-construction** (option 5) is already true of the
-design: the label is an explicit Triple-Barrier rule, the side is a
-transparent `sign(log_return_5)`, sizing is the closed-form Kelly clip
-`f = clip(λ(2p−1), 0, cap)` from §8.4.2, and every feature has a documented
-formula, unit and timeframe.
-
-## 8.8 From model to deployable artifact
-
-Each asset's trained booster is frozen into a self-contained, self-verifying
-file `Assets/TICKER/strategy_TICKER.py` (`asset_writers.py`,
-`strategy_meta`): the model is serialized with `booster.save_raw()` and
-embedded as a base64 string, a `MODEL_HASH` (SHA-256 of the raw bytes) guards
-integrity on load, and golden vectors (the first few training rows) and their
-predictions are stored so a `selfcheck` asserts byte-identical predictions
-when the file is loaded. This satisfies the defense requirement of **no
-re-training at runtime** (Timeline Step 5) and, together with fixed seeding
-and pinned libraries, makes the OOS results reproducible. The artifact is a
-frozen predictor, not a notebook to re-run.
-
-## 8.9 Track B — Full-universe regression recommender
+## 8.2 Track A — Full-universe regression recommender
 
 **Dataset.** The full six-year Alpaca IEX window available at run time: 503
 S&P 500 tickers, 2020-07-27 → 2026-06-08 (5.86 years, 1,474 trading dates),
@@ -822,8 +593,8 @@ roughly three market months out (63 trading days), ranking stocks rather than
 predicting an exact price. A fixed time-based split (train 2020-10-20 →
 2024-12-31, test 2025-01-02 → 2026-03-09) compares five candidate models.
 *Naming note:* "Random Forest" here is a **different, independently trained
-model** from the RandomForest bagging baseline in §8.5 — that one is a
-Track A classifier that underperforms XGBoost; this one is a Track B
+model** from the RandomForest bagging baseline — that one is a
+Track B classifier that underperforms XGBoost; this one is a Track A
 regressor that turns out to be the practical winner of its own comparison.
 
 ![The golden rule of financial ML — chronology cannot be shuffled. Training
@@ -852,7 +623,7 @@ only), the ROCm PyTorch MLP (highest complexity, highest error, negative rank
 correlation) and the no-history Random Forest (the practical winner: handles
 non-linear patterns, stays explainable, and is validated walk-forward).
 This is the same comparison behind the "deep learning tested, not selected"
-conclusion in §8.6.](figures/11_trackb_model_comparison.png){ width=85% }
+conclusion.](figures/11_trackb_model_comparison.png){ width=85% }
 
 **Walk-forward validation.** The no-`history_days` Random Forest, retrained on
 expanding history across 13 rolling 63-day folds, beat the universe average
@@ -886,12 +657,241 @@ explainability and walk-forward robustness better than the alternatives — not
 because it topped every metric. Neither XGBoost nor the ROCm PyTorch MLP beat
 the simpler baselines on this universe.
 
-![The complete Track B temporal pipeline: raw prices → backward features and
+![The complete Track A temporal pipeline: raw prices → backward features and
 forward targets → chronological train/test split → model inference →
 predicted returns → risk/sector-constrained portfolio
 funnel.](figures/13_trackb_pipeline_overview.png){ width=85% }
 
 \newpage
+
+## 8.3 Problem framing and the learning target
+
+**From price bars to a supervised label (Triple-Barrier).** Every eligible 1h
+bar `t0` is a candidate trade. Its side is taken from 1h momentum,
+`direction = sign(log_return_5[t0])` (a zero-momentum bar is skipped). The
+trade is simulated under the **ATR Triple-Barrier** contract
+(`TripleBarrier.ATR.v1`, implemented in `pipeline.py: generate_candidate_events`,
+`simulate_trade`): entry fills at the next bar open,
+`entry = open[t0+1] · (1 + side · slippage)`; barriers are symmetric,
+half-width `= ATR14[t0] · 1.0` (target `= entry + side · width`, stop
+`= entry − side · width`); a **24-bar time barrier** closes the trade at a
+scheduled close (`scheduled_moc_close`) if neither side is touched; commission
+(1 bp) and slippage (2 bp) are charged. The label `Y = 1` if the net-of-cost
+return is positive, else `0` — this is **binary classification**, and because
+positive rates run ≈ 0.47–0.52 per asset, **AUC-PR** (not accuracy) is the
+honest metric.
+
+**Feature space.** The model sees **56 numeric features**, namespaced by
+timeframe and concatenated in a deterministic order (`config/feature_namespaces.json`):
+
+| Namespace  | IDs     | Count | Content                                            |
+| ---------- | ------- | ----- | --------------------------------------------------- |
+| `1h`       | 1–17    | 17    | 1-hour indicators (the decision clock)               |
+| `1d`       | 101–117 | 17    | Daily indicators, projected as-of the 1h decision    |
+| `1w`       | 201–217 | 17    | Weekly indicators, projected as-of the 1h decision   |
+| `multi_tf` | 901–905 | 5     | Cross-timeframe alignment / spread features          |
+
+Families repeat per timeframe: **returns** (`log_return_1/5/20`), **trend**
+(`dist_to_sma_20/50`, `sma_20_sma_50_ratio`, `close_z_score_20`), **momentum**
+(`rsi_14`, MACD line/signal/hist), **volatility** (`atr_pct_14`,
+`realized_volatility_20`, Bollinger %b + bandwidth), **volume**
+(`volume_z_score_20`) and the `direction` sign; the five `multi_tf` features
+are `momentum_alignment_multi`, `rsi_spread_1h_1d`, `volatility_ratio_1h_1d`,
+`macd_hist_alignment_multi` and `price_vs_sma_alignment_multi`. All features
+are numeric — no categorical encoding is needed, unlike the plan —
+and XGBoost's native missing-value handling absorbs the NaNs that
+daily/weekly projections legitimately produce early in a series.
+
+**Leakage control.** The series is split strictly by time
+(`config/pipeline_parameters.json`): warmup (2016-01-04 → 2016-10-14), train
+(2016-10-17 → 2023-12-29) and a never-touched **OOS window**
+(2024-01-02 → 2026-05-29). A purge step (`purge_train_setups`) drops any
+training setup whose label horizon reaches into OOS, and cross-validation
+inside Train (`purged_wf_folds`) uses **4 purged walk-forward folds** with a
+35-bar embargo (`EMBARGO_BARS`) — never a random k-fold, consistent with the
+leakage discipline. With a 24-bar horizon and a 35-bar
+embargo, the combined no-peek span between a label and the next usable bar is
+**59 bars**.
+
+## 8.4 Baseline models
+
+Two baselines frame how much the model adds: the **no-skill floor** (AUC-PR
+equal to each asset's positive rate, ≈ 0.47–0.52) and an **untuned XGBoost**
+with a fixed, honest first-iteration hyperparameter set (`max_depth 3, eta
+0.1, subsample 0.9, colsample_bytree 0.9, min_child_weight 1.0, reg_lambda
+1.0, n_estimators 100`). The untuned model
+already clears the prevalence floor on most assets, and Optuna tuning
+adds a further, modest lift on **10 / 10** assets — the realistic ceiling is
+low (`cv_auc_pr` tops out around 0.55), which sets honest expectations for the
+OOS economics.
+
+## 8.5 Metrics, optimization and model comparison
+
+### 8.5.1 Metrics
+
+Training/selection metric is **AUC-PR** (`eval_metric = "aucpr"`; Optuna
+direction `maximize` — more informative than ROC-AUC for a near-balanced,
+economically asymmetric target). A trade fires only when the model's
+probability `p ≥ THRESHOLD_ENTRY = 0.6` (`run_engine`) — a conservative gate
+that trades recall for precision. OOS economic metrics (profit factor,
+return %, max drawdown %, win rate %, trade count, time-in-market %) rank
+strategies by `STRATEGY_OBJECTIVE`: **PF (max) → drawdown (min) →
+time-in-market (min)**, with win rate informational.
+
+### 8.5.2 Hyper-parameter optimization
+
+XGBoost is tuned with **Optuna**: a TPE sampler (seed 42), a MedianPruner (2
+warmup steps), 200 trials, maximizing the mean AUC-PR over the 4 purged
+walk-forward folds (`layer7_optuna`). The search space
+(`config/xgboost_optuna_search_space.json`):
+
+| Hyper-parameter    | XGBoost name                       | Type  | Range        | Scale   |
+| ------------------ | ----------------------------------- | ----- | ------------ | ------- |
+| `max_depth`        | `max_depth`                         | int   | [2, 5]       | linear  |
+| learning rate      | `eta`                                | float | [0.02, 0.30] | log     |
+| row subsample      | `subsample`                          | float | [0.6, 1.0]   | linear  |
+| column subsample   | `colsample_bytree`                   | float | [0.6, 1.0]   | linear  |
+| `min_child_weight` | `min_child_weight`                   | float | [1.0, 10.0]  | linear  |
+| L2 regularization  | `reg_lambda` → `lambda`              | float | [0.5, 5.0]   | linear  |
+| number of trees    | `n_estimators` → `num_boost_round`   | int   | [40, 300]    | linear  |
+
+*Example fitted model (AAPL):* `max_depth 5, eta 0.192, subsample 0.748,
+colsample_bytree 0.965, min_child_weight 9.15, reg_lambda 3.88,
+n_estimators 115`, giving `cv_auc_pr = 0.541`.
+
+A second, nested optimization (`calibrate_kelly`) calibrates the **Kelly
+fraction** λ on a 20-point grid in [0.05, 1.0], maximizing train out-of-fold
+log-growth; live sizing is `f = clip(λ · (2p − 1), 0, KELLY_CAP = 1.0)`.
+Neither optimization reads OOS.
+
+### 8.5.3 Cross-asset OOS results
+
+| Ticker | Trades | Win % | PF   | Return %   | Max DD % | Time-in-mkt % | CV AUC-PR |
+| ------ | ------ | ----- | ---- | ---------- | -------- | ------------- | --------- |
+| XOM    | 263    | 48.67 | 0.88 | −5.16      | 7.55     | 36.85         | 0.514     |
+| AAPL   | 236    | 48.73 | 0.88 | −5.63      | 15.68    | 39.12         | 0.541     |
+| TSLA   | 74     | 59.46 | 1.55 | **+10.36** | 4.13     | 11.02         | 0.554     |
+| JPM    | 71     | 64.79 | 1.76 | +0.23      | 0.05     | 11.60         | 0.513     |
+| AMZN   | 6      | 33.33 | 0.23 | −0.73      | 0.83     | 1.46          | 0.532     |
+| GOOGL  | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.533     |
+| JNJ    | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.506     |
+| META   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.507     |
+| MSFT   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.521     |
+| NVDA   | 0      | —     | —    | 0.00       | 0.00     | 0.00          | 0.523     |
+
+One shared recipe, ten independent per-asset fits: **5 of 10 assets trade**,
+5 hold cash (their best probabilities never reach the 0.6 gate). Of the five
+that trade, two are profitable (TSLA, JPM), two lose ≈ 5 % (XOM, AAPL), and
+AMZN is marginally negative on 6 low-exposure trades.
+
+## 8.6 Bagging vs Boosting
+
+XGBoost is **gradient-boosted trees** — shallow trees added sequentially, each
+fitted to the residual errors of the ensemble so far
+(`pipeline.py: _xgb_train`; `objective="binary:logistic"`,
+`booster="gbtree"`). It is not a bagging method, but `subsample` and
+`colsample_bytree` (both tuned) borrow bagging's row/feature
+randomization inside the boosting loop, making it a **stochastic gradient
+booster**.
+
+To answer the mentor's explicit request (2026-05-28) for a bagging-vs-boosting
+comparison, a **RandomForest** (bagging, 300 trees, seed 42) baseline was
+trained against the tuned XGBoost on identical features and identical purged
+walk-forward folds:
+
+| Ticker | Setups | Pos-rate | Baseline XGB | **Tuned XGB** | RandomForest | Δ (XGB − RF) |
+| ------ | ------ | -------- | ------------ | ------------- | ------------ | ------------ |
+| AAPL   | 12 565 | 0.500    | 0.521        | **0.541**     | 0.504        | +0.037       |
+| AMZN   | 12 573 | 0.514    | 0.521        | **0.532**     | 0.514        | +0.018       |
+| GOOGL  | 12 573 | 0.491    | 0.502        | **0.533**     | 0.494        | +0.039       |
+| JNJ    | 12 526 | 0.482    | 0.491        | **0.506**     | 0.499        | +0.008       |
+| JPM    | 12 541 | 0.483    | 0.505        | **0.513**     | 0.491        | +0.022       |
+| META   | 12 564 | 0.487    | 0.485        | **0.507**     | 0.490        | +0.017       |
+| MSFT   | 12 551 | 0.473    | 0.486        | **0.521**     | 0.469        | +0.052       |
+| NVDA   | 12 569 | 0.502    | 0.509        | **0.523**     | 0.506        | +0.017       |
+| TSLA   | 12 570 | 0.522    | 0.546        | **0.554**     | 0.516        | +0.039       |
+| XOM    | 12 531 | 0.493    | 0.492        | **0.514**     | 0.498        | +0.016       |
+
+**Boosting beats bagging on all 10 assets** (mean advantage **+0.027** AUC-PR).
+RandomForest sits at each asset's prevalence floor — it extracts almost no
+signal — while tuned XGBoost shows a small but consistent edge. One asymmetry
+is itself a finding: RandomForest cannot consume `NaN`, so the daily/weekly
+gaps were median-imputed (fit on the training fold only), whereas XGBoost
+needed no imputation — its native missing-value handling is a practical
+advantage on top of the accuracy edge. As an internal cross-check, the
+**Tuned XGB** column above reproduces the stored `cv_auc_pr` to
+three decimals on every asset, confirming this comparison uses the production
+CV exactly. On small, noisy, tabular financial tables, sequential
+error-correction (boosting) extracts the faint signal better than
+variance-averaging (bagging) — which, combined with the native missing-value
+handling above, is why boosting is the model family used here.
+
+## 8.7 Deep Learning — tested, not selected
+
+**Track B** (the 10-asset per-ticker classifier described in this section)
+has **no deep learning**: `requirements.txt` pins `xgboost==3.3.0` and
+contains no PyTorch, TensorFlow or Keras. Reasoning for this track:
+
+- The 56 features are already engineered, tabular indicators — gradient-boosted
+  trees typically outperform neural nets on this kind of input.
+- With `cv_auc_pr` barely above 0.5, extra model capacity is far more likely to
+  overfit noise than to find new signal.
+- Determinism and reproducibility are project hard-constraints (`seed_everything`,
+  single-threaded XGBoost, pinned libraries), easier to guarantee without a
+  GPU-trained neural net.
+- The project's minimalism value favours a small, regularized tree ensemble
+  and a small dependency surface over an additional model family.
+
+A deep-learning model **was** implemented and tested, however, on **Track A**
+(the full 503-ticker regression recommender): `models/train_rocm_model.py`
+trains a small PyTorch MLP (`Linear(64) → ReLU → Dropout(0.10) → Linear(32) →
+ReLU → Linear(1)`) on an AMD ROCm GPU, and the script is committed to the
+project's GitHub repository. It satisfies the Liora Step 3.3 checklist's
+Deep Learning requirement, but **it was not selected** for the deployed
+recommender: on the fixed test split it scored MAE 0.342 / RMSE 0.430 /
+Spearman rank corr. −0.020, clearly worse than Ridge, Random Forest or
+XGBoost on the same features (the table above) — larger average errors and a
+slightly *negative* rank correlation, i.e. its stock ranking was no better
+than random. In this dataset, the extra model capacity did not translate into
+better recommendation quality, so the app's Model Comparison page reports the
+result transparently rather than hiding a negative finding.
+
+## 8.8 Interpretability
+
+In keeping with the project's minimalism value, interpretability is presented
+as a **menu** of methods applicable to a gradient-boosted tree model, alongside
+what the model already provides. No importance numbers are computed in this
+rendering.
+
+| # | Method                                        | New dependency         | Cost                  | Output                                                              |
+| - | ---------------------------------------------- | ----------------------- | ---------------------- | -------------------------------------------------------------------- |
+| 1 | Native XGBoost importance (gain/cover/weight) | none                    | trivial, no retrain    | global feature ranking                                              |
+| 2 | TreeSHAP (global + local)                     | `shap`                  | moderate                | global + per-setup attributions                                     |
+| 3 | Permutation importance (on OOS)               | `scikit-learn`          | moderate (re-scores)   | model-agnostic global ranking                                       |
+| 4 | Partial dependence / ICE                      | `scikit-learn` + plots  | moderate                | shape of a feature's effect                                         |
+| 5 | By-construction interpretability              | none                    | free                    | explicit label / side / sizing rules + documented feature formulas |
+
+Two of these need nothing new: **native importance** (option 1) is essentially
+free — the per-asset booster is already embedded in the frozen strategy file,
+so `gain`/`cover`/`weight` rankings can be read off without retraining or new
+dependencies — and **by-construction** (option 5) is already true of the
+design: the label is an explicit Triple-Barrier rule, the side is a
+transparent `sign(log_return_5)`, sizing is the closed-form Kelly clip
+`f = clip(λ(2p−1), 0, cap)`, and every feature has a documented
+formula, unit and timeframe.
+
+## 8.9 From model to deployable artifact
+
+Each asset's trained booster is frozen into a self-contained, self-verifying
+file `Assets/TICKER/strategy_TICKER.py` (`asset_writers.py`,
+`strategy_meta`): the model is serialized with `booster.save_raw()` and
+embedded as a base64 string, a `MODEL_HASH` (SHA-256 of the raw bytes) guards
+integrity on load, and golden vectors (the first few training rows) and their
+predictions are stored so a `selfcheck` asserts byte-identical predictions
+when the file is loaded. This satisfies the defense requirement of **no
+re-training at runtime** (Timeline Step 5) and, together with fixed seeding
+and pinned libraries, makes the OOS results reproducible. The artifact is a
+frozen predictor, not a notebook to re-run.
 
 # 9. Results and Discussion
 
@@ -903,10 +903,9 @@ funnel.](figures/13_trackb_pipeline_overview.png){ width=85% }
 
 The cross-validated signal is **weak but methodologically clean**:
 `cv_auc_pr` ≈ 0.51–0.55 (the weakest two assets barely clear 0.50), with
-leakage controlled by purge + embargo and a never-touched OOS window (§8.2).
+leakage controlled by purge + embargo and a never-touched OOS window.
 **Boosting > bagging** is established with a measured, fold-matched comparison
-(+0.027 mean AUC-PR, 10/10 assets, §8.5), and **tuning > untuned** on 10/10
-(§8.3, §8.5). The conservative 0.6 probability gate leaves 5 of the 10 assets
+(+0.027 mean AUC-PR, 10/10 assets), and **tuning > untuned** on 10/10. The conservative 0.6 probability gate leaves 5 of the 10 assets
 holding cash out of sample — the system errs toward *not trading* rather than
 over-trading a weak edge.
 
@@ -921,33 +920,32 @@ and the project's disclaimer stands.
 
 ## 9.3 Threats to validity
 
-- **Survivorship bias**, carried from §5.1, is not re-quantified on this
+- **Survivorship bias**, carried over, is not re-quantified on this
   10-asset universe.
-- **Single-market / USD-only scope** (§5.4) applies unchanged.
-- The RandomForest comparison in §8.5 used median imputation where XGBoost
+- **Single-market / USD-only scope** applies unchanged.
+- The RandomForest comparison used median imputation where XGBoost
   used native missing-value handling — a methodological asymmetry, not a
   confound, but worth stating plainly.
-- The **with-vs.-without-outlier study** the mentor asked for (§5.2, §7.6,
-  the SNDK protocol) was **not run** on either track's universe.
-- **Universe scope.** Track A runs on a 10-asset subset; Track B runs on the
+- The **with-vs.-without-outlier study** the mentor asked for (the SNDK protocol) was **not run** on either track's universe.
+- **Universe scope.** Track B runs on a 10-asset subset; Track A runs on the
   **full 503-ticker S&P 500 universe**.
 
 ## 9.4 Reconciling the two tracks
 
-Track A and Track B answer different questions, and neither alone fulfils the
+Track B and Track A answer different questions, and neither alone fulfils the
 original proposal end to end:
 
-- **Fidelity to the original proposal.** Track B is the closer match: full
+- **Fidelity to the original proposal.** Track A is the closer match: full
   universe, a 3-month-ish forward-return horizon, an enforced 30% sector cap,
-  and the risk questionnaire feeding its portfolio controls directly. Track A
+  and the risk questionnaire feeding its portfolio controls directly. Track B
   trades a narrower universe on an intraday horizon with no sector-cap
   mechanism.
-- **Rigor of the negative result.** Track A reports a weak, mostly
-  unprofitable OOS result plainly rather than overselling it. Track B is
+- **Rigor of the negative result.** Track B reports a weak, mostly
+  unprofitable OOS result plainly rather than overselling it. Track A is
   equally honest that the simplest model (Ridge) outperforms the fancier ones
   on this data.
-- **What ships as "the recommender."** The running app presents Track B,
-  wired to the questionnaire, as the beginner-facing recommender; Track A
+- **What ships as "the recommender."** The running app presents Track A,
+  wired to the questionnaire, as the beginner-facing recommender; Track B
   stands on its own as a separate exploration of short-horizon trading
   signals on a subset of names.
 
@@ -963,12 +961,12 @@ original plan — cluster the universe, rank within clusters, recommend — was
 revised twice under mentor guidance and evidence from the data: the
 unsupervised clustering stage was dropped in favour of supervised models,
 and the 12-month prediction horizon was shortened to 63 trading days
-because the available history (5–6 years, less for recent entrants, §2.4)
+because the available history (5–6 years, less for recent entrants)
 could not support enough independent 12-month test windows to validate that
-target honestly (§1.2). What shipped instead is **two complementary
-tracks**: Track A, a per-asset intraday classifier on a 10-stock subset with
+target honestly. What shipped instead is **two complementary
+tracks**: Track B, a per-asset intraday classifier on a 10-stock subset with
 Triple-Barrier labelling, Optuna tuning and fractional-Kelly sizing; and
-Track B, a full-universe (503-ticker) regression recommender that ranks
+Track A, a full-universe (503-ticker) regression recommender that ranks
 63-day forward returns and feeds a sector-and-volatility-constrained
 portfolio layer, now wired end-to-end to the 9-question risk questionnaire in
 the running Streamlit app.
@@ -983,9 +981,9 @@ the running Streamlit app.
 
 ```bash
 git clone <repo-url> && cd apr26_bds_int_stock_portfolio
-python -m venv .venv && source .venv/bin/activate
+python -m venv.venv && source.venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env.local   # add ALPACA_API_KEY / ALPACA_API_SECRET
+cp.env.example.env.local   # add ALPACA_API_KEY / ALPACA_API_SECRET
 python fetch_data.py                      # rebuild data/ from Alpaca (IEX)
 python reports/make_figures.py            # regenerate figures + printed statistics
 ./reports/build_pdf.sh                    # rebuild this PDF
@@ -1035,13 +1033,48 @@ no-retraining companion for the oral defense.
 
 ## D. Glossary
 
-Adjusted close, log-return, annualised volatility, beta, max drawdown, Sharpe
-ratio, IEX vs. SIP feed, survivorship bias, look-ahead leakage,
-`TimeSeriesSplit`, Triple-Barrier label, ATR, AUC-PR, ROC-AUC, purged
-walk-forward, embargo, TPE sampler, MedianPruner, fractional Kelly, stochastic
-gradient boosting, bagging / bootstrap aggregation, native missing-value
-handling, TreeSHAP, profit factor. Full definitions to be expanded for the
-final report.
+Every technical term used in this report, defined. Terms are listed alphabetically.
+
+- **Adjusted close** — closing price corrected for splits and dividends; the price series used for all return, volatility and correlation work (raw `close` is not).
+- **Annualised return** — a stock's mean daily return scaled to one year (× 252 trading days); the y-axis of the risk/return scatter.
+- **Annualised volatility (risk)** — the standard deviation of daily returns scaled to one year (× √252); the x-axis of the risk/return scatter.
+- **ATR (Average True Range)** — an average of a bar's true price range over N periods; a volatility unit used to size the Triple-Barrier take-profit and stop-loss levels.
+- **AUC-PR (Area Under the Precision–Recall Curve)** — a ranking metric for imbalanced binary targets whose no-skill floor equals the positive-class prevalence; the honest headline metric here, not raw accuracy.
+- **Bagging (bootstrap aggregation)** — training many models on bootstrap resamples of the data and averaging them to reduce variance; the mechanism inside a Random Forest.
+- **Beta** — sensitivity of a stock's returns to the market index; β > 1 amplifies market moves, β < 1 dampens them.
+- **Boosting (stochastic gradient boosting)** — building trees sequentially so each new tree corrects the current ensemble's errors; the family XGBoost belongs to.
+- **Corporate actions** — splits, dividends and similar events that shift the raw price series; neutralised by using the adjusted close.
+- **Embargo** — a time gap inserted after each test fold in walk-forward CV so training rows adjacent to the test window cannot leak information into it.
+- **Feature engineering** — deriving model inputs (returns, volatilities, momentum, volume, sector dummies) from the raw OHLCV bars.
+- **Fractional Kelly** — position sizing that stakes a fraction λ of the growth-optimal Kelly bet, `f = clip(λ·(p−(1−p)/b), 0, cap)`, trading some growth for lower volatility.
+- **IEX vs. SIP feed** — Alpaca's free feed sources the IEX exchange only (partial volume, ~5–6 years of history); the paid SIP feed consolidates all US venues.
+- **Jarque–Bera test** — a normality test based on skewness and kurtosis; used to reject normality of daily returns and to confirm approximate log-normality of volume.
+- **Kelly criterion** — the bet size that maximises long-run log-growth of capital; here applied in its fractional form with a cap.
+- **Log-return** — the natural log of the price ratio, `ln(P_t / P_{t-1})`; additive across time, used for return statistics.
+- **Look-ahead leakage** — allowing information from after the decision point to enter a feature or label, inflating results; the central bias the validation is designed to prevent.
+- **Max drawdown** — the largest peak-to-trough decline in a price or equity series; a downside-risk measure.
+- **MedianPruner** — an Optuna pruner that stops an unpromising trial early when it underperforms the median of prior trials at the same step.
+- **Meta-labeling** — a two-stage scheme where a primary rule sets the trade side and a secondary model decides whether to act; the Triple-Barrier target feeds this idea.
+- **Native missing-value handling** — XGBoost's built-in learning of a default split direction for `NaN`s, so ragged histories need no imputation.
+- **OHLCV** — Open, High, Low, Close, Volume: the per-bar market data fetched from Alpaca.
+- **Optuna** — the hyper-parameter optimization framework (TPE search plus pruning) used to tune the models.
+- **Out-of-sample (OOS) / one-shot OOS** — data never used in training or model selection; here the 2024→2026 window, read exactly once at the verdict step.
+- **Pearson correlation** — the linear correlation coefficient; used for the price-return correlation heatmap and the volatility–return relationship.
+- **Prevalence (positive rate)** — the share of positive labels in the data; equal to the AUC-PR no-skill floor.
+- **Profit factor** — gross profits divided by gross losses of a strategy; > 1 is profitable, < 1 loses.
+- **Purged walk-forward CV** — time-series cross-validation that drops (purges) training events whose label horizon overlaps a test fold, plus an embargo — the defence against label-overlap leakage (López de Prado).
+- **Random Forest** — a bagged ensemble of decorrelated decision trees; the exploratory-tier ranker (used without the `history_days` shortcut feature).
+- **Risk-free rate** — the return of a notionally riskless asset; set to 0 in this price-only project, so Sharpe reduces to mean ÷ volatility.
+- **ROC-AUC** — area under the ROC curve; a threshold-free ranking metric reported alongside AUC-PR.
+- **Sharpe ratio** — risk-adjusted return, mean return ÷ volatility, computed here with a risk-free rate of 0.
+- **Spearman rank correlation** — correlation of ranks; the ranking-quality metric for the recommender (0.16 fixed-split → ≈ 0.06 walk-forward).
+- **Survivorship bias** — applying today's index constituents backward, omitting delisted losers, which flatters historical benchmarks.
+- **`TimeSeriesSplit`** — scikit-learn's forward-chaining cross-validation that always trains on the past and tests on the future, without shuffling.
+- **TPE sampler (Tree-structured Parzen Estimator)** — Optuna's Bayesian strategy for proposing the next hyper-parameters to try.
+- **TreeSHAP** — an exact, fast SHAP-value method for tree ensembles that attributes each prediction to its input features.
+- **Triple-Barrier label** — labels a trade by the first barrier it touches: take-profit (2×ATR), stop-loss (1×ATR) or a time limit; converts raw price paths into a supervised target.
+- **Unbalanced / ragged panel** — a dataset where tickers have different start dates and lengths (new entrants such as SNDK), so feature windows must be aligned per ticker.
+- **XGBoost** — the gradient-boosted decision-tree library; the sealed-tier per-asset classifier.
 
 ## E. Bibliography
 
@@ -1054,26 +1087,23 @@ final report.
 - Akiba, T. et al. (2019). *Optuna: A Next-generation Hyperparameter Optimization Framework*. KDD.
 - Lundberg, S. & Lee, S. (2017). *A Unified Approach to Interpreting Model Predictions* (SHAP). NeurIPS.
 - Kelly, J. L. (1956). *A New Interpretation of Information Rate*. Bell System Technical Journal.
-- *(Add references progressively. Switch to a `.bib` file + CSL when count > 10.)*
 
-## F. Unified Streamlit application (added 2026-07-06)
-
-*Appended addition — no prior report text was modified.*
+## F. Unified Streamlit application
 
 The repository's root entry (`streamlit run app.py`, or `make deps && make app` → port 8503) now
 opens **one unified multi-page application** that presents both research tracks side by side under
 explicit evidence tiers:
 
 - **Pages:** Project Report · Data Explorer (the six validated EDA figures, recomputed live) ·
-  Risk Profile (the 9-question questionnaire) · Recommender (**Track B**, exploratory tier — the
-  ranking recommender of §8, with its caveats badged) · Basket Simulator (**Track A**, sealed
+  Risk Profile (the 9-question questionnaire) · Recommender (**Track A**, exploratory tier — the
+  ranking recommender, with its caveats badged) · Basket Simulator (**Track B**, sealed
   tier — realized one-shot OOS results of the per-asset XGBoost/LSTM pipelines vs buy-and-hold) ·
   Methodology & Integrity.
-- **Tier separation:** Track-A and Track-B numbers never share a results table; every figure
+- **Tier separation:** Track-B and Track-A numbers never share a results table; every figure
   carries its evaluation-tier badge (sealed vs exploratory).
 - **No look-ahead:** the questionnaire→profile→package rule is shared across tracks, but on the
   sealed tier its inputs are strictly pre-OOS (Train-CV score, risk statistics as of 2023-12-29,
-  static sectors) — the §8 rankings are dated at the end of the sealed OOS window and are
+  static sectors) — the model rankings are dated at the end of the sealed OOS window and are
   therefore never used to select tickers whose sealed results are displayed.
 - **No runtime training:** every page is read-only over committed artifacts; reproducibility via
   `make verify-xgb` / `make verify-lstm` (byte-identical re-runs) and `make test-app` (gates +
@@ -1082,9 +1112,7 @@ explicit evidence tiers:
 - **Pipeline Blueprint:** the application embeds a sealed single-file HTML documentary
   (`learning_by_doing_OHLCV_data_processing_pipeline.html`) — 17 procedure bricks in the pipeline
   order (welded, non-editable) with an XGBoost/LSTM view switch and a per-brick "how we thought /
-  what we learned" record: the lessons-learned map of the Track-A build (profit-aligned objective,
+  what we learned" record: the lessons-learned map of the Track-B build (profit-aligned objective,
   earned degrees of freedom, purge/embargo discipline, honest negatives, byte-reproducibility) and
   the data-science algorithms in context (boosted trees, LSTMs, Triple-Barrier labeling, purged
   walk-forward CV, Optuna TPE, generalized Kelly sizing, forward feature selection).
-
-Design rationale, the full methodology ladder and known limitations: `docs/UNIFIED_APP.md`.

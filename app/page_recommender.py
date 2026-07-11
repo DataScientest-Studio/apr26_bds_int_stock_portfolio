@@ -1,9 +1,9 @@
-"""Recommender (Track B — exploratory tier): the parent project's ranking recommender + model
+"""Recommender (Track A — exploratory tier): the parent project's ranking recommender + model
 comparison, rendered from the VENDORED CSVs (app/data/trackB/). Ported from
 mac-2026-06-09-full-6y/app.py; every number here is a model prediction or a fixed-split /
 un-purged walk-forward metric — the permanent tier badge says so, and nothing on this page ever
-selects tickers for the sealed Track-A simulator (that would be look-ahead: these rankings are
-dated at the END of the Track-A OOS window).
+selects tickers for the sealed Track-B simulator (that would be look-ahead: these rankings are
+dated at the END of the Track-B OOS window).
 """
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -403,8 +403,8 @@ def _render_model_comparison() -> None:
         "through feature importance, and has a walk-forward validation result. The Recommendation "
         "section then adds portfolio constraints on top of that model ranking."
     )
-    st.caption("Naming note: 'Random Forest' here is the Track-B ranking *regressor* (best of its "
-               "family). It is unrelated to any classifier baselines used inside the Track-A "
+    st.caption("Naming note: 'Random Forest' here is the Track-A ranking *regressor* (best of its "
+               "family). It is unrelated to any classifier baselines used inside the Track-B "
                "pipelines — the two tracks answer different questions on different data.")
 
     with st.expander("Model selection takeaway"):
@@ -421,7 +421,7 @@ def _render_model_comparison() -> None:
 
 
 def render() -> None:
-    st.title("Recommender — Track B (exploratory)")
+    st.title("Recommender — Track A (exploratory)")
     track_b_badge()
     _render_recommendation()
     st.divider()
