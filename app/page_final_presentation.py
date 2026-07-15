@@ -42,47 +42,20 @@ def _introduction() -> None:
   alone — and no idea where to begin.
 - Existing tools either lump everyone into a generic *"aggressive / moderate / conservative"* bucket,
   or assume you already **speak the language of finance**.
-- Every dot on the right is one S&P 500 stock, placed by **risk vs. return**. The cloud is the
-  problem: hundreds of choices, wildly different profiles, one decision to make.
-            """
-        )
-    with right:
-        _img(FIG_RISK_RETURN, "503 S&P 500 stocks by annualized risk vs. return — the choice-overload problem")
-
-    with st.expander("📐 How each dot is placed — the risk/return recipe"):
-        st.markdown(
-            """
-Every dot is **one S&P 500 stock**, positioned from its own daily prices — no forecasts, just history.
-
-1. **Daily return** = day-over-day % change of the **adjusted close** (splits & dividends already
-   handled): `r_t = adj_close_t / adj_close_(t−1) − 1`.
-2. For each stock, take the **mean** and the **standard deviation** of those daily returns over its
-   full history.
-3. **Y — annualized return** = mean daily return **× 252** (trading days in a year).
-4. **X — annualized risk (volatility)** = std of daily return **× √252** — risk grows with the
-   *square root* of time, return grows *linearly*.
-5. The dashed cross-hairs are the **median** of each axis — the "typical" stock the cloud centers on.
-
-*This is data preparation, not a model — the ML that ranks these stocks comes in the next segments.*
-            """
-        )
-
-    with st.expander("💡 That lone dot top-right — SNDK — is a data lesson, not a great stock"):
-        st.markdown(
-            """
-- <b><a href="/app/static/SNDK.txt" target="_blank" rel="noopener">SNDK (SanDisk)</a></b> sits at
-  <b>~343% return / ~98% risk</b> — miles from every other name. It looks like the best stock in the
-  index. It isn't. <i>(Click the ticker to open its raw price CSV — the very first row is its start date.)</i>
-- It's a <b>recent S&P 500 entrant</b>: its price history starts only on <b>2025-02-13</b>, ~<b>320
-  trading days (~1.3 years)</b> vs. a median of ~1,460 for everyone else.
-- <b>Annualizing a short, steep run inflates both axes.</b> The outlier is an artifact of a
-  <b>ragged / unbalanced panel</b>, not a real risk-return edge.
-- <b>Why it matters here:</b> our mentor flagged it, and it broke our early assumption that <i>"all 503
-  tickers have uniform data quality."</i> We now track <b>per-ticker history length</b> and handle new
-  entrants explicitly — the kind of data-integrity habit this project is built on.
+- Every dot on the right is one S&P 500 stock, placed by **risk vs. return** — hundreds of choices,
+  wildly different profiles, one decision to make.
+- **How each dot is placed:** only from a stock's **past daily prices** — average return on one axis,
+  how much it swings (**risk**) on the other. No forecasts, just history.
+- **The lone dot top-right (<a href="/app/static/SNDK.txt" target="_blank" rel="noopener">SNDK</a>) is
+  a data lesson, not a great stock:** it shows ~343% return, but it's a **recent entrant** (history
+  starts 2025-02-13, ~1.3 years) — measuring a short, steep run over-inflates it.
+- **So data quality isn't uniform:** that outlier broke our assumption that all 503 tickers have
+  equal-quality history — we now track **per-ticker history length**.
             """,
             unsafe_allow_html=True,
         )
+    with right:
+        _img(FIG_RISK_RETURN, "503 S&P 500 stocks by annualized risk vs. return — the choice-overload problem")
 
     st.divider()
 
@@ -169,10 +142,26 @@ Parts 1 & 2 walk the modelling **behind both tiers**; the Conclusion gives the *
     )
 
 
+def _conclusion() -> None:
+    st.header("Conclusion")
+    st.markdown(
+        """
+- **Scope evolved, on purpose:** we first considered **yfinance** for data but chose **Alpaca**'s
+  feed instead; clustering gave way to supervised models, and the 12-month target to
+  **63 trading days** — 5–6 years of history can't validate a yearly horizon.
+- **Recommender — weak signal, simple wins:** walk-forward rank correlation ≈ **0.06** (≈ 0.16 on a
+  single split); **Ridge beat the fancier models**, and a deep-learning model was tested, not selected.
+- **Biggest lesson — don't trust one test:** checked on a single slice of data the model looked
+  okay (0.16), but testing it across **many time periods** dropped the score to **0.06** — much weaker.
+- **Data quality isn't uniform:** new entrants like SNDK have short, ragged histories — we now track
+  per-ticker history instead of assuming a clean panel.
+        """
+    )
+
+
 _PLACEHOLDERS = [
     ("Machine Learning — Part 1", "M", "First half of the modelling story."),
     ("Machine Learning — Part 2", "P", "Second half of the modelling story."),
-    ("Conclusion", "T", "Verdict, limitations stated openly, next steps."),
 ]
 
 
@@ -180,8 +169,11 @@ def render() -> None:
     _introduction()
 
     st.divider()
-    st.header("Remaining segments")
-    st.caption("Running order for the rest of the defense — one owner per segment. Placeholders for now.")
+    st.header("Machine Learning segments")
+    st.caption("Owned by M and P — still placeholders; drafted by their owners.")
     for i, (title, owner, hint) in enumerate(_PLACEHOLDERS, start=2):
         st.subheader(f"{i}. {title}  ·  ({owner})")
         st.info(f"🚧 Placeholder — owned by **{owner}**. {hint}")
+
+    st.divider()
+    _conclusion()
