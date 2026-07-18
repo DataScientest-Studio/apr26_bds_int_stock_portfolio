@@ -20,8 +20,14 @@ tab_xgb, tab_lstm = st.tabs(["XGB — entry ranges", "LSTM — sequence & occlus
 
 
 def fmt_bound(value, sigma=False):
+    # Open ends: results.db stores NULL, interpretation.json stores '-inf'/'inf' as strings.
     if value is None:
         return "±∞"
+    value = float(value)
+    if value == float("inf"):
+        return "+∞"
+    if value == float("-inf"):
+        return "−∞"
     return f"{value:.3f}σ" if sigma else f"{value:.5g}"
 
 
@@ -77,12 +83,14 @@ with tab_xgb:
                     x0 = s["interval_lo_sigma"] if s["interval_lo_sigma"] is not None else lo_clip
                     x1 = s["interval_hi_sigma"] if s["interval_hi_sigma"] is not None else hi_clip
                     color = theme.ACCENT if s.get("candidate_entry_region") else theme.TEXT_DIM
+                    tp = s.get("tp_before_sl_rate")
                     fig.add_trace(go.Scatter(
                         x=[x0, x1], y=[s.get("entry_lift", 0)] * 2, mode="lines",
                         line=dict(color=color, width=10), showlegend=False,
                         hovertemplate=(f"{fmt_bound(s['interval_lo'])} … "
                                        f"{fmt_bound(s['interval_hi'])} · lift %{{y:.2f}} · "
-                                       f"TP-before-SL {s.get('tp_before_sl_rate')}<extra></extra>")))
+                                       f"TP-before-SL {'—' if tp is None else f'{tp:.3f}'}"
+                                       "<extra></extra>")))
                 fig.update_layout(**theme.plotly_layout(
                     height=260,
                     xaxis=dict(gridcolor=theme.BORDER, title="feature value (Train sigmas)"),
@@ -117,7 +125,8 @@ with tab_xgb:
                     rows = []
                     for lo, hi, er, lift in zip(bins.get("lo", []), bins.get("hi", []),
                                                 bins.get("entry_rate", []), bins.get("lift", [])):
-                        rows.append({"lo": lo, "hi": hi, "entry rate": er, "lift": lift})
+                        rows.append({"bin": f"{fmt_bound(lo)} … {fmt_bound(hi)}",
+                                     "entry rate": er, "lift": lift})
                     st.dataframe(rows, hide_index=True, width="stretch")
                 elif doc is None:
                     st.markdown('<span class="status-warn">ARTIFACT PAYLOAD MISSING</span>',
