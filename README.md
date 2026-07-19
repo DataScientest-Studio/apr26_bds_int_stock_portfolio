@@ -80,6 +80,8 @@ artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.js
 data/results.db   sealed SQLite results store (read-only)
 examples/         two executed notebooks: the full XGB path for AAPL and NVDA
 docs/             METHODOLOGY.md, ARCHITECTURE.md
+docs-facts-infos/ written audits (Polish): OHLCV data, methodological integrity,
+                  and the research-consistency report
 pipeline_lego_blueprint.html   standalone 18-brick pipeline map (embedded by the Blueprint page)
 data_flow_3d.html              standalone 2.5D build-path map (embedded by the Data Flow page)
 ```
@@ -91,7 +93,7 @@ of this presentation branch.
 
 ## Limitation
 
-All results are historical, one-shot out-of-sample reads of sealed models over fixed
-windows. They are research output — **not a live trading signal** and not investment
-advice. The interpretation layer is Train-derived and must not be read as an OOS
+All results are historical out-of-sample reads of sealed models over fixed windows —
+every OOS read is counted in an append-only ledger (Integrity page). They are research
+output — **not a live trading signal** and not investment advice. The interpretation layer is Train-derived and must not be read as an OOS
 result.

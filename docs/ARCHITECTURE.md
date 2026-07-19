@@ -28,7 +28,7 @@ and writes nothing.
 | L6 | Causal entry candidates and asymmetric ATR Triple-Barrier labels become the "Output B" feature matrix. |
 | L7 | Optuna tunes XGBoost by maximizing Train out-of-fold trading log-growth through the real engine. |
 | L8 | Per-asset operating-point calibration (theta_entry via shared op_select), final fit on full Train, and the self-contained `strategy_<TICKER>.py` artifact (base64 booster + selfcheck). |
-| L9 | The one-shot OOS read with HODL fallback on zero trades, producing exactly one metrics row. |
+| L9 | The ledgered OOS read with HODL fallback on zero trades, producing exactly one metrics row. |
 
 ## 3. LSTM pipeline phases (src/lstm/pipeline.py, model.py)
 
@@ -40,9 +40,9 @@ and writes nothing.
 | D4 | Causal daily indicators, z-scored with Train-only per-asset statistics. |
 | D5 | Momentum-sided candidates and asymmetric ATR Triple-Barrier labels (entry next open, costs both sides, label-uniqueness weights). |
 | D6 | The per-candidate sequence tensor: the SEQ_LEN x n_features window of normalized features ending at t0. |
-| D7 | The LSTM classifier with deterministic CPU training and Optuna HPO (BCE loss weighted by class balance and label uniqueness), warm-started from the universal backbone. |
+| D7 | The LSTM classifier with deterministic CPU training (BCE loss weighted by class balance and label uniqueness). No per-asset Optuna ran in this epoch: one committed universal backbone supplies the architecture and warm-starts every refit; the cold-start study exists behind `LSTM_COLD_START=1`. |
 | D8 | Operating-point calibration (theta_entry, direction mode) via shared op_select, then the final refit and the sealed strategy artifact. |
-| D9 | The single OOS read: the frozen window is scored exactly once per asset, into one metrics row. Nothing downstream may feed back into D1-D8. |
+| D9 | The ledgered OOS read: the frozen window is scored into one metrics row per asset, every read recorded in the append-only ledger. Nothing downstream may feed back into D1-D8. |
 
 ## 4. Shared modules (src/shared/)
 

@@ -22,9 +22,11 @@ st.markdown(
     "Train window only: XGBoost reads value ranges of engineered 1h features, the LSTM "
     "reads a 60-session sequence of daily state channels. Take-profit and stop-loss are "
     "a mechanical ATR triple-barrier contract — never a model decision. Buy-and-hold "
-    "(HODL) over the same out-of-sample window is the benchmark, and a model that finds "
-    "no robust operating point stays idle by design. All results below are one-shot "
-    "out-of-sample reads of sealed artifacts; nothing is trained or recomputed here.")
+    "(HODL) over the same out-of-sample window is the benchmark, and a model that never "
+    "clears the Train-OOF trade floor is not promoted — an explicit verdict, not a "
+    "silent gap. All results below are out-of-sample reads of sealed artifacts — every "
+    "OOS read is counted in an append-only ledger (Integrity page); nothing is trained "
+    "or recomputed here.")
 
 run = data.research_run()
 checks = data.integrity()

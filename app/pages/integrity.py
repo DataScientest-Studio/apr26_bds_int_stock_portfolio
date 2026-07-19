@@ -55,10 +55,11 @@ if reads:
 
 # ---------------------------------------------------------------- 3. one-shot OOS
 st.subheader("One-shot OOS discipline")
-st.markdown("The out-of-sample window is read **once per asset and never used to choose "
-            "anything** — it only reports. Every read is counted in an append-only ledger, "
-            "so the claim is auditable rather than asserted. The cumulative counter spans "
-            "all epochs the asset has ever been sealed in.")
+st.markdown("The out-of-sample window is **never used to choose anything** — it only "
+            "reports. Every read is counted in an append-only ledger (an interrupted, "
+            "resumed pass counts every read), so the discipline is auditable rather than "
+            "asserted. The cumulative counter spans all epochs the asset has ever been "
+            "sealed in.")
 if reads:
     st.dataframe(pd.DataFrame([{
         "pipeline": r["pipe"],
@@ -94,9 +95,10 @@ if mm["models"]:
             row[model] = mm["counts"].get((model, mode), 0)
         rows.append(row)
     st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
-    st.markdown("`TRAIN_OOF_FLOOR_NOT_MET` is the honest idle state: no operating point on "
-                "the Train-OOF grid cleared the trade floor, so the asset was **not promoted "
-                "to a strategy**. `HODL_FALLBACK_NO_MODEL_TRADES` means the model never "
+    st.markdown("`TRAIN_OOF_FLOOR_NOT_MET` is the honest not-promoted state: no operating "
+                "point on the Train-OOF grid cleared the trade floor, so the asset was **not "
+                "promoted to a strategy** (such an asset usually never trades OOS, but it "
+                "can trade and simply not be promoted). `HODL_FALLBACK_NO_MODEL_TRADES` means the model never "
                 "traded out-of-sample, so the executed path is buy-and-hold — its single "
                 "trade is the benchmark's, never counted as a model trade.")
 
@@ -121,5 +123,8 @@ st.markdown(
     "- **In-sample interpretation** — the ENTRY ranges, contributions and trajectories are "
     "**Train-derived descriptions of a sealed model**, not an out-of-sample result and not "
     "a live trading signal.")
+st.caption("Full written audits (Polish) live in docs-facts-infos/ at the repository root: "
+           "the OHLCV data audit, the methodological-integrity audit, and the "
+           "research-consistency report.")
 
 C.integrity_footer()

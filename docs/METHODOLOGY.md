@@ -19,7 +19,7 @@ single out-of-sample (OOS) evaluation:
 | LSTM | 1d | 2017-01-01 to 2023-12-31 | 2024-01-01 to 2026-04-30 |
 
 **Honest verdict.** Over the strong 2024-2026 bull OOS window the strategies do not beat
-buy-and-hold on most assets. The demonstrated product is the leak-free *method*: a reproducible,
+buy-and-hold on most assets. The demonstrated product is the causal, OOS-isolated *method*: a reproducible,
 Train-only calibration procedure that yields, per asset, an ENTRY indicator with an explicit
 description of when it acts and when it stays idle. Three things must never be conflated:
 
@@ -149,7 +149,7 @@ shared.
 OOS), so absolute Train-CV scores are upper-biased and must not be compared across different
 inits. What stays fair: every subset and grid comparison shares the identical init, so rankings
 and the operating-point choice are unaffected in ordering; the final honest read remains the
-one-shot OOS.
+ledgered OOS read.
 
 ## 6. Known biases and limitations
 
@@ -164,14 +164,23 @@ one-shot OOS.
 | Bull-market OOS window | 2024-2026 is a strongly rising market; HODL is a hard benchmark and the beats-HODL ratio is regime-dependent. |
 | In-sample interpretation | All ENTRY ranges, contributions and occlusion values are Train-derived descriptions of the sealed model, not OOS evidence. |
 
-## 7. The one-shot OOS read
+A broader audit of the whole research program (in Polish), including the full
+declared-limitations list and the measured read-ledger figures, lives in
+`docs-facts-infos/Raport_Spojnosci_Badan.md`, next to the data audit
+(`Dane_OHLCV.md`) and the methodological-integrity audit
+(`Raport_Poprawnosci_Metodologicznej.md`).
 
-OOS data is read exactly once per asset and never feeds back into any choice — not HPO, not
-feature selection, not the operating point, not even the ML-vs-HODL verdict wording. Feature
-search runs on Train-CV only; the sealed run is the single OOS read. Each asset's outcome is
-classified by `result_mode` (see ARCHITECTURE.md for the full enum): multi-trade result,
-single-trade low-evidence result, HODL fallback when the model produced zero OOS trades, or an
-explicit idle verdict when the Train-OOF trade floor was never met. Profit factor is always
+## 7. The ledgered OOS read
+
+OOS data never feeds back into any choice — not HPO, not feature selection, not the operating
+point, not even the ML-vs-HODL verdict wording. Feature search runs on Train-CV only; the
+sealing pass scores each asset at the verdict step, and every read of the OOS window —
+including re-reads from an interrupted, resumed pass — is recorded in an append-only ledger
+whose cumulative per-asset counts the Integrity page shows. Each asset's
+outcome is classified by `result_mode` (see ARCHITECTURE.md for the full enum): multi-trade
+result, single-trade low-evidence result, HODL fallback when the model produced zero OOS
+trades, or an explicit not-promoted verdict when the Train-OOF trade floor was never met (such
+an asset usually never trades OOS, but it can trade and simply not be promoted). Profit factor is always
 reported with coverage (how many assets have at least 2 model trades), never as a bare mean.
 
 ## 8. The interpretation layer

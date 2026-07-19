@@ -55,7 +55,8 @@ _n_xgb, _n_lstm = _run.get("xgb_assets", 0), _run.get("lstm_assets", 0)
 
 st.write(
     "Bottom → top: split-adjusted bars (A1) → leakage-safe split (A4) → signal, label and features "
-    "(B1–B4) → profit-aligned HPO and the per-asset operating point (C1–C3) → the one-shot OOS "
+    "(B1–B4) → profit-aligned Train-only tuning (per-asset Optuna for XGB; one warm-started "
+    "backbone for LSTM) and the per-asset operating point (C1–C3) → the ledgered OOS "
     "verdict, the honest benchmark, the Train-derived interpretation and this console (E1–E4), "
     "with fail-closed **GUARDS** between. The **XGBOOST | LSTM** switch flips only the bricks whose "
     "logic depends on the model."
@@ -63,7 +64,8 @@ st.write(
 st.caption(
     f"Sealed in this release: {_n_xgb} XGB · {_n_lstm} LSTM. Counts read from the store; the "
     "blueprint's own figures are frozen. Click a brick for its contract and its lesson; the "
-    "Optuna cell values are marked SCHEMATIC and are not recorded trials."
+    "tuning-trial cell values are marked SCHEMATIC and are not recorded trials — for LSTM no "
+    "per-asset study ran in this epoch (the cold-start path exists behind LSTM_COLD_START=1)."
 )
 
 if not BLUEPRINT.exists():
