@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 34003,
-   "sha256": "3fbe672e916609751e3dcaceabf442a84fcb9909afe607f8300c677af1214e26"
+   "sha256": "e17958cbf356a0c45ce11c502ea2b3832af774eec0270247f6e6e43d28850b79"
   },
   "metrics.json": {
    "bytes": 1101,
-   "sha256": "aa0eb5b8cd573095e786574bb24f4c13c7e16c0f5d0400bcb5c362c0bb56e769"
+   "sha256": "4c15c8ad500eabccc5b8ca88f71906fa10483ec0a952c5f19632bffb02fc9923"
   },
   "parameters.json": {
    "bytes": 4082,
@@ -18,7 +18,7 @@
    "sha256": "8688f7dacaa89bd559344e04e5b0df697a22de7328e4fcd6537da6d17e844f4a"
   }
  },
- "folder_sha256": "8786b70d79141c76b4396bd3d51dde914dd0aa2161a0172cffeb618879ed5b9f",
+ "folder_sha256": "f38350186b3d0bca94e67e05a110bd21db83e49133e771a630706046c005ce41",
  "model": "xgb",
  "model_hash": "fc7e6a646cdd9eba9b75851b0533b87897c6ba5c09dc29d148f24832e0e07086",
  "ticker": "CIEN"

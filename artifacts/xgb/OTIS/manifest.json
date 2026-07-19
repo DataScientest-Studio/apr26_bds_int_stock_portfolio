@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25923,
-   "sha256": "4b40729e3b2356a80bb6504e90673edb6c2ceb955891e01e178d623c64de1485"
+   "sha256": "35fda03c6d76c8714acb5f1f4eaf26bec25791a5628841329392181b2a804c69"
   },
   "metrics.json": {
    "bytes": 1049,
-   "sha256": "d2e84485910a31eba0319f5872efd7c8376d61e7008db4a30a7378edd1dc94de"
+   "sha256": "d98a79a84376278917ff33e7af72f54c1de8dbcf4a6ae21ee12f1af8f70dcb1b"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "aa35f528ae8b664a576b1ba28663e7a9d20bdb6f9109d6b0a44c1fdd6ff21971"
   }
  },
- "folder_sha256": "6e1881da3fc5dfde4c05f4816fad14b532f44f50fd6f4d33fd29595ea9f8a54d",
+ "folder_sha256": "7f4ab2d525132c41d051386435ccb33e5d040a8eea51e29192fd7da9a5760beb",
  "model": "xgb",
  "model_hash": "9aad20641a3371792d058e73307b375f0dee1ea028b842b902369f655c6a1179",
  "ticker": "OTIS"

@@ -2,8 +2,8 @@
 
 Ten dokument opisuje **dane** w projekcie: skąd pochodzą, jak są przetwarzane w cechy
 i etykiety, oraz co potwierdziła weryfikacja na realnych zapieczętowanych barach.
-Wszystkie fakty mają źródło (plik:linia / pomiar). Stan: 2026-07-18, epoka
-`2026-07-golden-v4`, gałąź `Stable_Presentable_Version`.
+Wszystkie fakty mają źródło (plik:linia / pomiar). Stan: 2026-07-19, epoka **`2026-07-golden-v5`** (bary skorygowane o splity),
+gałąź `Stable_Presentable_Version`.
 
 ## 1. Źródła danych
 
@@ -70,36 +70,59 @@ Dowody:
   sesji ze slippage (gap nocny/weekendowy poniesiony, nie fantazyjna cena); purge/embargo
   `t0+H+embargo ≤ oos_start` zweryfikowane; wagi unikalności w (0,1].
 
-## 4. Obszar do domknięcia — dostosowanie do splitów (błąd do poprawy)
+## 4. Splity — DOMKNIĘTE (epoka 2026-07-golden-v5, 2026-07-19)
 
-Weryfikacja wskazała **jeden realny błąd w danych wejściowych do poprawienia**: bary są w
-wersji **nieskorygowanej o splity** (`CORP_ACTIONS_POLICY='deferred'` jest zwalidowana w
-kodzie, samo dostosowanie do wykonania jako osobny krok). Opisujemy to jawnie i planujemy
-korektę — potwierdzone własnym pomiarem na committed `data/results.db` + surowych barach:
+Błąd opisany wcześniej (bary nieskorygowane o splity) **został naprawiony u źródła**
+i cały pipeline przeliczony na skorygowanych danych.
 
-- **Zasięg**: **79/498 tickerów (16%)** ma gap splitowy w historii — **31 w OOS, 58 w Train**.
-- **Przykład NVDA**: surowy gap overnight −75,2% (split 4:1, 2021-07-20, Train) i −90,1%
-  (split 10:1, 2024-06-10, OOS) — to zmiany czysto techniczne (podział akcji), nie ruch ceny.
-- **Benchmark HODL na cenach surowych** pokazuje dla tych tickerów wartości nieskorygowane
-  (NVDA `-56,34%`, CMG `-98,56%`, AVGO `-62%`, WMT `-24%`). Po dostosowaniu do splitów
-  odpowiadają realnym, w większości dodatnim zwrotom buy-and-hold — korekta sprowadza je do
-  prawdziwego HODL, a wraz z nimi statystyki „beats-HODL".
-- **Dobra wiadomość co do zasięgu**: dostosowanie poprawia głównie **porównanie z HODL** i
-  zwroty 79 tickerów trzymanych przez split; **nie dotyka** mechaniki filtra ENTRY ani
-  warstwy interpretacyjnej (oparte na Train, w większości okna poza splitem). Pozostałe 419
-  tickerów oraz cała mechanika przetwarzania są potwierdzone jako poprawne.
+**Jak naprawiono.** Autorytatywnego źródła współczynników nie było na serwerze (LEAN ma
+tylko 22 przykładowe tickery, bez NVDA/AMZN/AVGO; API dostawcy zwraca 401), więc tabela
+zdarzeń powstała **z danych + przeglądu człowieka**:
+- detektor o **zawężonym** zbiorze ratio `{3:2, 2..8, 10, 15, 20, 25, 50}` + odwrotności —
+  gęsta siatka (8:5, 5:3, 7:4) sprawiała, że **krachy dopasowywały się lepiej niż prawdziwe
+  splity** (krach FISV −44% trafiał w 8:5 z resztą 0,10%), co dawało 17,6% błędu w obie strony;
+- **przegląd wszystkich 126 kandydatów**: 88 auto-zaakceptowanych, z tego 10 usunięto jako
+  fałszywki (spinoffy DELL/DD/PNR, dywidenda specjalna KDP, krachy PG&E/OPEC/CVNA/TTD/VRT),
+  a 5 dopisano ręcznie (SHW 3:1 i ROL 3:2 tuż za progiem; HLT i DD 1:3 odwrotne wplecione
+  w spinoffy; EXE 1:200 zniekształcone upadłością). **Wynik: 83 zdarzenia / 69 tickerów**,
+  każde z uzasadnieniem w `overrides.csv`.
+- Korekta nakładana w `xgb/src/bars.py:load_bars()` **na barach 1h, PRZED roll-upem**
+  (ceny × faktor, wolumen ÷ faktor); dzienny store LSTM rolluje się z tego samego
+  skorygowanego strumienia, więc 1h i 1d są spójne z konstrukcji.
+- `CORP_ACTIONS_POLICY` przestała być martwą konfiguracją — `A_adjusted` realnie rozgałęzia kod.
 
-### Koszt obliczeniowy korekty (16 rdzeni / 30 GiB; z realnych czasów nocy v4)
+**Dowody poprawności (zmierzone, nie deklarowane):**
+| Test | Wynik |
+|---|---|
+| Kotwica LEAN (AAPL) | faktor **0,25 → 1,00** — trafiony dokładnie |
+| Negatywna kontrola | **434 tickery bez zdarzeń bit-identyczne** z surowymi |
+| **Chirurgiczność korekty** | z 497 modeli XGB **436 bit-identycznych z v4**, zmieniło się tylko **61** — dokładnie te ze splitami |
+| Gapy po korekcie | NVDA −90,1% → −0,77%, CMG −98% → +0,98%, AMCR +404,6% → +0,93% |
+| Spójność 1h↔1d | roll-up == store, dokładnie (2612 sesji) |
+| Bramki cross-bar | strzelają na **każdym** surowym splicie, **0/503 alarmów** po korekcie |
 
-| Poziom | Co obejmuje | Czas @16c |
+**Skutek dla wyników** (te liczby były wcześniej nieprawdziwe):
+| | v4 (surowe) | v5 (skorygowane) |
 |---|---|---|
-| **1. Tylko HODL (read-side)** | Przeliczyć benchmark na cenach skorygowanych, poprawić `beats_hodl`/`hodl_return_pct` | **~5–15 min**, zero re-treningu |
-| **2. Tylko 79 tickerów splitowych** | Korekta ich barów + re-seal + re-ekstrakcja + HODL uniwersum | **~45–70 min** |
-| **3. Pełna epoka v5 (docelowo)** | Korekta całego universum → re-seal → żniwa → interpretacja → results.db → bramki | **~6–7 h / jedna noc ≈ ~100 rdzeniogodzin** |
+| NVDA HODL | −56,3% | **+336,6%** |
+| CMG HODL | −98,6% | **−27,9%** |
+| AVGO HODL | −62,4% | **+276,5%** |
+| AMCR HODL | +294,0% | **−20,4%** (miraż odwrotnego splitu) |
+| beats-HODL XGB | 85/498 | **72/498** |
+| beats-HODL LSTM | 143/495 | **129/495** |
+| tickery z HODL < −50% | 33 | **22** |
 
-Skorygowane ceny zmieniają cechy → etykiety → modele, więc pełne domknięcie wymaga re-runu
-(poziom 3). Na prezentację **teraz** wystarcza **poziom 1** (~kwadrans, bez re-treningu) +
-krótka nota o splitach na Overview/Model Comparison, z oznaczeniem 79 tickerów przy „beats-HODL".
+Niezależny przegląd adwersaryjny przewidział te wartości z samej tabeli zdarzeń
+(NVDA ~+339%, CMG ~−25%, AVGO ~+280%, AMCR ~−21%, beats-HODL 72 i 131) — pełny retrain
+je potwierdził, co jest mocnym dowodem, że korekta zrobiła dokładnie to, co miała.
+
+**Świadome ograniczenia, zapisane wprost:**
+- splity **poniżej 3:2 nie są wykrywalne z barów** (skan przy |gap|>10% daje ~1000
+  przypadkowych zbieżności) — pomijamy je i to dokumentujemy;
+- **spinoffy i dywidendy specjalne NIE są korygowane** — dla benchmarku cenowego to realne
+  spadki, ta sama klasa co dywidenda;
+- korroboracja wolumenem jest **flagą do przeglądu, nie bramką** (zawodzi w obie strony);
+- jedyna zewnętrzna kotwica prawdy to plik LEAN dla AAPL.
 
 ## 5. Drobne domknięcia jakości danych (usprawnienia)
 

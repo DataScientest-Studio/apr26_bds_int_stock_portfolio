@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25860,
-   "sha256": "38317e3ca2f6039d95cb5a78bbc54e12ea87b05923ad1917c5a541b03ccf9944"
+   "sha256": "6213c9dd7d957735676bd7db39e11ab8238a35c099fd6c8ad42c86be3ade9441"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "7f1dfabfc766561e044c2b6947ec0669dc75ae57263839d4294bce07ba9f4fd4"
+   "sha256": "edbfe3bcd848d1e4e26c68f21e9fbd11041eae8e6de6ada4ef354f20ce94bc31"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "81e0f6770a8a152c618778ff4a84f9ebda6df5dbe3b7b5c191776152ab74153b"
   }
  },
- "folder_sha256": "3a5ed2a2d3e963b67c737b559f3fc57bebf11110a853bd79c72f839a1bf912f9",
+ "folder_sha256": "de6c8429598fe891dca5d77eaa3448d644bd0e7f83e3a4400ab7b493b2afaabd",
  "model": "xgb",
  "model_hash": "3b42801f13672f791405e16a2d68817f1fed7967fdb9dbf35dadcfc1bfa7b7ec",
  "ticker": "CHTR"

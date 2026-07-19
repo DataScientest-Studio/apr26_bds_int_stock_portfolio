@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85905,
-   "sha256": "f943224ed82f062dc4028011f1f3709968db51c1d4c6d1b0f07c7e6393c8a2a2"
+   "bytes": 79864,
+   "sha256": "0fea65a96b3e192286aa6e5e812cbeeb451e83db650f2800cce084239bac0667"
   },
   "metrics.json": {
-   "bytes": 1057,
-   "sha256": "fb112b2ad67b1b4abce306069758192cb7b736e505523db27cfaab7eb85e9ea3"
+   "bytes": 1064,
+   "sha256": "84499e337c234b31bc71a59603699bfd0f1d926dd117f395ca0ac29278b7e08a"
   },
   "parameters.json": {
-   "bytes": 2755,
-   "sha256": "9b965298f9c622ef7926eb0403666475f91febf7f923674c6eecf61ba2d73a38"
+   "bytes": 2626,
+   "sha256": "4691b969fe439df3a6dfd2e9288fdd3e81e6f4f6bff80c977edfc797310ad617"
   },
   "strategy_APTV.py": {
-   "bytes": 82076,
-   "sha256": "d913cc225bb364fe1310c7dcf62f569e9d4889b66a4b3cdfa5b2ab05118b9daf"
+   "bytes": 80442,
+   "sha256": "57c05d2a75f98b678201ecc491e3e13e75c70a8fbfb00cd6143e3c1cc2dd86c4"
   }
  },
- "folder_sha256": "12251d0d90a51b34d3c36fc2cf8bb9c46f94449b758c978a0c1a3bf976716f79",
+ "folder_sha256": "7b6ad9208714d2d6b95875d195011cc7d5d206d7fad7cded23cbe5f3fc5602b1",
  "model": "lstm",
- "model_hash": "801fb37116d6af4f531e0ca38fafdb98fcdb7f9a7ed05c0c004a3aada913ab5b",
+ "model_hash": "55c01a7ff39466609c6488b8a3d84a8465b1fb06165f7fb52c75a67247455f15",
  "ticker": "APTV"
 }

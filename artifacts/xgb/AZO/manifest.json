@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 179334,
-   "sha256": "286d03518de586780fc42b375ea9240bfab8c78ed5cc052e54e04a1612879fab"
+   "sha256": "4909c38aa4b6aa1acda2d82ac5d17861b94e4f8385b3b45a10f591391e6cf8d8"
   },
   "metrics.json": {
    "bytes": 1103,
-   "sha256": "ac91c56c095d50986739f9b2cf6eb0b6d4d6622df9816ed2202b28ee65a7c592"
+   "sha256": "820036aa5509ea54560b2374af5b947500a93363e7535daadabedf20b8e761f7"
   },
   "parameters.json": {
    "bytes": 5359,
@@ -18,7 +18,7 @@
    "sha256": "69f7b471854a6415b747bee26e54d7c77770d0063e083d5ce5cf3131c4fa10b0"
   }
  },
- "folder_sha256": "cb4b71363e39b38ad0dd4504b987f4644c2ce37015f567de763df0f128068918",
+ "folder_sha256": "6492144692eb52b5c3bb3381cf525b08f3ec378987ccb2a63d040562a3ad1529",
  "model": "xgb",
  "model_hash": "24eb37ef3462d639284d9b41199de8202c1d0f11342a2b12048fdb2e59f0c020",
  "ticker": "AZO"

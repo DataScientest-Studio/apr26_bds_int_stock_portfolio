@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25800,
-   "sha256": "ba2dcd313dab3c26b576effb63483f0f9ee9ecda913da61158f9084248b25655"
+   "sha256": "e53ca32aa07f92d1a8c963916e089bd6301def5cf4222b3dec303703ed6ecfb5"
   },
   "metrics.json": {
    "bytes": 1048,
-   "sha256": "ce9154a5d5d717f88c5b3199954704ac1cbfaf3c44647678ca47a31c1c413f35"
+   "sha256": "e0fce5808c71834ea1d5680dc9cae92e71e653c8ccb7b9503ae5eda803c81a6c"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "5bb79a1017c17e7816a1631290031b0aca3d895789e8850f101556361cbaa2a3"
   }
  },
- "folder_sha256": "01c5866693a020fc6dc55b44a354f277df269069059a6be0f9c15bf75efae147",
+ "folder_sha256": "75b5168476cfbe39207123220f1d80f0a8796592bb3d893ead597d70a2ca8d2e",
  "model": "xgb",
  "model_hash": "397a1fd82f8c2def24e2c9c5d0cc041746fc3f1cf3dff1bc2f1aa50c8cae39f7",
  "ticker": "KVUE"

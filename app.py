@@ -19,5 +19,6 @@ pages = st.navigation([
     st.Page("app/pages/features.py", title="Feature Logic", url_path="features"),
     st.Page("app/pages/comparison.py", title="Model Comparison", url_path="comparison"),
     st.Page("app/pages/architecture.py", title="Architecture", url_path="architecture"),
+    st.Page("app/pages/integrity.py", title="Integrity", url_path="integrity"),
 ])
 pages.run()

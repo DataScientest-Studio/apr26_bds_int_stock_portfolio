@@ -1,16 +1,16 @@
 {
   "best_params": {
-    "max_depth": 3,
-    "eta": 0.15087564776577284,
-    "subsample": 0.8478573706766139,
-    "colsample_bytree": 0.7405114480881256,
-    "min_child_weight": 4.662035401823383,
-    "reg_lambda": 0.504191017319631,
-    "reg_alpha": 0.4869758501380998,
-    "gamma": 0.4144033107427556,
-    "n_estimators": 157,
+    "max_depth": 2,
+    "eta": 0.257050456796859,
+    "subsample": 0.7880299005825459,
+    "colsample_bytree": 0.9244491079190222,
+    "min_child_weight": 8.13573575140472,
+    "reg_lambda": 3.1761043514643603,
+    "reg_alpha": 2.2856374551690983,
+    "gamma": 0.24185243740599272,
+    "n_estimators": 220,
     "kelly_fraction": null,
-    "theta_entry": 0.42
+    "theta_entry": 0.4
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -24,9 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "1w",
-      "multi_tf"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -73,35 +71,13 @@
         "feature_count": 17
       },
       {
-        "namespace": "1d",
-        "id_range": "101-199",
-        "feature_ids": [
-          112
-        ],
-        "feature_names": [
-          "rsi_14_1d"
-        ],
-        "feature_count": 1
-      },
-      {
         "namespace": "1w",
         "id_range": "201-299",
         "feature_ids": [
-          217
+          206
         ],
         "feature_names": [
-          "macd_hist_12_26_9_1w"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          906
-        ],
-        "feature_names": [
-          "xtf_zscore_1h_vs_1d"
+          "dist_to_sma_20_1w"
         ],
         "feature_count": 1
       }
@@ -124,9 +100,7 @@
       15,
       16,
       17,
-      112,
-      217,
-      906
+      206
     ],
     "effective_feature_names": [
       "direction",
@@ -146,11 +120,9 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "rsi_14_1d",
-      "macd_hist_12_26_9_1w",
-      "xtf_zscore_1h_vs_1d"
+      "dist_to_sma_20_1w"
     ],
-    "effective_feature_count": 20,
+    "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[ICE]"
   },
   "features": {
@@ -172,9 +144,7 @@
       15,
       16,
       17,
-      112,
-      217,
-      906
+      206
     ],
     "names": [
       "direction",
@@ -194,15 +164,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "rsi_14_1d",
-      "macd_hist_12_26_9_1w",
-      "xtf_zscore_1h_vs_1d"
+      "dist_to_sma_20_1w"
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "1w",
-      "multi_tf"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -249,41 +215,19 @@
         "feature_count": 17
       },
       {
-        "namespace": "1d",
-        "id_range": "101-199",
-        "feature_ids": [
-          112
-        ],
-        "feature_names": [
-          "rsi_14_1d"
-        ],
-        "feature_count": 1
-      },
-      {
         "namespace": "1w",
         "id_range": "201-299",
         "feature_ids": [
-          217
+          206
         ],
         "feature_names": [
-          "macd_hist_12_26_9_1w"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          906
-        ],
-        "feature_names": [
-          "xtf_zscore_1h_vs_1d"
+          "dist_to_sma_20_1w"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.3894124956528497,
+  "cv_auc_pr": 0.39532920413493705,
   "cv_folds": 4,
   "n_trials": 80
 }

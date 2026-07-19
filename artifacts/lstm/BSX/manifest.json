@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 64866,
-   "sha256": "2f1f1ca63178d16a2452074104df5b71b606b6c975d0f94bdd39b70a943ea1d3"
+   "bytes": 77663,
+   "sha256": "11ebca7fbff4b590b5edd9580ecec463ca637eefdc61c48dfbf23590d4dae3e0"
   },
   "metrics.json": {
-   "bytes": 1045,
-   "sha256": "081348657c27fa77a2f8ba68b4b7302333ec345d6330e75c56b6895cd86c582f"
+   "bytes": 1081,
+   "sha256": "c8e3b82f3bc5e53ea0c2b8aea87c5f8a4498c272538b9e9b81995a685daaa601"
   },
   "parameters.json": {
-   "bytes": 2656,
-   "sha256": "d9fcc159b3b6a52fc562e5cf7f9308bfaec2f771742d3a70f07a03393b5054bc"
+   "bytes": 2537,
+   "sha256": "882bbf3f3a0fa748ecf92bf1a3b59b7138746dd1d093743b06f0bd408bbe84ef"
   },
   "strategy_BSX.py": {
-   "bytes": 80567,
-   "sha256": "4ff61ce6acb3cec3dbd698e6ddeae5801fe4e6cb6c90072a56cb49912a54df34"
+   "bytes": 77785,
+   "sha256": "416cba161b8e41e0ad80b37ab59b20efcf1274e6cbe8bbb5d375f5761e9e423f"
   }
  },
- "folder_sha256": "c3e6b9b4f819f2a17b56f74dc945f50d8bcedce3fc358826c94fe44388ea3ff5",
+ "folder_sha256": "eed23cf2c6583a17c26219fe7dbd65643e0434f1344bcc8681e016fa50ada3a4",
  "model": "lstm",
- "model_hash": "8a152630c5f91a64aa1dc2565aa0a75c4e58fa6648548ae50704c030548ff8c7",
+ "model_hash": "60fb10de85b635f799fcf03b2f62ab93448b466316acdba5a57589726700a58e",
  "ticker": "BSX"
 }

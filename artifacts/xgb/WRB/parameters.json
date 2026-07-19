@@ -1,16 +1,16 @@
 {
   "best_params": {
-    "max_depth": 2,
-    "eta": 0.15131822707852322,
-    "subsample": 0.8527418182377037,
-    "colsample_bytree": 0.6448121354498806,
-    "min_child_weight": 7.739886670977439,
-    "reg_lambda": 3.295258781574047,
-    "reg_alpha": 1.0407303009098556,
-    "gamma": 0.1250152640256363,
-    "n_estimators": 295,
+    "max_depth": 4,
+    "eta": 0.021146536167031597,
+    "subsample": 0.9879639408647978,
+    "colsample_bytree": 0.9329770563201687,
+    "min_child_weight": 2.9110519961044856,
+    "reg_lambda": 1.318212352431953,
+    "reg_alpha": 0.9170225492671691,
+    "gamma": 1.5212112147976886,
+    "n_estimators": 176,
     "kelly_fraction": null,
-    "theta_entry": 0.44
+    "theta_entry": 0.6
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -23,9 +23,7 @@
       "multi_tf"
     ],
     "active_namespaces": [
-      "1h",
-      "1d",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -70,28 +68,6 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1d",
-        "id_range": "101-199",
-        "feature_ids": [
-          111
-        ],
-        "feature_names": [
-          "realized_volatility_20_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          208
-        ],
-        "feature_names": [
-          "sma_20_sma_50_ratio_1w"
-        ],
-        "feature_count": 1
       }
     ],
     "effective_feature_ids": [
@@ -111,9 +87,7 @@
       14,
       15,
       16,
-      17,
-      111,
-      208
+      17
     ],
     "effective_feature_names": [
       "direction",
@@ -132,11 +106,9 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "realized_volatility_20_1d",
-      "sma_20_sma_50_ratio_1w"
+      "macd_hist_12_26_9"
     ],
-    "effective_feature_count": 19,
+    "effective_feature_count": 17,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[WRB]"
   },
   "features": {
@@ -157,9 +129,7 @@
       14,
       15,
       16,
-      17,
-      111,
-      208
+      17
     ],
     "names": [
       "direction",
@@ -178,14 +148,10 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "realized_volatility_20_1d",
-      "sma_20_sma_50_ratio_1w"
+      "macd_hist_12_26_9"
     ],
     "active_namespaces": [
-      "1h",
-      "1d",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -230,32 +196,10 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1d",
-        "id_range": "101-199",
-        "feature_ids": [
-          111
-        ],
-        "feature_names": [
-          "realized_volatility_20_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          208
-        ],
-        "feature_names": [
-          "sma_20_sma_50_ratio_1w"
-        ],
-        "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.3673793862777176,
+  "cv_auc_pr": 0.3667534071893944,
   "cv_folds": 4,
   "n_trials": 80
 }

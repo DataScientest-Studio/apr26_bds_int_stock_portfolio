@@ -6,20 +6,20 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
   "THRESHOLD_ENTRY": 0.54,
-  "DIRECTION_MODE": "long_only",
+  "DIRECTION_MODE": "both",
   "CALIBRATION": {
     "theta_entry": 0.54,
     "kelly_fraction": null,
-    "direction_mode": "long_only",
-    "oof_trades": 23,
+    "direction_mode": "both",
+    "oof_trades": 34,
     "trade_floor_met": true,
-    "oof_log_growth": 0.4597123141969189
+    "oof_log_growth": 0.49569979123431673
   },
-  "cv_auc_pr": 0.5506598708688992,
+  "cv_auc_pr": 0.5589427255995726,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,10 +36,8 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
-    "xas_rs_mkt_20",
-    "downside_vol_20",
-    "momentum_acceleration_10",
-    "bb_bandwidth_20"
+    "volume_trend_5_20",
+    "downside_upside_vol_ratio_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -94,25 +92,17 @@
       "mean": -0.0014774187349779375,
       "std": 0.675099876319048
     },
-    "xas_rs_mkt_20": {
-      "mean": -0.0019434416009726262,
-      "std": 0.06136258383686446
+    "volume_trend_5_20": {
+      "mean": 0.001849489168228844,
+      "std": 0.2678643371611488
     },
-    "downside_vol_20": {
-      "mean": 0.007908324423901764,
-      "std": 0.005274593322069273
-    },
-    "momentum_acceleration_10": {
-      "mean": -0.0001471723495111142,
-      "std": 0.06879122771450476
-    },
-    "bb_bandwidth_20": {
-      "mean": 0.023317616028427687,
-      "std": 0.017667381558100766
+    "downside_upside_vol_ratio_20": {
+      "mean": 1.0334246035843724,
+      "std": 0.6296715632799282
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "ccdba417770c80e6ee08d2ad21a71063e466b5977045dc73a2fda6b98fa5c629",
+  "MODEL_HASH": "704bbd4a16dc6eac1b9d2fa82ba68b24df7e2d68150920aa413743510e2abd78",
   "RANDOM_SEED": 42
 }

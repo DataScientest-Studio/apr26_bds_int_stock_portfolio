@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 40104,
-   "sha256": "dff35fd9c8a1a733d72e360fc30d3e108c5b3982cfc3bff953594237bfddd385"
+   "sha256": "464b3341c81add9ac442c2a1eec4ee72837441ff02b664734c4886a785eb64e5"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "202d7f5316b410316f454c03e977e7dcbb523a02b547ed64c660765bd9908327"
+   "sha256": "8718669dc81fc2bd9c82d690647293c503f39cd100a139a952f518a0f9f6fb70"
   },
   "parameters.json": {
    "bytes": 4083,
@@ -18,7 +18,7 @@
    "sha256": "dd79c1e4009cd4c5828243b8b096535395dcd8d6a2f331d0be0275c56ca2739b"
   }
  },
- "folder_sha256": "cb2a06161c89978d34a136a59d07eb789a4e380edd7a8477ce87767b2cad95d3",
+ "folder_sha256": "a310a0a13f556845ed6f1e1058b43f20cf29836c7d5f7d7886fb17bcc8da80b1",
  "model": "xgb",
  "model_hash": "8cd8e6836acba8c05f14614af9af76bdcdfe593ef359d9ab3eb5d2fa1d9af235",
  "ticker": "FFIV"

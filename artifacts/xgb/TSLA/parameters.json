@@ -1,14 +1,14 @@
 {
   "best_params": {
     "max_depth": 2,
-    "eta": 0.16054976541301413,
-    "subsample": 0.7352912357558958,
-    "colsample_bytree": 0.9159777473601554,
-    "min_child_weight": 7.008451267041613,
-    "reg_lambda": 3.945758568662619,
-    "reg_alpha": 0.35186929677083956,
-    "gamma": 0.25877842758482555,
-    "n_estimators": 257,
+    "eta": 0.16103603185084467,
+    "subsample": 0.7914482234726563,
+    "colsample_bytree": 0.8798497281932495,
+    "min_child_weight": 6.152278643300262,
+    "reg_lambda": 0.8505500097184302,
+    "reg_alpha": 0.9259160273736274,
+    "gamma": 0.19094023966926055,
+    "n_estimators": 216,
     "kelly_fraction": null,
     "theta_entry": 0.44
   },
@@ -24,8 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
-      "1h_ext",
-      "multi_tf"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -72,24 +71,13 @@
         "feature_count": 17
       },
       {
-        "namespace": "1h_ext",
-        "id_range": "301-399",
+        "namespace": "1w",
+        "id_range": "201-299",
         "feature_ids": [
-          301
+          207
         ],
         "feature_names": [
-          "day_range_pos_session"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          901
-        ],
-        "feature_names": [
-          "momentum_alignment_multi"
+          "dist_to_sma_50_1w"
         ],
         "feature_count": 1
       }
@@ -112,8 +100,7 @@
       15,
       16,
       17,
-      301,
-      901
+      207
     ],
     "effective_feature_names": [
       "direction",
@@ -133,10 +120,9 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "day_range_pos_session",
-      "momentum_alignment_multi"
+      "dist_to_sma_50_1w"
     ],
-    "effective_feature_count": 19,
+    "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[TSLA]"
   },
   "features": {
@@ -158,8 +144,7 @@
       15,
       16,
       17,
-      301,
-      901
+      207
     ],
     "names": [
       "direction",
@@ -179,13 +164,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "day_range_pos_session",
-      "momentum_alignment_multi"
+      "dist_to_sma_50_1w"
     ],
     "active_namespaces": [
       "1h",
-      "1h_ext",
-      "multi_tf"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -232,30 +215,19 @@
         "feature_count": 17
       },
       {
-        "namespace": "1h_ext",
-        "id_range": "301-399",
+        "namespace": "1w",
+        "id_range": "201-299",
         "feature_ids": [
-          301
+          207
         ],
         "feature_names": [
-          "day_range_pos_session"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          901
-        ],
-        "feature_names": [
-          "momentum_alignment_multi"
+          "dist_to_sma_50_1w"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.43468118570617786,
+  "cv_auc_pr": 0.4309536951657843,
   "cv_folds": 4,
   "n_trials": 80
 }

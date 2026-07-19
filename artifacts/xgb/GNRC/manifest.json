@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 204342,
-   "sha256": "42bb3acd8eba92b35b94473de775335091a65e847a2208ab4f7901592c7b2e1c"
+   "sha256": "85002df9364fbe617379aa8aab344f5278a556b2b0f182dae203887c0810cef6"
   },
   "metrics.json": {
    "bytes": 1111,
-   "sha256": "828d08f373dac23c6b6dc1ff18d9fea610afec0713e00d7c549b597196d83341"
+   "sha256": "55951caf433568648a4d863790eb5f7de5cb0b0941a2e568df196d5f79408c9b"
   },
   "parameters.json": {
    "bytes": 4827,
@@ -18,7 +18,7 @@
    "sha256": "4e26480e53d0f9d2dfcb5bab1bef15a1a23198e56a02338f999fe0613b92c120"
   }
  },
- "folder_sha256": "f67379617d0b48a630ec62a0da165e0441349b4b600868c3804f1816a7d90d41",
+ "folder_sha256": "9ec4ffa364c63534786ca042b5728692ae2f57997596f5b835738e731ff6c1fb",
  "model": "xgb",
  "model_hash": "471a03368a8a621cdb2b9fcc0456877e52e6922c3450538f3f4ecd98815493ec",
  "ticker": "GNRC"

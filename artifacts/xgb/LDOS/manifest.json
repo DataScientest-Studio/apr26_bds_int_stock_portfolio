@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 42884,
-   "sha256": "b0023ca354a7f789ac3c7dba5fa8983597591e51a98851928fe2b2dcbfe2c9e5"
+   "sha256": "25fe7e4f5d531a703edc9dbea9900ff8ff293d7f89733abcd0e5436fc8f93295"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "2d745389574b20ed206c554bd465532fdc37537696a549fd7356645c6b8b3c92"
+   "sha256": "298fe0a26d0254c8cfdcb317421dc9d47494cb5f709f484c6251ee8868fb9bc6"
   },
   "parameters.json": {
    "bytes": 4804,
@@ -18,7 +18,7 @@
    "sha256": "6741a0749e3c8115bde548048717625d74a5bf1e34c74dd96f78f790675aeeea"
   }
  },
- "folder_sha256": "ffc181084cf335614e98b25dec251b70d5e3af4a4cd244a569caa9bddefbfd23",
+ "folder_sha256": "e39b255af0a9900b599555841002586b4a8c61b0aa4b48b257cc860e5f44d3d2",
  "model": "xgb",
  "model_hash": "965705d5496ccdc45d3cc4f9be601f18f739a99f4165d74f6a4dc26e0187f313",
  "ticker": "LDOS"

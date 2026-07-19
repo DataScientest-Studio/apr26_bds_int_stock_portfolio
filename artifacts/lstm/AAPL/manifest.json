@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 70233,
-   "sha256": "cd4a84f418d7d046d3fdf7ad31c724c735b695d3ee0aa597ce9f5a075eceaac5"
+   "bytes": 89594,
+   "sha256": "f36283a1380ace284fa079e01e73dd8eac8d7774965d6659163d06dd33930959"
   },
   "metrics.json": {
-   "bytes": 1054,
-   "sha256": "53152f0b8f958c218f3ebb17f8b24ffd0d4e00035a7e5fefa6a22eae730f0e88"
+   "bytes": 1075,
+   "sha256": "cce639995a9585cbe7aa4693d586ab7c66a64b92b726ccab685955fe73cbb83e"
   },
   "parameters.json": {
-   "bytes": 2520,
-   "sha256": "02cda87cb206518848cd2d41ea0a2f8c5ab8c1bf6c7b2114c9275a40f175a7d8"
+   "bytes": 2868,
+   "sha256": "27982d7c30a2921ea0a837f5b597da89fa354c6bb72cbd945bef5c274e150e50"
   },
   "strategy_AAPL.py": {
-   "bytes": 76932,
-   "sha256": "c6af48aef9ef75194517b738bec50f6e18fc6ecc821d652ac288046e8e4c96e5"
+   "bytes": 85159,
+   "sha256": "b0c8a70f383ac1a4f3086d81b8df314ed8d570747a6d16a225d3cdfe3b449224"
   }
  },
- "folder_sha256": "cc80ba5e2fbd16b4556cd77c689f19625b19ce43d6425832c771c0a1dbbb6a2b",
+ "folder_sha256": "e47b5c0290c7a49d67aba557e3306fb564e4cdd4659958655df91a7043c4a09a",
  "model": "lstm",
- "model_hash": "dc7b7134ac2a23cd81025877534841fd9068109a1ceb9d5f88e77981549551f5",
+ "model_hash": "7ef01e4f19427a6efd07efc517a60c643e5c853e82348ef4d1253671bc8c9f7a",
  "ticker": "AAPL"
 }

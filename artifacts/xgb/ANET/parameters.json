@@ -10,7 +10,7 @@
     "gamma": 0.009032414479334117,
     "n_estimators": 226,
     "kelly_fraction": null,
-    "theta_entry": 0.4
+    "theta_entry": 0.42
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -199,7 +199,7 @@
       }
     ]
   },
-  "cv_auc_pr": 0.41982765586940435,
+  "cv_auc_pr": 0.415252510435793,
   "cv_folds": 4,
   "n_trials": 80
 }

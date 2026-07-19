@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 75275,
-   "sha256": "11960c8f529442553c5bf15c444a9d3a48834786163cebe64991f71476049bd4"
+   "sha256": "55ef80edbfcf1f5483a8673d915ef97f43a06d9d432c450d5901d0205a625bdc"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "936fd2f0b4579dd6034076f48fcb137d4b31d3256f816330bf869c2d605cdc69"
+   "sha256": "1f2cf18bdd36909b7b2f85b6cc3534b190e7a9562b3e399864b94ebde9447b6c"
   },
   "parameters.json": {
    "bytes": 4792,
@@ -18,7 +18,7 @@
    "sha256": "49fb82f418bfb4f55a2cd5818fb4efa61e49c16c7737f45cf4e9c07eceabcbf9"
   }
  },
- "folder_sha256": "d0121e150dced00abe068f50f339e53cae2bc19d19cb20bb17391aa3b84ef44c",
+ "folder_sha256": "1a79105e091a13f7078f543a725ed1279ee189b8747b2d328c05903e7182747f",
  "model": "xgb",
  "model_hash": "5f85aeaa965c283bff08cd6998d57c2002e2b1eb5c82cc47117a78379f71ab81",
  "ticker": "SYF"

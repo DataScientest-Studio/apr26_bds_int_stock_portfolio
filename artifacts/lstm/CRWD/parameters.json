@@ -6,7 +6,7 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
   "THRESHOLD_ENTRY": 0.5,
@@ -15,11 +15,11 @@
     "theta_entry": 0.5,
     "kelly_fraction": null,
     "direction_mode": "long_only",
-    "oof_trades": 55,
+    "oof_trades": 60,
     "trade_floor_met": true,
-    "oof_log_growth": 0.4636723650915068
+    "oof_log_growth": 0.2423326612322019
   },
-  "cv_auc_pr": 0.4668045373114076,
+  "cv_auc_pr": 0.4602948145160077,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,9 +36,7 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
-    "close_position_in_range",
-    "vol_regime_20_60",
-    "illiquidity_amihud_20"
+    "ret_kurt_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -93,21 +91,13 @@
       "mean": 0.02928975688572826,
       "std": 1.8605105143407072
     },
-    "close_position_in_range": {
-      "mean": 0.5199089718657052,
-      "std": 0.29227162734048684
-    },
-    "vol_regime_20_60": {
-      "mean": 0.9480768946512578,
-      "std": 0.20756502584071035
-    },
-    "illiquidity_amihud_20": {
-      "mean": 0.0018061682182170754,
-      "std": 0.0006357136844387384
+    "ret_kurt_20": {
+      "mean": 0.743456891547212,
+      "std": 2.0068855034790634
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "90aa9597e2f3b98250938572ef3e7ea4d9a3746735d5b021b9ed60ef1a5be02c",
+  "MODEL_HASH": "d314f4a986017d3583720f7e7df49b30890d590b0d7b3b599d32adab931f0a21",
   "RANDOM_SEED": 42
 }

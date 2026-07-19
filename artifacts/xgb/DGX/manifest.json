@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25936,
-   "sha256": "036eae3ca9eebec4d7e774980c8b26bb6da6c62332f9b9feb099835787d2acd3"
+   "sha256": "b2c21a8d19e6cc735e193925801d1f979259d0acb203898ba9c859888ad12926"
   },
   "metrics.json": {
    "bytes": 1043,
-   "sha256": "d098280582784a068fed2730d99574d94c6bb52d479ea38bae599adf08751f03"
+   "sha256": "8ac53195b82bcff9cbd328c594ba7167df0a843f5cb1139a23b127452b8affa9"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "ca2d50737c542cfee747d0765eaebee45cb2052765f1c7a08344ee9bce1c0e4d"
   }
  },
- "folder_sha256": "ff491a10c06c14f99ab28115838f7bcf6b856fd7c1967c7a2193bfbc29ccabbe",
+ "folder_sha256": "424189de5d2f0a8d7d2bdd576ecb6162cc66bff7568a9e078877cb663f7bb824",
  "model": "xgb",
  "model_hash": "3e12e6f1e2a78da31a1e8782df20ce1fc913cd8ddfe98f617bc4bdb84dfd66da",
  "ticker": "DGX"

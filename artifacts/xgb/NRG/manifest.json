@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25918,
-   "sha256": "66f77810f1f972f131c55a5bee9a2c2a1d4dcd4d7bda857a08e29eb8f47943a3"
+   "sha256": "8dc4db00d99e9c28c29a86bc13559091e172224ba23ebc82284cb15fa26e2aa1"
   },
   "metrics.json": {
    "bytes": 1044,
-   "sha256": "91aa425fe7fd4f2aa626d1c42f933c0ae7d13462c4acbcf2b53691ae30222960"
+   "sha256": "c0b09d3805a98e596d4d53d0de81bbb00c14ddbd44528aee05b52864ec3adadb"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "928b37743b930da511715506553a691cf01240e70f3971df554353e59ffaac98"
   }
  },
- "folder_sha256": "bdf33479bb6829df848ee0eac280d633712750285a6749775501c400016dc3ff",
+ "folder_sha256": "f088d51b5511bfb556d8da68f95ecc86e723ca6a3cb1be9fa2f98828c16aa7e7",
  "model": "xgb",
  "model_hash": "ada555c52351def30e44ce44954ea3ae4ca923b6d9931f3717518ad7224e8e68",
  "ticker": "NRG"

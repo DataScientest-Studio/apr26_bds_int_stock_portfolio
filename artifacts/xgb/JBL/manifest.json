@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 31518,
-   "sha256": "c27e9930adb11c7ede8f5be008a90f78d3996db404b35c7b0d43b4c82aa2748c"
+   "sha256": "cc59e400ce1efde5d1ea7db2811c3d63ca3dccff8b6bf35b034e0c5728decf31"
   },
   "metrics.json": {
    "bytes": 1100,
-   "sha256": "70b0b80702456dbe92f21e14727efe2bcfde3e6220af7cb38cae89d862431df4"
+   "sha256": "9c8eab250c3b2a26b679cc7caf0ead52dd0edbeec91636f8204cb12a99a8dd5e"
   },
   "parameters.json": {
    "bytes": 4641,
@@ -18,7 +18,7 @@
    "sha256": "2938beba771461c4ccc093380cdb48e5f080b787c2a1f57b2926abe3c711110e"
   }
  },
- "folder_sha256": "eb258f20257f929ef8c907bf431e238df34d266e89c2c38756d4d0e208324a40",
+ "folder_sha256": "bd1cc01c6746c00662c920f0f5585d10e352b6d442ca356ad57903896c1f8173",
  "model": "xgb",
  "model_hash": "c6a34cb097849913904633712f2a8755bcb28acf84b51da57cb5921215d91808",
  "ticker": "JBL"

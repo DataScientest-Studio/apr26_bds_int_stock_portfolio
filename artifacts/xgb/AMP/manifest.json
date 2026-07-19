@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 33552,
-   "sha256": "85a48077765191121c7771e3b958f7d877246a85ca82e92509c3019b06c21de4"
+   "sha256": "c787246516d1d69b39784fe8e7acb0e729a55beedd54a5873f120bc39dc55acb"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "091f3a17b28dff25fcf75351f9254532241bdf4fc23d6a247b9d800e76ba2d31"
+   "sha256": "561dbd3b0eef7fee95005bea9ad13ab519f7c1e5279d794dbb24e41751279d1c"
   },
   "parameters.json": {
    "bytes": 4614,
@@ -18,7 +18,7 @@
    "sha256": "0490e1cc603af582aab3b7dedf0338b94da13ade2f24c8613a96eeb0aaeaf2c6"
   }
  },
- "folder_sha256": "53d544390e425b3eab215452df8a7d2137f43865b3986f5166f59094cd229344",
+ "folder_sha256": "bb36cc9abf9ddb726f8b6e41f9ebedca3c7cccee34c2baad38b832fff77dadae",
  "model": "xgb",
  "model_hash": "035edfa497fddbaa0f2f4684915964a864ea2ddbcfa578ba56479ba6566da0dc",
  "ticker": "AMP"

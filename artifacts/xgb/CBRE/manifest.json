@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 36683,
-   "sha256": "1d22afc6bc6c1f5c6b21f347c322869e91e2779904421512ca20e57e848e78c5"
+   "sha256": "1b4bc3d65b0c9c361f41e16db3a89cc9b60a12d9e703d917b4a49779dd1154c1"
   },
   "metrics.json": {
    "bytes": 1093,
-   "sha256": "1e38de5cd4f0607bd2b4c6a99c19c0a4f4abb037c75eb6c8d7689c51b1632a84"
+   "sha256": "2dfd8fd5d1e551a362cc7c8c53541eadab6509bf4a0c8b6ff4cdd63d44743263"
   },
   "parameters.json": {
    "bytes": 4621,
@@ -18,7 +18,7 @@
    "sha256": "ecc55a516f23d0fc5936d7506d542de20e6be89ec3ae2e70aa74643ae36d788e"
   }
  },
- "folder_sha256": "8823f21a4ff96ad4e2f26cf01808feb4fd4c6ab03164e32ef36c63e629c64567",
+ "folder_sha256": "bdae9fdcb14bf4824f101f21d6ef6d990e193690f97e0ded3009152a0d1233d6",
  "model": "xgb",
  "model_hash": "acba4c2be80da814541216b6fa55f027a4326120de93b8c58e8035e6b031f8c9",
  "ticker": "CBRE"

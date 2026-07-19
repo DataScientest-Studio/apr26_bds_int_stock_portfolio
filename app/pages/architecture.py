@@ -14,6 +14,12 @@ C.page_header("Architecture", "How the sealed study flows into this console — 
                               "to read the code.")
 C.guard(stop=False)  # static page: banner without stopping
 
+# counts are DERIVED from the store, never typed into prose — a new epoch must not be able
+# to leave a stale number behind in the copy.
+_run = data.research_run()
+_n_xgb, _n_lstm = _run.get("xgb_assets", 0), _run.get("lstm_assets", 0)
+_n_assets = _n_xgb + _n_lstm
+
 st.subheader("Data flow")
 DOT = f"""
 digraph flow {{
@@ -46,7 +52,7 @@ st.dataframe(
         {"path": "src/lstm/", "role": "LSTM research code: pipeline.py (D1–D6), model.py (D7–D8), features.py, universal.py, feature_search.py, artifact.py"},
         {"path": "src/shared/", "role": "contracts shared by both pipelines: op_select.py (operating point), golden_calibration.py (search policy), interpretation.py (range math)"},
         {"path": "config/", "role": "the frozen configuration the code reads: xgb.json, lstm.json, feature families, feature registries"},
-        {"path": "artifacts/xgb/<T>/, artifacts/lstm/<T>/", "role": "993 sealed per-asset artifacts (strategy, manifest, parameters, metrics, interpretation) + artifacts/manifest.json completeness contract"},
+        {"path": "artifacts/xgb/<T>/, artifacts/lstm/<T>/", "role": f"{_n_assets} sealed per-asset artifacts (strategy, manifest, parameters, metrics, interpretation) + artifacts/manifest.json completeness contract"},
         {"path": "data/results.db", "role": "SQLite results store (8 tables + 2 views), opened read-only"},
         {"path": "examples/", "role": "two executed notebooks: the full XGB path for AAPL and NVDA"},
         {"path": "docs/", "role": "METHODOLOGY.md and ARCHITECTURE.md"},
@@ -64,7 +70,7 @@ st.markdown(
     "window is read once, to produce the sealed result rows. \n\n"
     "**Sealed artifacts.** Each asset ships five files whose SHA-256 hashes chain into "
     "manifest.json (per-file → folder → model hash); artifacts/manifest.json states the "
-    "completeness contract (498 XGB + 495 LSTM = 993). The console verifies dataset "
+    f"completeness contract ({_n_xgb} XGB + {_n_lstm} LSTM = {_n_assets}). The console verifies dataset "
     "health fail-closed and renders everything read-only.")
 
 run = data.research_run()

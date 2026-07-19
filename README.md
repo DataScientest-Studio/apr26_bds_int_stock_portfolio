@@ -13,7 +13,7 @@ OHLCV (1h / 1d)
   -> XGB | LSTM  (sealed per-asset models)
   -> per-asset artifact  (strategy + manifest + parameters + metrics + interpretation)
   -> data/results.db  (SQLite, read-only)
-  -> Streamlit console  (six pages)
+  -> Streamlit console  (seven pages)
 ```
 
 ## Quickstart
@@ -28,8 +28,8 @@ make setup
 make app
 ```
 
-The app serves on `http://localhost:8503`. The shallow clone is ~260 MB (993 sealed
-artifacts travel with the repo). `make setup` installs only the presentation
+The app serves on `http://localhost:8503`. The shallow clone is ~260 MB (every sealed
+artifact travels with the repo — 993 in this release). `make setup` installs only the presentation
 dependencies (`streamlit`, `pandas`, `plotly`); nothing is trained, recomputed or
 written at runtime.
 
@@ -48,7 +48,7 @@ Both models only decide ENTRY; take-profit and stop-loss are a mechanical ATR
 triple-barrier contract. An asset with no robust Train operating point stays idle by
 design. See `docs/METHODOLOGY.md`.
 
-## The six pages
+## The seven pages
 
 1. **Overview** — what the study is, Train/OOS timeline, median outcomes, main finding.
 2. **Universe** — one operational table over all assets; search, filter, jump to an asset.
@@ -58,18 +58,21 @@ design. See `docs/METHODOLOGY.md`.
    and trajectories (Train-derived interpretation).
 5. **Model Comparison** — four charts: return, profit factor, trades, beats-HODL share.
 6. **Architecture** — the data flow above plus a map from the presentation to the code.
+7. **Integrity** — the dataset's own record: epoch and recipe hashes, the one-shot OOS
+   read ledger (cumulative per-asset read counts), interpretation coverage, when the model
+   stays idle, every integrity check, and the known limits.
 
 ## Repository structure
 
 ```text
-app.py            Streamlit entry point (six pages under app/pages/)
+app.py            Streamlit entry point (seven pages under app/pages/)
 app/              console code; app/data.py is the ONLY module opening the database
 src/xgb/          XGB research code (pipeline L4-L9, feature search, artifact writers)
 src/lstm/         LSTM research code (pipeline D1-D6, model D7-D8, feature search)
 src/shared/       contracts shared by both pipelines (op_select, golden_calibration,
                   interpretation)
 config/           frozen configuration the code reads
-artifacts/        993 sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.json
+artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.json
 data/results.db   sealed SQLite results store (read-only)
 examples/         two executed notebooks: the full XGB path for AAPL and NVDA
 docs/             METHODOLOGY.md, ARCHITECTURE.md

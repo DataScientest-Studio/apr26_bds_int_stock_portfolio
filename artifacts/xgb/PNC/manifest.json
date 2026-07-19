@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 68370,
-   "sha256": "461ea3c1af27e364c386e414a0a0bedfade3367f07b58940f090ad9325f15057"
+   "sha256": "8a80b935bdaac74cc7fb22588df03cf843fcdf1cb5aa3036e2234a60eaab2d99"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "180399c90b7c38b0e57863865718e4b4f349945ef66d8c09014434216073ab77"
+   "sha256": "eca53ceef46a70b4b3393a81f88bd59a3abe0e6ca92d2e851832ccc28f3102b8"
   },
   "parameters.json": {
    "bytes": 4082,
@@ -18,7 +18,7 @@
    "sha256": "36864735480009aaf631a460d941294bb7e145586d7286f21aae37cb47b661b5"
   }
  },
- "folder_sha256": "d8bffcd380c647441075ee08de9f53131c7f29edf43790d759cb30c69debd3cd",
+ "folder_sha256": "fb1c56451f79f0ed12ebb87a0bb9234efaa810eff1facb36729ee13557744814",
  "model": "xgb",
  "model_hash": "96572eb0e2d9154bb5aaacd63db5012484a472e49c4bfa040ef83b24da7143cb",
  "ticker": "PNC"

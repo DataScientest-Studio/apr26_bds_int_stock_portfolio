@@ -6,7 +6,7 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
   "THRESHOLD_ENTRY": 0.56,
@@ -15,11 +15,11 @@
     "theta_entry": 0.56,
     "kelly_fraction": null,
     "direction_mode": "both",
-    "oof_trades": 8,
+    "oof_trades": 13,
     "trade_floor_met": true,
-    "oof_log_growth": -0.10751039235524244
+    "oof_log_growth": -0.18619064093389767
   },
-  "cv_auc_pr": 0.4181648583925699,
+  "cv_auc_pr": 0.39740351091078524,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,9 +36,11 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
-    "dist_to_sma_200",
-    "down_streak_10",
-    "zscore_close_20"
+    "dist_to_high_252",
+    "ret_skew_20",
+    "dist_to_sma_10",
+    "range_compression_60",
+    "trend_efficiency_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -93,21 +95,29 @@
       "mean": -0.005376348022738276,
       "std": 0.8999353319566031
     },
-    "dist_to_sma_200": {
-      "mean": 0.039194603490304195,
-      "std": 0.096167785332383
+    "dist_to_high_252": {
+      "mean": -0.10754586446880059,
+      "std": 0.09585087393289976
     },
-    "down_streak_10": {
-      "mean": 0.0888068181818182,
-      "std": 0.1267367850341215
+    "ret_skew_20": {
+      "mean": -0.08636652675111918,
+      "std": 0.8307638221946148
     },
-    "zscore_close_20": {
-      "mean": 0.17773131527739192,
-      "std": 1.2981789906434333
+    "dist_to_sma_10": {
+      "mean": 0.0016433405355135104,
+      "std": 0.024476113694226226
+    },
+    "range_compression_60": {
+      "mean": 0.5110606060606061,
+      "std": 0.29686463238868493
+    },
+    "trend_efficiency_20": {
+      "mean": 4.227591504936504,
+      "std": 3.2134055508756894
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "36cbb2058f3c8fb8fd5e72efac833bf7884153e4933bd26ffb67990f1dbf4b9d",
+  "MODEL_HASH": "cff4ca57d56b9d085281faf80c0c6cf9db17fc8469d75967696ade4a8eb0ec1b",
   "RANDOM_SEED": 42
 }

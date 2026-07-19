@@ -1,14 +1,14 @@
 {
   "best_params": {
-    "max_depth": 4,
-    "eta": 0.28749227296777013,
-    "subsample": 0.9998466668371343,
-    "colsample_bytree": 0.8398023448714944,
-    "min_child_weight": 9.029263052482078,
-    "reg_lambda": 1.8570823390382576,
-    "reg_alpha": 1.3404687347956274,
-    "gamma": 0.006625168797902245,
-    "n_estimators": 252,
+    "max_depth": 2,
+    "eta": 0.06276030434489653,
+    "subsample": 0.9724464972932803,
+    "colsample_bytree": 0.6121597644302789,
+    "min_child_weight": 5.104245933082122,
+    "reg_lambda": 1.634095282621932,
+    "reg_alpha": 0.314205504560931,
+    "gamma": 0.2334469661863321,
+    "n_estimators": 118,
     "kelly_fraction": null,
     "theta_entry": 0.44
   },
@@ -24,6 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
+      "1d",
       "multi_tf"
     ],
     "per_namespace": [
@@ -69,6 +70,17 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          111
+        ],
+        "feature_names": [
+          "realized_volatility_20_1d"
+        ],
+        "feature_count": 1
       },
       {
         "namespace": "multi_tf",
@@ -100,6 +112,7 @@
       15,
       16,
       17,
+      111,
       901
     ],
     "effective_feature_names": [
@@ -120,9 +133,10 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
+      "realized_volatility_20_1d",
       "momentum_alignment_multi"
     ],
-    "effective_feature_count": 18,
+    "effective_feature_count": 19,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[GOOG]"
   },
   "features": {
@@ -144,6 +158,7 @@
       15,
       16,
       17,
+      111,
       901
     ],
     "names": [
@@ -164,10 +179,12 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
+      "realized_volatility_20_1d",
       "momentum_alignment_multi"
     ],
     "active_namespaces": [
       "1h",
+      "1d",
       "multi_tf"
     ],
     "per_namespace": [
@@ -215,6 +232,17 @@
         "feature_count": 17
       },
       {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          111
+        ],
+        "feature_names": [
+          "realized_volatility_20_1d"
+        ],
+        "feature_count": 1
+      },
+      {
         "namespace": "multi_tf",
         "id_range": "901-999",
         "feature_ids": [
@@ -227,7 +255,7 @@
       }
     ]
   },
-  "cv_auc_pr": 0.4128049867218819,
+  "cv_auc_pr": 0.41417220715543,
   "cv_folds": 4,
   "n_trials": 80
 }

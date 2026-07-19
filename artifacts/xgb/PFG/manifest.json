@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 58554,
-   "sha256": "f0c8febdf27996646c732e91fdd947a49a489ca7cda8a52c17f17b6d855885c2"
+   "sha256": "74cb649a5cc8cd6e0743ee3fa6d91ab87909f5e6e4099081564fb08a4270d46f"
   },
   "metrics.json": {
    "bytes": 1103,
-   "sha256": "726b2da708bcb90e373f719361f46f757213f539be24b8e8322fc5ddab1096e8"
+   "sha256": "056223dad65b6968981a04bafb102ff4a825b48b47f2c00699b2cc69416e6f30"
   },
   "parameters.json": {
    "bytes": 4642,
@@ -18,7 +18,7 @@
    "sha256": "2276a28487e7bf5326fddfe690648ea715315be34f7dc74d73d49db0d783c516"
   }
  },
- "folder_sha256": "1b3a304ae87e9c99ffbc9875d5445e5a2f476a51ae6bd05ba2e7ee1dac4d81ce",
+ "folder_sha256": "95d11bec6c0e4d09b8a75f46b7ff31e1ad78cf819567af50e2e5cf7b45aafb2b",
  "model": "xgb",
  "model_hash": "e9e6788b96c900a75edd88060cf11bd3b5bcdef392ddda05f0302c9037fa3103",
  "ticker": "PFG"

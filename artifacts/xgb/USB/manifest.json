@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 161213,
-   "sha256": "737f9e5f4be1e028dd0bc18cbe965d149117bf88a0ab958b643ca305b8a76c17"
+   "sha256": "5b9c771ed1cd605ec356c409a0746bf7e854ab4e5f6c1ad1807438d8921e8923"
   },
   "metrics.json": {
    "bytes": 1108,
-   "sha256": "6c7b1d62cf42d1124ab0dca9e595edcfe5e6a23a0540ae8d709995d689c18398"
+   "sha256": "23b9fc8d69cce2d1192eec3e34c91e5d74dba36d4175c47d62374c7891c77935"
   },
   "parameters.json": {
    "bytes": 4644,
@@ -18,7 +18,7 @@
    "sha256": "29df1e5509ecaefda5bc29d6bf4829ba3b12eefd8f5cb73f0f7b90c5e6f78103"
   }
  },
- "folder_sha256": "12d5dffde82a42c60335e78dd504fc409e80e75f5f1206bdac9c0fe1c7973906",
+ "folder_sha256": "0a6584180b7059b9447f81ec029a7a1ddf7928d2de881dd51a955ca7efb9e405",
  "model": "xgb",
  "model_hash": "0c683bfbd2bfe1dff0ff36db964a9857f5841081f35fa54ed9855aff645ffe1a",
  "ticker": "USB"

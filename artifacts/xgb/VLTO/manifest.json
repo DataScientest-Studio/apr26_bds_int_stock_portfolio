@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25763,
-   "sha256": "d1603d6fd922fdfcbd3b471c9a2eae60dcedc9f3cad26b409b1b4864b064e9a4"
+   "sha256": "55a7e6e7e8e5847ce48f5667011a8943dae2c52a2de032d1b421fa0cfb4d6933"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "42e9a5ab11c99060adbcc4592ac30536cfa158214b142100c1050478cea6177b"
+   "sha256": "5dd23993653915f7b9c2f7b33743199f6bca6c5592476ddc85bcdfc722af631b"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "cfcf0476ac7d2a33671cf2fe327274d3f47c439051aa2d1cc2717ea0cfa54911"
   }
  },
- "folder_sha256": "d5e864795cf9f35b04d5a4f3d076386d0231c84fee7ae06ffd3f1b0ae7ab3797",
+ "folder_sha256": "f6eb250f51f6d64f582d016daefd1ae6fd5dc8751bf873d4653f0c0e4b8f7852",
  "model": "xgb",
  "model_hash": "6d29c18575e5db91892fac6d17f9bd6675beb36f552f174292a12adbd23d040d",
  "ticker": "VLTO"

@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 84472,
-   "sha256": "c195f0dfd0da717d4e61c922e4180d60b307b6a0bd3f8730da710aa2ad8a5470"
+   "bytes": 85653,
+   "sha256": "adad939140884298409964081efac3eb65769bb8a4fb4597d9a36464f581e7c9"
   },
   "metrics.json": {
-   "bytes": 1053,
-   "sha256": "d927d580c3c1e63d262cd7d94e3e84ceed8343748df48f0a1a88dd2e66e07b00"
+   "bytes": 1084,
+   "sha256": "b318ee54315d4a2caf2328d0e796d4cdac40819f630a806cac6ec8ef467beba0"
   },
   "parameters.json": {
-   "bytes": 2807,
-   "sha256": "16a288f43ce3f35983ab8fb8dc3539631128a9a7c94180e3b024de98264f55e8"
+   "bytes": 2759,
+   "sha256": "a5dc50f4e521f0b54ed8258d7bdcbee7e58deafabb33c3cf51475db4e4638e7f"
   },
   "strategy_AMZN.py": {
-   "bytes": 84174,
-   "sha256": "ebf0b5d53a067440ba61add9b786840886a74fa560bcae8c92f547c3e3de16c4"
+   "bytes": 83986,
+   "sha256": "e173f318c7576f996b00e5a5fc0b75e75f9fe151fbeca1476a90332cc191b2fe"
   }
  },
- "folder_sha256": "7d86497402bc6b488235d0b5b24caaaff6d0a86d6aaadf567939b9d96369754f",
+ "folder_sha256": "690e262e979b960d24df2db08a966988f7e708bf3efaf7984500114f8c1165dd",
  "model": "lstm",
- "model_hash": "7535da6e2b6b0d21cfbd7adbeb3d2c3ca5077c7f94c1d9d0c29d39107aba282b",
+ "model_hash": "08f400a53e70554817f03aa949e2e701c9ae7b2d25667a2a943035f18050cda9",
  "ticker": "AMZN"
 }

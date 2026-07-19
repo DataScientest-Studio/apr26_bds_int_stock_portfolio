@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25951,
-   "sha256": "41a21ca5f99e1bed2e30b55597d4d4af16a04aa394c712b60f81e1fc5782a613"
+   "sha256": "d41e4efa165356e3db2ed6deb7d7640defdd79537fdb25811703e98ca58b2df7"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "e04e661e973201d43c5bf9a1de65dee9f3c7a8b52263b91db5963fd50df9df35"
+   "sha256": "a1b7c5b7df8d2b11b638362838362a3383c0fbb456ca0b8fb002d2bd69866aca"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "f2f515f8e1e5f5255a53ba65facb4d85f0f49c08b7ae7262ecd4e59f6565f275"
   }
  },
- "folder_sha256": "3768e2fad53d2ea2fceafb054e5c61622c6e4037b65f8b515ec448d14ef0ba13",
+ "folder_sha256": "0c5e2ea42daf277b2b4af369e2a8eac0d3a5149512eb80887d36974e7f7e9220",
  "model": "xgb",
  "model_hash": "e2f88465a8fa4a11e2b7e8078cfd14fae4a15299e1663004979594af4710f91a",
  "ticker": "PNW"

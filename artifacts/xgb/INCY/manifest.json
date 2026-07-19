@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 35681,
-   "sha256": "3b6a0238185d22931fea92d37d7ad6d66191f9b13f777f060270cb0bc484b730"
+   "sha256": "8ab0940e26d5596db3db38b568e2265d1b740383068764215c82709dddbec5fd"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "b492d8ccd37efdbbf1383728567b7343c2a7fd80123c0e17cb72f6f60ea39a84"
+   "sha256": "2f4fe4414645553046ee8226611ac946495ed363b93fd56de9d31f77df3ea32d"
   },
   "parameters.json": {
    "bytes": 4656,
@@ -18,7 +18,7 @@
    "sha256": "75b015bcc10e0f10a56402596cf5ede59d9976f0af6883a88fb97c074d8c2269"
   }
  },
- "folder_sha256": "dcf844ec987aed98d72436bfa8bf2c246456a8887543582456e789f4bb4d2499",
+ "folder_sha256": "7937e3f903393c041f4ffad749ba59f9abdd7f7c8d1b2e5ccda4c35ecf2188ce",
  "model": "xgb",
  "model_hash": "2ffb8d4ee9f9d74e40c700b8390139cd146a7e3dadb7479d5d40f20435a0322c",
  "ticker": "INCY"

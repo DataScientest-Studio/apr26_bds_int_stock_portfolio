@@ -1,14 +1,14 @@
 {
   "best_params": {
     "max_depth": 3,
-    "eta": 0.24291409084725948,
-    "subsample": 0.6880882561667372,
-    "colsample_bytree": 0.9460917566764401,
-    "min_child_weight": 2.2226882238755508,
-    "reg_lambda": 4.869978208223361,
-    "reg_alpha": 0.6211131000581674,
-    "gamma": 0.5349117638947337,
-    "n_estimators": 158,
+    "eta": 0.16686070532579966,
+    "subsample": 0.7419703908716453,
+    "colsample_bytree": 0.8290973248460497,
+    "min_child_weight": 7.649628861210539,
+    "reg_lambda": 3.55054858704052,
+    "reg_alpha": 0.26743246535864584,
+    "gamma": 0.3730657505645745,
+    "n_estimators": 202,
     "kelly_fraction": null,
     "theta_entry": 0.4
   },
@@ -23,7 +23,8 @@
       "multi_tf"
     ],
     "active_namespaces": [
-      "1h"
+      "1h",
+      "1w"
     ],
     "per_namespace": [
       {
@@ -68,6 +69,17 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
+      },
+      {
+        "namespace": "1w",
+        "id_range": "201-299",
+        "feature_ids": [
+          218
+        ],
+        "feature_names": [
+          "ma_slope_4_1w"
+        ],
+        "feature_count": 1
       }
     ],
     "effective_feature_ids": [
@@ -87,7 +99,8 @@
       14,
       15,
       16,
-      17
+      17,
+      218
     ],
     "effective_feature_names": [
       "direction",
@@ -106,9 +119,10 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9"
+      "macd_hist_12_26_9",
+      "ma_slope_4_1w"
     ],
-    "effective_feature_count": 17,
+    "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[MCHP]"
   },
   "features": {
@@ -129,7 +143,8 @@
       14,
       15,
       16,
-      17
+      17,
+      218
     ],
     "names": [
       "direction",
@@ -148,10 +163,12 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9"
+      "macd_hist_12_26_9",
+      "ma_slope_4_1w"
     ],
     "active_namespaces": [
-      "1h"
+      "1h",
+      "1w"
     ],
     "per_namespace": [
       {
@@ -196,10 +213,21 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
+      },
+      {
+        "namespace": "1w",
+        "id_range": "201-299",
+        "feature_ids": [
+          218
+        ],
+        "feature_names": [
+          "ma_slope_4_1w"
+        ],
+        "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.3973436024527111,
+  "cv_auc_pr": 0.3860222720914425,
   "cv_folds": 4,
   "n_trials": 80
 }

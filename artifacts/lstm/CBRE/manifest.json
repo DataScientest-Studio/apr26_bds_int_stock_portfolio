@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 96654,
-   "sha256": "617dada24f5eea8a30d3e4eb59420b3db241e3de4d66d7ef6eb3d65e3708645b"
+   "bytes": 59751,
+   "sha256": "93b5c28bcd674ca8a9ceb065e418206b3c0534cfe4b0044d512ca65d56a0dddb"
   },
   "metrics.json": {
-   "bytes": 1040,
-   "sha256": "f2e33774481b5e48a0fb8b620c84a72c0160b7e8d6826b1d571f40580df976f9"
+   "bytes": 1055,
+   "sha256": "a4c0cb748539fb499fb1e78300d35a55cd655a6ed8d301d93f4ee2a37f6487d4"
   },
   "parameters.json": {
-   "bytes": 3134,
-   "sha256": "e58c3e95feb9eda2d48bbe8210f1fced2cad167f525fdda5a2b6ee8b8f6a1ea4"
+   "bytes": 2529,
+   "sha256": "4a8b44b7d171aae495c12dd6fbf8b17cbbbeccbb86da7acb2b51011076084636"
   },
   "strategy_CBRE.py": {
-   "bytes": 92624,
-   "sha256": "21cb441410ff1091b42bd3f1850bbfc0472d3f663a418a315873e3a1425975f2"
+   "bytes": 76502,
+   "sha256": "06b8ba3515fcf4db18b63c6e66fe2879c7b169767c6680612a3587cd8b6e45d8"
   }
  },
- "folder_sha256": "d73c818a065948f722ab17fd68d5f5936cd6f8adc6eed2557669b2c49b1a3b8a",
+ "folder_sha256": "90713f16f917e583c1b2764caa02eeb62d5e5c34b2c2806ec4823b26e4061963",
  "model": "lstm",
- "model_hash": "145f8360666193f9828950bb578de757ed6c7bc29363244bb108306218ee8ee0",
+ "model_hash": "a66cc40e8cddd728d7cdffb6896aa4b731b7f280964a4d29717631bc3f7e59aa",
  "ticker": "CBRE"
 }

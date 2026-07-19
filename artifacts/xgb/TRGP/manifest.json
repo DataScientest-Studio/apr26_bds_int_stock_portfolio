@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 70576,
-   "sha256": "4361eee06b7ad5f8bda8a4bfed80ad0c205437ca6269e1662df41863118ef7c4"
+   "sha256": "a5bf93659e68acd49f68dc02dcede4e6cf774d84206327111fc1bcf0f9e33274"
   },
   "metrics.json": {
    "bytes": 1092,
-   "sha256": "0731df6e5b7e7319cd3792bc5b520486aa1f2f65ebe1e46fd28f1c26fbc42307"
+   "sha256": "f76bee351418fbc13059eda98041ae2badb3fd9575dd1dadd70ca65d131d3c3d"
   },
   "parameters.json": {
    "bytes": 4083,
@@ -18,7 +18,7 @@
    "sha256": "735baa634fac4beadb7313d7dfb717b27fb7a6dedd08bbdfbabd7e7d465d2ec7"
   }
  },
- "folder_sha256": "1caba128badf30ec7db389726ae1d1d7c3e79d6789aef2c2890ab09f2cf41314",
+ "folder_sha256": "a27bd9bbacdd2eb0641f15e0d5580c93abe0630fb2f3604a4bba06467102e0ba",
  "model": "xgb",
  "model_hash": "2b5875d966ff0106a52449f84a763dc3086432476a7db80717259e05985fb0f6",
  "ticker": "TRGP"

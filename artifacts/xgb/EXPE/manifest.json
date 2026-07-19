@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 57111,
-   "sha256": "026eb36d34ed1defc1760d3adfb701e8042e9f15a0d51c67923e4ce3d97f5818"
+   "sha256": "f2313d6184c118e7400e2b4ffaeec13796cba9337eeeb259f474daf895cb17a0"
   },
   "metrics.json": {
    "bytes": 1110,
-   "sha256": "44615fccf362009eabc8d0cb82b4f3d5afb088a50e5a143f0fa55ee7aea8f498"
+   "sha256": "490f36e0e6f50fe7b0d360205523d238ce5fac79504440e92091f39101fba462"
   },
   "parameters.json": {
    "bytes": 5857,
@@ -18,7 +18,7 @@
    "sha256": "9d7f4b3baf2d280682f2bf1ff0486cf4e84a2ba2dbee7cb55b22b16cfc8b2677"
   }
  },
- "folder_sha256": "8feb3acc042d055bb5df20a3f03f62884de509343e4ae90db1e68fa943a50490",
+ "folder_sha256": "6720c208f78d5a875da6cb116abc65d78ffb9e48e72ca0dfd173b58fb8f1d80f",
  "model": "xgb",
  "model_hash": "b9c5ab55be6ec4af0d945ef3452495310932d0cc66ff963a1d21e52d4a461e75",
  "ticker": "EXPE"

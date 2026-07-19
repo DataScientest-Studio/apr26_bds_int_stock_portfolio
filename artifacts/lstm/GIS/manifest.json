@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81827,
-   "sha256": "8211df659e07bc89b4abfaa7264498f5b256fac87f39215581efe8efa96d4375"
+   "bytes": 103296,
+   "sha256": "013e8b610721705d68389ec46aec51093d50ab31a7083eca0d299d6768545f90"
   },
   "metrics.json": {
-   "bytes": 1062,
-   "sha256": "e46f43cf5e72d7df9433c554971fb1f674f09e4df98c25dc1239f3a15a599b07"
+   "bytes": 1058,
+   "sha256": "85c913f4689dbb4c38bdf64e422793bbf93f9065c8b20d1f223e8dfbaf11ebb5"
   },
   "parameters.json": {
-   "bytes": 2647,
-   "sha256": "e6a87161f6cf7c7445d05b3046ab0834515afa59c5b8c75c724af183ecefe212"
+   "bytes": 3164,
+   "sha256": "7d09f28fb9c269097a40115e6a5842db54afad5fbca0a74187af59cfd125748b"
   },
   "strategy_GIS.py": {
-   "bytes": 80772,
-   "sha256": "434c8694246e326bcad27bdf2ef234c0596d292e9ad95242d3893ec27996fc46"
+   "bytes": 93967,
+   "sha256": "8efebe69330170a70a38c6dfb9ab94717b64fdb1fab004ac40683e00ec46eca9"
   }
  },
- "folder_sha256": "4845ca81890c4f47e7e36ea1aecb3e521cc54e8c1b6a3f3571da3c4821cd89db",
+ "folder_sha256": "343c1728999ba1ccdd9fa6359c0ac06680cad92ceafb9e2b9aa3cbc882c8b3ac",
  "model": "lstm",
- "model_hash": "2f5303f6ccc8ffc205ae728713cb0c843418782b4c3c49a59b60757e9ffb34be",
+ "model_hash": "b8ae3a6d4a652419eeb4a5bdbe967e53466c22a09572e8c1581c6d7dc144a926",
  "ticker": "GIS"
 }

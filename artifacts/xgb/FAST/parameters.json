@@ -1,16 +1,16 @@
 {
   "best_params": {
-    "max_depth": 2,
-    "eta": 0.05149278896311941,
-    "subsample": 0.7149824981539521,
-    "colsample_bytree": 0.9717889254535739,
-    "min_child_weight": 9.181866617774165,
-    "reg_lambda": 3.4246351601935636,
-    "reg_alpha": 1.1260067542912813,
-    "gamma": 0.034187183497789694,
-    "n_estimators": 90,
+    "max_depth": 4,
+    "eta": 0.14480055809101075,
+    "subsample": 0.9176017860054144,
+    "colsample_bytree": 0.8996567227826335,
+    "min_child_weight": 9.560222558570514,
+    "reg_lambda": 4.325741888710907,
+    "reg_alpha": 1.4669244806159072,
+    "gamma": 0.14219215662527587,
+    "n_estimators": 236,
     "kelly_fraction": null,
-    "theta_entry": 0.4
+    "theta_entry": 0.44
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -24,8 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "multi_tf"
+      "1d"
     ],
     "per_namespace": [
       {
@@ -75,21 +74,10 @@
         "namespace": "1d",
         "id_range": "101-199",
         "feature_ids": [
-          117
+          106
         ],
         "feature_names": [
-          "macd_hist_12_26_9_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          901
-        ],
-        "feature_names": [
-          "momentum_alignment_multi"
+          "dist_to_sma_20_1d"
         ],
         "feature_count": 1
       }
@@ -112,8 +100,7 @@
       15,
       16,
       17,
-      117,
-      901
+      106
     ],
     "effective_feature_names": [
       "direction",
@@ -133,10 +120,9 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "macd_hist_12_26_9_1d",
-      "momentum_alignment_multi"
+      "dist_to_sma_20_1d"
     ],
-    "effective_feature_count": 19,
+    "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[FAST]"
   },
   "features": {
@@ -158,8 +144,7 @@
       15,
       16,
       17,
-      117,
-      901
+      106
     ],
     "names": [
       "direction",
@@ -179,13 +164,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "macd_hist_12_26_9_1d",
-      "momentum_alignment_multi"
+      "dist_to_sma_20_1d"
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "multi_tf"
+      "1d"
     ],
     "per_namespace": [
       {
@@ -235,27 +218,16 @@
         "namespace": "1d",
         "id_range": "101-199",
         "feature_ids": [
-          117
+          106
         ],
         "feature_names": [
-          "macd_hist_12_26_9_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          901
-        ],
-        "feature_names": [
-          "momentum_alignment_multi"
+          "dist_to_sma_20_1d"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.43081707510643646,
+  "cv_auc_pr": 0.42515389991928554,
   "cv_folds": 4,
   "n_trials": 80
 }

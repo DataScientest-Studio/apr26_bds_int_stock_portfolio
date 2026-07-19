@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25926,
-   "sha256": "3fdfe488d845c39698f36364fec86826971725d95c816754d5fb75dc5ed0477c"
+   "sha256": "a70ee3dbad7edafcbed652df0c5fa50a108010aa05ce40c69082ad421ffeda73"
   },
   "metrics.json": {
    "bytes": 1044,
-   "sha256": "edc2b7c7296288029b0b83441c50db2bb5928fde66cd3446ae5b5f4a85328c38"
+   "sha256": "c81efdf63a78e1421f694b2674b368a13cd47fd53d0bd6531cddcb277d1c3639"
   },
   "parameters.json": {
    "bytes": 4078,
@@ -18,7 +18,7 @@
    "sha256": "0c1e0e64913a7002d47078dd4e978a01f270f14dad26c2f62671e69e6c425457"
   }
  },
- "folder_sha256": "1b58b8c00fd02f3481441ae48636cd3a4779ace14dceec7ad1017310fd829250",
+ "folder_sha256": "dfb9e9fa9ba9a88fda9c1bc37e93dd8cc94fc1cbf8200fc9a14f7c6aebecff93",
  "model": "xgb",
  "model_hash": "c8538430f1e83df1571add411618403b1e4b8644d5259530b4ac256c1d8d95e8",
  "ticker": "TFC"

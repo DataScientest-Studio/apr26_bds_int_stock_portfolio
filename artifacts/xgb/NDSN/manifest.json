@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 34890,
-   "sha256": "d49b4d74174549e5f946c3a831ceae5f72d571711126bc01bb578a851b8c3057"
+   "sha256": "cf0db9bf49f579a4952a13164c001944394b82af7ca620ba9570723daecf135f"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "95fdfeaacd157a5fbe431c3e5eab8a4409e87243d45909087da3755cee2cc545"
+   "sha256": "20e43a423e37d9ef5ac1469b88759bb035b4cd6017bc6f91e9b1dfc6a4320a2a"
   },
   "parameters.json": {
    "bytes": 4645,
@@ -18,7 +18,7 @@
    "sha256": "88740412de28ada03eb2b1b145c87ac3d53883d4a97d85e18833d3bba4e8efc6"
   }
  },
- "folder_sha256": "c665f3351cd3e50fa91287e3c2bca6cac8ae1b4a164109a41ca10b3f0565e30f",
+ "folder_sha256": "db1d2fc27a3fad45f8f2c0876d3cefb8a1be0066d480343db0730e0c171d89d7",
  "model": "xgb",
  "model_hash": "f582f4b8ce97ce7fe1ec5f9bcac0bfb9778a86e1813430c79862eca56725c12a",
  "ticker": "NDSN"

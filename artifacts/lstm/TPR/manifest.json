@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 100194,
-   "sha256": "80933a791129a2fe9ca9301a8e1728ac661784fc1ac7f30928bbd55b5c14cd7a"
+   "bytes": 72689,
+   "sha256": "08b912d350efb9068aec0543049d055a9c1bfeae355ed76e1889a06b07c3d8f5"
   },
   "metrics.json": {
-   "bytes": 1065,
-   "sha256": "2d493a1cc83eb67babee3707dc6078d782068cb2d56069bcb8ba959b2a283b65"
+   "bytes": 1075,
+   "sha256": "87a7198a9ff1506ed5b4d93fe98e3e8550b191d873da1f6823198a1cb0109136"
   },
   "parameters.json": {
-   "bytes": 3167,
-   "sha256": "8e0dba526d6e7d144499b43e84f573785ecb5b1d95e529d5244b3add2c257d0d"
+   "bytes": 2923,
+   "sha256": "788c9453f93431e2246bbb9a792d76b81a9b970259cfa0b7e14a02d301eed10c"
   },
   "strategy_TPR.py": {
-   "bytes": 92415,
-   "sha256": "c40fd1a0176e5c8f2e62e7cbcc47ee1c5398f896d86890bdb920f304a0f6b9ff"
+   "bytes": 87244,
+   "sha256": "a9fafbd072bd381bb426f900b8f702a4df503473f678f2ee8babd7ae4bc2a0da"
   }
  },
- "folder_sha256": "945bee28c3e3e00f6e773fed84cae86a78b2a84c727fe38bfacf32163f90c2cf",
+ "folder_sha256": "83c7b5799fb1748ac6f24e451fa9169b1a8a50535a2809128f2e489f1fb4bd6d",
  "model": "lstm",
- "model_hash": "0969bc5b1600d32a7bb955f8a7d9c846671b5cd05376c718c3ad170957cc0a3e",
+ "model_hash": "a97f4846a60caf9990b656ead0c4a960243c5df741d67d1a5b02a591d6d63554",
  "ticker": "TPR"
 }

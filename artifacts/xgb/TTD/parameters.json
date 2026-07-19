@@ -1,16 +1,16 @@
 {
   "best_params": {
     "max_depth": 2,
-    "eta": 0.14114209184064247,
-    "subsample": 0.8423032082121165,
-    "colsample_bytree": 0.9070272685504713,
-    "min_child_weight": 2.6604530746640633,
-    "reg_lambda": 2.1307729176915764,
-    "reg_alpha": 1.0464788748879787,
-    "gamma": 0.18055751812941467,
-    "n_estimators": 290,
+    "eta": 0.12405962351697125,
+    "subsample": 0.8553213824145458,
+    "colsample_bytree": 0.9930871650086934,
+    "min_child_weight": 4.825597404269462,
+    "reg_lambda": 2.367039095648337,
+    "reg_alpha": 0.07522921769000601,
+    "gamma": 1.8892443734733253,
+    "n_estimators": 195,
     "kelly_fraction": null,
-    "theta_entry": 0.42
+    "theta_entry": 0.4
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -24,8 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "1w"
+      "1d"
     ],
     "per_namespace": [
       {
@@ -75,21 +74,10 @@
         "namespace": "1d",
         "id_range": "101-199",
         "feature_ids": [
-          102
+          106
         ],
         "feature_names": [
-          "log_return_1_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          202
-        ],
-        "feature_names": [
-          "log_return_1_1w"
+          "dist_to_sma_20_1d"
         ],
         "feature_count": 1
       }
@@ -112,8 +100,7 @@
       15,
       16,
       17,
-      102,
-      202
+      106
     ],
     "effective_feature_names": [
       "direction",
@@ -133,10 +120,9 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "log_return_1_1d",
-      "log_return_1_1w"
+      "dist_to_sma_20_1d"
     ],
-    "effective_feature_count": 19,
+    "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[TTD]"
   },
   "features": {
@@ -158,8 +144,7 @@
       15,
       16,
       17,
-      102,
-      202
+      106
     ],
     "names": [
       "direction",
@@ -179,13 +164,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "log_return_1_1d",
-      "log_return_1_1w"
+      "dist_to_sma_20_1d"
     ],
     "active_namespaces": [
       "1h",
-      "1d",
-      "1w"
+      "1d"
     ],
     "per_namespace": [
       {
@@ -235,27 +218,16 @@
         "namespace": "1d",
         "id_range": "101-199",
         "feature_ids": [
-          102
+          106
         ],
         "feature_names": [
-          "log_return_1_1d"
-        ],
-        "feature_count": 1
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          202
-        ],
-        "feature_names": [
-          "log_return_1_1w"
+          "dist_to_sma_20_1d"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.4246982116679425,
+  "cv_auc_pr": 0.40837832835978116,
   "cv_folds": 4,
   "n_trials": 80
 }

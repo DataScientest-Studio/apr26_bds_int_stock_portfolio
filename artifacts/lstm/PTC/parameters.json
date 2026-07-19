@@ -6,20 +6,20 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
-  "THRESHOLD_ENTRY": 0.5,
+  "THRESHOLD_ENTRY": 0.56,
   "DIRECTION_MODE": "both",
   "CALIBRATION": {
-    "theta_entry": 0.5,
+    "theta_entry": 0.56,
     "kelly_fraction": null,
     "direction_mode": "both",
-    "oof_trades": 113,
+    "oof_trades": 13,
     "trade_floor_met": true,
-    "oof_log_growth": -0.15690727503993301
+    "oof_log_growth": -0.20245254082676775
   },
-  "cv_auc_pr": 0.40759342815140426,
+  "cv_auc_pr": 0.4012612138650603,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -37,10 +37,9 @@
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
     "volume_trend_5_20",
-    "dist_from_low_20",
-    "price_volume_rank_divergence",
-    "trend_efficiency_20",
-    "zscore_close_20"
+    "stoch_k_14",
+    "mr_dist_atr_20",
+    "vol_scaled_momentum_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -99,25 +98,21 @@
       "mean": 0.00403267626209133,
       "std": 0.3248945717546966
     },
-    "dist_from_low_20": {
-      "mean": 0.08810533921514246,
-      "std": 0.06738394015895306
+    "stoch_k_14": {
+      "mean": 57.72278874139055,
+      "std": 29.76256711306112
     },
-    "price_volume_rank_divergence": {
-      "mean": 0.09890624999999999,
-      "std": 0.46751641896984975
+    "mr_dist_atr_20": {
+      "mean": 0.36487007065072297,
+      "std": 1.683546033793382
     },
-    "trend_efficiency_20": {
-      "mean": 4.888663087554368,
-      "std": 3.5097001595361905
-    },
-    "zscore_close_20": {
-      "mean": 0.2937561772751446,
-      "std": 1.3149652441868516
+    "vol_scaled_momentum_20": {
+      "mean": 1.2933440400513745,
+      "std": 4.4541127317900475
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "696085c1aaa9857470d5947a73daddbdfdd57172144c450150d233ff5e9d0d26",
+  "MODEL_HASH": "aa0c77f941ed2344e341691f7dd1df6f6a80c41640c7618d02e9b1a1aa98e253",
   "RANDOM_SEED": 42
 }

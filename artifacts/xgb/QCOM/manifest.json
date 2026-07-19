@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 165110,
-   "sha256": "ac794afc17a665badb1428bb9d7253c5899c7c7e29989c4f3f0755e459124a60"
+   "sha256": "74696e8b1dfd02ff5a33afed7286e11466c814784a3d5311d5bca215ea0b0b75"
   },
   "metrics.json": {
    "bytes": 1108,
-   "sha256": "b45291e2aea42d9d8cc371e93e2b4f01a2a2896f8627f584ea2505b9fcc4a1ce"
+   "sha256": "ec3abf0811e2d786223fcd22844ca108b1dfa12855a23a9749fe3b9e80c6b68c"
   },
   "parameters.json": {
    "bytes": 4667,
@@ -18,7 +18,7 @@
    "sha256": "635785fe6f42d890387e6068615134b7d209ee2ffe47c05f4dca73ec8030fde2"
   }
  },
- "folder_sha256": "8c56361277b5cdb3238c8b173ccd320978838195854292991cfec0bcb59a00d3",
+ "folder_sha256": "f59ea0347407beb45a89612c1f9278a71a6d14aa0e119ce9e7edb1bc72a01f27",
  "model": "xgb",
  "model_hash": "c0b91b6a300404f2671a6cdb63b3060706d9d867bfd54614412a686f485d09fc",
  "ticker": "QCOM"

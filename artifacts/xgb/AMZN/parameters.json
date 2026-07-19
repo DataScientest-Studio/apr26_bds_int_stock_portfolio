@@ -1,16 +1,16 @@
 {
   "best_params": {
     "max_depth": 2,
-    "eta": 0.038601353332368436,
-    "subsample": 0.7241803736339046,
-    "colsample_bytree": 0.9474969979281641,
-    "min_child_weight": 6.693226218631102,
-    "reg_lambda": 4.638983728600027,
-    "reg_alpha": 1.348651787543417,
-    "gamma": 0.012039374394250228,
-    "n_estimators": 108,
+    "eta": 0.11182802447676446,
+    "subsample": 0.7495616922121945,
+    "colsample_bytree": 0.9916385331682853,
+    "min_child_weight": 9.502586660033513,
+    "reg_lambda": 4.0631218227086014,
+    "reg_alpha": 0.8485878726354494,
+    "gamma": 0.4902841310080409,
+    "n_estimators": 292,
     "kelly_fraction": null,
-    "theta_entry": 0.48
+    "theta_entry": 0.4
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -23,8 +23,7 @@
       "multi_tf"
     ],
     "active_namespaces": [
-      "1h",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -69,17 +68,6 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          202
-        ],
-        "feature_names": [
-          "log_return_1_1w"
-        ],
-        "feature_count": 1
       }
     ],
     "effective_feature_ids": [
@@ -99,8 +87,7 @@
       14,
       15,
       16,
-      17,
-      202
+      17
     ],
     "effective_feature_names": [
       "direction",
@@ -119,10 +106,9 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "log_return_1_1w"
+      "macd_hist_12_26_9"
     ],
-    "effective_feature_count": 18,
+    "effective_feature_count": 17,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[AMZN]"
   },
   "features": {
@@ -143,8 +129,7 @@
       14,
       15,
       16,
-      17,
-      202
+      17
     ],
     "names": [
       "direction",
@@ -163,12 +148,10 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "log_return_1_1w"
+      "macd_hist_12_26_9"
     ],
     "active_namespaces": [
-      "1h",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -213,21 +196,10 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          202
-        ],
-        "feature_names": [
-          "log_return_1_1w"
-        ],
-        "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.43488195795960305,
+  "cv_auc_pr": 0.424676765347648,
   "cv_folds": 4,
   "n_trials": 80
 }

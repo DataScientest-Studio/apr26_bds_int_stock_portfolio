@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25956,
-   "sha256": "0c20184cc74451e69d0932d9f159af5d59eb7f443cad2e3889e0c8e94a242fe5"
+   "sha256": "2a22a08f9e6c05f2f7df0227097778b3fd52868106709595c9c0fd11e419478f"
   },
   "metrics.json": {
    "bytes": 1044,
-   "sha256": "d9959d84a3f012c234290775442c24c8d15ddd8d843ec87c1e8384a1aa4a4cd9"
+   "sha256": "eca3606f64a0ec8d9470176ea1a55fd3479d2403b8d19aa5701c4b66cfe3a07d"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "4ee5421867891fb3d711e6a3eddf9701281072a6bbbc85fdd3609de17096a4c7"
   }
  },
- "folder_sha256": "e5bd2c528bbed1965ab6b6df6f3d3f1d0eca1b420d2df2528b0ee52b49c0b575",
+ "folder_sha256": "daabb58c8f8d39874a32b56b3789b6fe85d7c5ede5bd98c00f03c02fe1e5d6a9",
  "model": "xgb",
  "model_hash": "a19c926d195f540d3a70685ea769c77666c23718728c95a1d912211f23d38316",
  "ticker": "PPL"

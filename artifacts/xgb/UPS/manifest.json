@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 27406,
-   "sha256": "b1fe20829243364b067cabd7e58608487ee1644a1fa780f0f62993cc4bab2200"
+   "sha256": "f2281e7325239dbb66f70bc25b115d16f3e4d34330c101748b29938c59ad792f"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "e482c378784a972dc110e0a4fe5649e53caff4abbf68c37496fc4364104ee8ec"
+   "sha256": "9483d06bfbc9936237bcee3abd06ea1cd4c215ee5fd8607cfce5158f8d5be3d2"
   },
   "parameters.json": {
    "bytes": 4630,
@@ -18,7 +18,7 @@
    "sha256": "80fee98e32f7b5f92e5fdc43f80e1dbdafcf0f215dfc9f57283e664522f2e70e"
   }
  },
- "folder_sha256": "25b320496785268109f7133b26c49abf7095055c8b21e5c8c4d73ba3a615ecdf",
+ "folder_sha256": "59a9da023e025cb81631a8bf80a1ae21a8943652ea9d7775b6de150967bb3301",
  "model": "xgb",
  "model_hash": "d66a05ca53a86b9abb3b27c3153c1f1f4426b808c1f169e0b23a41f22ca0ee81",
  "ticker": "UPS"

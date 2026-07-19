@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 44562,
-   "sha256": "fb7347cb0682b1086949a09fd1996a02e512be8e015f52a9a45d2f8d3b1b7330"
+   "sha256": "43a1f054cd1bc6d18c81d6b3cc39f095ee5b088cc5ea1d7d8e411b41a962fecb"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "69bad8a080653eb8544eee3d67e7983ed43638b0522bfc4f1cb3668daf78e572"
+   "sha256": "55a736165c8de078ed7e71c2104324e2bfd9221a4ede8fd00b682211a25abcc3"
   },
   "parameters.json": {
    "bytes": 4640,
@@ -18,7 +18,7 @@
    "sha256": "dfd24ac7bf9e58f226bf75de7eb5de1c42c217a37bc3226dca9885c490d7d461"
   }
  },
- "folder_sha256": "a722cc4854f3af190acd7b771eb0ab60e12f8fc2454f34aef65a8369b3eca67e",
+ "folder_sha256": "b680cb43e4337cbc556f480865e518f896e1c79cbc8b69cd254bbf5d243bbe7f",
  "model": "xgb",
  "model_hash": "75679feab08da736e64bd5a738c8122c805afa3799fbf28121ac6c84b7b61bb3",
  "ticker": "AMT"

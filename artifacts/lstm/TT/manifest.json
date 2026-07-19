@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75914,
-   "sha256": "44d81684f14d0558954b084fa50e752f9c0c38b4ed251f575d2dba513e473e38"
+   "bytes": 90812,
+   "sha256": "ab516651a9ff0790a5a60a38e92528480fb0f333a4c94b32bb12e6bdc8e82ca7"
   },
   "metrics.json": {
-   "bytes": 1056,
-   "sha256": "19efc0266e27f7ac292bb60d71bc9db10596ef9e4a08adfbba4d5400dce04f37"
+   "bytes": 1061,
+   "sha256": "1612fd6c45222f6d9d0e30a5e070488f2bcce648d151b0a5f3eb5d6c73f5b0bc"
   },
   "parameters.json": {
-   "bytes": 2527,
-   "sha256": "13d0d1d60059b87d42832b4bb0dc5ae1c23352eda4241a742af7a534da52a6a9"
+   "bytes": 2907,
+   "sha256": "e53d9f479dc65ae7d228aedf1a8fece50c491a5a8b18457726c04e52331a6b78"
   },
   "strategy_TT.py": {
-   "bytes": 77153,
-   "sha256": "28edfa840338c1aeaad0ae85b48d60afc0ed5efc3458fc176f275f212ce18181"
+   "bytes": 86782,
+   "sha256": "7820049856915f6f41032070e8168789516407f090414e91344221d2979ae381"
   }
  },
- "folder_sha256": "28c99dff47fd19c0c24a7991ac86a5c391c611c175de6bea74f10d1b0acd5d16",
+ "folder_sha256": "5c007ac9f89b43108844a928d64c4a8ecdc0ef9b7456a239d9cf29f11405cef5",
  "model": "lstm",
- "model_hash": "c73f0b7032f4bbab7e2b6d7748aea4d20620e964d69a8879531ad1a7da0476b8",
+ "model_hash": "857e9a6af39e9e36dab5e7981a28e0e5c919534859eca4382c3059490a66c6b1",
  "ticker": "TT"
 }

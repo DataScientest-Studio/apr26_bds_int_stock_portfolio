@@ -8,7 +8,9 @@ How this research was run, what it claims, and — just as important — what it
 model on 1-hour bars and one LSTM on daily bars per ticker — under a frozen, mechanical TP/SL
 contract, and how does it compare to buy-and-hold (HODL)?
 
-**Scope.** 498 XGBoost assets + 495 LSTM assets = 993 sealed per-asset artifacts, each with a
+**Scope.** One sealed per-asset artifact per model per asset (this release: 498 XGBoost +
+495 LSTM = 993 — the authoritative counts live in `research_run`, which the console reads
+and the Integrity page shows). Each artifact carries a
 single out-of-sample (OOS) evaluation:
 
 | model | bars | Train window | OOS window |
@@ -40,7 +42,10 @@ the label contract and identical in research, verification and the sealed artifa
   widths read at t0 (strictly causal, data up to close[t0] only). Reward:risk b = 2.
 - **Horizon.** XGB: 24 hourly bars; LSTM: 10 daily sessions. If neither barrier is hit, the
   trade exits at the horizon.
-- **Label.** Y = 1 iff TP is reached before SL within the horizon.
+- **Label.** Y = 1 iff the realized net return of the barrier trade is positive — costs on
+  both sides and the gapped fill included. This is stricter than "TP before SL": a target
+  touch whose next-open fill turns negative after costs is labelled 0, and a time-barrier
+  exit that ends positive is labelled 1.
 - **Execution realism.** Entry fills at the next bar open; commission and slippage are charged
   on both sides; capital policy is all-in compounding per asset (no cross-asset portfolio).
 - **Overlap control.** Overlapping label windows are down-weighted by label-uniqueness weights.
@@ -154,6 +159,8 @@ one-shot OOS.
 | Universal warm-start init (LSTM) | Accepted, guarded (section 5). |
 | Survivorship | The universe is built from present-day S&P 500 constituents; delisted losers are absent. Aggregate results are optimistic. |
 | Single data feed | One equities feed; no cross-vendor reconciliation of bars. |
+| Corporate actions | Prices are **split-adjusted** from a reviewed event table (83 events / 69 tickers) applied at the 1h level before any roll-up. Spin-offs and special dividends are deliberately NOT adjusted — for a price benchmark they are real drops, the same class as a dividend. Splits below 3:2 are not detectable from bars and are missed unless entered by hand. |
+| Barrier timing | Barriers are evaluated on closes. Measured effect: the 1xATR stop is pierced intra-bar more often than the 2xATR target, so the close-scan is net **conservative** on win-rate by roughly 5 pp. |
 | Bull-market OOS window | 2024-2026 is a strongly rising market; HODL is a hard benchmark and the beats-HODL ratio is regime-dependent. |
 | In-sample interpretation | All ENTRY ranges, contributions and occlusion values are Train-derived descriptions of the sealed model, not OOS evidence. |
 

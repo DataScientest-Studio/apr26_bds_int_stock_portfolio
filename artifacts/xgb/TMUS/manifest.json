@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25926,
-   "sha256": "009bf8b8cfc9f67f070e571686eedfff2efd51ead1478a6c5e1ce3973df31249"
+   "sha256": "21a854b89617d51d7f1aa8d6e34b280b099f8eff7c0745de482fec4638903120"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "120f28217da679858a09d7ad936103d8b77491b9820ae7f66ad1dd7e7ab2aa7c"
+   "sha256": "f86c5750b40b60a9d471fede5af59c02e000e983007d8a8c8cbdb22768df661c"
   },
   "parameters.json": {
    "bytes": 4080,
@@ -18,7 +18,7 @@
    "sha256": "92ee12896ea4ea663b98281098f8fca1678ad1c514d3eebc3b32369c77671d2f"
   }
  },
- "folder_sha256": "356176c584c6697a9061ec1b3a05455b84669b48f12388d336fb85074bd094d7",
+ "folder_sha256": "c457fd844d7d33a2782d67759d9cdfb74c0a199a30edb6bd900f5b87d7d2a037",
  "model": "xgb",
  "model_hash": "7fbc3a592f9dafcb61ef6187ad793dae2afb23c6212ca9db532e5b33fab68979",
  "ticker": "TMUS"

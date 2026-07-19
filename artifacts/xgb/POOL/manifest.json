@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 157037,
-   "sha256": "7383c3eb59bc3ce29dcc10b9205432533d04bd6844f013e19b220b84d362018b"
+   "sha256": "11641befbade3ae2b9d2859274178a2d5f0633ee18150128e03850b5e8c95310"
   },
   "metrics.json": {
    "bytes": 1110,
-   "sha256": "850731d26e8d5ab7b99d02c4ea267cdfbd1d77292c77820d8b4f2b15c9a4b8c1"
+   "sha256": "51f7869fcac813fff3a518e9415b1b4cb3ee9c756af068ddec46752beb322bd5"
   },
   "parameters.json": {
    "bytes": 4639,
@@ -18,7 +18,7 @@
    "sha256": "462bd3ca07366e1d9b4c0362092806a1d0e3925085c0656109f9104bc71d22af"
   }
  },
- "folder_sha256": "f8c8003fa61825c02b7f592116c0de747d6f3a089548faad6ac251eaa36ab371",
+ "folder_sha256": "aef8f7a7f90891b0bfa46ed7603c616c01556d109208555e2ef9a2736c92351e",
  "model": "xgb",
  "model_hash": "322af9e96250b320d3cbed0e5a003d727192485813e6e0f317bc16900c4165b6",
  "ticker": "POOL"

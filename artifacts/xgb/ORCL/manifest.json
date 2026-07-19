@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 95988,
-   "sha256": "0ee4dec932c1e603a106350d096300d832903533bd10ff26d57557b11b16c5c3"
+   "sha256": "d4ac881c19aa070aa6ffcc40dfed4fc6c0e0ee92d0761435c751802d580b8cc3"
   },
   "metrics.json": {
    "bytes": 1110,
-   "sha256": "fde1d69b845884ea36d2f378b384cb6859f9e146cf797675f95e79b5c5849a11"
+   "sha256": "ab451a8093895d872f4ad4f4940f839934ee433e20b3d066c3f1102e94f43a35"
   },
   "parameters.json": {
    "bytes": 4790,
@@ -18,7 +18,7 @@
    "sha256": "b67617ff9025c132d828069c086c9a2ddcc4edf75724cffec8f752ae36089629"
   }
  },
- "folder_sha256": "6ffaceb42e112e6afac51afb157ef9f6a8378f406c1e58a32faae543282c6fa8",
+ "folder_sha256": "01ff06d5de3c7ff9db61fd9922c23ff8727a74839869056e917c9b48f21c05b9",
  "model": "xgb",
  "model_hash": "12d817f2323a264e00cda546bf652c0e452284670d738aa889dcf732c3dfeddd",
  "ticker": "ORCL"

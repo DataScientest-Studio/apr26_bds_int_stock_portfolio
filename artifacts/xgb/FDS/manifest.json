@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 46849,
-   "sha256": "ad1461ce354e9c9bc2592907ae02e5c0f8aeda60a12be5805e21fa87edd57fea"
+   "sha256": "f65d742cd3d5b9c58c08b6d8ce68874c2b0a1dbb0b0fba618dd79a83bf5b27dd"
   },
   "metrics.json": {
    "bytes": 1110,
-   "sha256": "5fb65a48d80d2bf055c38417dc74e69efffc73a937e6f3a8695e2254854cbd66"
+   "sha256": "0eb85058c1f70f45880d3e97f9288751dc8333ecdb3a47c490e619cf83f3c088"
   },
   "parameters.json": {
    "bytes": 4620,
@@ -18,7 +18,7 @@
    "sha256": "4b36261cbe5384843e788150ff896de04b818d26df180a5d102ee49cf881a990"
   }
  },
- "folder_sha256": "c885f112540dede2255d9cd8c463fa3edce6a4435b3d3d5f6fccf1e58ea276f1",
+ "folder_sha256": "5f7ef611978b1a96f1825fd1e90bfac134cf94d3761209df252f522a8fa5fbcb",
  "model": "xgb",
  "model_hash": "03f06b31da46e4468fdde68ee83ef1fd41c34293eb052ec445eb19834f87af3a",
  "ticker": "FDS"

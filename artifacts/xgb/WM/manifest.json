@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 32011,
-   "sha256": "6bd464671cd70e54d1415573bcbc8a2a2658bc44db81d21e3674926672584b62"
+   "sha256": "97b5a421adbac9f54a291993462536ba3dab86f34d83e9fe06eb6a574600833d"
   },
   "metrics.json": {
    "bytes": 1105,
-   "sha256": "fc2d5a7bb4be99459190aff961a958072fe848fff407d83318d7cb527795cbc7"
+   "sha256": "c3dc5f4c0a98d8fa0180ae45a719e3440be3e9eb47d0fba90ffc8c8ba6feba55"
   },
   "parameters.json": {
    "bytes": 4640,
@@ -18,7 +18,7 @@
    "sha256": "c967535e3f39b08d02ad7a79da7c6187926a7b14c6b17f1c93e52382d470832a"
   }
  },
- "folder_sha256": "44042349dfc7a8cb543905465a747d1382551ef85f291b0729013e7607550fc3",
+ "folder_sha256": "2ff73e2c89194a427bfa54f6ff05d19cdd076784daf606f2d8037aa521f85e97",
  "model": "xgb",
  "model_hash": "285a627ddc3659c89b95c1186ca814c4345cda91e571ed05296efad2eb555dca",
  "ticker": "WM"

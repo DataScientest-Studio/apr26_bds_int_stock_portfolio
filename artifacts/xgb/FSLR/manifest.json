@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 36203,
-   "sha256": "b665b07294c180f8f3e4ba745cdd7cf37ec44ea10ba2ff90956dd05f2130ae43"
+   "sha256": "9061ef80d2aa8487f21cae43c7c5b1bbd7405ad5addf2174f541b0cea7610f36"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "2557db59f23fb14b28751ffbccb1653e37f89914f85cd2c39f064966fb5e5b8b"
+   "sha256": "cc0ccec52a914e01ec50f51ee98a676fb2028766d175ea89428c7fa78940ed56"
   },
   "parameters.json": {
    "bytes": 4616,
@@ -18,7 +18,7 @@
    "sha256": "69f8769fff1fe2bded89fcf871f9b752e89d0e21b77b5d5726aa2e371827730e"
   }
  },
- "folder_sha256": "5021d421cd7449b33bd0a506e670a1f5487d4f094ed687c49bf4a58638dc7bca",
+ "folder_sha256": "e1d8cbdf151820ab103afc35362f95dbc4f654ac85870e184e96ffaf4430fa6d",
  "model": "xgb",
  "model_hash": "b726ff7e8ba89f161c6a48eda939f68c32c5865e6142f500c9741eb8b78e6178",
  "ticker": "FSLR"

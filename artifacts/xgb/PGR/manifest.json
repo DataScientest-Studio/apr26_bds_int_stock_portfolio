@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25925,
-   "sha256": "d9c093db5701e009b8f61220d42b5153ec6af38fad16a74095bf50f1c4bc7742"
+   "sha256": "17b344bb37fa3eba17216fe73a8043fef71d2cfc9b1cd283061893647bc74e8b"
   },
   "metrics.json": {
    "bytes": 1044,
-   "sha256": "1f376f685b391d496b7696b6ef91aa6af32a5ffa12f1868dcfde304065e6548a"
+   "sha256": "d024aac6c89cba90650d8ade51054a26dc8b674ccc003cd76f39370e6c309db6"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "3f35f1d3ea2332634421ba16d0454fc92aa6520ff95c54b0b64b36849e83d5ab"
   }
  },
- "folder_sha256": "4b4ff72cc6921c4520a203e5bb50b3978a4d49d3a88d3ced6061de5b904cef46",
+ "folder_sha256": "60bed3f47c996124b97da96fe05c0445fe43fbc9ddb04678ae2d42cac0a0db93",
  "model": "xgb",
  "model_hash": "f532afb280a54194565051fa15da1a81b6d1c76736ca7c64c90175fa994ebea9",
  "ticker": "PGR"

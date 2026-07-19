@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75887,
-   "sha256": "6545aa4f0e3c312c73b515aaf52a0c809ca591e3f60546d883d28268cde4e879"
+   "bytes": 72654,
+   "sha256": "11dc4730e177156cb3bfe291c8112609b39be81625fbf7464590a10d6feba48f"
   },
   "metrics.json": {
-   "bytes": 1059,
-   "sha256": "d3a234786f80d54bf56c4bbea97e317f0cd919d761a651f9bc24f57bbbd49ab6"
+   "bytes": 1052,
+   "sha256": "5de06dae1e9ecb63f5cfb5e630ba3793b6dbe40d9c6d12e1af80fe6e3322397f"
   },
   "parameters.json": {
-   "bytes": 2525,
-   "sha256": "ed3442b5a14961c264be525b9db4dddbf5e45a293603e42366e4cd85df796cd0"
+   "bytes": 2925,
+   "sha256": "64bd97a6a844ba4b0118ff9327dcde73dce92d526ca4ffd028f1908e66504932"
   },
   "strategy_ATO.py": {
-   "bytes": 77267,
-   "sha256": "0e01bf30ded6ed4d67a42011d9433c743081a09cd36a5ed655e014a1ecce672f"
+   "bytes": 87155,
+   "sha256": "70206097e073a7ca1a62921bf78b0f931256a9ca4aeb337d459e0c4008e99c8b"
   }
  },
- "folder_sha256": "3816a67dd0935fc81acaa026b6245bfbc4fe13ac88270a95cb4a360b9664be9b",
+ "folder_sha256": "bae09b0a7422dd4a0493c4ae541cebbc87f63881628b1f607ce84dbd982e1171",
  "model": "lstm",
- "model_hash": "1176a9efd62867d574d3a085a03133827548dfdaaecfabb3e4f77ea63ee07d2c",
+ "model_hash": "9ff4b2711d169555fb9eed850d97fa839d6f5e0859450559f9b3ab7f560d7768",
  "ticker": "ATO"
 }

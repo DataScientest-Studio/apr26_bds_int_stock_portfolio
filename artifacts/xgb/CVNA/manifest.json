@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 129461,
-   "sha256": "7b1bd6a6e3d062ba62fb891e5f53617594a0af4b753b63b56327f4b817e36d04"
+   "bytes": 129957,
+   "sha256": "48b1d356b01748766a717755575a725f79d55437f4aa12355dc2bb695f55248e"
   },
   "metrics.json": {
-   "bytes": 1109,
-   "sha256": "d6dfa7f6783eda69cd95b23dc1b5511359f798f2905a95a8a5909448dde2c1b3"
+   "bytes": 1111,
+   "sha256": "47df35d842fc860b52a1652cf6e886cf242346d0cb7cd3e34b8126a5d09a067c"
   },
   "parameters.json": {
    "bytes": 4626,
    "sha256": "9cad750d2a68a2179da350bba57029b344eb209c5ecaa42d973c1cef75a863ed"
   },
   "strategy_CVNA.py": {
-   "bytes": 433724,
-   "sha256": "1fe99ebe336a8889613f1f0b8a93ed61972e24adb00a7e5606e40f4439e059d1"
+   "bytes": 433736,
+   "sha256": "91cbd7980d2a3aa289560407e5ab0f05d47d9f3b4319660f820fa691cb10ae99"
   }
  },
- "folder_sha256": "67c9fced7fdcb5a056deac3771ea9d0c7785bba1d2de857f584a004f8f154e2d",
+ "folder_sha256": "b523f4c7f3b45c94a87d467edfab8763560b547dc86c513bd46078c14c0088bd",
  "model": "xgb",
- "model_hash": "fdd2d74699c232da18edfeed7f5f54206f3853d3e356d29262d5fb43108dfc7d",
+ "model_hash": "f1af33f052717bbd07bbef3139aa2c77b02f3f27798c160d3df0769d47c6082b",
  "ticker": "CVNA"
 }

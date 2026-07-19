@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 197426,
-   "sha256": "bfc94b3c4b7680409b120d40d16a45f52f9b8d79388e3b588ab9ad1fa91e39e3"
+   "sha256": "15e6606ec0cb5d93c085685c50bf613bd1c9a704433781e804ac7ac349bd8794"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "8a3164029589ce9a06f696a332da38bfa05a81283eccd7569baa66c8db7e39c6"
+   "sha256": "dadb93a265fca942cf04ddecfc4d9eaf5f101e00129fb126b45ef76cca7ad251"
   },
   "parameters.json": {
    "bytes": 5160,
@@ -18,7 +18,7 @@
    "sha256": "1825bdbacb163f7459fcd1fac834fc7898bd5ea0ca1b7d35187bc3194a39819a"
   }
  },
- "folder_sha256": "b10b6bfa2232a5c05f0184877dd1c97a25d1d9ebcb71b2445fb9172d235a459a",
+ "folder_sha256": "c2cbbabe9ea47fd667281a10b777479440c9909aa0495f483edada0b1afaafd8",
  "model": "xgb",
  "model_hash": "e8e6b7e8d53371e260228739ae91c1df81e8809b8a5884fd6838ba23ab0c368b",
  "ticker": "ACN"

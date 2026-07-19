@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 71115,
-   "sha256": "db9e4ba1e197c0ab456ce8c4646c6f36209cc27d0f94b06dc47fbff7a72f314a"
+   "sha256": "e974334ef42d5f61edeec783814ae5a0466b18c1f3643d50697247d972d1b2dd"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "9aa62be988fa8d220618853f458b1229aa55fcc27dda9260e98d8ec7bd065842"
+   "sha256": "0634bd3a21e7838b5fc99376524550171fe3220107dc581dabdcc18509357cb3"
   },
   "parameters.json": {
    "bytes": 5596,
@@ -18,7 +18,7 @@
    "sha256": "446334b450184f844fc5277b49af0aba9ca92e25d80ed88269baa9b616f3052a"
   }
  },
- "folder_sha256": "f99170e940b271f4dab8e0e3051a783b46ebf7eeba90a00c5aa266ceaba06f20",
+ "folder_sha256": "48249e118ea0f7aef374d098a377b73d8f66dd7c41f8d8ad4efbb026ea91029d",
  "model": "xgb",
  "model_hash": "27c37eafe64008c22facddd08721ea2230535f0fff3a876222dffedc575f63e4",
  "ticker": "INTC"

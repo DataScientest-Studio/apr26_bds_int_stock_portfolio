@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 34449,
-   "sha256": "004bbccfd81c1c069f03b4378949a67f722bfbff31248455a8c72e93a8cb7b29"
+   "sha256": "b206df6f3fa0a993b4f701060f44350723a31c4bd17e4cd2d2b34e3a3f7ffea8"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "0784d5945350a73ba691316aca3244c7490598dfe1a80d120d7dd6eb2da567fe"
+   "sha256": "928706c77873fc22bac37d8c97f3e5a61c5678ec2c6ecf7d49c65251ba4207be"
   },
   "parameters.json": {
    "bytes": 5197,
@@ -18,7 +18,7 @@
    "sha256": "fe0f61deda6dd39b4fb33867468f9212307a8dfd40b23dfa0ad1db79ff467626"
   }
  },
- "folder_sha256": "7a6302df23bcc754e57c2d56c66ec600ed1706a341dfc99e9fcfcf813a2255ac",
+ "folder_sha256": "8f50ec0a865c960473ed6bc22ed77805f6cdc4204f6a9b4f7187f4d120c734ff",
  "model": "xgb",
  "model_hash": "9d725a6c145c520fd6de55a7e6add9012c76482183d871ee9caaa6ccc64d727f",
  "ticker": "NXPI"

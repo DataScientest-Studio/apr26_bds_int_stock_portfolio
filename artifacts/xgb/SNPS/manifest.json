@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 31639,
-   "sha256": "21035b0047ddaad1953ba502aea4b77352e4f99d6980bac04193dec1e12dbea5"
+   "sha256": "6a13f5f2ad5fcdec370ced5af8f4b15dd4a0258c2030d864f87c031a2c4b0bc4"
   },
   "metrics.json": {
    "bytes": 1111,
-   "sha256": "b35381153bda451b801d2f1babe610254b147528f8bfcbca65d7057f02ef1d10"
+   "sha256": "2bd8e5f551dd2de60e3c126fd47252ad40c048274a50c1eb950a73116d13a02a"
   },
   "parameters.json": {
    "bytes": 4658,
@@ -18,7 +18,7 @@
    "sha256": "48dcfa4d69402bb843ce69051d8f8642fd0c7255bd5fff61924b92be0e260389"
   }
  },
- "folder_sha256": "596d7ea28b790b18240129dbc7dcc2c8fd9e2148e7e6827215bbae58539f52ab",
+ "folder_sha256": "139c2f730829cdde3eb9eee1f29fcfa4d20e1acdc4e8756f3854fd7d063cc1f6",
  "model": "xgb",
  "model_hash": "2d3a2c69036069f8a799f10b703cf6bf950f5d28396ef4c659ed8a14ecc1d342",
  "ticker": "SNPS"

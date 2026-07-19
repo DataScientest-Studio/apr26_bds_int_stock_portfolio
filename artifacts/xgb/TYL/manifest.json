@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 53144,
-   "sha256": "d0a645ca64c5372018fac351018623d64dea27babd0053fe05e0d20876f35e89"
+   "sha256": "48ed271086d16c4877a08697b094220435de79c9fc95d123aefbb4fe7b455572"
   },
   "metrics.json": {
    "bytes": 1102,
-   "sha256": "74217c6471cc4a57cc49149478dbfd14a4164bbaa1120a259a99bd6890c3e739"
+   "sha256": "503429a48f6f937ffd7b3b6c68bdb684d86ece763e32b2d581d63e786406c86a"
   },
   "parameters.json": {
    "bytes": 4634,
@@ -18,7 +18,7 @@
    "sha256": "db71d2ae091d9016481c5396fd379496582a360297cebf85e1119a8bb15fb590"
   }
  },
- "folder_sha256": "b6a1de3f3027621bb26ce3959cc9429ec60af5c13794f208680514cf649afe83",
+ "folder_sha256": "a160fdf29024473921f2fc8178980175ecbfd4df8bb38e7e2dd495f2446c5fd1",
  "model": "xgb",
  "model_hash": "a355380893ec8d26ff5aea4fded88d4514da333cd1c7681722e6ba3bf94de7b6",
  "ticker": "TYL"

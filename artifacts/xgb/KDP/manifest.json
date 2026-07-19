@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25952,
-   "sha256": "828d4b34b6ca14caee02185da74b03bf59709c6b874e3f5f19245b5f7c593488"
+   "sha256": "c3c5f64a65e1b053c532d08a9c337364a30bf07a6adfcc734894c389a21891ee"
   },
   "metrics.json": {
    "bytes": 1045,
-   "sha256": "5b234f401e8322ba5bc04f362ba6e1cee5554f516f4a33a6fb606d8efbc9c68a"
+   "sha256": "df08b5d44e214ef6160f9928a42117fa6df656d76e68a3c2c4e09bcd846d13d1"
   },
   "parameters.json": {
    "bytes": 4079,
@@ -18,7 +18,7 @@
    "sha256": "368e65ccf1c446d317d5786ed77d7986433925c931b55a14bb19c5bcf899b188"
   }
  },
- "folder_sha256": "b0e3ce5b8dda5616ff3db44fe78774b7cf20c093dfae24bd3fc8755c23bedb27",
+ "folder_sha256": "d1363c6cfb4cb0e80cc5d39c1a0fb284c0d609a26e0e53bf09a836bbacc58714",
  "model": "xgb",
  "model_hash": "72e36151af49fdd69e7cd195138b5ba3d58bed156a07e43dcd4b70ad3298efa1",
  "ticker": "KDP"

@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25884,
-   "sha256": "25a942859d0f3dcf6f9e8a286529253ef5e02d038bf5dffe42a185a9132ab944"
+   "sha256": "4740799e1472e78a3ff5def57468897dbd6ed21eaed4cefe71f1c5c5ce3ff241"
   },
   "metrics.json": {
    "bytes": 1046,
-   "sha256": "3fb678c6c2d4ee4a7ea54b6d41001e84716d0a00ea394a55e71a1fb2f818a71d"
+   "sha256": "d63f9e9602533020ab8f5460ea42897f0b3f07d886df518048954e4b1f262ef3"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "f83ba96f0a227551e2c0debd6784d938f0129c4c6fc77f4d379e7fe1a5df94a5"
   }
  },
- "folder_sha256": "9e90b75924d6317fa24e380c797800c3c781c8742feedfe60e0b549f2aec4315",
+ "folder_sha256": "1e36ce3b0c61f0c3e1898b06e84f2427d7e733b61d3be1b354029c670d8eb19f",
  "model": "xgb",
  "model_hash": "4ea00ef6c6341e1376f817f61605de84cde4868579612ff80cdd9308a0aba09a",
  "ticker": "FANG"

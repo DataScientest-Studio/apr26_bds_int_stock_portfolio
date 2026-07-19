@@ -6,3 +6,11 @@ __pycache__/
 .DS_Store
 *.db-wal
 *.db-shm
+
+# research-tree leftovers that live in this working copy but are NOT part of the
+# presentation branch (the research code lives on to_give_up_and_show)
+xgb/
+lstm/
+iterators/
+experiments/
+.publish_stage/

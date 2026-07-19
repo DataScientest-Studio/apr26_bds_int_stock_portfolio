@@ -1,16 +1,16 @@
 {
   "best_params": {
     "max_depth": 2,
-    "eta": 0.13691233544161552,
-    "subsample": 0.7002169692713317,
-    "colsample_bytree": 0.9698067106457862,
-    "min_child_weight": 9.163433448521637,
-    "reg_lambda": 4.035935268580074,
-    "reg_alpha": 1.3561137180800176,
-    "gamma": 0.0735996007767537,
-    "n_estimators": 290,
+    "eta": 0.03538828868527996,
+    "subsample": 0.8929884712119375,
+    "colsample_bytree": 0.6311943465429466,
+    "min_child_weight": 3.26093084458457,
+    "reg_lambda": 2.021835421398135,
+    "reg_alpha": 0.6269771982651688,
+    "gamma": 0.18244981496703105,
+    "n_estimators": 48,
     "kelly_fraction": null,
-    "theta_entry": 0.44
+    "theta_entry": 0.4
   },
   "feature_manifest": {
     "schema_version": "simple_features.v1",
@@ -24,7 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
-      "1d"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -71,13 +71,13 @@
         "feature_count": 17
       },
       {
-        "namespace": "1d",
-        "id_range": "101-199",
+        "namespace": "1w",
+        "id_range": "201-299",
         "feature_ids": [
-          115
+          209
         ],
         "feature_names": [
-          "macd_line_12_26_9_1d"
+          "volume_z_score_20_1w"
         ],
         "feature_count": 1
       }
@@ -100,7 +100,7 @@
       15,
       16,
       17,
-      115
+      209
     ],
     "effective_feature_names": [
       "direction",
@@ -120,7 +120,7 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "macd_line_12_26_9_1d"
+      "volume_z_score_20_1w"
     ],
     "effective_feature_count": 18,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[SHW]"
@@ -144,7 +144,7 @@
       15,
       16,
       17,
-      115
+      209
     ],
     "names": [
       "direction",
@@ -164,11 +164,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "macd_line_12_26_9_1d"
+      "volume_z_score_20_1w"
     ],
     "active_namespaces": [
       "1h",
-      "1d"
+      "1w"
     ],
     "per_namespace": [
       {
@@ -215,19 +215,19 @@
         "feature_count": 17
       },
       {
-        "namespace": "1d",
-        "id_range": "101-199",
+        "namespace": "1w",
+        "id_range": "201-299",
         "feature_ids": [
-          115
+          209
         ],
         "feature_names": [
-          "macd_line_12_26_9_1d"
+          "volume_z_score_20_1w"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.4025078970810837,
+  "cv_auc_pr": 0.40225012271606364,
   "cv_folds": 4,
   "n_trials": 80
 }

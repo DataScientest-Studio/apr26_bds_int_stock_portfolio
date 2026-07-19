@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25898,
-   "sha256": "2120b7696888a204466fa90342500cdba9575a7d2e621c755f48d72d0a78e589"
+   "sha256": "9a0dc37afce644caf6f28d053ca10ff8151923c8ee446f0a9fb55a7029b91fd0"
   },
   "metrics.json": {
    "bytes": 1048,
-   "sha256": "779deee9519536fe095b1969e384c9127b2f121a93481ebfc014aabb3a342a71"
+   "sha256": "44d5f79054a54a5cd10b1dc0dd99b0faa040a44c9c029f8655c3e262c1620303"
   },
   "parameters.json": {
    "bytes": 4081,
@@ -18,7 +18,7 @@
    "sha256": "b8e53c88a4f00d46c25616a3a04adf6ee2d5c5236fbbd774af3eb3590736bcbe"
   }
  },
- "folder_sha256": "e4d069f4317b053c0872768ee478ae058c83643562c30091875c822f81d28bc9",
+ "folder_sha256": "0bf18862278d26332a6a939c59aa1b3eaf25c3bdc6369ba368a062d573773642",
  "model": "xgb",
  "model_hash": "be9d784f4e00210c6a45ae7f1be9bb14c2b8ff08e2812fed5b27006f8e5af7a4",
  "ticker": "STLD"

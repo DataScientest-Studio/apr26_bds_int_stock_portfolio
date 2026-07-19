@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 130721,
-   "sha256": "bdd44df3a5e2c42169a876add118802ad61049193e262fc5ecf7e4066a27f3e9"
+   "sha256": "3e086024d83f393453a90f54c5e4be1ff88b080d0456ebf1dae2037e427a77e1"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "cce38bd61eb0e3aafb741497d7b4831a4fe597547e0a550c135e83788afd0809"
+   "sha256": "2cf38cc0a448b94bc0a80ee3a95996e851f272cfd636284ba01002dbbf5874a0"
   },
   "parameters.json": {
    "bytes": 4934,
@@ -18,7 +18,7 @@
    "sha256": "129e31aee07757ff7d90c692755fe0653771bb593bc5ec6c6fd50ff2b0a58a63"
   }
  },
- "folder_sha256": "2d0072b049fa9f61ebf0d49f89b496222ebea42f910c88da6a87bc4689b9701e",
+ "folder_sha256": "002f7b918344c5e3e1e4f924a349abca21535c219b913207578efe1110d2f13c",
  "model": "xgb",
  "model_hash": "667e20af7100c30c3b8bcf05cfaf244ef90961c754bed985fa630a6d08317ae4",
  "ticker": "MRNA"

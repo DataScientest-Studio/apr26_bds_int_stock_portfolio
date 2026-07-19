@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 125781,
-   "sha256": "fba8d3f9554e246ddb675ec72cd6389f9397523b7f9f6111ad7b383c32f0d389"
+   "sha256": "cb8c6b7883962d502f7859297d2b6bf7ad05b09a79be7d0f691cbe07d901c210"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "87f766ab56d92a472ef07cd3d8712e7e2ec43d86574fd1d7558c1e7aeb010ef9"
+   "sha256": "68c2e8c5f98ae017b270e8ec034c74169b112392d59d7b2329ce7a4b55e1d021"
   },
   "parameters.json": {
    "bytes": 4615,
@@ -18,7 +18,7 @@
    "sha256": "6a15dc65c9a6c2390a69da8ea0d0c446062b13b3afb283957480a71f46fb60c4"
   }
  },
- "folder_sha256": "8dcf7c36bf6472758e7a5c07c58b322199f18c56c234334ccb29d69b1bc64d71",
+ "folder_sha256": "1a15cc8608015bf508dcca28522bda6eb25b2b22c479a01daf25ab778c20e68a",
  "model": "xgb",
  "model_hash": "0551db2c29360432b08405e8615c33f6717317ef3e271c54d13c3120e4e74842",
  "ticker": "GRMN"

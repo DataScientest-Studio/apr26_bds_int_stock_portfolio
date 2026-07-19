@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 25928,
-   "sha256": "3bd5afb6fc6ffa1025a4d3fdd867e5161cf24f8b31cbe5cb9edbd2f3b3f47c17"
+   "sha256": "a280086ffe803d33831b3b8e6db6362a7397cda1bd18f8dca2c7c36eb57e0b15"
   },
   "metrics.json": {
    "bytes": 1045,
-   "sha256": "a3af5ffdfd1d6b31e78a5de8a4869a1cfcbe5f99eb34d9263e2c5705a123537a"
+   "sha256": "c46ecb5f66f4edbb69f94f2545c047d1a70d43112e72588dedff87be64669d9c"
   },
   "parameters.json": {
    "bytes": 4078,
@@ -18,7 +18,7 @@
    "sha256": "8b7db3c312586777c27b0c43815359f743fbe80960e3527980408effb66bbb64"
   }
  },
- "folder_sha256": "f2229727aa1329bdaadb8a176613e91c108b1ebd272b2d57890f100023822dc5",
+ "folder_sha256": "f5673cbf11bc5aac55e34f52abd81197a61102de0b2e768332b3b433f3e70a39",
  "model": "xgb",
  "model_hash": "ccdb06ded1482d3205df829e07b85a781d38250e56ae546384b61a787485ddd3",
  "ticker": "PNR"

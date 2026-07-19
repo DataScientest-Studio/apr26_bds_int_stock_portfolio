@@ -1,6 +1,7 @@
 # ARCHITECTURE
 
-Frozen research snapshot: 498 XGBoost + 495 LSTM = 993 sealed per-asset artifacts, one results
+Frozen research snapshot (this release: 498 XGBoost + 495 LSTM = 993; the counts are declared
+in `research_run` and verified against the store, never hardcoded in the app): sealed per-asset artifacts, one results
 database, one read-only Streamlit console. All 16/16 integrity checks PASS.
 
 ## 1. Data flow
@@ -76,7 +77,7 @@ Eight tables and two views. Key columns only:
 
 | table | key columns |
 |---|---|
-| `research_run` | run identity, git_sha, per-model recipe hashes, Train/OOS windows, declared asset counts (498/495), `research_status`, `presentation_freeze` |
+| `research_run` | run identity, git_sha, per-model recipe hashes, Train/OOS windows, declared asset counts, `research_status`, `presentation_freeze` |
 | `asset_results` | (ticker, model) PK; `result_mode`, return_pct, profit_factor, model_trades, hodl_return_pct, beats_hodl, max_drawdown_pct, win_rate_pct, theta_entry, trade_floor_met, oof_trades, oof_log_growth, theta_boundary, fold_spread_relaxed, selected_feature_count, recipe_hash, `artifact_path`, oos_window |
 | `asset_features` | (ticker, model, feature_id) PK; feature_name, feature_family, formula, kind — the selected per-asset features |
 | `feature_search_summary` | (ticker, model) PK; verdict, stop_reason, baseline_score, baseline_trades, final_gain, n_families_surviving, selected_ids, recipe_hash |
@@ -114,7 +115,7 @@ Fail-closed statuses, bannered by the app:
 | NOT FOUND | `data/results.db` missing or unreadable. |
 | SCHEMA MISMATCH | An expected table is absent. |
 | DATA INTEGRITY: FAILED | Any `integrity_checks` row is not PASS. |
-| DATASET STATUS: PARTIAL | Freeze/status marker wrong, or per-model row counts differ from the declared 498/495. |
+| DATASET STATUS: PARTIAL | Freeze/status marker wrong, or per-model row counts differ from the counts `research_run` declares. |
 
 ## 8. Repository map
 

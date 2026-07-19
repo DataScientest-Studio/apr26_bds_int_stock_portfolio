@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 48502,
-   "sha256": "b15d8c6a611d1833adc8da054f158a210675f6ad7e5f223ece7de8fb68307b57"
+   "sha256": "736e93d04d27ba4f4069f9d1d7ce9891ca8ff2e1b213e379e2eadc4d6f2ea3e4"
   },
   "metrics.json": {
    "bytes": 1106,
-   "sha256": "53d77aeffaa32a6e6eae859cf15a3ef5b000eca0ccb7b6bc8ac21072eb2e7507"
+   "sha256": "7d8c16fc403dd55ba50ddd53b75fab2c41f4867dcecf45b895cd4e181506d2c5"
   },
   "parameters.json": {
    "bytes": 4082,
@@ -18,7 +18,7 @@
    "sha256": "c272d9a5289f316a91977d7d0da96905f245fa74f44b4e49f937111c8a8969c6"
   }
  },
- "folder_sha256": "517749e74cf6debcf8e880b37b8d304ca4f710ce41a66720de326a4e0ea61410",
+ "folder_sha256": "90bbf216cfdcdf4363b1846e737b66611a1e37b7089b9ef5c0310413d64ed670",
  "model": "xgb",
  "model_hash": "b13309a4d4a68873574cb912388675ba5a8d913ad1ea208a3b430d878b970255",
  "ticker": "APO"

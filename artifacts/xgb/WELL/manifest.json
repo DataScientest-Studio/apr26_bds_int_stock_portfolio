@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 36279,
-   "sha256": "e8f24251c8be0c6895f92f0d62065b9ff8ba3bff97e3938da24d82ba64d0f60e"
+   "sha256": "54f960ead4d981687a709631bbb42250ab30564149a462e89d7f5aa93f0debba"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "47e795611125dcaad9d80bffb51e6dddb94b24011da11242836984f7e8e75573"
+   "sha256": "79ab4eac80fc9a07b1975ffd828802bea5741a7c261858a8788a8107b82b1a5a"
   },
   "parameters.json": {
    "bytes": 4086,
@@ -18,7 +18,7 @@
    "sha256": "7b8c2ecfa222adfcd3adce5a002a97ebc721b8070351f493a7fda186c7cf240f"
   }
  },
- "folder_sha256": "96442ea97e9d7fff238174591a980abfa3c4b2ed2fc6f7101d34641d43351a99",
+ "folder_sha256": "1783503d3810dc024aca8a26917a698d11c5241a792f190941f2a75e5c4a415c",
  "model": "xgb",
  "model_hash": "be2d62ce5120c0ec0e4392ae3f7d8c191f5587b940b961f35c807761a074e960",
  "ticker": "WELL"

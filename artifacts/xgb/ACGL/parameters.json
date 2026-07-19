@@ -1,14 +1,14 @@
 {
   "best_params": {
-    "max_depth": 2,
-    "eta": 0.1149783601081126,
-    "subsample": 0.7150052553590768,
-    "colsample_bytree": 0.9995049667510094,
-    "min_child_weight": 9.9742647030802,
-    "reg_lambda": 3.729856917964954,
-    "reg_alpha": 1.1142398414999208,
-    "gamma": 0.16792942467236038,
-    "n_estimators": 298,
+    "max_depth": 4,
+    "eta": 0.11522567985098049,
+    "subsample": 0.7635966780638443,
+    "colsample_bytree": 0.830587223216821,
+    "min_child_weight": 7.984877391249422,
+    "reg_lambda": 2.9872488077118318,
+    "reg_alpha": 0.19386442347840924,
+    "gamma": 0.8206350056256511,
+    "n_estimators": 200,
     "kelly_fraction": null,
     "theta_entry": 0.4
   },
@@ -24,7 +24,8 @@
     ],
     "active_namespaces": [
       "1h",
-      "1w"
+      "1h_ext",
+      "1d"
     ],
     "per_namespace": [
       {
@@ -71,15 +72,28 @@
         "feature_count": 17
       },
       {
-        "namespace": "1w",
-        "id_range": "201-299",
+        "namespace": "1h_ext",
+        "id_range": "301-399",
         "feature_ids": [
-          218
+          302
         ],
         "feature_names": [
-          "ma_slope_4_1w"
+          "session_pos"
         ],
         "feature_count": 1
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          108,
+          110
+        ],
+        "feature_names": [
+          "sma_20_sma_50_ratio_1d",
+          "atr_pct_14_1d"
+        ],
+        "feature_count": 2
       }
     ],
     "effective_feature_ids": [
@@ -100,7 +114,9 @@
       15,
       16,
       17,
-      218
+      302,
+      108,
+      110
     ],
     "effective_feature_names": [
       "direction",
@@ -120,9 +136,11 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "ma_slope_4_1w"
+      "session_pos",
+      "sma_20_sma_50_ratio_1d",
+      "atr_pct_14_1d"
     ],
-    "effective_feature_count": 18,
+    "effective_feature_count": 20,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[ACGL]"
   },
   "features": {
@@ -144,7 +162,9 @@
       15,
       16,
       17,
-      218
+      302,
+      108,
+      110
     ],
     "names": [
       "direction",
@@ -164,11 +184,14 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "ma_slope_4_1w"
+      "session_pos",
+      "sma_20_sma_50_ratio_1d",
+      "atr_pct_14_1d"
     ],
     "active_namespaces": [
       "1h",
-      "1w"
+      "1h_ext",
+      "1d"
     ],
     "per_namespace": [
       {
@@ -215,19 +238,32 @@
         "feature_count": 17
       },
       {
-        "namespace": "1w",
-        "id_range": "201-299",
+        "namespace": "1h_ext",
+        "id_range": "301-399",
         "feature_ids": [
-          218
+          302
         ],
         "feature_names": [
-          "ma_slope_4_1w"
+          "session_pos"
         ],
         "feature_count": 1
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          108,
+          110
+        ],
+        "feature_names": [
+          "sma_20_sma_50_ratio_1d",
+          "atr_pct_14_1d"
+        ],
+        "feature_count": 2
       }
     ]
   },
-  "cv_auc_pr": 0.42412587346701974,
+  "cv_auc_pr": 0.4163916352758684,
   "cv_folds": 4,
   "n_trials": 80
 }

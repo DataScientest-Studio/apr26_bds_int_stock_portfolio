@@ -1,14 +1,14 @@
 {
   "best_params": {
-    "max_depth": 3,
-    "eta": 0.020246880156991092,
-    "subsample": 0.9254953382288774,
-    "colsample_bytree": 0.8634524459966418,
-    "min_child_weight": 8.021138712718438,
-    "reg_lambda": 3.436468105610434,
-    "reg_alpha": 0.6305811296974493,
-    "gamma": 0.051742194845481926,
-    "n_estimators": 185,
+    "max_depth": 2,
+    "eta": 0.024175771358054123,
+    "subsample": 0.6118646977845044,
+    "colsample_bytree": 0.8137059558238351,
+    "min_child_weight": 5.9614786760472676,
+    "reg_lambda": 1.9127052904483182,
+    "reg_alpha": 0.5150701080134226,
+    "gamma": 0.00016942442888046028,
+    "n_estimators": 196,
     "kelly_fraction": null,
     "theta_entry": 0.4
   },
@@ -24,8 +24,9 @@
     ],
     "active_namespaces": [
       "1h",
-      "1w",
-      "multi_tf"
+      "1h_ext",
+      "1d",
+      "1w"
     ],
     "per_namespace": [
       {
@@ -72,26 +73,39 @@
         "feature_count": 17
       },
       {
+        "namespace": "1h_ext",
+        "id_range": "301-399",
+        "feature_ids": [
+          302
+        ],
+        "feature_names": [
+          "session_pos"
+        ],
+        "feature_count": 1
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          102,
+          117,
+          118
+        ],
+        "feature_names": [
+          "log_return_1_1d",
+          "macd_hist_12_26_9_1d",
+          "ma_slope_10_1d"
+        ],
+        "feature_count": 3
+      },
+      {
         "namespace": "1w",
         "id_range": "201-299",
         "feature_ids": [
-          202,
-          204
+          212
         ],
         "feature_names": [
-          "log_return_1_1w",
-          "log_return_20_1w"
-        ],
-        "feature_count": 2
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          903
-        ],
-        "feature_names": [
-          "volatility_ratio_1h_1d"
+          "rsi_14_1w"
         ],
         "feature_count": 1
       }
@@ -114,9 +128,11 @@
       15,
       16,
       17,
-      202,
-      204,
-      903
+      302,
+      102,
+      117,
+      118,
+      212
     ],
     "effective_feature_names": [
       "direction",
@@ -136,11 +152,13 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "log_return_1_1w",
-      "log_return_20_1w",
-      "volatility_ratio_1h_1d"
+      "session_pos",
+      "log_return_1_1d",
+      "macd_hist_12_26_9_1d",
+      "ma_slope_10_1d",
+      "rsi_14_1w"
     ],
-    "effective_feature_count": 20,
+    "effective_feature_count": 22,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[AAPL]"
   },
   "features": {
@@ -162,9 +180,11 @@
       15,
       16,
       17,
-      202,
-      204,
-      903
+      302,
+      102,
+      117,
+      118,
+      212
     ],
     "names": [
       "direction",
@@ -184,14 +204,17 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
-      "log_return_1_1w",
-      "log_return_20_1w",
-      "volatility_ratio_1h_1d"
+      "session_pos",
+      "log_return_1_1d",
+      "macd_hist_12_26_9_1d",
+      "ma_slope_10_1d",
+      "rsi_14_1w"
     ],
     "active_namespaces": [
       "1h",
-      "1w",
-      "multi_tf"
+      "1h_ext",
+      "1d",
+      "1w"
     ],
     "per_namespace": [
       {
@@ -238,32 +261,45 @@
         "feature_count": 17
       },
       {
+        "namespace": "1h_ext",
+        "id_range": "301-399",
+        "feature_ids": [
+          302
+        ],
+        "feature_names": [
+          "session_pos"
+        ],
+        "feature_count": 1
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          102,
+          117,
+          118
+        ],
+        "feature_names": [
+          "log_return_1_1d",
+          "macd_hist_12_26_9_1d",
+          "ma_slope_10_1d"
+        ],
+        "feature_count": 3
+      },
+      {
         "namespace": "1w",
         "id_range": "201-299",
         "feature_ids": [
-          202,
-          204
+          212
         ],
         "feature_names": [
-          "log_return_1_1w",
-          "log_return_20_1w"
-        ],
-        "feature_count": 2
-      },
-      {
-        "namespace": "multi_tf",
-        "id_range": "901-999",
-        "feature_ids": [
-          903
-        ],
-        "feature_names": [
-          "volatility_ratio_1h_1d"
+          "rsi_14_1w"
         ],
         "feature_count": 1
       }
     ]
   },
-  "cv_auc_pr": 0.4288420925590818,
+  "cv_auc_pr": 0.4451449323808884,
   "cv_folds": 4,
   "n_trials": 80
 }

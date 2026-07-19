@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 45709,
-   "sha256": "ba77d197c7ce1cd45c2245ef5fe9ea39d5ef36c07431f5e7d5c69d996053f966"
+   "sha256": "0d15d35a54416287391ffcf03c024ab0a2769e1330ab5fa0bca4fd96ec1f4027"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "57f5f8e32b69f5af6437ff2256a745bf265529ae36992bfd9f7836549e6ac5a3"
+   "sha256": "25ea5c670a5141cf4a90ec8f5d711bd2f1119022ca31237e4f236216de222a59"
   },
   "parameters.json": {
    "bytes": 5158,
@@ -18,7 +18,7 @@
    "sha256": "5a78e05da5b9079d17a774ce1affb7e87137e8b6dc5f311a5352292037432aaa"
   }
  },
- "folder_sha256": "51ed00502b48def24b0edde2f7fe8becf87948975ba01d908c448c1bb476a5c9",
+ "folder_sha256": "3100beb4dcccdd9b548bb0f6d76b7d26e828fa5af605f035800c050849e56217",
  "model": "xgb",
  "model_hash": "d1d43ace03b1fa86265eb061a39ee8b48ed958e2de62632ba7e9e74c8d161dc2",
  "ticker": "HIG"

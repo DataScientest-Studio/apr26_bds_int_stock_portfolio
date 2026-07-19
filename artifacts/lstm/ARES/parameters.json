@@ -6,20 +6,20 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
-  "THRESHOLD_ENTRY": 0.5,
+  "THRESHOLD_ENTRY": 0.52,
   "DIRECTION_MODE": "long_only",
   "CALIBRATION": {
-    "theta_entry": 0.5,
+    "theta_entry": 0.52,
     "kelly_fraction": null,
     "direction_mode": "long_only",
-    "oof_trades": 97,
+    "oof_trades": 68,
     "trade_floor_met": true,
-    "oof_log_growth": 0.812650707867369
+    "oof_log_growth": 0.9695869198937217
   },
-  "cv_auc_pr": 0.5579340999007747,
+  "cv_auc_pr": 0.5642052880877177,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,12 +36,10 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
-    "return_120",
-    "gap_open_z20",
-    "close_position_in_range",
-    "volume_trend_5_20",
-    "rsi_2",
-    "reversal_2d"
+    "atr_ratio_5_20",
+    "down_streak_10",
+    "xas_rs_mkt_20",
+    "zscore_close_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -96,33 +94,25 @@
       "mean": 0.005301932900215389,
       "std": 0.4114987034926773
     },
-    "return_120": {
-      "mean": 0.123106044547862,
-      "std": 0.15376231362133932
+    "atr_ratio_5_20": {
+      "mean": 1.0042656427065357,
+      "std": 0.15349188903362185
     },
-    "gap_open_z20": {
-      "mean": -0.019333794463897058,
-      "std": 1.0162259366349764
+    "down_streak_10": {
+      "mean": 0.08272727272727272,
+      "std": 0.12157795173100852
     },
-    "close_position_in_range": {
-      "mean": 0.5244617773016127,
-      "std": 0.2993211047298172
+    "xas_rs_mkt_20": {
+      "mean": 0.014114919530673627,
+      "std": 0.06666122614836627
     },
-    "volume_trend_5_20": {
-      "mean": 0.01186658373141076,
-      "std": 0.35118933129479646
-    },
-    "rsi_2": {
-      "mean": 54.8301490052135,
-      "std": 31.357714782984438
-    },
-    "reversal_2d": {
-      "mean": -0.0021210224182961904,
-      "std": 0.03171558646161932
+    "zscore_close_20": {
+      "mean": 0.3710467755500397,
+      "std": 1.2925848945964733
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "8eb3f8a1dcd91029c347b094131fb26f008b43ad8b7beef5666e785eacdecda4",
+  "MODEL_HASH": "e26998813ba0948853b6cca689481ad6c72f69ab7d26ed7319d98ea399abb55a",
   "RANDOM_SEED": 42
 }

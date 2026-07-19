@@ -23,8 +23,7 @@
       "multi_tf"
     ],
     "active_namespaces": [
-      "1h",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -69,17 +68,6 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          211
-        ],
-        "feature_names": [
-          "realized_volatility_20_1w"
-        ],
-        "feature_count": 1
       }
     ],
     "effective_feature_ids": [
@@ -99,8 +87,7 @@
       14,
       15,
       16,
-      17,
-      211
+      17
     ],
     "effective_feature_names": [
       "direction",
@@ -119,10 +106,9 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "realized_volatility_20_1w"
+      "macd_hist_12_26_9"
     ],
-    "effective_feature_count": 18,
+    "effective_feature_count": 17,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[BF.B]"
   },
   "features": {
@@ -143,8 +129,7 @@
       14,
       15,
       16,
-      17,
-      211
+      17
     ],
     "names": [
       "direction",
@@ -163,12 +148,10 @@
       "bollinger_bandwidth_20_2",
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
-      "macd_hist_12_26_9",
-      "realized_volatility_20_1w"
+      "macd_hist_12_26_9"
     ],
     "active_namespaces": [
-      "1h",
-      "1w"
+      "1h"
     ],
     "per_namespace": [
       {
@@ -213,17 +196,6 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
-      },
-      {
-        "namespace": "1w",
-        "id_range": "201-299",
-        "feature_ids": [
-          211
-        ],
-        "feature_names": [
-          "realized_volatility_20_1w"
-        ],
-        "feature_count": 1
       }
     ]
   },

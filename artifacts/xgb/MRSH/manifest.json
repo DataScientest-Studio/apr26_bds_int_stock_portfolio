@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 42985,
-   "sha256": "3b5efa80e06f2e62aae43125af25803e1b29a43f8dceb432fad1394f5038a5c3"
+   "sha256": "797d6b628f81980614ee99856c100662110ce78d42ea7e9e4a51c490eb4a3272"
   },
   "metrics.json": {
    "bytes": 1112,
-   "sha256": "bb9e649a62b512c3e79a27d137ab1b34208b11f3c424a8aca48064680d09bc9e"
+   "sha256": "1a489c6f230bb4c1d2c42d4cbe239ed7674e0a3f778dbac44ff31c22b4cf3bbc"
   },
   "parameters.json": {
    "bytes": 5226,
@@ -18,7 +18,7 @@
    "sha256": "87aa383604bd4727f44c6e4da56a7bade0adb227bc31208fc0d810d2c7432edf"
   }
  },
- "folder_sha256": "25ad8621827e6e2f61fde92662c0f2829f7d40be49e6572447964361becf5860",
+ "folder_sha256": "b04565264d77e5f064e7d3dcd48631d01270efcc8f4605f8c726cdf2ff336f7e",
  "model": "xgb",
  "model_hash": "0cc4f0475c7e9ea02e7de86748168a0a2f7a39a8517b08c12845154d0879a194",
  "ticker": "MRSH"

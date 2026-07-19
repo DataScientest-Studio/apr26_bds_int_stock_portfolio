@@ -1,24 +1,24 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 28877,
-   "sha256": "b6913cef42255a1313a8c5ba0971f29bd7dbdec60e0e6dbb01beae04f5be859a"
+   "bytes": 28912,
+   "sha256": "197e70290f166bbce7dc3fbb56acdafe20fc5484e817a60719e798008b7bd867"
   },
   "metrics.json": {
-   "bytes": 1091,
-   "sha256": "7743dab98203012e47e7b5a59eb9d77a5ec029d52949f1c66c8dc0cbdbdb172e"
+   "bytes": 1088,
+   "sha256": "912ea1c72554f373ea605fc999a21853b3d06218ae97545a0328e3125bea4dc1"
   },
   "parameters.json": {
    "bytes": 5209,
    "sha256": "1b1d4b0f6665cba9c4f635b9006c898734703aa35acc99fc125234f3bcaa5d9b"
   },
   "strategy_LRCX.py": {
-   "bytes": 187562,
-   "sha256": "8bccb567825c25885366b70eb073a4efb82935d34e6878a41a3ef7fcda3a05b5"
+   "bytes": 187572,
+   "sha256": "ce161d28f366db42298a7e85c312b64cd618b4ab07c27e6a3f2b8473df4a7483"
   }
  },
- "folder_sha256": "b9fb189e7d14500b0bccbd2895ae765ac5834205ccbcc68bb26180a0e604bd2b",
+ "folder_sha256": "4d585cc284ff0c0c828f6c571c580238b3953f10cb7828480c074a514d56a608",
  "model": "xgb",
  "model_hash": "a3ca1199205f4aa3c56a6fdaf6e4a763e7d03126491972320987f1f693c812b7",
  "ticker": "LRCX"

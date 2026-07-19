@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 101021,
-   "sha256": "913194f091b7acace060769043e958c4cf14f2fb23fc668f2d4b4b52fd15fdcb"
+   "sha256": "92bdd953530e978b36c649ecc582614bdb884a40b0884ca4cec66348c596a98d"
   },
   "metrics.json": {
    "bytes": 1101,
-   "sha256": "f18c9c2ec02e98ebdec4d9d26087ed1a367d8f3c9fd29272d6fe094fb2868178"
+   "sha256": "2fd138aee0d5e256410c76bf9ff1ed9e50d4c1051239c1083756b55737d55f49"
   },
   "parameters.json": {
    "bytes": 4615,
@@ -18,7 +18,7 @@
    "sha256": "48be37751331bd68d46ad35e0d74577105eb7e1dee2446f8c7ada243ef8ddb4e"
   }
  },
- "folder_sha256": "e01439f3864bdd463b64f382eb579c70114c29ba93e105c54a2eeb27cfb10486",
+ "folder_sha256": "40e60378a9600fc8ef09558ef26efe9aeb48e0710d6bbe280c88b7068f7de8e2",
  "model": "xgb",
  "model_hash": "e04d5e7b5a069df94a54b97764197ea26b4715d8ca85ff6ad53b938a75411a75",
  "ticker": "VST"

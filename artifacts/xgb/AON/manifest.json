@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 46868,
-   "sha256": "d34563f168ef00d12ed31ded4480033c2ab7d499ac6291ddaf3dc9b08f0104db"
+   "sha256": "f33e93879d382dfdc9ddd25d2fdb2297bd9335f595d7b32a1877c9ca6f568aa6"
   },
   "metrics.json": {
    "bytes": 1108,
-   "sha256": "49e37ced3a4dae5c1b82b9879a09f59f7089a4d03405c92dab940d78c8ebd75c"
+   "sha256": "60bcfcc54e4725560aad44e5d9989de2f80a19a958bad7df83a894183a482eb8"
   },
   "parameters.json": {
    "bytes": 5541,
@@ -18,7 +18,7 @@
    "sha256": "f1d5f055999eb9e0d280d4a6e7536a32aeab9a13fdb8d3fcf4bc3ad4971d900f"
   }
  },
- "folder_sha256": "9ae67956bbdc36b84ade26507a9805c204a3b96d0da8106a1ba84394a521eef4",
+ "folder_sha256": "0dd8907ec552dbd3c59477aeae39baa559e6d8136a121dca1abef749763fcf9f",
  "model": "xgb",
  "model_hash": "69b9a69323565478257267b05d8affca0fd7379c4a9eff3ba635ad5e9fd3a8ab",
  "ticker": "AON"

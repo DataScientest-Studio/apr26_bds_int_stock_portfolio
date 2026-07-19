@@ -6,20 +6,20 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
-  "THRESHOLD_ENTRY": 0.52,
+  "THRESHOLD_ENTRY": 0.6,
   "DIRECTION_MODE": "both",
   "CALIBRATION": {
-    "theta_entry": 0.52,
+    "theta_entry": 0.6,
     "kelly_fraction": null,
     "direction_mode": "both",
-    "oof_trades": 99,
+    "oof_trades": 10,
     "trade_floor_met": true,
-    "oof_log_growth": -0.04199151919596704
+    "oof_log_growth": 0.17328892057169298
   },
-  "cv_auc_pr": 0.43807608658581426,
+  "cv_auc_pr": 0.45547221807430566,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,7 +36,10 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
-    "high_low_range_pct"
+    "high_low_range_pct",
+    "xas_mkt_lead_ret_1",
+    "downside_upside_vol_ratio_20",
+    "day_range_pos_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -94,10 +97,22 @@
     "high_low_range_pct": {
       "mean": 1.8037818981143332,
       "std": 1.2149279969138234
+    },
+    "xas_mkt_lead_ret_1": {
+      "mean": 0.0003902873512400288,
+      "std": 0.012764853298657727
+    },
+    "downside_upside_vol_ratio_20": {
+      "mean": 0.9350416944254786,
+      "std": 0.3773060410464679
+    },
+    "day_range_pos_20": {
+      "mean": 0.5785402252584629,
+      "std": 0.28893826430740416
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "1176a9efd62867d574d3a085a03133827548dfdaaecfabb3e4f77ea63ee07d2c",
+  "MODEL_HASH": "9ff4b2711d169555fb9eed850d97fa839d6f5e0859450559f9b3ab7f560d7768",
   "RANDOM_SEED": 42
 }

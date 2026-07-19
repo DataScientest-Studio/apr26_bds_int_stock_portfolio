@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 28329,
-   "sha256": "2a1286be834fd3649f7e72a13d19ee2d7e36e2ab7e0945af8c3929e12ff09267"
+   "sha256": "0f1a0f3dd1c44430917be28bc9b888c8dcab242a4bcf1882f3d166097793e002"
   },
   "metrics.json": {
    "bytes": 1105,
-   "sha256": "4d6222ddf67800682274e33ade9852e57da79025ef0a182bec77b597be808392"
+   "sha256": "3f70c26a2ba237d2a2365d1324140e319970c2e4306095fb1347623e037a57c9"
   },
   "parameters.json": {
    "bytes": 4082,
@@ -18,7 +18,7 @@
    "sha256": "a1eda0504bed1a1bbb08f5c66f720743c91247779ad1faaa3900f16bedea76aa"
   }
  },
- "folder_sha256": "12003445d9341748b4a2f7a2cfc8f4f1ec233672c28d93a55e1f154422677ddd",
+ "folder_sha256": "e809ed81bb690212616de3f775315051e8e9e95f9b296564c857525f0ac403e8",
  "model": "xgb",
  "model_hash": "13256e784715a783830e2ed8e259db34843f8c7f9e094e042e87268d9736a2cd",
  "ticker": "NTAP"

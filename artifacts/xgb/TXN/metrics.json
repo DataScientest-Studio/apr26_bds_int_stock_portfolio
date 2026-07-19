@@ -10,7 +10,7 @@
   "theta_entry": 0.5,
   "trade_floor_met": true
  },
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "model": "xgb",
  "store_row": {
   "benchmark_trades": 0,
@@ -26,7 +26,7 @@
   "oof_trades": 148,
   "oos_window": "2024-01-02 -> 2026-05-29",
   "profit_factor": 1.764255123837506,
-  "recipe_hash": "67abd5576ce7eff1",
+  "recipe_hash": "447745d1059e560f",
   "result_mode": "ML_MULTI_TRADE",
   "return_pct": 11.789920884153426,
   "start_capital": 1000.0,

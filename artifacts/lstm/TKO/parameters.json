@@ -6,20 +6,20 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
-  "THRESHOLD_ENTRY": 0.52,
+  "THRESHOLD_ENTRY": 0.5,
   "DIRECTION_MODE": "both",
   "CALIBRATION": {
-    "theta_entry": 0.52,
+    "theta_entry": 0.5,
     "kelly_fraction": null,
     "direction_mode": "both",
-    "oof_trades": 95,
+    "oof_trades": 91,
     "trade_floor_met": true,
-    "oof_log_growth": 0.5680188133032954
+    "oof_log_growth": 0.0989862948481556
   },
-  "cv_auc_pr": 0.49120305881040116,
+  "cv_auc_pr": 0.4683748268158498,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -36,10 +36,12 @@
     "bollinger_percent_b_20_2",
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
+    "return_120",
+    "volume_trend_5_20",
     "ret_skew_20",
-    "rsi_2",
-    "xas_mkt_lead_ret_1",
-    "illiquidity_amihud_20"
+    "up_streak_10",
+    "downside_vol_20",
+    "vol_scaled_momentum_20"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -94,25 +96,33 @@
       "mean": -0.0006119403648172479,
       "std": 0.5514583242512399
     },
+    "return_120": {
+      "mean": 0.10408002727624935,
+      "std": 0.29573017062007967
+    },
+    "volume_trend_5_20": {
+      "mean": 0.007041452650494032,
+      "std": 0.3923058196802749
+    },
     "ret_skew_20": {
       "mean": -0.022051942767295007,
       "std": 1.2388650528249425
     },
-    "rsi_2": {
-      "mean": 53.51699575311321,
-      "std": 31.69555653131347
+    "up_streak_10": {
+      "mean": 0.10636363636363637,
+      "std": 0.14390797105175032
     },
-    "xas_mkt_lead_ret_1": {
-      "mean": 0.0003428762936156412,
-      "std": 0.012758821573075113
+    "downside_vol_20": {
+      "mean": 0.012236923468803146,
+      "std": 0.0095820479790247
     },
-    "illiquidity_amihud_20": {
-      "mean": 0.0011471085334225932,
-      "std": 0.0004453381277394245
+    "vol_scaled_momentum_20": {
+      "mean": 1.157911856183551,
+      "std": 4.690268732937689
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "783e3dd4a221680182f15cd4a357ae550cce61f1cad4d69631456d4dedd942d0",
+  "MODEL_HASH": "85acdc9597613f1c62cc65b69acf9aad00fa8d5109554bd5ada4741c8dd69f59",
   "RANDOM_SEED": 42
 }

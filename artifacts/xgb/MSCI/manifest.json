@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 43023,
-   "sha256": "7e36b4186b0544efa5a56eb9b5530332c1a899064e47175949055e59c5b3b0d9"
+   "sha256": "df81fae7925c05bd2b26cd79a92d7bacc74a69fe80308b5a72cb703222feac66"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "742b2af66a66b77e24d87cd2698ed4ff18c556a700f0f8796cf334d4858ae8da"
+   "sha256": "fc714e78f369c2854f2c58211114676105e759a7f754623631875ab353143325"
   },
   "parameters.json": {
    "bytes": 4616,
@@ -18,7 +18,7 @@
    "sha256": "663772d2712ac5a61ad512d19fd6a065504446419ded4b9171ec099a842d5826"
   }
  },
- "folder_sha256": "6e8c4d39d666da8daa1c13e8c709f0e06080fc2f6a84e1379ad786c106d8430a",
+ "folder_sha256": "d72e8492e3b092010969107cff20e88169d5c3161c86609941a065c8406ba610",
  "model": "xgb",
  "model_hash": "815620a7691924ed262fb10d990018985b0248f19e29f4fccf0a72a1f547af34",
  "ticker": "MSCI"

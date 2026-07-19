@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 198886,
-   "sha256": "5def5189ecc27dcd055c9767b9afe3bd9db88525de8d60fec500be261c08ae89"
+   "sha256": "73bd2b71cf45404aafc3644543a66823912655cda6926fd656fe2a0a5a11b4ba"
   },
   "metrics.json": {
    "bytes": 1109,
-   "sha256": "786a7558e0475e16ca3a9dabe49c2bc21223e8631b9a1139a08d0205734fd4d9"
+   "sha256": "974883e4a338235668422180ff95835c94aee563b706343442857db1a6c33880"
   },
   "parameters.json": {
    "bytes": 4086,
@@ -18,7 +18,7 @@
    "sha256": "bd3ad47b9ac77e943e094cda2164a10de61c230bc147c29d4147f45096e39245"
   }
  },
- "folder_sha256": "90708768c6e42078b2fabb012b7bcd5c903627e10a318fcdc3059ad10130a90c",
+ "folder_sha256": "7f9bc55700cabaf3c781c3a93a76cca1ac366ac4566234c8e2a0a2fb0a6e39c0",
  "model": "xgb",
  "model_hash": "388f07f83984e6a14da6a8ac8792c3ec4e388471d80a1921873346121b084960",
  "ticker": "BIIB"

@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 40243,
-   "sha256": "0881b8fb628c9aee7866aeec7bc1abb58a6eed5bd80ee2bbde03cf2ad5301d66"
+   "sha256": "165cf5301b9efa65d11c4b4d99c64bcdcb1282128210732ac86853359b1989da"
   },
   "metrics.json": {
    "bytes": 1104,
-   "sha256": "2efd713eb93e69f0d0210cf1bb06fe8257fb9a44426ee3efe780a3729fefcda6"
+   "sha256": "6c811169fcf07a53aaafa2ec9bc4af0a0385c1adf391fd44aae5fa65723a5554"
   },
   "parameters.json": {
    "bytes": 5160,
@@ -18,7 +18,7 @@
    "sha256": "1baf7737da75d7287849b8ae909281e7bc8f9770454dd98204c89c1f866ff54e"
   }
  },
- "folder_sha256": "94e7c5e982209d4ae775b6bf1e328a510fb3775dd2b5ecae57f25caf83769faf",
+ "folder_sha256": "49a91d43a88558f31f2953d6f3f8da4146547df609ce000e52fefafc0796aa57",
  "model": "xgb",
  "model_hash": "1bc5bb182a7fb61c5ce579b46c84fecf6ea65123b13db4ca68b02481206507ba",
  "ticker": "JNJ"

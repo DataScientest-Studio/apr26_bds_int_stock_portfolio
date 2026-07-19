@@ -1,25 +1,25 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 74826,
-   "sha256": "1ce482ab47778716812beb91631f078648ad9eed8dec098468dfdea33b004208"
+   "bytes": 74406,
+   "sha256": "0c35268e3503a573d3f3c069f41bc5056d5c96429cf6a8507eeb1d312bd720cf"
   },
   "metrics.json": {
-   "bytes": 1055,
-   "sha256": "a2613df84a54ef9fc0815ed3b801a9db04ef63049c0d972bcf28f0841c28b6a9"
+   "bytes": 1073,
+   "sha256": "b3e7ba8e2ff6de6dee75849c7e2aba1b0728626bc6a8e6f5574242fc983ff7d4"
   },
   "parameters.json": {
-   "bytes": 2508,
-   "sha256": "5d7f9b81894797bf5c1a77b5915abfe2793f4e40c7fc16b14a3ec43308c4f8ed"
+   "bytes": 2517,
+   "sha256": "da341a6bb67e9a9e51d309342335bda1232834c34d47e62267ea757256384dda"
   },
   "strategy_CRM.py": {
-   "bytes": 76186,
-   "sha256": "4232322dffa4a903811280f5cf56514015c68285da0721b5434fc24084e6925a"
+   "bytes": 77130,
+   "sha256": "aaacd42edef8c0720724061f43443fee4384f13c89122e9b254355e6f2c320da"
   }
  },
- "folder_sha256": "f2f16f027ddfd6b1b3c675b45285a8a613d72a78247829cf8a95f3be4e0b24ac",
+ "folder_sha256": "8fa34ca416863b64fff9ab5c7de2bd13d6cf5a285d6798029e9931fc3dc720a1",
  "model": "lstm",
- "model_hash": "483a099d0ace70c9a6326de9b60b07bd47239ff3d6df80a9e5401f0ffc590740",
+ "model_hash": "c7e7d9457482dfdc4d5f6476747de5d9752c9cbd14fc004bfba7cd46ec2dfc1e",
  "ticker": "CRM"
 }

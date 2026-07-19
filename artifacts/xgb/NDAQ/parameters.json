@@ -1,14 +1,14 @@
 {
   "best_params": {
-    "max_depth": 5,
-    "eta": 0.0907018942104371,
-    "subsample": 0.614791460036869,
-    "colsample_bytree": 0.8828929041803025,
-    "min_child_weight": 6.344154191981028,
-    "reg_lambda": 2.5072295566848033,
-    "reg_alpha": 0.5208073500416435,
-    "gamma": 0.3090854116923678,
-    "n_estimators": 231,
+    "max_depth": 3,
+    "eta": 0.0601647398720913,
+    "subsample": 0.6530891334481557,
+    "colsample_bytree": 0.6073248792362046,
+    "min_child_weight": 7.349159517029646,
+    "reg_lambda": 3.276844476112148,
+    "reg_alpha": 1.3689514952723199,
+    "gamma": 0.021720004453649334,
+    "n_estimators": 242,
     "kelly_fraction": null,
     "theta_entry": 0.48
   },
@@ -24,6 +24,7 @@
     ],
     "active_namespaces": [
       "1h",
+      "1d",
       "multi_tf"
     ],
     "per_namespace": [
@@ -69,6 +70,17 @@
           "macd_hist_12_26_9"
         ],
         "feature_count": 17
+      },
+      {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          107
+        ],
+        "feature_names": [
+          "dist_to_sma_50_1d"
+        ],
+        "feature_count": 1
       },
       {
         "namespace": "multi_tf",
@@ -100,6 +112,7 @@
       15,
       16,
       17,
+      107,
       902
     ],
     "effective_feature_names": [
@@ -120,9 +133,10 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
+      "dist_to_sma_50_1d",
       "rsi_spread_1h_1d"
     ],
-    "effective_feature_count": 18,
+    "effective_feature_count": 19,
     "feature_selection_source": "config/feature_namespaces.json + data/per_asset_feature_overrides.json[NDAQ]"
   },
   "features": {
@@ -144,6 +158,7 @@
       15,
       16,
       17,
+      107,
       902
     ],
     "names": [
@@ -164,10 +179,12 @@
       "macd_line_12_26_9",
       "macd_signal_12_26_9",
       "macd_hist_12_26_9",
+      "dist_to_sma_50_1d",
       "rsi_spread_1h_1d"
     ],
     "active_namespaces": [
       "1h",
+      "1d",
       "multi_tf"
     ],
     "per_namespace": [
@@ -215,6 +232,17 @@
         "feature_count": 17
       },
       {
+        "namespace": "1d",
+        "id_range": "101-199",
+        "feature_ids": [
+          107
+        ],
+        "feature_names": [
+          "dist_to_sma_50_1d"
+        ],
+        "feature_count": 1
+      },
+      {
         "namespace": "multi_tf",
         "id_range": "901-999",
         "feature_ids": [
@@ -227,7 +255,7 @@
       }
     ]
   },
-  "cv_auc_pr": 0.4172559031666635,
+  "cv_auc_pr": 0.42486248140601,
   "cv_folds": 4,
   "n_trials": 80
 }

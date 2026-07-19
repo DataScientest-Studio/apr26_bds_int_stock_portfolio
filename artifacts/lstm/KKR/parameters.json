@@ -6,7 +6,7 @@
     "dropout": 0.3,
     "weight_decay": 0.0001,
     "num_layers": 1,
-    "refit_epochs": 5
+    "refit_epochs": 4
   },
   "kelly_fraction": null,
   "THRESHOLD_ENTRY": 0.54,
@@ -15,11 +15,11 @@
     "theta_entry": 0.54,
     "kelly_fraction": null,
     "direction_mode": "long_only",
-    "oof_trades": 69,
+    "oof_trades": 73,
     "trade_floor_met": true,
-    "oof_log_growth": 0.26958657419183335
+    "oof_log_growth": 0.2678297204358432
   },
-  "cv_auc_pr": 0.44991286332135,
+  "cv_auc_pr": 0.455353494520077,
   "cv_folds": 4,
   "SEQ_LEN": 60,
   "FEATURE_MANIFEST": [
@@ -37,7 +37,7 @@
     "bollinger_bandwidth_20_2",
     "macd_hist_12_26_9",
     "overnight_vol_20",
-    "day_range_pos_20"
+    "ma_slope_10"
   ],
   "NORM_STATS": {
     "log_return_1": {
@@ -96,13 +96,13 @@
       "mean": 0.01084413031466151,
       "std": 0.007411101836465374
     },
-    "day_range_pos_20": {
-      "mean": 0.584053895839249,
-      "std": 0.2976043627393071
+    "ma_slope_10": {
+      "mean": 0.0009539446776469178,
+      "std": 0.0067939046763000445
     }
   },
   "TRAIN_WINDOW": "2017-01-01 -> 2023-12-31",
   "LABEL_CONTRACT": "TripleBarrier.ATR.daily.v1",
-  "MODEL_HASH": "eb7684c182903e83e8771ede890036416c41abf7970eebf48a3a8597073559db",
+  "MODEL_HASH": "7d385bf665821a1d583bad9d1be1a1684b2328be3351fc6782f3b73839fa9952",
   "RANDOM_SEED": 42
 }

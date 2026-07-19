@@ -27,8 +27,9 @@ DB_PATH = ROOT / "data" / "results.db"
 EXPECTED_TABLES = {
     "research_run", "asset_results", "asset_features", "feature_search_summary",
     "integrity_checks", "feature_train_stats", "feature_contributions", "xgb_entry_ranges",
+    "oos_read_summary",
 }
-EXPECTED_FREEZE_PREFIX = "public/"
+EXPECTED_FREEZE_PREFIX = "public/"   # stable-1, stable-2, … — the label carries the release
 ARTIFACT_JSONS = ("manifest.json", "parameters.json", "metrics.json", "interpretation.json")
 
 # fail-closed statuses (STREAMLIT_DESIGN §4)
@@ -150,7 +151,7 @@ def universe_df():
 
 @lru_cache(maxsize=1)
 def results_df():
-    """All 993 result rows for distributions (Comparison) and medians (Overview)."""
+    """Every result row for distributions (Comparison) and medians (Overview)."""
     rows = _rows(
         "select ticker, model, result_mode, return_pct, profit_factor, model_trades,"
         " hodl_return_pct, beats_hodl, max_drawdown_pct, win_rate_pct,"
@@ -288,3 +289,32 @@ def calibration(ticker, model):
     column is null for every row); also theta/floor/OOF details per model."""
     doc = metrics(ticker, model)
     return (doc or {}).get("calibration")
+
+
+@lru_cache(maxsize=1)
+def oos_reads():
+    """Per-pipeline OOS-read discipline: how many reads this epoch and the CUMULATIVE
+    per-ticker counter across all epochs. The one-shot rule is the project's core
+    contract, so the console has to be able to show it, not just claim it."""
+    return _rows("select * from oos_read_summary order by pipe")
+
+
+@lru_cache(maxsize=1)
+def result_mode_matrix():
+    """result_mode counts per model — the direct evidence for 'the model knows when to
+    stay idle', which is otherwise scattered across Overview and Universe."""
+    rows = result_mode_shares()
+    models = sorted({r["model"] for r in rows})
+    modes = sorted({r["result_mode"] for r in rows})
+    return {"models": models, "modes": modes,
+            "counts": {(r["model"], r["result_mode"]): r["n"] for r in rows}}
+
+
+@lru_cache(maxsize=1)
+def model_hash_coverage():
+    """How many distinct sealed models the interpretation layer actually covers —
+    proves the layer describes THESE artifacts, not a stale set."""
+    return _rows("select model, count(distinct model_hash) as models, "
+                 "count(distinct ticker) as tickers, "
+                 "count(distinct interpretation_recipe_hash) as recipes "
+                 "from feature_train_stats group by model order by model")

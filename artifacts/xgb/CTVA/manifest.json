@@ -1,13 +1,13 @@
 {
- "epoch": "2026-07-golden-v4",
+ "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
    "bytes": 136387,
-   "sha256": "fe91a5b10ea02b9adc3906f2f7fd738ca192cf5af9333ca1972ad60ed8420303"
+   "sha256": "2520e37f33d5b9ab234a51a5670f2d5df3d24824d9892e63865ac4f50895b0c2"
   },
   "metrics.json": {
    "bytes": 1107,
-   "sha256": "92f6d49120136165fca9c049bb3fe24ea5d7ba970b96296c1d31bad7572ba353"
+   "sha256": "e80fdeb964bf983c63b95541bfdc1e55526b04f4f6e729e90baf9877f416ecee"
   },
   "parameters.json": {
    "bytes": 4087,
@@ -18,7 +18,7 @@
    "sha256": "62d020147042fefebab930465551bb37a1c8d6463919e64b4d1e9f5391345c99"
   }
  },
- "folder_sha256": "2246fd98d68c48463256e617f769c0d6302b40c3082759fad37cbf9d3d1cc0e8",
+ "folder_sha256": "9149eea557a7f974d633fa13ea5aad11e15b64f95b5f7c4acc2bd5ea07e7214a",
  "model": "xgb",
  "model_hash": "7423a73034f2d9486157f54362b1c0679fbdd66db8ecdccb85f660eec1d75ced",
  "ticker": "CTVA"
