@@ -81,9 +81,9 @@ the pick**.
             """
 **The setup**
 - Course: *Data Scientist* · difficulty **8/10** · mentor **Paul Grolier**.
-- Data source: **Alpaca** free IEX feed — daily OHLCV, S&P 500, ~5–6 years of history
+- Data source: **Alpaca** free IEX feed — daily OHLCV (Open, High, Low, Close, Volume), S&P 500, ~5–6 years of history
   (yfinance kept only as a cross-check).
-- Deliverables: EDA report → modelling report → final report → **Streamlit app + oral defense**.
+- Deliverables: EDA (Exploratory Data Analytics) report → modelling report → final report → **Streamlit app + oral defense**.
             """
         )
 
@@ -111,6 +111,11 @@ the pick**.
 - The **63-trading-day forward return** of each stock — *"how much does this stock return over the
   next ~3 months?"* In code: `adj_close.shift(-63) / adj_close − 1`.
 - We don't need the exact number — we use it to **rank** stocks (best expected return first).
+- **Why use the past if we want the future?** To *teach* the model we need examples where the answer
+  is already known. Example: on **1 Jan 2024** we can look at what the stock **actually did over the
+  following 63 days** — that already happened, so it's a known "answer" to learn from (`shift(-63)`
+  simply fetches it). **Today** we flip it: the model applies what it learned to predict the next
+  63 days, which haven't happened yet.
             """
         )
     with f2:
