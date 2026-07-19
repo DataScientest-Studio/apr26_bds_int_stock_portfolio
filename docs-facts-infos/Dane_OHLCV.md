@@ -5,13 +5,26 @@ i etykiety, oraz co potwierdziła weryfikacja na realnych zapieczętowanych bara
 Wszystkie fakty mają źródło (plik:linia / pomiar). Stan: 2026-07-19, epoka **`2026-07-golden-v5`** (bary skorygowane o splity),
 gałąź `Stable_Presentable_Version`.
 
+> **Mapa referencji do kodu i danych:** dokument opisuje przetwarzanie danych tak, jak
+> przebiegło ono na **gałęzi badawczej** `to_give_up_and_show`, i cytuje jej układ plików.
+> Na tej gałęzi istnieją odpowiedniki: `src/xgb/pipeline.py`, `src/lstm/pipeline.py`,
+> `src/shared/op_select.py`, `config/{xgb,lstm}.json`, `data/results.db`. **Wyłącznie na
+> gałęzi badawczej** żyją natomiast: store'y barów (`data/sp500_1d.duckdb` dzienny oraz
+> godzinowy `liora.duckdb`), moduł ładowania barów `xgb/src/bars.py` z korektą splitów,
+> `xgb/src/corporate_actions.py` wraz z bramką `cross_bar_qc` i tabelami
+> `splits_sp500.csv` / `overrides.csv`, warstwa orkiestracji (`run_asset.py`, `iterators/`,
+> ledgery `oos_read_ledger.jsonl`) oraz robocze parquety `<T>_ohlcv_1h.parquet`. Ta gałąź
+> wozi **wynik** tamtego przetwarzania: 993 zapieczętowane foldery artefaktów i
+> `data/results.db` (integralność sprawdzalna offline przez `make verify`).
+
 ## 1. Źródła danych
 
 Dwa surowe strumienie OHLCV, po jednym na model:
 
 - **XGB → bary 1-godzinne (1h)** — S&P 500, zapieczętowane per asset w
   `<T>_ohlcv_1h.parquet`.
-- **LSTM → bary dzienne (1d)** — S&P 500, w committed `data/sp500_1d.duckdb`.
+- **LSTM → bary dzienne (1d)** — S&P 500, ze store'u `data/sp500_1d.duckdb` (gałąź
+  badawcza; ta gałąź nie wozi barów — patrz mapa referencji powyżej).
 
 **Interwały 1d i 1w w plikach XGB to NIE trzecie źródło danych** — są **wyliczane z tego
 samego strumienia 1h** jako kontekst wielointerwałowy (`CONTEXT_TIMEFRAMES = ("1d","1w")`,
@@ -88,7 +101,7 @@ zdarzeń powstała **z danych + przeglądu człowieka**:
   każde z uzasadnieniem w `overrides.csv`. Sama tabela nadpisań liczy łącznie **28 wpisów**;
   ich efektem netto na zbiorze auto-zaakceptowanych są opisane usunięcia i dodania
   (88 → 83 zdarzeń). Kanoniczna księgowość: `Raport_Spojnosci_Badan.md` §3.5.
-- Korekta nakładana w `xgb/src/bars.py:load_bars()` **na barach 1h, PRZED roll-upem**
+- Korekta nakładana w `xgb/src/bars.py:load_bars()` (gałąź badawcza) **na barach 1h, PRZED roll-upem**
   (ceny × faktor, wolumen ÷ faktor); dzienny store LSTM rolluje się z tego samego
   skorygowanego strumienia, więc 1h i 1d są spójne z konstrukcji.
 - `CORP_ACTIONS_POLICY` przestała być martwą konfiguracją — `A_adjusted` realnie rozgałęzia kod.
@@ -102,6 +115,10 @@ zdarzeń powstała **z danych + przeglądu człowieka**:
 | Gapy po korekcie | NVDA −90,1% → −0,77%, CMG −98% → +0,98%, AMCR +404,6% → +0,93% |
 | Spójność 1h↔1d | roll-up == store, dokładnie (2612 sesji) |
 | Bramki cross-bar | strzelają na **każdym** surowym splicie, **0/503 alarmów** po korekcie |
+
+Baza **503** w dwóch wierszach powyżej to liczba tickerów w **store'ze barów** (434 bez
+zdarzeń + 69 ze zdarzeniami), a nie liczba zapieczętowanych modeli: XGB pieczętuje 498
+wierszy, LSTM 495 — tickery bez kompletu barów nie dochodzą do treningu.
 
 **Skutek dla wyników** (te liczby były wcześniej nieprawdziwe):
 | | v4 (surowe) | v5 (skorygowane) |
@@ -133,7 +150,8 @@ je potwierdził, co jest mocnym dowodem, że korekta zrobiła dokładnie to, co 
   (2021-04-19, 2021-10-25, 2022-03-08; + 2018-05-02/03) zwijają sesję do jednego płaskiego
   bara — **3825 płaskich barów u 475 tickerów (0,4% wszystkich)**, wszystkie w Train, wpływ
   niewielki i ograniczony do wąskiego okna kroczącego. **Domknięte:** w v5 objęte jawną
-  bramką (`cross_bar_qc`, płaskie bary z progami udziałowymi).
+  bramką (`cross_bar_qc` w `xgb/src/pipeline.py`, gałąź badawcza — płaskie bary z progami
+  udziałowymi).
 - **Detekcja barier po CLOSE** jest z natury ostrożna po stronie win-rate o ~5 pp (ciaśniejszy
   SL 1×ATR bywa dotykany intra-bar częściej niż TP 2×ATR); mechanizm jest w kodzie.
   **Domknięte:** kierunek i skala są opisane w `docs/METHODOLOGY.md` §6 (wiersz „Barrier

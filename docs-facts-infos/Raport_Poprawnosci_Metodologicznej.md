@@ -232,6 +232,20 @@ Na stronie `Integrity` powinny być jawnie prezentowane co najmniej:
 * lista ustaleń `MINOR`,
 * wersja kodu lub commit `HEAD`.
 
+**Stan realizacji na gałęzi prezentacyjnej (2026-07-19).** Strona `Integrity` pokazuje:
+status `FROZEN` i komplet kontroli integralności, tożsamość epoki wraz z recipe hashami,
+blok **Frozen parameters** czytany wprost z `config/{xgb,lstm}.json` (purge, embargo,
+horyzont `H`, `SEQ_LEN`, granice warmup/Train/OOS wraz z `oos_start`, kontrakt barier
+2×/1× ATR, koszty, konwencje wypełnień, tryb kapitału, siatka θ, próg transakcji, ziarno),
+sposób inicjalizacji modelu (universal warm-start LSTM vs Optuna per asset dla XGB),
+ledger odczytów OOS podsumowany per pipeline, macierz `result_mode` z opisem fallbacku
+oraz listę znanych ograniczeń z survivorship bias na czele. **Świadomie niedostępne na tej
+gałęzi:** numer epoki i commit `HEAD` — pola tożsamości zostały zanonimizowane przy
+publikacji (`epoch = 'sealed'`, `git_sha = NULL`; uzasadnienie w
+`Raport_Spojnosci_Badan.md` §2), a rolę identyfikatora pełnią niezmienione recipe hashe.
+**Lista ustaleń `MINOR`** to sekcja 6 tego dokumentu — strona `Integrity` odsyła do
+`docs-facts-infos/` zamiast jej duplikować.
+
 ---
 
 ## 8. Konkluzja

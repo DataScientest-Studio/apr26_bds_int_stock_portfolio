@@ -94,10 +94,14 @@ pipeline_lego_blueprint.html   standalone 18-brick pipeline map (embedded by the
 data_flow_3d.html              standalone 2.5D build-path map (embedded by the Data Flow page)
 ```
 
-The code under `src/` is the real research code, kept complete and importable for
-reading; running it end-to-end would additionally require the training stack
-(`torch`, `xgboost`, `optuna`, `duckdb`) and the raw bar stores, which are not part
-of this presentation branch.
+The code under `src/` is the real research code that produced and describes the sealed
+artifacts: both pipelines, the feature searches, the artifact writers and the shared
+contracts, unmodified and readable. The acquisition and orchestration layer around it —
+bar loading with the corporate-action correction, the per-asset runner, the compute-run
+harness — stays on the research branch, together with the raw bar stores and the training
+stack (`torch`, `xgboost`, `optuna`, `duckdb`). So `src/` is here to be read and audited,
+not to re-run the universe; what you can re-verify on this branch is the artifact tree
+(`make verify`) and the two executed notebooks under `examples/`.
 
 ## Limitation
 
