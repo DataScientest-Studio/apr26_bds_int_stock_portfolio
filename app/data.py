@@ -96,17 +96,6 @@ def research_run():
 
 
 @lru_cache(maxsize=1)
-def model_summary():
-    return _rows("select * from v_model_summary order by model")
-
-
-@lru_cache(maxsize=1)
-def universe():
-    """The operational table (page 2.2): one row per ticker, both models pivoted."""
-    return _rows("select * from v_universe_summary order by ticker")
-
-
-@lru_cache(maxsize=1)
 def tickers():
     return [r["ticker"] for r in _rows("select distinct ticker from asset_results order by ticker")]
 
@@ -121,14 +110,6 @@ def result_mode_shares():
 @lru_cache(maxsize=1)
 def integrity():
     return _rows("select * from integrity_checks order by check_name")
-
-
-@lru_cache(maxsize=1)
-def family_contribution_summary():
-    """Universe-level 'z czego składają się opisy': mean family share per model."""
-    return _rows("select model, feature_family, avg(family_share) as mean_family_share, "
-                 "count(distinct ticker) as assets from feature_contributions "
-                 "group by model, feature_family order by model, mean_family_share desc")
 
 
 # ---------------------------------------------------------------- page DataFrames (cached)
@@ -420,10 +401,6 @@ def interpretation_labels(ticker, model):
     labels = (doc or {}).get("labels") or [
         "TRAIN-DERIVED INTERPRETATION", "NOT AN OOS RESULT", "NOT A LIVE TRADING SIGNAL"]
     return " · ".join(labels), (doc or {}).get("disclaimer", "")
-
-
-def parameters(ticker, model):
-    return artifact_json(ticker, model, "parameters.json")
 
 
 @lru_cache(maxsize=1)

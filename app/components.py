@@ -40,10 +40,6 @@ def status_label(mode):
     return STATUS_LABELS.get(mode, mode or "—")
 
 
-def num(x):
-    return "—" if x is None else f"{x:,.0f}" if isinstance(x, float) else f"{x:,}"
-
-
 def metric_row(pairs):
     """pairs = [(label, value_str), ...] — aligned numbers, no delta arrows."""
     cols = st.columns(len(pairs))
