@@ -136,7 +136,7 @@ app/pages/                  10 pages in three sidebar sections —
                             Playground: Basket Simulator, Jupyter Notebook;
                             Results: Overview, Universe, Asset Indicator,
                             Feature Logic, Model Comparison;
-                            Method & proof: Integrity, Pipeline Blueprint,
+                            Method & proof: Integrity, Data Pipeline Lego Plan,
                             Data Flow
 app/basket.py               basket arithmetic (no Streamlit): the three-number split
 app/venn.py                 the pixel agreement diagram (no imports at all)

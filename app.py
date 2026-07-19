@@ -28,7 +28,7 @@ pages = st.navigation({
     ],
     "Method & proof": [
         st.Page("app/pages/integrity.py", title="Integrity", url_path="integrity"),
-        st.Page("app/pages/blueprint.py", title="Pipeline Blueprint", url_path="blueprint"),
+        st.Page("app/pages/blueprint.py", title="Data Pipeline Lego Plan", url_path="blueprint"),
         st.Page("app/pages/flow.py", title="Data Flow", url_path="flow"),
     ],
 }, expanded=True)

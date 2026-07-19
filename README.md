@@ -77,8 +77,8 @@ The sidebar groups them the way a defence walks: **Playground** (do something), 
    parameters, the OOS read ledger (reads per pipeline, and the spread of the cumulative
    per-asset counter), interpretation coverage, when the model is not promoted, every
    integrity check, and the known limits.
-9. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
-   lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
+9. **Data Pipeline Lego Plan** — the procedure as an 18-brick ladder: contract, reasoning
+   and lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
 10. **Data Flow** — the build path drawn twice and captioned nowhere: the whole study as
    eight boxes, then the same path as a 2.5D canvas map — sixteen levels, both pipelines
    in one ladder, every contract a click away.
@@ -102,7 +102,7 @@ scripts/          the offline verifiers behind `make verify`: artifact hashes an
 docs/             METHODOLOGY.md, ARCHITECTURE.md
 docs-facts-infos/ written audits (Polish): OHLCV data, methodological integrity,
                   and the research-consistency report
-pipeline_lego_blueprint.html   standalone 18-brick pipeline map (embedded by the Blueprint page)
+data_pipeline_lego_plan.html   standalone 18-brick pipeline map (embedded by the Lego Plan page)
 data_flow_3d.html              standalone 2.5D build-path map (embedded by the Data Flow page)
 ```
 
