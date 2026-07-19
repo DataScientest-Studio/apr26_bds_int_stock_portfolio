@@ -10,10 +10,11 @@ setup:
 app:
 	$(ST) run app.py --server.port 8503
 
-# No virtualenv needed: the verifier is stdlib only, so a reviewer can run it
+# No virtualenv needed: both verifiers are stdlib only, so a reviewer can run them
 # on a fresh clone before installing anything.
 verify:
 	python3 scripts/verify_artifacts.py
+	python3 scripts/verify_notebooks.py
 
 clean:
 	rm -rf __pycache__ app/__pycache__ app/pages/__pycache__ .streamlit/cache
@@ -21,5 +22,5 @@ clean:
 help:
 	@echo "make setup   Install presentation dependencies"
 	@echo "make app     Run the Streamlit presentation"
-	@echo "make verify  Recompute every artifact hash against artifacts/manifest.json"
+	@echo "make verify  Recompute every artifact hash, and check the notebooks against the store"
 	@echo "make clean   Remove local runtime cache"
