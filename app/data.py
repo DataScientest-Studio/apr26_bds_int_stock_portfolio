@@ -3,7 +3,7 @@
 The ONLY place in the app that:
 - opens data/results.db (sqlite, mode=ro),
 - verifies the schema and dataset completeness (fail-closed statuses),
-- holds every SQL query the nine pages need,
+- holds every SQL query the eleven pages need,
 - caches small aggregates (lru_cache; the db is sealed, so caches never go stale),
 - lazy-loads per-asset JSONs ONLY after an asset is selected, strictly via
   asset_results.artifact_path -> manifest.json / parameters.json / metrics.json /
@@ -32,6 +32,7 @@ EXPECTED_TABLES = {
 EXPECTED_FREEZE_PREFIX = "public/"   # stable-1, stable-2, … — the label carries the release
 ARTIFACT_JSONS = ("manifest.json", "parameters.json", "metrics.json", "interpretation.json")
 CONFIG_JSONS = ("xgb.json", "lstm.json")   # the frozen configuration the pipelines read
+MODEL_KEY = {"XGBoost": "xgb", "LSTM": "lstm"}   # display name -> store key
 
 # fail-closed statuses (STREAMLIT_DESIGN §4)
 OK = "OK"
@@ -178,6 +179,118 @@ def overview_stats():
             "pf_coverage_n": int(len(pf)),
         }
     return out
+
+
+# ---------------------------------------------------------------- basket simulator
+
+@lru_cache(maxsize=2)
+def simulator_rows(model):
+    """Capital endpoints + the win/loss split for one pipeline, for the Basket Simulator.
+
+    Deliberately NOT part of results_df(): the simulator needs end_capital, wins,
+    losses and trade_floor_met, which the distribution pages never read — widening
+    the shared frame would make four pages pay for two. There is no per-trade data
+    anywhere in this release, so a basket is the sum of per-asset ENDPOINTS: no
+    equity curve, no drawdown path, no timing.
+    """
+    return pd.DataFrame(_rows(
+        "select ticker, result_mode, end_capital, return_pct, model_trades, trades,"
+        " wins, losses, max_drawdown_pct, win_rate_pct, profit_factor,"
+        " trade_floor_met, hodl_return_pct, benchmark_trades, oos_window"
+        " from asset_results where model=? order by ticker", (MODEL_KEY.get(model, model),)))
+
+
+@lru_cache(maxsize=2)
+def hodl_returns(model):
+    """{ticker: price-only buy-and-hold return %} — the benchmark leg of a basket.
+    Assets whose benchmark is null are dropped, so the caller can tell how many of
+    its picks actually carry a benchmark."""
+    rows = _rows("select ticker, hodl_return_pct from asset_results"
+                 " where model=? and hodl_return_pct is not null",
+                 (MODEL_KEY.get(model, model),))
+    return {r["ticker"]: r["hodl_return_pct"] for r in rows}
+
+
+@lru_cache(maxsize=1)
+def payoff_ratios():
+    """The REALIZED median win/loss payoff per model, recovered from sealed scalars.
+
+    profit_factor = (wins x avg_win) / (losses x avg_loss), so avg_win/avg_loss =
+    PF x losses / wins. The barrier geometry is nominally 2:1 (2xATR target against
+    a 1xATR stop); this is what actually settled once triggers on the close, next-open
+    fills, gaps and two-sided costs were paid. Promoted rows only, and only where both
+    a win and a loss exist — the ratio is undefined otherwise.
+    """
+    rows = _rows("select model, profit_factor, wins, losses from asset_results"
+                 " where result_mode='ML_MULTI_TRADE' and profit_factor is not null"
+                 " and wins > 0 and losses > 0")
+    out = {}
+    for model in ("xgb", "lstm"):
+        vals = pd.Series([r["profit_factor"] * r["losses"] / r["wins"]
+                          for r in rows if r["model"] == model])
+        out[model] = {"median_payoff": float(vals.median()) if len(vals) else None,
+                      "n": int(len(vals))}
+    return out
+
+
+# Basket presets. Every membership is DERIVED from the store, never a typed list.
+# The first five are cross-model (the same set whichever model is selected); the
+# last four depend on the selected model and say so in their own label.
+PRESETS = (
+    ("universe", "Whole universe", False),
+    ("active_both", "Promoted in both models", False),
+    ("beats_both", "Beat buy & hold in both", False),
+    ("idle_both", "No model result in either", False),
+    ("disagree", "Models disagree on buy & hold", False),
+    ("top10", "Top 10 by OOS return", True),
+    ("bottom10", "Bottom 10 by OOS return", True),
+    ("busiest10", "Busiest 10 by model trades", True),
+    ("random10", "Random 10 (seed 0)", False),
+)
+PRESET_LABELS = {key: label for key, label, _ in PRESETS}
+PRESET_PER_MODEL = {key: per_model for key, _, per_model in PRESETS}
+
+
+@lru_cache(maxsize=32)
+def preset_tickers(name, model):
+    """One basket preset as a tuple of tickers, derived by SQL from the sealed rows.
+
+    'Both' presets require the ticker to be present twice (the two pipelines seal
+    498 and 495 assets, so three tickers exist for XGB only)."""
+    key = MODEL_KEY.get(model, model)
+    if name == "universe":
+        sql, params = "select distinct ticker from asset_results order by ticker", ()
+    elif name == "active_both":
+        sql, params = ("select ticker from asset_results where result_mode='ML_MULTI_TRADE'"
+                       " group by ticker having count(*)=2 order by ticker"), ()
+    elif name == "beats_both":
+        sql, params = ("select ticker from asset_results where beats_hodl=1"
+                       " group by ticker having count(*)=2 order by ticker"), ()
+    elif name == "idle_both":
+        sql, params = ("select ticker from asset_results where result_mode in"
+                       " ('HODL_FALLBACK_NO_MODEL_TRADES','TRAIN_OOF_FLOOR_NOT_MET')"
+                       " group by ticker having count(*)=2 order by ticker"), ()
+    elif name == "disagree":
+        sql, params = ("select ticker from (select ticker,"
+                       " max(case when model='xgb' then beats_hodl end) as x,"
+                       " max(case when model='lstm' then beats_hodl end) as l"
+                       " from asset_results group by ticker)"
+                       " where x is not null and l is not null and x != l order by ticker"), ()
+    elif name in ("top10", "bottom10"):
+        order = "desc" if name == "top10" else "asc"
+        sql, params = (f"select ticker from asset_results where model=?"
+                       f" order by return_pct {order} limit 10"), (key,)
+    elif name == "busiest10":
+        sql, params = ("select ticker from asset_results where model=?"
+                       " order by model_trades desc limit 10"), (key,)
+    elif name == "random10":
+        import random
+        pool = [r["ticker"] for r in _rows(
+            "select distinct ticker from asset_results order by ticker")]
+        return tuple(sorted(random.Random(0).sample(pool, 10)))
+    else:
+        raise ValueError(f"unknown preset: {name}")
+    return tuple(r["ticker"] for r in _rows(sql, params))
 
 
 # ---------------------------------------------------------------- per-asset queries
