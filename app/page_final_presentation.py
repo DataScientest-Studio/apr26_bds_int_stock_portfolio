@@ -45,17 +45,15 @@ def _introduction() -> None:
 - Every dot on the right is one S&P 500 stock, placed by **risk vs. return** — hundreds of choices,
   wildly different profiles, one decision to make.
 - **How each dot is placed:** only from a stock's **past daily prices** — average return on one axis,
-  how much it swings (**risk**) on the other. No forecasts, just history.
+  how much the price swings (**risk**) on the other. No forecasts, just history.
 - **The lone dot top-right (<a href="/app/static/SNDK.txt" target="_blank" rel="noopener">SNDK</a>) is
-  a data lesson, not a great stock:** it shows ~343% return, but it's a **recent entrant** (history
-  starts 2025-02-13, ~1.3 years) — measuring a short, steep run over-inflates it.
-- **So data quality isn't uniform:** that outlier broke our assumption that all 503 tickers have
-  equal-quality history — we now track **per-ticker history length**.
+  a data lesson, not a great stock:** it looks like +343%, but it's a **recent listing** (only ~1.3
+  years of history) — a short, steep run makes the yearly numbers look bigger than they are.
             """,
             unsafe_allow_html=True,
         )
     with right:
-        _img(FIG_RISK_RETURN, "503 S&P 500 stocks by annualized risk vs. return — the choice-overload problem")
+        _img(FIG_RISK_RETURN, "503 S&P 500 stocks, placed by yearly risk vs. yearly return — the choice-overload problem")
 
     st.divider()
 
@@ -108,29 +106,28 @@ the pick**.
         st.markdown(
             """
 **🎯 What the model predicts (target)**
-- The **63-trading-day forward return** of each stock — *"how much does this stock return over the
-  next ~3 months?"* In code: `adj_close.shift(-63) / adj_close − 1`.
+- **The return over the next ~3 months** (63 trading days) for each stock: take the price ~3 months
+  from now, compare it to today's price, as a percent.
 - We don't need the exact number — we use it to **rank** stocks (best expected return first).
-- **Why use the past if we want the future?** To *teach* the model we need examples where the answer
-  is already known. Example: on **1 Jan 2024** we can look at what the stock **actually did over the
-  following 63 days** — that already happened, so it's a known "answer" to learn from (`shift(-63)`
-  simply fetches it). **Today** we flip it: the model applies what it learned to predict the next
-  63 days, which haven't happened yet.
+- **Why look at the past if we care about the future?** To teach the model, we need examples where
+  the answer is already known. Take **1 Jan 2024**: we can see exactly what the stock did over the
+  next 63 days — that already happened, so it's a ready-made "answer" to learn from. Once trained,
+  the model does the same for **today**, where the next 63 days haven't happened yet.
             """
         )
     with f2:
         st.markdown(
             """
 **🧩 Features we selected (the model's inputs)**
-- **Momentum:** returns over 5, 20, 60 days + average daily return (20d, 60d).
-- **Risk:** volatility (20d, 60d) and 252-day drawdown.
-- **Liquidity:** log average volume (20d).
-- **Sector** (one-hot). → **9 price/volume features + sector**.
-- *Removed on purpose:* `history_days` (a data-leakage shortcut — see next slides).
+- **Momentum** — recent price gains (over 5, 20, 60 days).
+- **Risk** — how much the price swings (last month & 3 months) + the worst drop from a peak in the last year.
+- **How easy it is to trade** — typical daily volume (shares changing hands).
+- **Sector** — which industry (tech, energy, healthcare, …).
+- → **9 price/volume features + sector**. *Removed on purpose:* `history_days` (a data-leakage
+  shortcut — see next slides).
             """
         )
-    st.caption("All inputs are engineered from Alpaca OHLCV only — no fundamentals. "
-               "Source: `train_random_forest_no_history_model.py`.")
+    st.caption("All inputs come from price & volume only (Alpaca) — no company financials.")
 
     st.markdown(
         "That same shape runs **twice**, at **two levels of rigour** — the reason why is the next slide."
@@ -148,12 +145,12 @@ the pick**.
             """
 - **One unified multi-page Streamlit app** — from raw data all the way to an interactive,
   justified recommendation.
-- We went **beyond the original single-model brief** into **two evaluation tiers**:
-  - an **exploratory** ranking recommender (the original questionnaire → portfolio), and
-  - a **sealed** pipeline validated under a stricter standard of evidence — where the **method**, not
-    a market-beating result, is the deliverable.
-- Every number carries a **tier badge**; the two tiers never share a results table.
-- Reproducible end to end: the sealed results re-run **byte-for-byte**.
+- We built it in **two versions**:
+  - a **first, quick version** (the questionnaire → portfolio), and
+  - a **locked-down version** tested under much stricter rules — here the goal was to prove the
+    **method is sound**, not to beat the market.
+- Every number is tagged with which version it came from; we never mix the two in one table.
+- The locked-down results **re-run exactly** — anyone can reproduce them.
             """
         )
 
@@ -179,14 +176,36 @@ def _conclusion() -> None:
 - **Scope evolved, on purpose:** we first considered **yfinance** for data but chose **Alpaca**'s
   feed instead; clustering gave way to supervised models, and the 12-month target to
   **63 trading days** — 5–6 years of history can't validate a yearly horizon.
-- **Recommender — weak signal, simple wins:** walk-forward rank correlation ≈ **0.06** (≈ 0.16 on a
-  single split); **Ridge beat the fancier models**, and a deep-learning model was tested, not selected.
-- **Biggest lesson — don't trust one test:** checked on a single slice of data the model looked
-  okay (0.16), but testing it across **many time periods** dropped the score to **0.06** — much weaker.
-- **Data quality isn't uniform:** new entrants like SNDK have short, ragged histories — we now track
-  per-ticker history instead of assuming a clean panel.
+- **Biggest lesson — don't trust one test:** on one lucky slice the ranking looked okay (a score of
+  **0.16** on a 0-to-1 scale, where 0 = guessing), but tested honestly across **many time periods** it
+  fell to **0.06** — a **weak** signal. A **simple model won** (a plain linear model, "Ridge"),
+  and a deep-learning model was tried but not chosen.
+- **What we actually ship:** the simple model scored best on that single slice, but the **recommender
+  in the app uses the "no-history" Random Forest** — it held up best across time periods.
+- **Data quality isn't uniform:** new listings like SNDK have short, patchy histories — we now track
+  each stock's history length instead of assuming a clean dataset.
         """
     )
+
+    st.markdown("**Features we could add next (beyond price & volume)**")
+    c1, c2 = st.columns(2, gap="large")
+    with c1:
+        st.markdown(
+            """
+- **News:** headline flow and event tags (earnings, upgrades, M&A — mergers).
+- **Social sentiment:** Reddit / X / StockTwits tone and volume.
+- **Fundamentals:** P/E (price-to-earnings), earnings growth, margins, debt.
+            """
+        )
+    with c2:
+        st.markdown(
+            """
+- **Macro:** interest rates, inflation, sector rotation, VIX (the market's "fear gauge").
+- **Options-implied:** how much traders expect the price to move (implied volatility).
+            """
+        )
+    st.caption("Today the model deliberately uses **price & volume only** — these are honest "
+               "directions to strengthen the signal, not things we already use.")
 
 
 _PLACEHOLDERS = [
