@@ -18,6 +18,11 @@ single out-of-sample (OOS) evaluation:
 | XGBoost | 1h | 2016-10-17 to 2023-12-29 | 2024-01-02 to 2026-05-29 |
 | LSTM | 1d | 2017-01-01 to 2023-12-31 | 2024-01-01 to 2026-04-30 |
 
+These are the declared boundaries, straight from `config/{xgb,lstm}.json`. The LSTM ones are
+calendar-round on purpose, so every sealed LSTM row reports its first *realized* session,
+2024-01-02 — 1 January is a market holiday. The XGB config already declares session dates, so
+its rows and its declaration read the same. No bar is added or dropped either way.
+
 **Honest verdict.** Over the strong 2024-2026 bull OOS window the strategies do not beat
 buy-and-hold on most assets. The demonstrated product is the causal, OOS-isolated *method*: a reproducible,
 Train-only calibration procedure that yields, per asset, an ENTRY indicator with an explicit

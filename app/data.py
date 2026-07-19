@@ -31,6 +31,7 @@ EXPECTED_TABLES = {
 }
 EXPECTED_FREEZE_PREFIX = "public/"   # stable-1, stable-2, … — the label carries the release
 ARTIFACT_JSONS = ("manifest.json", "parameters.json", "metrics.json", "interpretation.json")
+CONFIG_JSONS = ("xgb.json", "lstm.json")   # the frozen configuration the pipelines read
 
 # fail-closed statuses (STREAMLIT_DESIGN §4)
 OK = "OK"
@@ -256,6 +257,56 @@ def artifact_json(ticker, model, name):
     if not p.exists():
         return None
     return json.loads(p.read_text())
+
+
+@lru_cache(maxsize=2)
+def frozen_config(name):
+    """One frozen pipeline config from config/, with the `_`-prefixed editorial keys
+    dropped — those are authoring notes (some still cite research-branch paths) and
+    must never reach the screen. Fail-soft: returns {} when the file is absent."""
+    if name not in CONFIG_JSONS:
+        raise ValueError(f"not a config json: {name}")
+    p = ROOT / "config" / name
+    if not p.exists():
+        return {}
+    doc = json.loads(p.read_text())
+    return {k: v for k, v in doc.items() if not k.startswith("_")}
+
+
+def frozen_parameters():
+    """The parameters the Integrity page has to show: label horizon, purge, embargo,
+    the split boundaries, the barrier contract and the operating grid — read from the
+    frozen config rather than typed into prose. Returns (xgb, lstm) dicts; a key the
+    config does not declare comes back as None so the page can render it as absent."""
+    out = {}
+    for model, name in (("xgb", "xgb.json"), ("lstm", "lstm.json")):
+        cfg = frozen_config(name)
+        sp = cfg.get("splits", {})
+        op = {k: v for k, v in (cfg.get("OPERATING_SPACE") or {}).items()
+              if not k.startswith("_")}
+        theta = op.get("theta") or []
+        out[model] = {
+            "H": cfg.get("H"),
+            "purge": cfg.get("PURGE_CANDLES", cfg.get("PURGE_BARS")),
+            "embargo": cfg.get("EMBARGO_BARS"),
+            "seq_len": cfg.get("SEQ_LEN"),
+            "train": f"{sp.get('train_start')} → {sp.get('train_end')}" if sp else None,
+            "oos": f"{sp.get('oos_start')} → {sp.get('oos_end')}" if sp else None,
+            "warmup": f"{sp.get('warmup_start')} → {sp.get('warmup_end')}" if sp else None,
+            "tp_atr": cfg.get("TB_ATR_TP"),
+            "sl_atr": cfg.get("TB_ATR_SL"),
+            "barrier_mode": cfg.get("BARRIER_MODE"),
+            "costs_bps": (cfg.get("COMMISSION_BPS"), cfg.get("SLIPPAGE_BPS")),
+            "entry_fill": cfg.get("ENTRY_FILL"),
+            "exit_fill": cfg.get("EXIT_FILL"),
+            "scheduled_exit_fill": cfg.get("SCHEDULED_EXIT_FILL"),
+            "capital_mode": cfg.get("CAPITAL_MODE"),
+            "theta_grid": f"{min(theta)}–{max(theta)} (step {round(theta[1] - theta[0], 3)})"
+                          if len(theta) > 1 else None,
+            "min_oof_trades": op.get("min_oof_trades"),
+            "seed": cfg.get("RANDOM_SEED"),
+        }
+    return out["xgb"], out["lstm"]
 
 
 def interpretation(ticker, model):

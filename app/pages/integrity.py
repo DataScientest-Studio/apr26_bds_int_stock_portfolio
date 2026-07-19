@@ -53,6 +53,57 @@ if reads:
     reason = next((r.get("reason") for r in reads if r.get("reason")), "")
     if reason:
         st.caption(f"Epoch opened because: {reason}")
+st.caption(
+    "The epoch and the producing commit are deliberately anonymized in this public "
+    "release; the recipe hashes above are the identity that survives, and they are the "
+    "ones the research audits quote. The LSTM OOS window is declared on calendar "
+    "boundaries (from 2024-01-01), so each sealed LSTM row reports its first realized "
+    "session, 2024-01-02 — 1 January is a market holiday. XGB declares its splits on "
+    "session dates already, so both surfaces read the same there.")
+
+# ---------------------------------------------------------------- 2b. frozen parameters
+st.subheader("Frozen parameters")
+_xgb, _lstm = data.frozen_parameters()
+
+
+def _fmt(v):
+    if v is None:
+        return "—"
+    if isinstance(v, (tuple, list)):
+        return " + ".join(f"{x} bp" for x in v)
+    return str(v)
+
+
+st.dataframe(pd.DataFrame([
+    {"parameter": label, "XGB (1h)": _fmt(_xgb.get(key)), "LSTM (1d)": _fmt(_lstm.get(key))}
+    for label, key in [
+        ("label horizon H", "H"),
+        ("purge", "purge"),
+        ("embargo", "embargo"),
+        ("sequence length", "seq_len"),
+        ("warmup window", "warmup"),
+        ("Train window", "train"),
+        ("OOS window (declared)", "oos"),
+        ("take-profit (xATR)", "tp_atr"),
+        ("stop-loss (xATR)", "sl_atr"),
+        ("barrier evaluated on", "barrier_mode"),
+        ("costs per side", "costs_bps"),
+        ("entry fill", "entry_fill"),
+        ("exit fill", "exit_fill"),
+        ("time-exit fill", "scheduled_exit_fill"),
+        ("capital mode", "capital_mode"),
+        ("theta grid", "theta_grid"),
+        ("Train-OOF trade floor", "min_oof_trades"),
+        ("random seed", "seed"),
+    ]]), hide_index=True, width="stretch")
+st.caption(
+    "Read from config/xgb.json and config/lstm.json — the same files the pipelines read, "
+    "not prose. The fill conventions are declared once, in the XGB config; the LSTM "
+    "engine is a port of the same trade mechanics (METHODOLOGY §3). Model "
+    "initialization: XGBoost trains per asset from scratch after per-asset Optuna; the "
+    "LSTM warm-starts every asset from one committed universal backbone — the "
+    "per-asset cold-start study exists behind LSTM_COLD_START=1 and did not run in this "
+    "epoch.")
 
 # ---------------------------------------------------------------- 3. OOS read ledger
 st.subheader("OOS read discipline")
@@ -126,7 +177,8 @@ st.markdown(
     "**Train-derived descriptions of a sealed model**, not an out-of-sample result and not "
     "a live trading signal.")
 st.caption("Full written audits (Polish) live in docs-facts-infos/ at the repository root: "
-           "the OHLCV data audit, the methodological-integrity audit, and the "
-           "research-consistency report.")
+           "the OHLCV data audit, the methodological-integrity audit (its §6 is the list "
+           "of MINOR findings), and the research-consistency report. Artifact integrity "
+           "is not only asserted here — `make verify` recomputes every hash offline.")
 
 C.integrity_footer()
