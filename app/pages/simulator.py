@@ -208,12 +208,31 @@ def _apply_preset():
         return
     st.session_state.basket = set(data.preset_tickers(key, st.session_state.method))
     st.session_state.basket_source = key
+    st.session_state.basket_edited = False
 
 
 def _toggle(ticker):
+    """A tile edits the basket without erasing where it came from: the caption can then say
+    "preset X, edited by hand", which is the story this page advertises. Only a basket built
+    from nothing is called hand-picked."""
     b = st.session_state.basket
     b.discard(ticker) if ticker in b else b.add(ticker)
-    st.session_state.basket_source = "manual"
+    st.session_state.basket_edited = True
+    if not st.session_state.get("basket_source"):
+        st.session_state.basket_source = "manual"
+
+
+def _select_all(tickers):
+    st.session_state.basket.update(tickers)
+    st.session_state.basket_edited = True
+    if not st.session_state.get("basket_source"):
+        st.session_state.basket_source = "manual"
+
+
+def _clear_basket():
+    st.session_state.basket.clear()
+    st.session_state.basket_source = ""
+    st.session_state.basket_edited = False
 
 
 def _go(stage):
@@ -230,6 +249,7 @@ C.guard(stop=False)
 st.session_state.setdefault("stage", "pick")
 st.session_state.setdefault("basket", set())
 st.session_state.setdefault("basket_source", "")
+st.session_state.setdefault("basket_edited", False)
 st.session_state.setdefault("method", "XGBoost")
 
 method = st.session_state.method
@@ -237,8 +257,11 @@ model = data.MODEL_KEY[method]
 df = data.simulator_rows(model)
 tickers = list(df["ticker"])
 
-dropped = st.session_state.basket - set(tickers)
-st.session_state.basket -= dropped
+# The two pipelines sealed 498 and 495 assets, so three tickers exist for XGB only. Narrow
+# them out of THIS model's view, but never out of the stored basket: deleting them would
+# make a round trip through the switch quietly shrink the basket for good.
+covered = st.session_state.basket & set(tickers)
+dropped = st.session_state.basket - covered
 
 st.sidebar.markdown(
     f"**The game**\n\n"
@@ -257,6 +280,12 @@ with col_m:
                          key="method_sel", on_change=_select_method)
 with col_n:
     st.markdown("**Basket preset** — every membership is derived from the sealed store")
+    # Re-light the chip after a page switch: preset_sel is widget-keyed, so Streamlit drops
+    # it when the widget stops rendering, and the caption below would then still name a
+    # preset that no longer looks selected. basket_source is the surviving copy.
+    if (st.session_state.basket_source in data.PRESET_LABELS
+            and not st.session_state.get("preset_sel")):
+        st.session_state.preset_sel = st.session_state.basket_source
     # The labels are CONSTANT: st.pills matches its value by formatted string, so a label
     # that changed with the model (".. (XGBoost)") stopped matching after a switch and the
     # raw label landed in session_state. Which model a ranking preset uses is said below.
@@ -267,18 +296,16 @@ with col_n:
                "the same set whichever model is selected.")
 
 if dropped:
-    st.caption(f"{len(dropped)} ticker(s) dropped — no {method} row: "
-               f"{', '.join(sorted(dropped))}.")
+    st.caption(f"{len(dropped)} of your picks have no {method} row and sit out this "
+               f"calculation: {', '.join(sorted(dropped))}. They stay in the basket and "
+               f"come back when the model does.")
 
-n_sel = len(st.session_state.basket)
+n_sel = len(covered)
 source = st.session_state.basket_source
+edited = (", edited by hand" if st.session_state.basket_edited else "")
 if source and source != "manual":
-    base = set(data.preset_tickers(source, method))
-    added, removed = st.session_state.basket - base, base - st.session_state.basket
-    edited = (f", edited by hand (+{len(added)} / −{len(removed)})"
-              if (added or removed) else "")
-    st.caption(f"Basket: **{n_sel}** ticker(s) — preset “{data.PRESET_LABELS[source]}”{edited}. "
-               f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
+    st.caption(f"Basket: **{n_sel}** ticker(s) — preset “{data.PRESET_LABELS[source]}”"
+               f"{edited}. ${B.ENTRY_USD * n_sel:,.0f} to invest.")
 elif n_sel:
     st.caption(f"Basket: **{n_sel}** ticker(s), picked by hand. "
                f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
@@ -296,12 +323,8 @@ with st.expander(f"Pick manually — the {len(tickers)}-tile grid"):
     # with every tile built, so one source of truth is worth more than the saved frame.
     if st.toggle("Load the tile grid", key="grid_on"):
         b1, b2, _ = st.columns([2, 2, 6])
-        b1.button("Select all", width="stretch",
-                  on_click=lambda: (st.session_state.basket.update(tickers),
-                                    st.session_state.__setitem__("basket_source", "manual")))
-        b2.button("Clear", width="stretch",
-                  on_click=lambda: (st.session_state.basket.clear(),
-                                    st.session_state.__setitem__("basket_source", "manual")))
+        b1.button("Select all", width="stretch", on_click=_select_all, args=(tickers,))
+        b2.button("Clear", width="stretch", on_click=_clear_basket)
 
         st.markdown(GRID_CSS, unsafe_allow_html=True)
         picked = st.session_state.basket
@@ -319,11 +342,18 @@ if st.session_state.stage != "result" or not n_sel:
 
 # ---------------------------------------------------------------- result
 
-r = B.compute_basket(sorted(st.session_state.basket), df, data.hodl_returns(model))
+r = B.compute_basket(sorted(covered), df, data.hodl_returns(model))
 window = str(df["oos_window"].iat[0]) if len(df) else "—"
 
 st.divider()
 st.subheader(f"Basket of {r['n']} — sealed out-of-sample window {window}")
+if window != "—":
+    # The header shows the first REALIZED session (from the sealed rows); the page footer
+    # shows the DECLARED calendar window (from research_run). For LSTM those differ by one
+    # day because 1 January is a market holiday — say so rather than let a reader find it.
+    st.caption("Dates here are the first and last realized sessions of the frozen window; "
+               "the footer below quotes the declared calendar boundaries, which for the "
+               "daily model start one day earlier (1 January is a market holiday).")
 
 # Three numbers, never one. The executed path is what happened to the capital; the model
 # result is what floor-met configurations actually traded; the benchmark is what holding
@@ -337,6 +367,12 @@ C.metric_row([
      f"{ml}   ({r['ml_final']:,.0f} USD)" if r["ml_return_pct"] is not None else "—"),
     ("Price-only buy & hold", f"{hodl}   ({r['hodl_final']:,.0f} USD)"),
 ])
+# The three USD figures do NOT share a base — the middle one is a subset of the basket, so
+# comparing the dollars side by side is meaningless while the percentages remain comparable.
+st.caption(f"Bases differ: the executed path and buy & hold are the endpoint of "
+           f"${r['invested']:,.0f} over {r['n']} assets, the model result of "
+           f"${r['ml_invested']:,.0f} over {r['ml_n']}. Compare the percentages; the dollars "
+           f"only within one column.")
 
 if r["no_model_trade_n"]:
     st.caption(f"**{r['no_model_trade_n']} of {r['n']} assets carry no model result** — "
@@ -346,21 +382,34 @@ if r["no_model_trade_n"]:
                "own path and carries no model result. Both sit inside the executed path and "
                f"outside the {method} model-result figure.")
 if r["hodl_return_pct"] is not None:
-    verdict = "**beat**" if r["beats_hodl"] else "did **not** beat"
-    st.caption(f"Over this window the executed path {verdict} price-only buy & hold (splits "
-               "adjusted, dividends excluded — the same price plane the strategy trades). The "
-               "OOS window is never optimized against, and every read of it is counted in the "
-               "ledger (Integrity page).")
+    if r["ml_n"] == 0:
+        # Every asset fell back to the benchmark, so the two paths are the same path and a
+        # verdict between them would be theatre — the gap is rounding, not skill.
+        st.caption("No asset in this basket produced a model result, so the executed path IS "
+                   "the benchmark path: the tiny difference between the two figures is "
+                   "rounding, not performance. This is what a basket of assets the models "
+                   "declined to trade looks like — an explicit verdict, not a gap.")
+    else:
+        verdict = "**beat**" if r["beats_hodl"] else "did **not** beat"
+        st.caption(f"Over this window the executed path {verdict} price-only buy & hold (splits "
+                   "adjusted, dividends excluded — the same price plane the strategy trades). "
+                   "The OOS window is never optimized against, and every read of it is counted "
+                   "in the ledger (Integrity page).")
 
 st.subheader("Per-asset detail")
 det = r["rows"].copy()
 modes = det.pop("result_mode")
 det.insert(1, "strategy", [C.status_label(m) for m in modes])
-st.caption("Strategy status is the sealed `result_mode`, in the same words the rest of the "
-           "console uses: ACTIVE means at least two model trades; a one-trade row is still an "
-           "ML result but too thin to compare; IDLE / HODL means the model never traded, so "
-           "the single trade shown is the benchmark's; NO-TRADE (floor) means the "
-           "configuration never cleared the Train-OOF floor and the run is a diagnostic replay.")
+st.caption(
+    "Every column counts MODEL trades, so a row can read 0 while the money still moved — "
+    "the benchmark's own trade is sealed separately and is not shown here. Strategy status "
+    "is the sealed `result_mode`, in the same words the rest of the console uses: ACTIVE "
+    "means at least two model trades; a one-trade row is still an ML result, too thin to "
+    "compare; IDLE / HODL means the model never traded, so the capital simply followed the "
+    "benchmark; NO-TRADE (floor) names the CONFIGURATION, not the row — it never cleared the "
+    "Train-OOF floor, so the run is a diagnostic replay and is not promoted, even in the one "
+    "case in the whole universe where such a model did trade out of sample (LSTM CEG, 40 "
+    "trades).")
 
 if len(det) > MAX_TIP_ROWS:
     st.dataframe(det, hide_index=True, width="stretch")
@@ -373,7 +422,7 @@ else:
                "search selected for that asset.")
 
 st.subheader("XGB vs LSTM — asset-level result agreement (this basket)")
-counts = B.venn_counts(st.session_state.basket, data.simulator_rows("xgb"),
+counts = B.venn_counts(covered, data.simulator_rows("xgb"),
                        data.simulator_rows("lstm"))
 if counts is None:
     st.info("No diagram: no asset in this basket is a promoted strategy in BOTH stores. "
