@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 31868,
-   "sha256": "b903bd03b2f6fd26f3ad29544207db7bbb2e1c03ed2fb7b6be06d81cc69e28ec"
+   "bytes": 31871,
+   "sha256": "15dc9b11e82298f0a4e543ab7234fcd65c0f4eea74b51f0874b1ae8e38131f49"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "a3f2acb3d8670474417f077b51d067d666cf244e4d096059facdc73db647b80a"
   }
  },
- "folder_sha256": "56b83b4492ecd50a710f8b4ffaa04d9020c7ffd58350287df6aec2784bdde404",
+ "folder_sha256": "cbe383c5e889bdaa259f3a9c8bf437ab33eae730a7249b2dbeb4b7c3527351f5",
  "model": "xgb",
  "model_hash": "3c4450f04a2c0a7b597e3c22db65a7fb2cfd2d1a9c325daeddae0432b6c4eb44",
  "ticker": "TPR"

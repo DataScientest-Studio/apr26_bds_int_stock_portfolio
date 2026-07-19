@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 59956,
-   "sha256": "c475d01c23c93bf01779f7b398b3ff94e21754fd1ea6600ebd26eb0673009e11"
+   "bytes": 59959,
+   "sha256": "61e8518c3be3eec31dbf5ac1fdc3fffd715de14e57bec8b20ef73a2ac62aca72"
   },
   "metrics.json": {
    "bytes": 1078,
@@ -18,7 +18,7 @@
    "sha256": "2977f4f05defa919a3bdde48d8227edb230703c3f5452ce54ab96fa2a7c2d762"
   }
  },
- "folder_sha256": "d3c6b61bb2860c4d8591b52e7a1bf632695470a3aff5c934c68cb257b684886b",
+ "folder_sha256": "cc69fab771425f854b37f8d41a61a4c06cedb2dfc8f68fd9279ec3129dd8e674",
  "model": "lstm",
  "model_hash": "62043b292663d316d590a91e7e32b2c98e101ad52737b8193904f6c1fd749c36",
  "ticker": "WAT"

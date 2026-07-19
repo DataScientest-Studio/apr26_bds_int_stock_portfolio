@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 60982,
-   "sha256": "5878a146d1c6e8cda2d7b7a86d3b9358fce95256060357a2ba9a98b4a5ec934a"
+   "bytes": 60985,
+   "sha256": "71f2308db2f178ba3d304a20ab1c3cbde0ac8571541fbf934b070a918432af53"
   },
   "metrics.json": {
    "bytes": 1058,
@@ -18,7 +18,7 @@
    "sha256": "2f837020b6140f56d7ca1386db5036190759b6aaed990c4c82200c253e60cda5"
   }
  },
- "folder_sha256": "fd0033c5a828e31be301a9377caf05f591e6aff4ba820e7c7d6a91492fc230fd",
+ "folder_sha256": "f9329f1f3cef7a5642a5dcfd7d583a3475dbac47cf77b12bbd7fd94e0691224a",
  "model": "lstm",
  "model_hash": "b91761091bb18efd34dc4a87fe3717fbd6433693bb6e7852e614bdbc3a941987",
  "ticker": "TEL"

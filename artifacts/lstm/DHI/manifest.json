@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 68586,
-   "sha256": "fc812252d6a6ede99a62c0f2dcc10f41a851fa65acd333c3bdcbb7a597396a11"
+   "bytes": 68589,
+   "sha256": "1670836d2ba9f217eaab1a4b605568d63b3651d18eb8d522038f081842519ec3"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "1ca45e4dad156ae1e3cec576993cf4ed1734e1baee61a19d1131866b01ea4075"
   }
  },
- "folder_sha256": "c9b140d61f1bd4ad2e7312598e53dd8eca1db5dee753312c7b5f59fa5d7878e7",
+ "folder_sha256": "090de93de921a872c155d82f3024357e474979cf9fa46d755567f9a974ecd1d1",
  "model": "lstm",
  "model_hash": "e3d29084a7f73f137a10272e57c084bf45e269dc820b074982596e97f7067c5a",
  "ticker": "DHI"

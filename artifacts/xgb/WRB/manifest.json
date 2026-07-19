@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 26039,
-   "sha256": "f498b815c617356e1c11b05a7bb64b631ba26cb712d747fb28bc9e395649c0fb"
+   "bytes": 26042,
+   "sha256": "3296345e715a8cb9e78f42a9a480293ce385aa6aa67b03b9e52dea6a76a3c28f"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "496c2c528b9a570e03138e19b31aa21c24e9a4cfb4a612131b5a80868678380b"
   }
  },
- "folder_sha256": "065b13ddff3412ca85202050504692d06ad8fc2010468378a5c168730e1e378a",
+ "folder_sha256": "90b7e667c6b3e6a61acf1808b7fcaff79d3843c5b21477c47b6055cd9fb9bf49",
  "model": "xgb",
  "model_hash": "c1be4878a255ead1faadabbe9bb1354b4f2a6ed1057118f423b2ceb06c98e1c0",
  "ticker": "WRB"

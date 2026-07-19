@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 59587,
-   "sha256": "65647960598d23b2d72e9e406316ecbb8f09bf3049b69a89b0b6b3a654b8a576"
+   "bytes": 59590,
+   "sha256": "f02b786942770da2cad52724b3fbed0b10172ac1bfe65d8c27ba12e6fcaefaec"
   },
   "metrics.json": {
    "bytes": 1052,
@@ -18,7 +18,7 @@
    "sha256": "ba7222f585eb54419c21362a0f6075a92614d13773c1f8a0e5cac5b7c1074799"
   }
  },
- "folder_sha256": "2e1569d0242a3242ebc8cc59bf2e0d9c4703375564aff05b7e7b3d81ae91ce4c",
+ "folder_sha256": "3fd327f34cb2371ee1e34165b6af296d5f9f8b2e41be731d1ebf64f0f5aea272",
  "model": "lstm",
  "model_hash": "477163347039174ccc709bfde093979ce36552c7c0c7bc66ecd7034ce74afacc",
  "ticker": "CCL"

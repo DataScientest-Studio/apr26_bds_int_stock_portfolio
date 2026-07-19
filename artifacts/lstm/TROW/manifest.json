@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 54000,
-   "sha256": "34330442e24c567e44faeb9dde97e3f4756858019e2c4019a37c037ab015d759"
+   "bytes": 54003,
+   "sha256": "333c776a38093c43d2c6aa8e6a2aa849ab0f807f08e693f89874e22bf3744f22"
   },
   "metrics.json": {
    "bytes": 1060,
@@ -18,7 +18,7 @@
    "sha256": "aff0823419595ce697c537bbad11983da7cf8376705a6708c011125b4b0be177"
   }
  },
- "folder_sha256": "93c3ce795b496658dee4b8687494613d7001637da4bdfb49af6e13b4cebf888b",
+ "folder_sha256": "fa55533bc1e1829bda5df99fd9de08f5ec4565f37f8ab1bb511778cf0e3db671",
  "model": "lstm",
  "model_hash": "eede6a0f39ab1e5635b3e1e84ea8586190db905445d8a5aa8c29980cf92f04a3",
  "ticker": "TROW"

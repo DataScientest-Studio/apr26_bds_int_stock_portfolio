@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 44354,
-   "sha256": "4666a3fb9bb69ea9e3ce4c8d473d00f106cb004cd771c41a76446d95b9519d2d"
+   "bytes": 44357,
+   "sha256": "9086898690351d6b5eaeaaa8ae6153e1f6f8687024ac4d37986674c7a433dbdd"
   },
   "metrics.json": {
    "bytes": 1108,
@@ -18,7 +18,7 @@
    "sha256": "ff90c11126467c64d2a70d7e6483d33d30a5ffc0e921d875d647413daf27a622"
   }
  },
- "folder_sha256": "623450467e1e825f86199e54641c1c8396015cf75849830f852a67ddf1f9d2e0",
+ "folder_sha256": "595c1745b89fe71df5d319768a6bf2d63fa7d3f4f84a4ec6e2ca9a894dc134f3",
  "model": "xgb",
  "model_hash": "a68676359a3cfc3e6402a4ce504e8681f71c2ec0954eb88ae790b2a58b56aad3",
  "ticker": "ROK"

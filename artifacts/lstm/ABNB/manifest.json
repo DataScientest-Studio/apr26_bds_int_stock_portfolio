@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 93673,
-   "sha256": "3b731b6fd114a8333c097f0e74a7b11ff2dd54276ea8c5a69affa83338ceb910"
+   "bytes": 93676,
+   "sha256": "7e76575b3d104d811c164dbe2fc4446d560e8ff36f92897943ead22494e7b054"
   },
   "metrics.json": {
    "bytes": 1059,
@@ -18,7 +18,7 @@
    "sha256": "19fb9e3be3e3119194c9c020201d09a04c42e0985fa3779abb59bf5e8fa8806c"
   }
  },
- "folder_sha256": "418354b3cacdebdeb9f85f670c485c97ec05a5b085833c85694fc30311125a49",
+ "folder_sha256": "617dfee22f50636a68649992c516c38e7d0a6dbfa8d65056ade11e86773da1dc",
  "model": "lstm",
  "model_hash": "3729ae499fd4cbc6be58beb75615fa74bb8684af50dbb9292ab5da94ef485e14",
  "ticker": "ABNB"

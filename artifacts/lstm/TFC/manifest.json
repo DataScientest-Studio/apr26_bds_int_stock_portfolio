@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81776,
-   "sha256": "0b0b3b47a725c50d7caae4d17bd2fb46e6708a898b9a89f883eae4b9e8ba64e8"
+   "bytes": 81779,
+   "sha256": "dd82aff7c247e0cd9c9bf714119990e71d7fccbe7ff355573055bf350146f86e"
   },
   "metrics.json": {
    "bytes": 1059,
@@ -18,7 +18,7 @@
    "sha256": "8af1776f7b5f78b24cdc6d3e2652c23bb68eae61abd912c980b8ddd7554e2f28"
   }
  },
- "folder_sha256": "ec0fbccc82ba8a1fdd182b4a0f9fc9121294c5ebc2abe318638bf5316a3dfa68",
+ "folder_sha256": "0ba300f73397eba68c6cd4c1a12d3055d7d5cbc571dd9a9c1f92d3546dedb7fa",
  "model": "lstm",
  "model_hash": "b8bdd143874f74676bfc80e54e442d58e015f567912ab7ff576113ddc9c89a50",
  "ticker": "TFC"

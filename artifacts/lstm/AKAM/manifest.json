@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 95146,
-   "sha256": "ba7b8960f8c4f3ded2a3c3b5d16bf7bd50212a3b7eb929a58a223d6cb23c1e6a"
+   "bytes": 95149,
+   "sha256": "37a33fb3dabd4571633d50c052d1786f84692956ba991725405fb71c8ba0b9ec"
   },
   "metrics.json": {
    "bytes": 1071,
@@ -18,7 +18,7 @@
    "sha256": "1a516262a40850b0a720115ea5899636f0f19d3b87997eec25cf9d909b7b0129"
   }
  },
- "folder_sha256": "79d7ae6f27ca618c8242011120ac977367540cf213f1b4c4e758f3b632152c5b",
+ "folder_sha256": "e013fb0820672710e1c2e1fbe64de6300a92366f2000fdde722bb7ec5784c91c",
  "model": "lstm",
  "model_hash": "bd8dc7d3ef3d1b14b640ce0cffa9f9a39b74d6456594dd801eac499583a0bc1a",
  "ticker": "AKAM"

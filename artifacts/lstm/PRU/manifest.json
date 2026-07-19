@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 71307,
-   "sha256": "f775b7a5860cb76ee7aefb3f885cfe5a18a0d44a7714a51e7222e7fb749dd6a9"
+   "bytes": 71310,
+   "sha256": "4a4e47c90d687b3edf0e89efc89a5daf1a3b1ba6829cb0ac0cb5d34f2f0eb432"
   },
   "metrics.json": {
    "bytes": 1061,
@@ -18,7 +18,7 @@
    "sha256": "9121bf9b02dff1bf0f8c4d3955f38fe9b31238c0575d2b102f62ce064f529b61"
   }
  },
- "folder_sha256": "932d8c0e2471df1c25422798bd8ee8807a8bd3d51656768a942fe92caec2d74b",
+ "folder_sha256": "a31cda7a873aed07cc86e34eb8058f9f809f7fa2ff951b81fb0a2503b033964d",
  "model": "lstm",
  "model_hash": "b9f2f4d37cb0d1d33bd50913082019a3213710060941fbaac28d11632e4d74a6",
  "ticker": "PRU"

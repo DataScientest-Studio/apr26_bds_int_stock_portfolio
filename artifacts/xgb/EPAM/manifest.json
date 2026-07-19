@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 31815,
-   "sha256": "12d8d252d73e01f9c38cc091855a7146ef668a700e589df9597d736021acbf87"
+   "bytes": 31818,
+   "sha256": "af0c5a1dc273b4cbc86cd1d7f2a8850aea6dfdf135a5e0e668dffce6d6d52ff4"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "b8dbf6f2354b81723183cc00c3fff0a1d733e060692420f4f947baae75807f20"
   }
  },
- "folder_sha256": "b18e855a1e4a8c80bdfae7708ee471dc482c5f18c67e885a6485c6bac9874456",
+ "folder_sha256": "0375bf143728d376886df7f9257a8cf2c545ca9ffc81e195c78217427d09dc72",
  "model": "xgb",
  "model_hash": "0d3952c3bec3a94a830af46986ed17d1b4996e3a2163af1164fa2473107d59f6",
  "ticker": "EPAM"

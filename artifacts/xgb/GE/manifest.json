@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 61403,
-   "sha256": "d36277d4e40c49ea6a02d67066715a2951a643ce3eba6673a5c823c2dd136a30"
+   "bytes": 61406,
+   "sha256": "0092616dba3092250d2c28e3973d07f44640180f30290764d994335fb72ae09d"
   },
   "metrics.json": {
    "bytes": 1086,
@@ -18,7 +18,7 @@
    "sha256": "4b88c5a7789c7976dd37d2d61208ef84755d6487a9d1f1daae7b88a055a3e5ee"
   }
  },
- "folder_sha256": "aac56584f8ff135a98bb244be0fda8b1cab86ed1589b92046af768859e5f9452",
+ "folder_sha256": "0cbde99a1f67392179488da42d7069a5f20cf8a5b8bc5e24ac7235b04aa7d8e8",
  "model": "xgb",
  "model_hash": "557ca07be4c47e8aab1c95164261a1dd9f8f8bb58d7f613a1ea085b8bd5276cb",
  "ticker": "GE"

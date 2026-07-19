@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 74256,
-   "sha256": "49e69f44836d8adb1820743807ac553a2ad55d8238936eef2b8833f4b3749e05"
+   "bytes": 74259,
+   "sha256": "c3ad61cb740a586316c63a1c619532c892d0dcaef0948250119c281354a47a67"
   },
   "metrics.json": {
    "bytes": 1064,
@@ -18,7 +18,7 @@
    "sha256": "53190e2dc1d0cc89b9fe724427534d9868c2c35f1b9f0df6ea42fdf123e1b3d5"
   }
  },
- "folder_sha256": "cd9e1b68ea4211562b51e79259d1c773f18948f930ee3181cc4d4ad6c91e11ba",
+ "folder_sha256": "6c334da3f66a90a4b6c7e2ef02eaf65b1e179d77a1c8eb9cc76ba360974e2a63",
  "model": "lstm",
  "model_hash": "a83ab3f183a1f14cb565706d890dcf7591c3680eec3da94b43726df924310554",
  "ticker": "VLO"

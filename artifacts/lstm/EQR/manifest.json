@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76393,
-   "sha256": "7d424d6bdd0b9c4caed4a6a22e7d7aedda6f1b36b91d5a5524b92369639c46ec"
+   "bytes": 76396,
+   "sha256": "f5f82715fba868edae00748d0dcd3137394a217004931bee9102db1c2d1d403e"
   },
   "metrics.json": {
    "bytes": 1064,
@@ -18,7 +18,7 @@
    "sha256": "b447cb25fa24cd0fe17d0f4acf6b27216a8b323ee02f1f518f25f15c41bfe9fb"
   }
  },
- "folder_sha256": "6e48777c9f6979b685d7f036ba08a42a5e7d8afd636662126b6c8745f5a2eba5",
+ "folder_sha256": "d744eb23f22d22b7d2f69dc229fbd17cfcf797fca327cd926855f73452938576",
  "model": "lstm",
  "model_hash": "7e603b0ec12b78c6637096ce274571acd44d881e3a0f92142cdf4bfc12af5656",
  "ticker": "EQR"

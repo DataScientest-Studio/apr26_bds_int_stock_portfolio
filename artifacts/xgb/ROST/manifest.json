@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25909,
-   "sha256": "74ad0d960b5774babbcbc453aa73a04738ae2a0f588436a46031894f2b2c0c70"
+   "bytes": 25912,
+   "sha256": "f230d1f9a537e2427d6616eb54eef3163231877b8835633d7d4463a25149e5d6"
   },
   "metrics.json": {
    "bytes": 1042,
@@ -18,7 +18,7 @@
    "sha256": "f15b84b4f20a771ea2519fe1e224adb0d00ea528c2d330580e892b90b5f2936a"
   }
  },
- "folder_sha256": "765e22eb101b1d207c7445943275b58851e329e302e7598408638196b6b0c49b",
+ "folder_sha256": "39a9d9e20992e900ccf7c2be1ce89960731d8bd35b036237aa6184f524d1b89c",
  "model": "xgb",
  "model_hash": "6679eb2d9bc5830f61d614b71e196c47ae112e468bc7251053a8634edc646e84",
  "ticker": "ROST"

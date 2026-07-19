@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83353,
-   "sha256": "fbe6f363d694a41c54fc33e291a6c732392967cc5706451cf777c2591d8b7bd0"
+   "bytes": 83356,
+   "sha256": "3aad0c6d0e3ce9fd7c59e623cc20d1c526bc67414c9e24d5d3a57a5cc37f16e5"
   },
   "metrics.json": {
    "bytes": 1079,
@@ -18,7 +18,7 @@
    "sha256": "fc17621a983ea00300fc4d09896ba15277893dbc7996a1b1a8ee1818a8796405"
   }
  },
- "folder_sha256": "ab29a998ec2e4647d9d4c4e8a598b49e01e7055a95f1d0b1ea31fdafbcb77f73",
+ "folder_sha256": "3c15a8e41658614f14105277417db2a80c6b66121e3778d5b23a9bd664a02d19",
  "model": "lstm",
  "model_hash": "9d28cdea33291b0654f42989b73443a8dbba5601666cf90c53189d2709e9e4b9",
  "ticker": "KO"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25938,
-   "sha256": "f3c58fea33b8764a03223ed37552411637d011c9bc6dff9d8f96ba338da7d161"
+   "bytes": 25941,
+   "sha256": "b4346d066ee2ab5ba96d3c5623f3923354811887c802ddcd73393348e78ed725"
   },
   "metrics.json": {
    "bytes": 1084,
@@ -18,7 +18,7 @@
    "sha256": "0a653b358bbc288fc021d4630b40f6433a0809a123684fe3d4b1f691ad882a33"
   }
  },
- "folder_sha256": "5687021d1aad65377078927e188b213c0636e17465947074497bfe08ea2dbf21",
+ "folder_sha256": "1f0fefc9a699395538eaef89016fd0bd5bf79fa66c72f289835ff3d4c71f6743",
  "model": "xgb",
  "model_hash": "45ba58bfa57ead58268d2a1a4a4efd4f0ac3ff4bb19dd72b4cf6d82108db0ba2",
  "ticker": "WEC"

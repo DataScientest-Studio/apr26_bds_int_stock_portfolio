@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 98067,
-   "sha256": "4c04e1adf5c8edb33ee5d45fb595ef8cf01580705c89f2a2845ccfbb62bf243e"
+   "bytes": 98070,
+   "sha256": "267b613142c8240b50d9ec8c2682091809fa5078cc9276cbc1d34d92e3b597f0"
   },
   "metrics.json": {
    "bytes": 1063,
@@ -18,7 +18,7 @@
    "sha256": "104a98df754f7430748e0a8714a5f804ea05229ec0673f01355291b83b08e5e1"
   }
  },
- "folder_sha256": "83e8cd27998180212b3d28500770d3f18b83eda6f6793a8c633e66b79cec308c",
+ "folder_sha256": "9df480fffc07fb495bcd81e2486b3a17c8bc79d07b27ec79f937bf173bb2c6be",
  "model": "lstm",
  "model_hash": "94614727469ed3bbae8be96e04f9d8dd9cd95ec4619aee7fe6f619d71c5989f1",
  "ticker": "FRT"

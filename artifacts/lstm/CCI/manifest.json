@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76565,
-   "sha256": "1b7973cd658a65a9324139d880d81941aba565aa5edff96a851a15cfa781bcf4"
+   "bytes": 76568,
+   "sha256": "c1866cdc4db22b9b5a65e69dc8a1f99f7e293dfe2f41a8470db556a9ea24e9be"
   },
   "metrics.json": {
    "bytes": 1073,
@@ -18,7 +18,7 @@
    "sha256": "187e3261ef404c02aee5efaaba2c0514a717f64f401c6ee31cea8cc1f01c68bb"
   }
  },
- "folder_sha256": "904a7786335e05c7c6b7b1ff091f6e8d7f1f4704ddcf851e14ef1429c2bb4c2b",
+ "folder_sha256": "920d9d4368d5acd6e7d96c76a47f066d65e49b896094c3c1225dc870986060ec",
  "model": "lstm",
  "model_hash": "3866fa2f1f61261e13a7ac87872c8da40f517d36f3b595763355f5d6f7e3aeaa",
  "ticker": "CCI"

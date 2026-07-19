@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83900,
-   "sha256": "c797517899065b20a09592d3cfe7b1930af571001dcd1af5c11ed71c9ae6b39a"
+   "bytes": 83903,
+   "sha256": "5490160e7b67f5cd7b1ea78f284f77cc8eeb1f9983fee9c1d692333d87cbf673"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "4914665205accd2e55b4fc08f7e63a2492cc0808242a3a4b6e7e5ac43cbe9e9a"
   }
  },
- "folder_sha256": "d8673a4a8d65e487482748208f4d4555a3b3f5db328aacbe7947c76457cf556f",
+ "folder_sha256": "86d0ec5853bb9ed3143da7f7b0648b6e220c48d9e5dbf70b989326a4ad4f61af",
  "model": "lstm",
  "model_hash": "d7aef488374b67a8923c9bb363d7b5f830f4cfadaf3260ab351ed6ce69dccab6",
  "ticker": "COP"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 70378,
-   "sha256": "5d9f93228253fac2856a22a840ff610981ed8357a0844f84d37e2368c217233d"
+   "bytes": 70381,
+   "sha256": "3e064273fc4bf537ea20a463c2246a6f5c4440ae7687beb627e62c35f3dcdc83"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "25a6bd8b6b84d37bb5cc298bacc169493ec4de2b234802665fd4320362ef317c"
   }
  },
- "folder_sha256": "d09eba3b4f7c35eb94baf1df15a3e8e7154906797ae77ebec72cb000826c5221",
+ "folder_sha256": "2289cc5ea3627df71fe838c5aeaee7ef9b9f6d4f3d21e6f3f515ea481f5f41b8",
  "model": "xgb",
  "model_hash": "0b4f316cc8ed53edeb122e9306304af9f92d75da2471bcde9eaa9c4dce015254",
  "ticker": "ZTS"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 36877,
-   "sha256": "cff6bc5c6fc7c9d14d4386ae7a038ec04b1a04a280522db74ea8c8c086914824"
+   "bytes": 36880,
+   "sha256": "5dd227a9670e082f7a977df75e74abb66eb01c9476869de07490ab6e817d10bf"
   },
   "metrics.json": {
    "bytes": 1088,
@@ -18,7 +18,7 @@
    "sha256": "78898965c28865435a3413f9a55e012d359c6f74acd0b03a8f9c5748f6862e27"
   }
  },
- "folder_sha256": "183eccadae0f2a23fc5577c8a290d6ab38f3f6b96c69aadbc2a2943dbf50544a",
+ "folder_sha256": "3f57deedf773828328938e19b84686c994ca618e43d9aa585db4fbbcfad3153d",
  "model": "xgb",
  "model_hash": "01e4b3c7a534e155ed8993e193ec1d123966eda5c181c09709155cd3f01e8c71",
  "ticker": "PSX"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 77139,
-   "sha256": "d2a5a944fa67c17d698c0c857e29f1504de80fc7dc403630ed8151997fcbaa29"
+   "bytes": 77142,
+   "sha256": "dd88a2e8c9a0f2dbeb62821af4d498c5d2f1fc17693116b417b3247d5f458a50"
   },
   "metrics.json": {
    "bytes": 1069,
@@ -18,7 +18,7 @@
    "sha256": "45fde9e516043bf4250edc1d16405c9ed9081b895c599e17d04053f00e3a63da"
   }
  },
- "folder_sha256": "bde837a76ba1c8cf4ebc7393e0438c348b00f5def2c6b0f5933b10a7262846a7",
+ "folder_sha256": "1aa4321247b61be8b6dd00f8fa61f612f86b516fa10b99ed9fee6f6d8b2b4628",
  "model": "lstm",
  "model_hash": "14ecaac05313175316b1daeafd5cc9d872c1b8d36ed73676e923b3d893ce28ca",
  "ticker": "BR"

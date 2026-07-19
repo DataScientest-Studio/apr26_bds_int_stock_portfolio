@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 64324,
-   "sha256": "8d9ff4bc620fccc874d282ad7d1e44405eb184754d18cf39e019a02e025b0965"
+   "bytes": 64327,
+   "sha256": "e66ed2907eb0e36767dfd6bc20eb48c5ead45038d34655ea6665fd5652658a60"
   },
   "metrics.json": {
    "bytes": 1052,
@@ -18,7 +18,7 @@
    "sha256": "ad3a9303a6bdeaba652acbf13fabe8167f30b1367a72af5cb1332cf9c8ecfba8"
   }
  },
- "folder_sha256": "4738cd6a202f04cd2573ddf274fc5a63cd6f8e9ca26d7d19e844e21c55090524",
+ "folder_sha256": "77dc303701cb0823486c5c1bf04ca21c98b461d0ddcf93244c57c1877b8b1b9a",
  "model": "lstm",
  "model_hash": "38ce9aaef4af7b2406caa110b705307d42f468b5b49bc870dbc2d7dfe4047656",
  "ticker": "AXP"

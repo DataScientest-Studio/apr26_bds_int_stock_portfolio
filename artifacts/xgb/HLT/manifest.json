@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 52581,
-   "sha256": "ec323ba671f40a3e6335f5e4f89323d0073eec61bf539458f1a89292ee5c2532"
+   "bytes": 52584,
+   "sha256": "499aedfa098927eb990ecaa3dd9650c38836ce279ec88a3f7da1be9a213fcf99"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "9673db54593bcd692f48a2f41e03716c92931fa7431dd8ceb0e29def05e2bd43"
   }
  },
- "folder_sha256": "3cfdbac934f04f3565d61eeebc25d9a750bba63cb72cbce910d92b00be6d8777",
+ "folder_sha256": "eedeb1aaf16fac4cd018130e6e32ec22002830c8685be6667ba2e52ad7db2e3b",
  "model": "xgb",
  "model_hash": "abddbd7ef6657d1392c41faaf77510d7465a87bbd0ad30b199e689715761035d",
  "ticker": "HLT"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 37205,
-   "sha256": "17caecceae9b95b4971ee649e30b92a8c2b40b35e4ce88632a7a45c312699a47"
+   "bytes": 37208,
+   "sha256": "fc20f1426870350b51805f0a174743479122a64211e9d597a99eeeef6d4d4453"
   },
   "metrics.json": {
    "bytes": 1111,
@@ -18,7 +18,7 @@
    "sha256": "e2bc1551862333f364da8f903274f90c0f794529edc171e97c103c5e4af3ffb7"
   }
  },
- "folder_sha256": "492d18acfbd62a3442167c4292c94122cd11b2e7668a94f502c997b4ca84e4cd",
+ "folder_sha256": "b71e9cc5f0533d12d66a54aea3419ea6923d585cd487d3c83331ffa178dadcf2",
  "model": "xgb",
  "model_hash": "ed3430eaf2f2659ff169174d816effdf500d21ca343055e49217e26f1e0d5c9c",
  "ticker": "ANET"

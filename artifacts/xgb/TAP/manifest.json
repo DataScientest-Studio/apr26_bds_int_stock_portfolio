@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25932,
-   "sha256": "9e1cd15fdbdd5603ee1b2c190cfd58892eb521913d575872d80c4775b529b0ec"
+   "bytes": 25935,
+   "sha256": "2c2eb6e1edbc51a5adafa296305b5b45abacd8a8663c0c99c29017c34866c3d6"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "42ecf328804b608c3d9334fb666479e71ec7e483e7e23941f72f8add87acf663"
   }
  },
- "folder_sha256": "216ecfbe103c9f1577b12e7858e32d43162b0854b8602ace0356ba5f7fb06325",
+ "folder_sha256": "4bbfe3d311051ff3ffed4614b91fc785d8dd9d83b8bae325b3bdfdc1d8bb8649",
  "model": "xgb",
  "model_hash": "e6502e3750de51a19749ac918cc50285a0d2fd9d96a6d075e213f0bd8d63c23c",
  "ticker": "TAP"

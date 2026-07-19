@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 71507,
-   "sha256": "e85f81682445a8ff221031f37b0900c773b9dcf5ea99d01daabff2f1e8a85cd2"
+   "bytes": 71510,
+   "sha256": "fea153d4f95a8a5e347250a4a00ad424963a3548e22d6450e7ec1c5e68c9ab62"
   },
   "metrics.json": {
    "bytes": 1082,
@@ -18,7 +18,7 @@
    "sha256": "54910a7a19e494df64275ae052da25abe1df30aae8609dcd6acdbe2fb7eb3af1"
   }
  },
- "folder_sha256": "baf0d0faa7144f96f62a3bce17af63b033e5ef92a528d93c54f91ccbbfa42227",
+ "folder_sha256": "b4d8f31bd1bed588c878e10a37ee12f96daf564c9ce1bd18dcbc042adb07e2a3",
  "model": "lstm",
  "model_hash": "44cff819d043cde12ca276ce13efecc34e7ff6994ba880768ab5a628416a0417",
  "ticker": "MDLZ"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75941,
-   "sha256": "f40cf0c997510a922b9381755dcc67215116a2f89274bc3edb06f1513e0eb39c"
+   "bytes": 75944,
+   "sha256": "25d0b6f42fb07182e3b7a5178ed33a47753e1aa7254706bbdc0516665c5ecf30"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "a0fb8f6b32ce872d8dcaeb596a5e464b31944605bad99ca15d10a0bc10701052"
   }
  },
- "folder_sha256": "02dbe1226d9b2c8219a98e2e4fe5a9fe284cb4ff551777a72a594743e397ead7",
+ "folder_sha256": "1ac35a5af505b14fc523bb0410537aab2bf1eb2753be3a1ef67c2a61a03261bb",
  "model": "lstm",
  "model_hash": "f3fba0cc45b672ba937238fd8ffe3804975207965ea9e7cfcb2c42dc1438a407",
  "ticker": "HWM"

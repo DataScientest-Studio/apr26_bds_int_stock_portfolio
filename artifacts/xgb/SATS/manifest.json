@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25924,
-   "sha256": "902a3c613b71cbaf0474843aac6da2c49013c897372e7f3cd1fbe100b5be248f"
+   "bytes": 25927,
+   "sha256": "e11350a7cb85444210fc3071e6bbcb22539c514c97ae822183d05aa12e16b4ec"
   },
   "metrics.json": {
    "bytes": 1040,
@@ -18,7 +18,7 @@
    "sha256": "79234ee37e189e5b0f410b1dd34f581f2f19a074f309ce71aa0680116602f8ae"
   }
  },
- "folder_sha256": "e470796ab72e107084d9daeffd2871de602601652be6a3551899e4c87b436660",
+ "folder_sha256": "b16a416d80ddbfcfdcdab310822ff228635aa08f0e9f8628d1ea26c8d9b437b7",
  "model": "xgb",
  "model_hash": "d2ca8b6e69c91eec9f8f3fe5d77125c371ad4cde9a40d838bdc3c96713f3c698",
  "ticker": "SATS"

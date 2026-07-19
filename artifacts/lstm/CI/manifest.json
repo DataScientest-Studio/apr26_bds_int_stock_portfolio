@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 80599,
-   "sha256": "5e5805612ea5f36393d6a99804bbc8dce6046961d20f7a150ed12a19e6b525a3"
+   "bytes": 80602,
+   "sha256": "93c92152076d913745e2b7e413ce9b28eeaf14883a9c693985f12a440c4422b1"
   },
   "metrics.json": {
    "bytes": 1075,
@@ -18,7 +18,7 @@
    "sha256": "450460a3abe893812d1864b3cba73561126e535a98299a4f03f3804dfa779953"
   }
  },
- "folder_sha256": "ccf8b270ca979050418ebcbacc33e8f547c2af3ae9514ea32c89107ac91b9650",
+ "folder_sha256": "9d81ed54b9483139428284f471e309f75fc9f4bb4d435fe06a14ec6358e12f24",
  "model": "lstm",
  "model_hash": "085dd14c4ae82992f8d9b71c3635fcc554846850a550fe1a81f18c7b422dd8f1",
  "ticker": "CI"

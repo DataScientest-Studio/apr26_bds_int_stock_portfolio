@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 101577,
-   "sha256": "e7c4bd13222a18747161c23a5b25cdc9284d869a738abb3978974f7f5855a19a"
+   "bytes": 101580,
+   "sha256": "691a1105bfc8270f13bef3cd264303db5617b5ae2d2abdd12b42412192a45bcb"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "d92781d7db8e2fad02af3cb8ad1972e2e485c11f7b2a180742d900057e28665e"
   }
  },
- "folder_sha256": "990ca9546c1b90010150b72970580a6a53c8276261972d6bc21fc0b43f1c2fb7",
+ "folder_sha256": "1ee02cd8c84f67b5dcce3e83af71d658d90896e82b2f8bb9d8c7c3562fa07a16",
  "model": "lstm",
  "model_hash": "f5a824a04d136e8e46f668a104856a75ac8772c1b1b0162f1081baf91f417775",
  "ticker": "PCG"

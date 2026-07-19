@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 105193,
-   "sha256": "1f3664b05dd8ea4c97cf0dfa85011b56369721b45affdbe16bdbaa89a4dba0b7"
+   "bytes": 105196,
+   "sha256": "93297a90f096ffc0132ebd1126719c7214478876bdca0224efc1073d23f21bd3"
   },
   "metrics.json": {
    "bytes": 1079,
@@ -18,7 +18,7 @@
    "sha256": "9070575b9855c3a2e9af81e5333ad8d7a9fef861e3c8dd106e2c93c94f4b7a47"
   }
  },
- "folder_sha256": "6b8af5b9e43f7c58b2ff006383fa29ee1287a3052728929305d9bbcb651b1a79",
+ "folder_sha256": "1d1cd5203e450705b8340fcc85dbb5af45b35f54ec73a19c5a962008c1ce91a3",
  "model": "lstm",
  "model_hash": "f71d255291089622fd664011186f33d1d39ed04083cf62b9e56e97f69cca9568",
  "ticker": "CSCO"

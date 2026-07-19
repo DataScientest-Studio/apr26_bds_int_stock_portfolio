@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 87681,
-   "sha256": "3ae032545fbe0e4aecdd56b7222f8ec438b2fe67e0d8702b447afa01d1931ce9"
+   "bytes": 87684,
+   "sha256": "75eaae5127ebf0eacfd3e01ef2e24731894d14e6999a399cf375c5410f37a9a8"
   },
   "metrics.json": {
    "bytes": 1080,
@@ -18,7 +18,7 @@
    "sha256": "546ba06e088cd450ec5f5086eb5655936f0798c929683394a480cb054e93740c"
   }
  },
- "folder_sha256": "d65bf240081fab43836bb42c9becb7d9b2cf1af9c793e5283cd1358c71ae1b27",
+ "folder_sha256": "747c3ec49c58596dd86632a8ad0eb30ce92f69f814971e41ff1734fc2311c2bd",
  "model": "lstm",
  "model_hash": "39d30db7b3c022d2d9d7b45c8e19986af117645b400ee24ae741f4514317ad6b",
  "ticker": "UPS"

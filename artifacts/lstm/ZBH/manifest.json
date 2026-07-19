@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76602,
-   "sha256": "0a3f064a885482f3ef487f30b6df471f79d12f8aaafa8dce7e8ba41955688d1f"
+   "bytes": 76605,
+   "sha256": "948c9a15e6dc5914b11b8693ba0b423b598629d6b98248b781b869def259d3d1"
   },
   "metrics.json": {
    "bytes": 1057,
@@ -18,7 +18,7 @@
    "sha256": "0732d3e2c39fcdb63dd347f177a71bfcb767b2158776a8b3c3d67bedcd379a9f"
   }
  },
- "folder_sha256": "43e672cf546866c6a0c585aabc31c101c9f388d921406ded1db2a8577b83ea57",
+ "folder_sha256": "fb39187529532a2a1e605bf28f37d67d68ebf2a49dac0ffb821d4336ef5ea695",
  "model": "lstm",
  "model_hash": "2940259c7c3ccbce6d58158514367114169f687f7f026fedcae81168c2af67b3",
  "ticker": "ZBH"

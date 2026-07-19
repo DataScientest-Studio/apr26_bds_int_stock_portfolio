@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 36645,
-   "sha256": "a6f87d2dab1592a1c6c826fa589e5486b919a257db34852de16fc55e029e69ae"
+   "bytes": 36648,
+   "sha256": "8ecfa8823e75ad5553f10faa77a12a32cf04dc8d9c7bb7cd7a20788fed294c02"
   },
   "metrics.json": {
    "bytes": 1106,
@@ -18,7 +18,7 @@
    "sha256": "892b7398810933918ef2beb2cb10e109357cbba7d2e3d062a4b9d7f18a42b3d7"
   }
  },
- "folder_sha256": "a32a035c5802ceb0b75a4b25b712c14aeb90c26e0c7db20b44cdf8e98bb69bee",
+ "folder_sha256": "d4754f7f041157683a13f0aa1396579ea3a18c557e12533fc293fb3ea51cdc8d",
  "model": "xgb",
  "model_hash": "683a491be95b13a56c4fce90b29fcb8e77942a4c681c3d773d08a31831509a0e",
  "ticker": "FICO"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 60202,
-   "sha256": "1233b35be9ff12f13a5523da4d31e272d5e10797f1fffc051b8624dab0e65400"
+   "bytes": 60205,
+   "sha256": "bd6ab6ada38c48eddf23d04e7ab884150ef1c5b16422297ac05e40cd24816371"
   },
   "metrics.json": {
    "bytes": 1060,
@@ -18,7 +18,7 @@
    "sha256": "a9f90aa7dc1fa98e39f9b654cdeb42e6446b44bc617aa03977380de8889fd5a7"
   }
  },
- "folder_sha256": "17fd60448579bde6e3c992bb018634a657e017e5468ff9154a405b7eba7e43a8",
+ "folder_sha256": "1eeb6e22b1ab704bb506823c4a18a47108039e29c29e9635cef1d70e7bef3ad2",
  "model": "lstm",
  "model_hash": "0a391f75ff434774cf1c070959246b338061cabf63eccaaa18bc05b504fcd74d",
  "ticker": "FITB"

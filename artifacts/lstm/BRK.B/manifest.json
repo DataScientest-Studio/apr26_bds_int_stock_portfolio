@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85529,
-   "sha256": "83cb3571c601d1de4d6b0ba19c373df8b07cb39c4b878456b04345d41ebbf19b"
+   "bytes": 85532,
+   "sha256": "d18550dc318ff15f79f98a7f6931e4e5bdfa0a3f6b4ca92443b8bdbd9f8f7b2b"
   },
   "metrics.json": {
    "bytes": 1066,
@@ -18,7 +18,7 @@
    "sha256": "1b3b7ec002d081febc4a173304ea830148cfb849606b8ef2beabd9664a0a1d7d"
   }
  },
- "folder_sha256": "3494dbc3732004f3048d473c047d714eb791b36bdd509dd33af67eb26608a281",
+ "folder_sha256": "2866cd9cb96a4e5b2816fbefb4899c2b710061b96a08a880a477287442401e33",
  "model": "lstm",
  "model_hash": "84504f09972c85888320a98fea5a636b141869d270a9ae6968574f32c8998be6",
  "ticker": "BRK.B"

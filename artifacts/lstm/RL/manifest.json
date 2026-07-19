@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85692,
-   "sha256": "a38760c3ef584278834c93cfd21e8f64a91f6019cd74f62a774f8edd3a1dfb4e"
+   "bytes": 85695,
+   "sha256": "e6da9827a84a64444bfdc8d9cfd715a11da9d2a30d950b9f11571a538c5d4468"
   },
   "metrics.json": {
    "bytes": 1070,
@@ -18,7 +18,7 @@
    "sha256": "fcb7525f52986213c0358c0237819451cb7fbc4428989e1660778346e1510648"
   }
  },
- "folder_sha256": "1b2bc410b93071ff2d98da1c5c373856b8de85383f6c952a958b1eadfa8213fb",
+ "folder_sha256": "c4bae16b906f0bd48a95ce98916a2dd89e68a06e2a3dc98fc3c768d2a12db94b",
  "model": "lstm",
  "model_hash": "d6dfba2076453c7a70e5f944521e312986d6c19307f82896c9e9de832f097ce1",
  "ticker": "RL"

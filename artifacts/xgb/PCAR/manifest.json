@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25897,
-   "sha256": "12ac9744f99effeaabb1c4861de99e97b9397b6a37953ab2a0d13858f86cf344"
+   "bytes": 25900,
+   "sha256": "0886106a7be80e2244f5851f7be9100af9ba2cbb32d0f37e4be3514d95adfa03"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "e9ddd35666d0062715ff6187ae5f252c565e5d1a1985c2906df13d25403818f6"
   }
  },
- "folder_sha256": "2bf09e0d9677ba83905a1c1997f959abc15529d5cf350f0c2b759cdece0cd833",
+ "folder_sha256": "1130f39840594376fe6e67f3c5054cae56bb74d8a04f0058bac8608773c90dfc",
  "model": "xgb",
  "model_hash": "b6d77fb5af43e267d764f4e0ed0156e85e3a005bfae6ad45949d75ff1885f808",
  "ticker": "PCAR"

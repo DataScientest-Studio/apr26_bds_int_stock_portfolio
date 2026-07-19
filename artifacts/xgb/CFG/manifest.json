@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27343,
-   "sha256": "271deb90c8f09ed7836cef99f8726263bab12fe08c20a27a31d87739d698b729"
+   "bytes": 27346,
+   "sha256": "7c195a975b3f22f6293f18e33bd6b9edca88da8314eea96a50d1586cdd513630"
   },
   "metrics.json": {
    "bytes": 1042,
@@ -18,7 +18,7 @@
    "sha256": "58829701fe5566a708739cca7ae6d87ef3ac928290c510d05af3c08f74a031af"
   }
  },
- "folder_sha256": "25684154e78ca858afec58e34c17562381b80144d8b958c2d3ac0fc7fd456e3f",
+ "folder_sha256": "e0f10a8c24ad6fcb3222dff688ca88352fd91a2a18fd79c71ef90fffac5875be",
  "model": "xgb",
  "model_hash": "6a6ccd07833a833005e20e1e99c9de19ce2692a2e47656351aa4addf8a71af3b",
  "ticker": "CFG"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 63712,
-   "sha256": "3877e39d1df3376af6a979093adcf8a3fd0157049ff32157f97d593b43198980"
+   "bytes": 63715,
+   "sha256": "80154c977c19fe3e2009c4156351f6e50aef069b2d577100fdcc9d1631029924"
   },
   "metrics.json": {
    "bytes": 1050,
@@ -18,7 +18,7 @@
    "sha256": "f0fb6a93fe389a95f78caf5928521e6ec7de0f6161d1d410d531959ccac93e5c"
   }
  },
- "folder_sha256": "1368cf79689234f39878e4a5256865bca3ad5e6afcab9d0d5073450d4f6eecb5",
+ "folder_sha256": "e61e927e4af4f68e04b0104104a3fdce8f39fe5890d86770fc746db9c9ebda71",
  "model": "lstm",
  "model_hash": "c7309813e018fb5c9e95065541ca7da2e5ff4316f20615d9838b80da3e7df927",
  "ticker": "SRE"

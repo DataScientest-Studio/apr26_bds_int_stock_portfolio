@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27414,
-   "sha256": "41b504a03fade25b31fe2d66d5839e81482ed2f2e02f3ceff23438c07164d6d0"
+   "bytes": 27417,
+   "sha256": "0b63c926be1349837413c4f9c2f50433e806c665c9e861ed42ba56d41dd69e8d"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "0de5266cac83243dbbfdaff7c6eb85b2bbfb343a4b58c8b38e27f70cba8a893f"
   }
  },
- "folder_sha256": "8c5d4decc59cc350097ad345bcc4946eac6d2b9b0e0a71f7a3ee12f18e6a77ff",
+ "folder_sha256": "143bc802df3a9421f98a6bb904dbd7907b8ab0d25825df20962de047af55163f",
  "model": "xgb",
  "model_hash": "d4b982128094cfcf7a403e90d1b12750490dec88104da74edc422c9e8e4bae18",
  "ticker": "BDX"

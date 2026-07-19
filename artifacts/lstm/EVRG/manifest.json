@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83083,
-   "sha256": "45d30a8cf19150c0cf3feac06fb1827d38050f9ea8401b82bb5b80b0561305c1"
+   "bytes": 83086,
+   "sha256": "700543ad398670dce12942d4301fedd8b5e173c084c9d38cd7175096cf93d6e8"
   },
   "metrics.json": {
    "bytes": 1070,
@@ -18,7 +18,7 @@
    "sha256": "fe6ab1ea32922e4c9dd72469a739137a871cf4d25ba962364a84925e7fea268e"
   }
  },
- "folder_sha256": "0e028227db38050fd033cc14fe3962d0d8adf133ec2f2de3234a7ba65081eeba",
+ "folder_sha256": "0f906dc12521b7b7fb387af2b402848b49334a6c185352c77abe886da9a23a9c",
  "model": "lstm",
  "model_hash": "ad412133c021175928a3786d27a6dc23c3bd86f5d627db0cd9bee0e28c70b348",
  "ticker": "EVRG"

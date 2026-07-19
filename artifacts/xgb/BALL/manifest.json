@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25937,
-   "sha256": "86f1efaae7ef7a61548e292dcced5c6008c3666d52ff52c045ec5ad37ea64ec1"
+   "bytes": 25940,
+   "sha256": "4a120ce1921cc50cf1d53f7283c592131a622089863aeed003300196284eaab7"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "6399078192f5941c024f179d0e4671060364ad524fd30a3245888580990776de"
   }
  },
- "folder_sha256": "d0a33b77a64747f237cd715813d5f70b81fc3a2620b9446ba779a594c20194b6",
+ "folder_sha256": "266b37eb1729acc2b0f6894e8787c49f66d002568009a762346a99fd30a82c64",
  "model": "xgb",
  "model_hash": "685a42691b69776af6b8f8aa578cb3193a8b7f6a0ff915fedc08b1551cef5770",
  "ticker": "BALL"

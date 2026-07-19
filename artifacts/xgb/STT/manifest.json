@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 43168,
-   "sha256": "515dced8d6a4062d7b6872c09aca9d91d8234cec4a9ed43987af74ea353a9385"
+   "bytes": 43171,
+   "sha256": "e381f41eddeeadb4233a704b5ac7c66a5f30eb6b9e7c63ee789ac2d18e78e90d"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "9c3c0026c686e7ca1989c1bd569d6e9e50dbc7f76bc4b9be8a264a363fd20758"
   }
  },
- "folder_sha256": "c20d7ca21bf4a08de403d1375cbdde2d02a35d02d755caf1ad35562540aa9c34",
+ "folder_sha256": "f3fd6e34bdac77098530dabdb1e5d840f7db9687da13eda6d2a4c90e0c5d843d",
  "model": "xgb",
  "model_hash": "4cab311387361fd2d345dd56ed0c46c1d94e8f3c933fb25c9fb6e9591956acab",
  "ticker": "STT"

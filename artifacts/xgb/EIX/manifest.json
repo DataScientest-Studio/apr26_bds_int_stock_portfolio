@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27418,
-   "sha256": "26b24ee095f3ba723df2bbdd99c22b0a5ad7a739780282d844740b141058f9a0"
+   "bytes": 27421,
+   "sha256": "8bea424c727a8ee955cd1d30aa2fa25d54e9a08271b55040bc452d87d37f0a0a"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "3556419212a2fc814349ccdb302628d0baa60f8480a183e80d58b8872597902b"
   }
  },
- "folder_sha256": "e0f65092c4af162014eed121dcd122b793af651c58bee9a8edffc5816148ecdb",
+ "folder_sha256": "6e7036a81d8a39809957783495086efcabd453ed0ce62a035f610edad61ec0fa",
  "model": "xgb",
  "model_hash": "842d7fc5901d4650952549c6306571c9505044170d530bd08fb8f2e0522bb3c5",
  "ticker": "EIX"

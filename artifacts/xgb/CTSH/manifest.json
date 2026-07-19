@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 41602,
-   "sha256": "7f826a61ca94755ce21861e03b9fa3e4f06bbf794c9775ee6ff0f71c120f8c25"
+   "bytes": 41605,
+   "sha256": "f691062da68462147985ae792f80990edb7fac8bf2621a55d03698e914389a46"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "6f3cdffc8fb6ebcaff6fa1e0ae20243cf18e0633d28a28853c6f2d76cd11f262"
   }
  },
- "folder_sha256": "35687d86be62da719fff3969433e0d0433fe3feb36c47446ad4a78b082f1adab",
+ "folder_sha256": "51a30e60df811546890ff0e4bd9e8d494575df7b225681db95927d7966949d81",
  "model": "xgb",
  "model_hash": "c2d90367d722bc18478baa616058878a7f0b4f3b77eb665228ecf6248ac22d1a",
  "ticker": "CTSH"

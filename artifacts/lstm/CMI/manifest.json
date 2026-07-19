@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 56395,
-   "sha256": "c4edc9af5455d96166804083ab8a4684d1c2747ee710af56146c8ed0ca4a9d2f"
+   "bytes": 56398,
+   "sha256": "2216f8a344c12d8b54593b4b828f3ee4c05f84ff295f3b9bfd797c6db2054660"
   },
   "metrics.json": {
    "bytes": 1055,
@@ -18,7 +18,7 @@
    "sha256": "95b6a723cdd9d4fece3b2468fd9e18c407497a26cd05a404a0fc86b55527c678"
   }
  },
- "folder_sha256": "f74b7df7911780b73f69b07bc0efe9361175a0dcc16c4dcc4ef4dfa5ce121b85",
+ "folder_sha256": "734e14bbd029b181be6046e3295031744fd8c41a02ce70d561279cf1ec3626fa",
  "model": "lstm",
  "model_hash": "d3e7e60830be68ddfa250a699949a7cee9f59c2ab430bfec9216729ded9cc904",
  "ticker": "CMI"

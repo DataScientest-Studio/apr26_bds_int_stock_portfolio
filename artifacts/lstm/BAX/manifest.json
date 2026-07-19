@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 77828,
-   "sha256": "b0ff319634d7db877978a6c19a2bd03d4aadf155efd1b64231b095441ac165df"
+   "bytes": 77831,
+   "sha256": "f1e5cfaf244f8d159c69a3fdf8275a0e4d8b7af782de0c4fb8341a7dedf157df"
   },
   "metrics.json": {
    "bytes": 1067,
@@ -18,7 +18,7 @@
    "sha256": "4c2208960915f7cea836732ccd61f55eba811fb710d74fea7a974c867f362493"
   }
  },
- "folder_sha256": "5c0ffa4e0e68c8372e12feba48c8f011ec137098fae5b1b6f8c9122fff58e196",
+ "folder_sha256": "cb21a7def197fec52e3913ca5be4d757073de3c17d7e69a19efbb925f493b968",
  "model": "lstm",
  "model_hash": "6d8ec3b5e4f70341cd1e1f89a326384908030d93602d64639d48af7ff3e01482",
  "ticker": "BAX"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 134943,
-   "sha256": "8549ea99c4c210ed544db1ad081b0429065641360e47f8beeac6ee4ff4b991fd"
+   "bytes": 134946,
+   "sha256": "5895644d755ca782242ada38a8f044336ecef8271ddf2a0117e7aaa737ae91f1"
   },
   "metrics.json": {
    "bytes": 1108,
@@ -18,7 +18,7 @@
    "sha256": "05d6652605970745b78880b903f9808e4ee892b4768085b9a76e217cb0eecd4b"
   }
  },
- "folder_sha256": "a0234c67c266583ec3c6b35c9e6d3284419db49e2414bad16550530a0ec4572a",
+ "folder_sha256": "97d9f7e7bd811f93263cc36fa0b65516696f5cf3b67aa18aa5f2a782c7c7f33f",
  "model": "xgb",
  "model_hash": "41f562b56c29b07760ec8aa22e4666645e7ec367dcd975b6db002617f78b29a9",
  "ticker": "AEP"

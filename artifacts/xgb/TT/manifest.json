@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25902,
-   "sha256": "1475eca7acb02ad78ee505ed703dbfd9fa8b17fe5fbf4ddc9217d44e3efbc9d5"
+   "bytes": 25905,
+   "sha256": "b63fc797b3aaaf45babcf4634a3bf50030419a6332d2aa401e0aa1ab023d661d"
   },
   "metrics.json": {
    "bytes": 1042,
@@ -18,7 +18,7 @@
    "sha256": "9add6a6d28d205da0c6223e352a6d26e962b9dd800b6d6073fe98b7ab1726f70"
   }
  },
- "folder_sha256": "db2928218d02ee0615afb396bcc749fe0d13bc00374ce878aa453e3fdf0f95c5",
+ "folder_sha256": "aed2d4255d9c87076b694bb0c69a699e7a29768e0541e879e14f89039d454cf3",
  "model": "xgb",
  "model_hash": "c42476cb5414b472c09b8f303d1fb1f701e08a00085e230ae39583f5d7bde78f",
  "ticker": "TT"

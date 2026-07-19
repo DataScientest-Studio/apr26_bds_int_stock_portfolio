@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 80660,
-   "sha256": "8a61fee4838c120a13c2e026d00ba12b83a107ad1bad7b90f822c0f5a9d707cc"
+   "bytes": 80663,
+   "sha256": "cc6764aa811a93ec35bb3161c74ae9810cd06557256ee7767a7c7c6c8547627c"
   },
   "metrics.json": {
    "bytes": 1062,
@@ -18,7 +18,7 @@
    "sha256": "c03ea1a997d83e293e533b8ed1a39f1b934eb709a16c820e8335d343960e353b"
   }
  },
- "folder_sha256": "561b70b4143eebb0a9ac2dab4e80f7648f2c0d286de2abe16e0c2c2fa7f575ff",
+ "folder_sha256": "558ff30d0f0acebe124a28fca5acb416e4679e4e48ea47ebc11b15ee9524900f",
  "model": "lstm",
  "model_hash": "70a4d903150087b1a865512a4f26ceefaef0e5b8b2da9200ffea1f7a57bb3aab",
  "ticker": "NSC"

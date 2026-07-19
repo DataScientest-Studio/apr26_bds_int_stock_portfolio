@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 52596,
-   "sha256": "e5ca1d928e263dc0846c1f83aea950fd56bd1f75e78b95a156574bc359bc3d55"
+   "bytes": 52599,
+   "sha256": "baba32e400caba7b7247b1b184b1c6bc8c92f0c82cbab17530d4416005b87b41"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "5b902235a2aa02985c29e0526659bcaeb8b4e6ee360beff12ae227c6dcc62bc9"
   }
  },
- "folder_sha256": "6c99f4432a6f86639a75749a3c0b82ff9177df80624aaf221c76955d168ed24e",
+ "folder_sha256": "e2cc83f37654d63557d6864e140dd2e2bdeb044efc21c7b510e325583fcc8afd",
  "model": "xgb",
  "model_hash": "3e97efb2f7da7323dd67f6a5fbe26b12f4704ec965105bfe6ac259456ee264c9",
  "ticker": "GOOG"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83850,
-   "sha256": "812830bbd3bee96352fbb1836f83cf3d9229483d495754ac7405fcd061496a00"
+   "bytes": 83853,
+   "sha256": "fc6462a65f75f420de5073f6fbd07ac43a6c51c0ee0e3c4ec3328d5b6bf0673e"
   },
   "metrics.json": {
    "bytes": 1076,
@@ -18,7 +18,7 @@
    "sha256": "dabc0401e1dcb7743e8889e84dffb988d01bd07ea3d04800ff1d29f7d2cdae24"
   }
  },
- "folder_sha256": "df066230934b81a8b0718fef4a3ac7f9c4ecb0e6db1a62d0237a73b8de54b30b",
+ "folder_sha256": "b9848c4fd3bbb2dd1cdbe53819cabf752b6f5facc6707a4c8479cab7990c6f13",
  "model": "lstm",
  "model_hash": "d9705365a9bc8bc788180a2ed94050292132e4a2bbcd51ee6a6d612dea397bda",
  "ticker": "TSLA"

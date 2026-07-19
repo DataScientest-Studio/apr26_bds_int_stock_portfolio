@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83428,
-   "sha256": "f43be7991989d675ef4ac56ab858ea764470302ce5899266ffab7ad8afb43d53"
+   "bytes": 83431,
+   "sha256": "854b3f1ba70457073d3a30bce4c15166dadc887b29d70e3341f91c87a9e5b0aa"
   },
   "metrics.json": {
    "bytes": 1080,
@@ -18,7 +18,7 @@
    "sha256": "2d7b476fdc241cf5dbc58426e4a8f7e150838a84706972c1fedfccddcdde0217"
   }
  },
- "folder_sha256": "7321ed0a80dc6fa29fa62dd96cbfc8109741cf14c2df706b358a7727fda60dba",
+ "folder_sha256": "282ab09cacefcfd1a54067377b0d55e4b62990aa1079fa650862582719c54124",
  "model": "lstm",
  "model_hash": "9b9a72744b8b3b2f7bd0c1bc17b1830809fd01f2baa2772290dbd88bb00cb332",
  "ticker": "PNW"

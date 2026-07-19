@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76773,
-   "sha256": "d044b9bf0c62d1d9bad2890b947ac21c99a3c367c93c06f0b55eb8654bf66104"
+   "bytes": 76776,
+   "sha256": "e9c284fd909c7ed13e3b9ea584d794158705776dcbe93b0b35c55d8e66566873"
   },
   "metrics.json": {
    "bytes": 1066,
@@ -18,7 +18,7 @@
    "sha256": "d0d58c6ef15b7d27c6c06a2f91cf3882b12c12cc2be51fd371d699696cbb3a58"
   }
  },
- "folder_sha256": "81f979577da58a2d6ec6d8f9445af1e0c6bf62a8dc7eb24b7a106f37564b7ea0",
+ "folder_sha256": "5397f49a6807356ca7f89d0ca559d68330b5bd3c3fb6ebbc73ecab0d90ada0e2",
  "model": "lstm",
  "model_hash": "0432f3d016a99f4997bd2796eb053a3c80aae230ae736f6125233eee6b317222",
  "ticker": "AMGN"

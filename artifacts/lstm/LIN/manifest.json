@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 63809,
-   "sha256": "8a960175ea09f75438fb69825ae2abf8e2692bc09c4bdfd0246502cfe4e735b4"
+   "bytes": 63812,
+   "sha256": "b3a69be39a6d84849e2489fa8f5c0dcac9abb2838d33d80e4b9a9f0f0ab9a110"
   },
   "metrics.json": {
    "bytes": 1069,
@@ -18,7 +18,7 @@
    "sha256": "77b575d6e13485721c6379c2830b600458597708d7ccebb1b4b9dfd15bbfb3f3"
   }
  },
- "folder_sha256": "d095a3c1ed79a49579e27aeb4440c6528ee82dddfbfb2bf2c1b872c7b06920fc",
+ "folder_sha256": "f5f11d14afcafad3e2d990f2f24da13a297f3bef61a2f82d19f5958974e17614",
  "model": "lstm",
  "model_hash": "4e07543ec2d29f771ac00e5b168bcb55c3123e169b36b25c9cf7cf27dcfc6a37",
  "ticker": "LIN"

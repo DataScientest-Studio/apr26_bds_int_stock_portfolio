@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 40701,
-   "sha256": "a50a4b26bbcd47acce4ff6dc40d5c1d8f0960404b21dd92597e92f988f4bde9d"
+   "bytes": 40704,
+   "sha256": "87dc89547d77734bb01e24aa89e3e1f10b80b4a6e02c0fd2d301947496eb9145"
   },
   "metrics.json": {
    "bytes": 1110,
@@ -18,7 +18,7 @@
    "sha256": "de8b72127b6ec613115c0f60aba548c8b1eb3828e5005ce5ef9d6790d75d62f1"
   }
  },
- "folder_sha256": "ea0192243db45a755d385e0243b622b7160bd1b130cf40c4c6578633a3a0dce5",
+ "folder_sha256": "b2c8552bdd388e7c949342462236ac54ffaee0f4a7af41ebfa8354128b3f8f31",
  "model": "xgb",
  "model_hash": "c94c619c6df3e2e20040bb85e94f1f46d48f4bf70cfe8a8145e00e43fa2d5d05",
  "ticker": "CPRT"

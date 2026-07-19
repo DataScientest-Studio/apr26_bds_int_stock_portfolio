@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76127,
-   "sha256": "09a23db297b7826b7413d102dea4aac36f31a8e58dfcea020070405c53acce8c"
+   "bytes": 76130,
+   "sha256": "93538e86ad657a136e186ffa0ec35d0238d554c30240b0ac84f5699377412bb6"
   },
   "metrics.json": {
    "bytes": 1072,
@@ -18,7 +18,7 @@
    "sha256": "a58338c021ac98037fb2bf9e1c0ebfed17c49a12323c46bb7bdc3d295c85e198"
   }
  },
- "folder_sha256": "208467bef018cb232ecc30ef59ad53eef409c7547598fe830a7738fc13edf772",
+ "folder_sha256": "f765a8cc631750d76dc453847fc719f8c89708ccadc7c7d4d92bfa33ad1c45ae",
  "model": "lstm",
  "model_hash": "26bd28e99e77b49427d77ea23534b5741eb9c363aa4c19d83cefc5caf8aca5ee",
  "ticker": "FE"

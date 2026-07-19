@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25883,
-   "sha256": "1a376b337e12e6b4634b86063e22a0c87ff28609c0341dff66ea6efc5510c090"
+   "bytes": 25886,
+   "sha256": "00ef69582c6a890ba3efb16a9084b83169870dce7fac086d824f3ee7e3a29f10"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "d775751db035fb9449f1d541ddd976d6068b53718e4f3e342f34e79985f2c2e3"
   }
  },
- "folder_sha256": "af80fc826c667c523f14a6177f69a956c31f3e47b5b73a8a247e4a71fd80090c",
+ "folder_sha256": "8c8fd7632187d8e8aa91c2f89b00a663eaffcafc8dfec55da2decc83328140d0",
  "model": "xgb",
  "model_hash": "960d1a57b1530d2a70019d41174b9410a2c0477e867cd360a978ce8919ab2cf5",
  "ticker": "AME"

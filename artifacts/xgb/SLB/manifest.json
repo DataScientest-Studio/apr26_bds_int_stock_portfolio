@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 149195,
-   "sha256": "d59b431065872c4c30b49069569b1390d6e35785673a93b3b9e93d7c3c2da57a"
+   "bytes": 149198,
+   "sha256": "70be286ba4f3ef820e940febdc8a20c7fe453ade7495834001ebea1007ef1c4c"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "bdce102ab2174962738b9b87d3d4635a53e3b91996179bbd6046b800901a2974"
   }
  },
- "folder_sha256": "55c56dde3de92f92d9eefaabfd716ff8505a67b8218b65751784da9ab5875874",
+ "folder_sha256": "3bcc3f5e4247c9d1e9b52bc08b831f10dbc56f003bc0558ecd312c23159c1e24",
  "model": "xgb",
  "model_hash": "c73da33916051b632f7254894d24c2aafdb778130f89f37fc55c7c65ff393bb9",
  "ticker": "SLB"

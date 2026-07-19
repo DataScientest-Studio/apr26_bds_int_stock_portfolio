@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25909,
-   "sha256": "dc57c6ce11064acbf475c7772be2cca5a94b781d423c1bbf260d26c0fb04a5cb"
+   "bytes": 25912,
+   "sha256": "463f8de7fe136d7a9d846e63ee4008948825231da929d3ce8bb846f1c578047e"
   },
   "metrics.json": {
    "bytes": 1041,
@@ -18,7 +18,7 @@
    "sha256": "6dc47dbf77f6f1a2619ffea00dc89b8d54dbf7d100e0211c036404d008293644"
   }
  },
- "folder_sha256": "22bfb644644c60036a625cfe87fb8f5241ee0ee9efc709158de5f2b1bbab2609",
+ "folder_sha256": "539aaf169879c23b34432936055006efbe34d3469b88d76511b5447d399a7d1b",
  "model": "xgb",
  "model_hash": "c839a881e6f191d8ad82ba8a8ff0a3ba33d7372444ddfd95ed6b59574b64aeaa",
  "ticker": "KR"

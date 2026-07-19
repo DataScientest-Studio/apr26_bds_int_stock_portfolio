@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76122,
-   "sha256": "d9c6c475ff6f19e438a784df9f2242a7dc1eaccced53500043aa197a872842f6"
+   "bytes": 76125,
+   "sha256": "fd5e674a9d37ea08fbc29f4757400bc38ef1e7a1dd48cbc1c19966600c2eeb3b"
   },
   "metrics.json": {
    "bytes": 1071,
@@ -18,7 +18,7 @@
    "sha256": "e34c0e7d1030760414c1f819750dab8232927d8d8229bddc9c4370fd3ec8a8a4"
   }
  },
- "folder_sha256": "a2924a83892dc999a5741711a16365a4d19dab6ba7831b0630b4e8aff7986137",
+ "folder_sha256": "7f664cdfeaa2a0ac9aabc9bceceee363f62de20359ca306225e3860b5f752514",
  "model": "lstm",
  "model_hash": "dde40b062c0411d6275f3746ed594eda033320c55d3c1a22707e07615d2fbde0",
  "ticker": "AJG"

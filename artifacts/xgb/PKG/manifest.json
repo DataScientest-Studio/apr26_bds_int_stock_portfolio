@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25874,
-   "sha256": "e1ce6edd05ff33f44f7b200e811836a03ef61737a7fae454868c20eb5f9e6a1a"
+   "bytes": 25877,
+   "sha256": "9b931358a4c99a84267c9e4c4ebbc775520493c86fb15aa808b281433ecb2656"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "222edeee0986e028122a0107d45f9be81af6226c97f98a0f897fdea673ff17ae"
   }
  },
- "folder_sha256": "5b105e98f46503555ca1cb807480e337482e0e444d8cfcf9b2338e1bf54b5287",
+ "folder_sha256": "278ad20304951aeaebb10a467e62ddddce5d861108f6583597d342aa246b34d4",
  "model": "xgb",
  "model_hash": "c9f1915039b3f9f6dc03c22c85a8970c2e4713e79eccf70a1b08252cb0350d79",
  "ticker": "PKG"

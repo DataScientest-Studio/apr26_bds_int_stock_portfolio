@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76065,
-   "sha256": "acca156307da3fdae01ce0e69071f693c9b22a4cd122a811a17e875ef47aae1f"
+   "bytes": 76068,
+   "sha256": "94eb621a9df4e316d2503d231e3c8214aed31576dde7193cbe5c1fe88fec4ae5"
   },
   "metrics.json": {
    "bytes": 1079,
@@ -18,7 +18,7 @@
    "sha256": "1d46fa522d17a7436d5d5822e73f4baf1fa954c2e52eb4ef7b4568e5f0e7486d"
   }
  },
- "folder_sha256": "9977eab4bbacf29fe764b645b571ba0a44793bae9ce6798400bdda2acc3332ff",
+ "folder_sha256": "d96abf5b71d2afc6b8c80aea76bcfd61998898bfac2e308d611fb65580396d78",
  "model": "lstm",
  "model_hash": "04e57bd2baadbd693dc04bb27846be57413c1745dd4e726840725bd95425d2a7",
  "ticker": "JKHY"

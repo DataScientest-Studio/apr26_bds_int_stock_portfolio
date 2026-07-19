@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 30803,
-   "sha256": "bb23313592770aeaaccc949e4f4cca829f47905716f5b0cfc0841728ebf67323"
+   "bytes": 30806,
+   "sha256": "8651502bf6d80ee073b1f13e98f6c044e40d7e570fc6abc8fec38e3b52677406"
   },
   "metrics.json": {
    "bytes": 1112,
@@ -18,7 +18,7 @@
    "sha256": "3316228981a454a2c892b47eb9e054426064b101773c196fa25a8da68eb9fa53"
   }
  },
- "folder_sha256": "9596c2044c8ff0d5f0a21bb386f9664cbdd8fdbf1162d73c7cd350f523795aea",
+ "folder_sha256": "c697c015c9be6bb028e45cc4a2ac1d3553edd34e6a274fda2eb55586ce7b38a7",
  "model": "xgb",
  "model_hash": "2ed0149bf1f0a41a8750b7a7924bbbdcbf589b8c4b55df202da8a8f43556fa96",
  "ticker": "SPGI"

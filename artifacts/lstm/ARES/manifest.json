@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 89911,
-   "sha256": "038dd31444ef0a2e99ee4409d8e9999d1b86e30c5fc9716a8aca1a8ef89dcfbd"
+   "bytes": 89914,
+   "sha256": "2f052d05a89c02906f4f065d135288d1c43f0b017f9871e449f3fd2711210832"
   },
   "metrics.json": {
    "bytes": 1081,
@@ -18,7 +18,7 @@
    "sha256": "fba5c3af1cf3f2e548ab76a574bfc2d9d0dba9a7fe3cb07dd926eeb12f9e050c"
   }
  },
- "folder_sha256": "7fcb7301c0f1f75e134216f9a7a40aacb785fb8fe48e83cfdd7765e767c1a3d0",
+ "folder_sha256": "26f1bad2dc68e6da88e647398fc34350146d079113ed0e1274e081e02486ec99",
  "model": "lstm",
  "model_hash": "e26998813ba0948853b6cca689481ad6c72f69ab7d26ed7319d98ea399abb55a",
  "ticker": "ARES"

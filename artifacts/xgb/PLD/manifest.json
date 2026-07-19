@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 42591,
-   "sha256": "600a19c3846e6acb595640ef7a29548bbcee2bc02db6b9fe4af7e2da5f79846a"
+   "bytes": 42594,
+   "sha256": "6b2cf954d601fd8e7ebb90914d216f7c7aa491c8621f4d9e5a042d4997358d19"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "943a12eeb48dac83429e0cdbf296ea981f1b273f83824da02b5bdc188e8d6f43"
   }
  },
- "folder_sha256": "77aab56968cb923a0e006a8d7bf39e6c15c9d2b796afb5651e65d2f12fc2f9ba",
+ "folder_sha256": "afeff5cd10919dceb2522c0de77ba654b1dbd3be1a19c161def3949d3e9a5a3b",
  "model": "xgb",
  "model_hash": "58965b80c3d3b368522a8aa2a9d0d8b863fadb94164ed86fcfa3341468e1ba5e",
  "ticker": "PLD"

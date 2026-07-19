@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 88798,
-   "sha256": "4404b3145803c1e11490d54b6195ff913a22e90ce673be37ab0d09835cd85f99"
+   "bytes": 88801,
+   "sha256": "7ef81dd96f69c5bab40a231f8d2fbf8fdd085897b4e3f36c96d0b601f1b61960"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "63c7321f58099cc69b814d0d2fc01293d682b1a552e8bb95deabe6e7f34c26a8"
   }
  },
- "folder_sha256": "37efdaa1e7bfd7946b3b1a07907a70b2f1ddf99fa8b9ee8afe087bf2989fc148",
+ "folder_sha256": "a8702f00119381fa4eb6ee75525c78348ad276ef55fd68b67f05786a2cc7d773",
  "model": "xgb",
  "model_hash": "0d83035780b549fe1abcb1849c8f9af284d8ddd340ed22845563ab8c7f7394a9",
  "ticker": "VTRS"

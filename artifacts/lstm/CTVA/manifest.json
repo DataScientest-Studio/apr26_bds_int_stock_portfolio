@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75229,
-   "sha256": "127bcefd5ebaaff3cedb49aa2a3d15553a9015320d21e9a9b7763f8b17f123a3"
+   "bytes": 75232,
+   "sha256": "dabc58db996cf485d6b51b93181e7e5afd5e24d0da27c454f23c804fd9693259"
   },
   "metrics.json": {
    "bytes": 1078,
@@ -18,7 +18,7 @@
    "sha256": "d806be62f2805411142a4b2ca95e5a5a60a9f0e9dc89ed820c1f95b61f60c099"
   }
  },
- "folder_sha256": "03a4547433cacbe487f6bd7cdbc829f01735a722b0080d863eaee849d8769c9a",
+ "folder_sha256": "638db37d043282d87b1a6682920f268656a08c89def12a140c9bcd8b47b73c75",
  "model": "lstm",
  "model_hash": "3b48e3eb4ed57b0fa8fcc4cf8f04b0db9667d470f4774120451990f47d359cda",
  "ticker": "CTVA"

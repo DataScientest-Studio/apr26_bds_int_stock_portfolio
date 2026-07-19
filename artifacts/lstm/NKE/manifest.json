@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81505,
-   "sha256": "fa0103d0c2912ef6aa5d71333cbcc254dc25edfe21a5a1c3edd8c1b49275c163"
+   "bytes": 81508,
+   "sha256": "99117aa342dbe1a072ccb2ae3262f80f6b822d2ed8d22b5f7c20226b1bf560e5"
   },
   "metrics.json": {
    "bytes": 1078,
@@ -18,7 +18,7 @@
    "sha256": "79f07f28352e109bde92aa4895b980bc07401e3c744e67e670070c5e1c71732c"
   }
  },
- "folder_sha256": "00f32a8a643015b6c0797beb640987eb49816677ca5465b0989e0c769c19be30",
+ "folder_sha256": "a00d4c90addfdbd6bff5982279712212c0d043c58a2871fd922f108c9242da8d",
  "model": "lstm",
  "model_hash": "938302bbfed9c3fb4831ba25c70d243b2da8d9f9e494f86547a5aaee87974c8f",
  "ticker": "NKE"

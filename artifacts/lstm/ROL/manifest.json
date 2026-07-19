@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81747,
-   "sha256": "c89221f947e0abb531ffd9998ab3b8fb1c0fffaa6ab3caac7364742338688768"
+   "bytes": 81750,
+   "sha256": "6e9bc66871c7f6315b1a15d8b2d7d587fddd57c40bb084c09390e0abe29da5e3"
   },
   "metrics.json": {
    "bytes": 1079,
@@ -18,7 +18,7 @@
    "sha256": "4fe9352ac28deabfcac83bb94d207a8e99220c4d1a167af29dc7053c14112e4b"
   }
  },
- "folder_sha256": "74edcd68520d0080b9e7ab85071d6379441d1820d4bae9c7c55a38a43e36df13",
+ "folder_sha256": "6783fbde4929ec3d29a8e60e9209c51b58e6ed01fe0597718e8a04487b467981",
  "model": "lstm",
  "model_hash": "f08f24d9cb528d9cd8bca8bec18f7ed95957db1d0dafb5de9ac10e5cdfb6df6c",
  "ticker": "ROL"

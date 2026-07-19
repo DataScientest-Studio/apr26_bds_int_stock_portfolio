@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 99369,
-   "sha256": "b221d25006223116f4fc92a98f8e9a228ff396074baf2ca6df55adfae47ca9a1"
+   "bytes": 99372,
+   "sha256": "5df6cad6f1fede7922213eaea9340fdcf4931ceb8166eddd32342d606fc54de1"
   },
   "metrics.json": {
    "bytes": 1058,
@@ -18,7 +18,7 @@
    "sha256": "b4a81a8d929babb746762832599e5ea9f64b5c117ab1d12a4437aa707cad7907"
   }
  },
- "folder_sha256": "c80ddf56e49cf305e5da243fd1f9eb5cb5d68fe52907e98aab0d55988f05538c",
+ "folder_sha256": "cf13054d379ac055a2883484a61c32ae99ecf722c41c942e3e2716d6e243749e",
  "model": "lstm",
  "model_hash": "85acdc9597613f1c62cc65b69acf9aad00fa8d5109554bd5ada4741c8dd69f59",
  "ticker": "TKO"

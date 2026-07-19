@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27428,
-   "sha256": "4b51e7746a50ce87cc3cd8b58eb0039cac87a78cf68cc293e1cc53fd75dd1862"
+   "bytes": 27431,
+   "sha256": "6d451ec343031fc8069ab06ee07b555a33d31896c2b6b9af3aadab4181f2b011"
   },
   "metrics.json": {
    "bytes": 1081,
@@ -18,7 +18,7 @@
    "sha256": "b6f05348da6787fb44cafbba704dc8d332b3947617a10cdb673d171ea2ebdb9b"
   }
  },
- "folder_sha256": "a04fafef86faccf7fe17b06c38bab5f172c79c6313d580993fe7b1b38ef2d526",
+ "folder_sha256": "80bc9fe4a0c48f1ca51c4d5bcbcc728bdbac4ad8539285466f9a475b1ff4cd53",
  "model": "xgb",
  "model_hash": "5c7492c7f089701e439809c586161045f2aeeb2f059dfdab97fb2f8842b4afcc",
  "ticker": "SBUX"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 237405,
-   "sha256": "3509993a69569824e364fb7aa2cd2aad77316b4d45e12acee58ae6e471784112"
+   "bytes": 237408,
+   "sha256": "3f59bf9f27eaa1ab8aec47022f617fbd39fcd4cfaba37c24459e2e4f2544355f"
   },
   "metrics.json": {
    "bytes": 1109,
@@ -18,7 +18,7 @@
    "sha256": "87ba888216706763f05c1f7ea6617a175427f5949069953e6633af7a82a1a4d3"
   }
  },
- "folder_sha256": "c454769a67e69b664f8ea0c20012faf2fa050e05df40cb508bfde56cb9f132ec",
+ "folder_sha256": "be1337dd5b7e6f0ac77f8f95e301509808394663700dea624043c7a3b51ff99d",
  "model": "xgb",
  "model_hash": "f559d3094c5e1cd7141e71cc49aefe9e753fac84e72ee095f54dce5d9845aa97",
  "ticker": "TTWO"

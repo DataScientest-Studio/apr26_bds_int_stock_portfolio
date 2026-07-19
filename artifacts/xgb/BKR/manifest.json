@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 240966,
-   "sha256": "1f2eda7392c15327a90db7b674c73f4add543aaf302d8f71b6ee79b79138d010"
+   "bytes": 240969,
+   "sha256": "caeb0341cb10a6af5529713545336bb30ccbb96047b8bf59363215b0b56070aa"
   },
   "metrics.json": {
    "bytes": 1102,
@@ -18,7 +18,7 @@
    "sha256": "22fb32a5b38d6fd945a14ec2924c2d0d12c4f85cb6c4bc322087d47d2fa7e351"
   }
  },
- "folder_sha256": "93d7da2820df3212a2a884c2c3bd336750d9ea40c149f0c10b14fd057dcbb667",
+ "folder_sha256": "91e362ed9f3e28a50e05efb0c98fa52b28d3d25ce5701c5a36ad03a5e9898a0b",
  "model": "xgb",
  "model_hash": "4a0ae4f5a684aa13925c56a093031ac178ed0a2b0c0d2fc1147914b2b97ca877",
  "ticker": "BKR"

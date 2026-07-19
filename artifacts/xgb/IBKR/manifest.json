@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 36400,
-   "sha256": "07bbc5e641c6e1f71242226efd9416a2478960f4bff1982c484438eed6e38d99"
+   "bytes": 36403,
+   "sha256": "c9b7f2f5d15cc79ff74fe32c9709b03774d655ae6ce9f5b81df1d76e08c0a14d"
   },
   "metrics.json": {
    "bytes": 1109,
@@ -18,7 +18,7 @@
    "sha256": "2b33a0d70a0d367a95d3c46a9d7f3b80fb202175f0e4104bad7d25b10e63df84"
   }
  },
- "folder_sha256": "fd59278be933d7d489136a49ee7b698c33ee7e5cc9723d5bcb7b987f9feed191",
+ "folder_sha256": "0182642a053fdcc4dcf873c7c938ad647064b6a0a5a6781f586787843bdab6b7",
  "model": "xgb",
  "model_hash": "c5d1f3e150c19400c5999295a794f97602bdb682f29ac70a3456fe4911af3780",
  "ticker": "IBKR"

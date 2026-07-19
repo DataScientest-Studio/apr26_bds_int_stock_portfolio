@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81153,
-   "sha256": "4fb91ba6bf044b8a03e5089c863e2a64de0616cd649ccf8b8a5f91f7734df8e3"
+   "bytes": 81156,
+   "sha256": "10e236d9560010757dc21326df71b31d6607cc399da8b6150733d892143bd9a5"
   },
   "metrics.json": {
    "bytes": 1076,
@@ -18,7 +18,7 @@
    "sha256": "158325d0ffe16abc436321226db2fd79645017541208e6c212302404b9a517d5"
   }
  },
- "folder_sha256": "98e80bb3c336e409f5a0bc7d78de95e27499119db15e808b797e42a0c40992e1",
+ "folder_sha256": "ff4bcf0ffcd4592f004e6903d25722b07dc5071fb372d2483b48f97676f285e8",
  "model": "lstm",
  "model_hash": "8aa0c553ef45efd3e69d997b903a47f4712ab16f695751c2090c9a142a92489d",
  "ticker": "MRSH"

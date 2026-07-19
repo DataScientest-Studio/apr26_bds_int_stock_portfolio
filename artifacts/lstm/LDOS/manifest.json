@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 92174,
-   "sha256": "a0fec982f7e676d6e281bf764751161f56251079af273fdcea17d7949256cb0b"
+   "bytes": 92177,
+   "sha256": "3ad12c4380e87686282e3e68adb83ecea4e3dc010eae84b9c2f32cf8532b6b88"
   },
   "metrics.json": {
    "bytes": 1068,
@@ -18,7 +18,7 @@
    "sha256": "377ec0caefe6391c46532c2c878d47535bc5c5a9db985ad0c3afbcdbc75f4ccd"
   }
  },
- "folder_sha256": "628ea6deb6892d7f9629d8eac9aa9b28a5bc5f7d4a1384fdc9354c3df712f360",
+ "folder_sha256": "2f3286bc24f723b8a395366474d82e3c1b8a174e37133185e614714cb06081fa",
  "model": "lstm",
  "model_hash": "f0d54ce52b490dfcc0f9254ad76bfa067156872af9374c4f8bcedebe452ebd35",
  "ticker": "LDOS"

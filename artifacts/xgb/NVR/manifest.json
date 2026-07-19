@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 133445,
-   "sha256": "27d5c3c7c456572243528ae3c042619fee4bcec665a447c66bf609b66b341421"
+   "bytes": 133448,
+   "sha256": "9bbe6d2fb6647c2f1fdffd685307b012755352b7dfc982a286ed97c17627757f"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "d6d0ce5d968b5281901eef9fbe6371e18dab454f2e38a44a304403612cd2853e"
   }
  },
- "folder_sha256": "634716a3910743416355b9ab914d9a1fbfbf1d3889a3f4c8317fb158d78b6700",
+ "folder_sha256": "d4bca0e4f84fa712c4565bace9915512917d11378356ca470f7c869e5590dd97",
  "model": "xgb",
  "model_hash": "cdbd8c86cf24b77e3b66d247b39dd16285f28e9ab1c22bfed96b4f483576d103",
  "ticker": "NVR"

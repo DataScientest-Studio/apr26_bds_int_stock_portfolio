@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 93055,
-   "sha256": "d4229f2e67a357d12b2bd45bd91851e5022bf5d1c80e0c1687f4809a066bfde8"
+   "bytes": 93058,
+   "sha256": "420ef68d990614dee9b26a6807f1b02cae4c3c6620c86ba6556f295a73f04e51"
   },
   "metrics.json": {
    "bytes": 1072,
@@ -18,7 +18,7 @@
    "sha256": "d1c91bfe47fe1e26403bc02d542bbb4929322c4233c998b832906ef9ad917fd7"
   }
  },
- "folder_sha256": "7df3acef0e63c51fe3622716eca605d4f184eb58dedb54c3e1f51c9306940cc0",
+ "folder_sha256": "02d820a6f8688951b3bce91ed62200488001dae94b31bbf9e716779483713007",
  "model": "lstm",
  "model_hash": "30f4a55ba68f95c7cebcdc2ffcbe24ff3fa6ffe5830a29e9dcb1b107445e291a",
  "ticker": "RVTY"

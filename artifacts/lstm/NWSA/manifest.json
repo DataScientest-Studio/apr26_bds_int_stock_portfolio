@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 71013,
-   "sha256": "2060425b52c57c4dea4c6321e3e60b79ec5dd88c6acdd9d98dc6eef97dfe536a"
+   "bytes": 71016,
+   "sha256": "12966a38121650cf6433061b24bbd38e0bd561b341695966c343e1c5f6ff2738"
   },
   "metrics.json": {
    "bytes": 1056,
@@ -18,7 +18,7 @@
    "sha256": "7b57e2f72bee887133b5de88720008b13377caa1bcddccbae3ccd2addc65b002"
   }
  },
- "folder_sha256": "b6348715a2e05aa3d941194516f8a366f50881012d8a53ea37509f0024ac6287",
+ "folder_sha256": "5abc50737977a2a63e83044045c86a881511bc987259822460002729ad5088b8",
  "model": "lstm",
  "model_hash": "741d87c55d6950f8c04cdea0831bed81d84052064316b85ea3bacdc51eef3a22",
  "ticker": "NWSA"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 50829,
-   "sha256": "7808e66a5ad066696e4bde35fe093b02ad4a29842b0c932dc57d15c5f4aaf5d7"
+   "bytes": 50832,
+   "sha256": "66669dd18bea90722e73658776c6955cec40416ee6a8ea90eec28cc46f5f0900"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "1de400fbf6c2a00b88ebe850556ede64a7be2eae871ae32803788ef9e3ea86dc"
   }
  },
- "folder_sha256": "8726ac86a5a8e17d2029527c790b9be7dd1f0f679afe32700185e13dd149d5b8",
+ "folder_sha256": "6f72ad4b9c8c08e3f11ca01453430b8bb89c1dca3c2d83e66e14ca142a89876d",
  "model": "xgb",
  "model_hash": "c306b8fc0984fe88c09fcc827ef2c6a273d5ed58f7cd88d6698c483d32f883af",
  "ticker": "IBM"

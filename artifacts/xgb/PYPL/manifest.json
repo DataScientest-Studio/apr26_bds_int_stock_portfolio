@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 40446,
-   "sha256": "34ba0d2aa4cb27b4c4e9f9d14cf7d28b6a9489265d0bdef3f00e85fcbc1d56b5"
+   "bytes": 40449,
+   "sha256": "3bc28f4e47c09fb140749dd9155925173ab53c829860682e2fd059368ae2915f"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "b1ac7103e3d43bcebc8e90f98a53cc681800f1b66ff1b2946fccc2e34269b91e"
   }
  },
- "folder_sha256": "135c6c854a144bd53d9f4653a92def20a65966f0620516a245e40b8b4d1ef59f",
+ "folder_sha256": "0e76cb625899be4a9f470e5e42c4df2a6b8cbc78f0c4ba82ae5d65e86b0ac739",
  "model": "xgb",
  "model_hash": "334a58f4ad26532cbf629fbac68e8efabca21b298685f71661dd8b5a9503ba21",
  "ticker": "PYPL"

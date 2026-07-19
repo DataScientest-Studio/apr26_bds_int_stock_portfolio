@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 73805,
-   "sha256": "3ffff317ddff9ed0017a8f927760dc2c16c56d57aa0c3768fed88674be309a3f"
+   "bytes": 73808,
+   "sha256": "36f351862f58c4cb6633176a297d6df9a6ca74bb8d5c476bb5b2ea7dcd3dfe59"
   },
   "metrics.json": {
    "bytes": 1039,
@@ -18,7 +18,7 @@
    "sha256": "06e1c5c28046ff31d465ee61667a054b36f9bec96fda387fb332529d806684a3"
   }
  },
- "folder_sha256": "fd7c773ed221ed929a3a849bf4c7437e5533960187598094fa0e4594792c0862",
+ "folder_sha256": "658080a93d2acb4bb4373e00273fbe24afe278fe15473efb6a10a937608e7b31",
  "model": "lstm",
  "model_hash": "7e43c6df76598884b9931d760ac1ccd917f86134d8630e67721f1f9c8a3b5599",
  "ticker": "CLX"

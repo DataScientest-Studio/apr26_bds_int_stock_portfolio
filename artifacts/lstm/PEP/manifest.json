@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76823,
-   "sha256": "d80987d84a5e9c5f6f05c0bda8fd766f78c39fee2502739fca2a6b65a33af5eb"
+   "bytes": 76826,
+   "sha256": "4d9a2ee364ea897d1193d3df74ad00463515b12181b1579a3efcb5b0b4f50360"
   },
   "metrics.json": {
    "bytes": 1073,
@@ -18,7 +18,7 @@
    "sha256": "9be4288dc737e577de7663f5d1eae13a3ea6fdba1954deafdd83a291fcb2fa22"
   }
  },
- "folder_sha256": "4db26d06df0faf11b4c66f1f2210451eaf40aa8a1f204a9519f8d4f24d384977",
+ "folder_sha256": "c3ab04d04c905d782533367f4932b22af4e7e08e524efebdc9d50e82ce8364ba",
  "model": "lstm",
  "model_hash": "204fa9d26d7a04aeedc23ff27ae26b88a8476b3b65d23341a45af529021f6fa0",
  "ticker": "PEP"

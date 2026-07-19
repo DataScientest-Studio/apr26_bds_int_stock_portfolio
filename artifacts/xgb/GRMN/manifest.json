@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 125781,
-   "sha256": "cb8c6b7883962d502f7859297d2b6bf7ad05b09a79be7d0f691cbe07d901c210"
+   "bytes": 125784,
+   "sha256": "66e098309352c1b31a2f8187c72357b3160fd54146240ae8e7b7a6b9bf9ff8c5"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "6a15dc65c9a6c2390a69da8ea0d0c446062b13b3afb283957480a71f46fb60c4"
   }
  },
- "folder_sha256": "1a15cc8608015bf508dcca28522bda6eb25b2b22c479a01daf25ab778c20e68a",
+ "folder_sha256": "55378eec9ab30d4324a6ddf160acbd1251debe4d10fcd888390123b9dae4b561",
  "model": "xgb",
  "model_hash": "0551db2c29360432b08405e8615c33f6717317ef3e271c54d13c3120e4e74842",
  "ticker": "GRMN"

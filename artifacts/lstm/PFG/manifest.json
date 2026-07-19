@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 61164,
-   "sha256": "7d54212a3cb41fdd41a0d48874859a8bf0c0416124c3c856eef728ac7571de59"
+   "bytes": 61167,
+   "sha256": "323e44d9aae3a1f90333342a961173d6bc498680802ee15025c1b8709f85bb01"
   },
   "metrics.json": {
    "bytes": 1076,
@@ -18,7 +18,7 @@
    "sha256": "e0aaafc5323643782c621e62a8595207c1f3fecc698fb2aac688855952863ba0"
   }
  },
- "folder_sha256": "cfd9b34510178ab4be8294c780788abfee5d75aa2d23c2a14d349d7b5dde71fa",
+ "folder_sha256": "ca77c57109363ed474ea28242decd29a82f372c26b255ff53de726a54f3b9f55",
  "model": "lstm",
  "model_hash": "04ee9d83154f771a42c54a7051e0f36ab622ed9b679104a3e64f6f53fd7240c9",
  "ticker": "PFG"

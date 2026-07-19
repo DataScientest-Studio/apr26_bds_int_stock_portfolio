@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 29870,
-   "sha256": "3193bc5c804f38c6e38fdc62407f1af3d38589a8e949c2bf1bd853627454d0b3"
+   "bytes": 29873,
+   "sha256": "607912b3280744f0de9371c19eebe1d64ddcb19da15fd55e3865c8c69e24322f"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "342ce2f56035dc9f531cab88d5275ffe5edb980c8791ed7b3bced0941dc8f496"
   }
  },
- "folder_sha256": "669e94552ef30ff6cee758a7ddc47f24b4f3701fe613cf33e27d1baee7ca5a76",
+ "folder_sha256": "737aa63cb9a62df72227e890059cabd98b245d926a7c37bc906aa450c56a5824",
  "model": "xgb",
  "model_hash": "8df911fb706b6ff689f33960fa273569dc35ef4ad459922cdc6fdb3eadacf08e",
  "ticker": "NOW"

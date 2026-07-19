@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27454,
-   "sha256": "b37a451a8e1303e289de0ba5be944368ae2ac32649e9245e08764c4fbe6d24a8"
+   "bytes": 27457,
+   "sha256": "ba3841419c5a9a01c3a5c4fba39346956087a6b6b3c2e601ca5cd24d5debbe59"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "3485aed63c995623f43aa435008ad42067537b26ae7261df1dff4c5d69b40a98"
   }
  },
- "folder_sha256": "9085dfd9012fa7342cace1371a24c83d79a77c745ad3c4ba44233144221a1ae7",
+ "folder_sha256": "3972f7a91ba7f1f3f20c8dd5f020ec49547988471ed6ccfffe9ab26448e1ca20",
  "model": "xgb",
  "model_hash": "3a5a8634bb24858446f97074a05bc88431a1e0edb93f348da1aa5f3734dd1c6d",
  "ticker": "ABT"

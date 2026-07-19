@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 233309,
-   "sha256": "b3fe1666ba1a7f6a268beb1b4766d3740de48db2197aa38f0132cf68b8661f6d"
+   "bytes": 233312,
+   "sha256": "ea1f1c63b118d100555caaeba2851b4996e54ccc63190b27ec0c8744eb14d540"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "daea512ebbc9087ef51fb5fa033c9a0ba0adebb8441ebdbec0fa4fcaba8a8cc6"
   }
  },
- "folder_sha256": "61140edd9f8036206c3260579e163d8a177650d2121ef21d049f14f33c830ec1",
+ "folder_sha256": "75ae8426109914e4a4aa0ad39a958067dd33bd528fdb1f04f67e0f72b54b2864",
  "model": "xgb",
  "model_hash": "2547c4261201a437aecbdea479f7204a530af4e54a175d1ade2471f3263c77d5",
  "ticker": "CHD"

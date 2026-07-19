@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 47318,
-   "sha256": "b8d96e832c06922f7f1a87f1a4fe20bf9669a69a8098aba4799c8c1c5c328ba1"
+   "bytes": 47321,
+   "sha256": "aabf9718fe010d8f9835137518a6786ddf312d040c1e179bcae21e32f0767a55"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "132edfa4d90345f8d0412958419c02db6cd57f7c9fe22ed0a992f5c77dc60dc4"
   }
  },
- "folder_sha256": "c63588d349401f919d5976c165a9b1cb2451b331db18892ef6a7b4b292df6256",
+ "folder_sha256": "7518b5e84f79a6e3d219974ba0bc584778c85550bdd901391939468606a62ff1",
  "model": "xgb",
  "model_hash": "8a58cd2bc09473e4b412908b0f08f4e8920b40c8c8d2f6d123a260cb32240d12",
  "ticker": "MET"

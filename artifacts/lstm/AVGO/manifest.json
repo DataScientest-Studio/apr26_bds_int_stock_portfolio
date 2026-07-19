@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 80676,
-   "sha256": "ce8b5fb44903384577fe0a2674cfc0ef0c62fe789d085fa395e61b61abe81d2a"
+   "bytes": 80679,
+   "sha256": "3db356c7f52bb8905d5784226a1a4398cd98bea8b0159fadcf4222b2219301ca"
   },
   "metrics.json": {
    "bytes": 1078,
@@ -18,7 +18,7 @@
    "sha256": "7e035d120bcdfc7d31cf4b64d92a80d256994ec5848664f3c91f20b6c99e2051"
   }
  },
- "folder_sha256": "768c782534507a43308abfdae7e9a700f943cc065e94cee404bc402301633555",
+ "folder_sha256": "06e7051db4d6f2e22fec1480044c4ac1c97b75813245ed01428f674d6abd1bf9",
  "model": "lstm",
  "model_hash": "e28cd6853da4530fbfe0d41a3b9f7358067103a4c8acab24a727dd41acfb676a",
  "ticker": "AVGO"

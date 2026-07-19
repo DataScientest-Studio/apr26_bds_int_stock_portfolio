@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75734,
-   "sha256": "8a843f4bf49cf815d2ba274dcecc620b1afc9aba6f8d0fdb27607bec001d79d3"
+   "bytes": 75737,
+   "sha256": "36adfec0d52c24a1b57b705dafb5f9d143c08b42be0a94645c69c34a26a8afae"
   },
   "metrics.json": {
    "bytes": 1077,
@@ -18,7 +18,7 @@
    "sha256": "c0c8283e055c832e23cd3896095bb227695a700e0e4f95bd4943f8b65afb4bb5"
   }
  },
- "folder_sha256": "010c126047373e0fe83e8e5acd801892ec2ca363fafa9685d4bcf40bbd01c15b",
+ "folder_sha256": "fb75b4b46292c9e2cf8107350f27e66d56395c3cb96769a0675dd69679c11108",
  "model": "lstm",
  "model_hash": "00925def8acc337600864ba47d7191c2377d31e618519cb87a1368787cf6b95f",
  "ticker": "NRG"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25860,
-   "sha256": "6213c9dd7d957735676bd7db39e11ab8238a35c099fd6c8ad42c86be3ade9441"
+   "bytes": 25863,
+   "sha256": "3028a6559b9e5b2307e8e3636a0234177a2c3be8eb252690f3ca7d95a675a6b6"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "81e0f6770a8a152c618778ff4a84f9ebda6df5dbe3b7b5c191776152ab74153b"
   }
  },
- "folder_sha256": "de6c8429598fe891dca5d77eaa3448d644bd0e7f83e3a4400ab7b493b2afaabd",
+ "folder_sha256": "d332ef44126f469dc7279841fcec521026e0ae92e817c91acc2bc861232f5221",
  "model": "xgb",
  "model_hash": "3b42801f13672f791405e16a2d68817f1fed7967fdb9dbf35dadcfc1bfa7b7ec",
  "ticker": "CHTR"

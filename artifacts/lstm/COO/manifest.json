@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 92045,
-   "sha256": "5a6a38d16d525e11dd8da0946c9efa13c43bb1c1c3e41eff3f32cce54e7587f0"
+   "bytes": 92048,
+   "sha256": "c786e727595788e47636b7773d822cd299343fc05cfaf6580e66e56ab1846e76"
   },
   "metrics.json": {
    "bytes": 1085,
@@ -18,7 +18,7 @@
    "sha256": "74fffaf8f50812c770d3f6714068439c1304f253c2a1e9f550c9c42738ab1c8c"
   }
  },
- "folder_sha256": "bb6be506f691b3f0cdb06555ae858d872c011f93c76e91d0e558ef49953c288b",
+ "folder_sha256": "b79cf05a6c961c9dae28d7f45b354a6fc22e0e43444f777506bfccc9c42d6cd1",
  "model": "lstm",
  "model_hash": "f002ddc2a82dbce1dd64af0cb9d37097f2e15e41ac5a6495d34da57d47c9198c",
  "ticker": "COO"

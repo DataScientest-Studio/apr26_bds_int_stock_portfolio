@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25936,
-   "sha256": "b2c21a8d19e6cc735e193925801d1f979259d0acb203898ba9c859888ad12926"
+   "bytes": 25939,
+   "sha256": "d82215d6f2b516f1c501a81bf6300b980ff8bd8de5f6dc7483a4db43a6bb57f1"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "ca2d50737c542cfee747d0765eaebee45cb2052765f1c7a08344ee9bce1c0e4d"
   }
  },
- "folder_sha256": "424189de5d2f0a8d7d2bdd576ecb6162cc66bff7568a9e078877cb663f7bb824",
+ "folder_sha256": "35c2ff57faf9c1694786e3e59a8eb47c8d4518ed21e7d444743091b9bd60b866",
  "model": "xgb",
  "model_hash": "3e12e6f1e2a78da31a1e8782df20ce1fc913cd8ddfe98f617bc4bdb84dfd66da",
  "ticker": "DGX"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 64750,
-   "sha256": "15b33e3fdfbbd111197d428267c43cd2af592ce5aaab4ebc5e0fb316527c44c0"
+   "bytes": 64753,
+   "sha256": "f7e0f72f4d1c594590c6c21d6438adb17d31a88e3a2f1402b9c3653e3cb8bb67"
   },
   "metrics.json": {
    "bytes": 1070,
@@ -18,7 +18,7 @@
    "sha256": "a398ed7352f6ffbae7d6d8f5dc20d902a10f24005bdda35c6fc067dd45b70662"
   }
  },
- "folder_sha256": "eff6933943b3d1102b9d47f24fd9ef886ff0b3e248a953c9596544c3a20205bb",
+ "folder_sha256": "342f9556b23d9bc23c9bc1c6e53435ce853655d2bbc9e6b5e0c36c5d1c78bbb8",
  "model": "lstm",
  "model_hash": "f302225acc0b711338feae170aa4a55ae04d5e828c141bbea5113af7eadb383b",
  "ticker": "GM"

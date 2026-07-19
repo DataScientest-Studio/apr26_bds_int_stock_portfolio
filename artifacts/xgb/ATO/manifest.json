@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 34285,
-   "sha256": "aa5a383afa607ab760b8dcd8f992b00f392acf3a48c61d4ccc19185e524cb369"
+   "bytes": 34288,
+   "sha256": "1cf1977f9dfb2d55c266ce6b90701e66d9ef4bf9a265b2689f679bfac0810564"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "276b42668bbaff606e4acaf49d93367dad26b2d1fd47d5c84e5d3b47bd64491e"
   }
  },
- "folder_sha256": "0ca3f052a5bcdc88dfc15cfe00c73e50480002f6a3ce85b704ecd55f9832eb9d",
+ "folder_sha256": "3e1494cf06b9b6f145c86a7379cee4d5f0c919209216aa09341dc560fced4120",
  "model": "xgb",
  "model_hash": "5ffab9c662636f7469ff6564dab6b44851bec64de0266a1008b12606371c8be5",
  "ticker": "ATO"

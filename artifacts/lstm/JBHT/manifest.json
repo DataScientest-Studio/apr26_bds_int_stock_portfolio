@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85326,
-   "sha256": "a37e87e3d632017c421b7d249570c4e4046b0f949cbbb820170935aa65f3d6e0"
+   "bytes": 85329,
+   "sha256": "cd738463c32eb4b3a3988031b2ea6354b575590d5ba05687601a3bf507f6fa52"
   },
   "metrics.json": {
    "bytes": 1081,
@@ -18,7 +18,7 @@
    "sha256": "5e00606a3e85edb102465366cebd50131b6c88f90aad80e5fc7117ea4e1ebe6d"
   }
  },
- "folder_sha256": "802bc0a59bfd83cc0d301f0b99ad718e5afc840176c78aaf1b0125353b7db96c",
+ "folder_sha256": "af531f776cb77821af8ebc0f236d8aaeb260a52df3394e873c33f9c711873a64",
  "model": "lstm",
  "model_hash": "b25d6ef52b42c39c3620d1cf60849faa2a0e8db8ab569dc945d66099351e5295",
  "ticker": "JBHT"

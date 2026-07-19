@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 171093,
-   "sha256": "2279e77e33df3ba07c1f8262a6f5d2fff82bf9f2ecda87b06f358122d5114574"
+   "bytes": 171096,
+   "sha256": "f6cc77ba32da1109d6438961e81304877864b4d3190c20c3fbec9969cea4314f"
   },
   "metrics.json": {
    "bytes": 1109,
@@ -18,7 +18,7 @@
    "sha256": "c8d2a715292d53315a7d270390a4ebb15d56bd321b113a464c386b16b7641f10"
   }
  },
- "folder_sha256": "b4bcb3268314a8d381e656402fc98614d9945839b2096afdb7c4367f95b504f3",
+ "folder_sha256": "8e83a2b1950fba02751ef928b5d0fb4199d1d05c0b5fffc5b4ba47aa9294480d",
  "model": "xgb",
  "model_hash": "5a076691c2ac23bb9de8dd03df695552b31a0d22cffe0d9e602dd5376d2710c8",
  "ticker": "DLTR"

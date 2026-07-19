@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 75083,
-   "sha256": "c11553e6dbe36e8a8861bf1840ecf72bbfa4da04108e890c994337a56562023f"
+   "bytes": 75086,
+   "sha256": "c44bfab0875b89dca4266d11d0a0321dc2a1f33b90c548f83366ecfaba2c3d78"
   },
   "metrics.json": {
    "bytes": 1082,
@@ -18,7 +18,7 @@
    "sha256": "469befe15513f899ff4e4bc3b7b209fb2c1377818241780c4575e5482c19231b"
   }
  },
- "folder_sha256": "7694573a03d73d4cf2ac9d684c39c16f28b6e870e1db8b3e61490088a9e38cdc",
+ "folder_sha256": "441978e667eaf8eea554e843fd62b63afbfe4778476c7a5f0297c0be49a4b7a2",
  "model": "lstm",
  "model_hash": "4b12ea13e15a37c6a0b7ec10b29afccc819f76d48a39c9e7eb1ca9826750a7b8",
  "ticker": "CTAS"

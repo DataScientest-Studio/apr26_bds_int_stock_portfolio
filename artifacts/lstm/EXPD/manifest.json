@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 68342,
-   "sha256": "8debd00071324aaa8e9c0dfd953f85523354be7b20c3193062beed4c5ae9bd27"
+   "bytes": 68345,
+   "sha256": "3d3212d6300ed500cb678dbd30c4b4c619fed7569d280d0c6f2b1921f63da2d5"
   },
   "metrics.json": {
    "bytes": 1056,
@@ -18,7 +18,7 @@
    "sha256": "28a582af52d65980bc07086f858c00b33338ff9f4e8ba589dd3afe3e0545fb58"
   }
  },
- "folder_sha256": "27d140b972cdf21f72e8a09b889097d0bc36372e7e0903f37034ff8d2158bda9",
+ "folder_sha256": "27046d60ec20d80bd9b201e0ade6755ee190baf281968cccb2fa95ac0e10562d",
  "model": "lstm",
  "model_hash": "2519bf6f65f1c5865a2fc6ae1e7ea44424727b1be9af11c439051ddd7b4e95e6",
  "ticker": "EXPD"

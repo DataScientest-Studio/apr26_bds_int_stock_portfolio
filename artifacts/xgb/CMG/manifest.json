@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 116111,
-   "sha256": "6c73016b1d072fc61a7aea1700da80719514484abf972b3062be2f0fa24f60f5"
+   "bytes": 116114,
+   "sha256": "2f0bf9964a15cc17a5a16cfece8e322dc1a4e8d5cb98c09cb3ba037bc9d3e541"
   },
   "metrics.json": {
    "bytes": 1102,
@@ -18,7 +18,7 @@
    "sha256": "9bd602164f33e5da3e230bf2cea8ec5b1d73ba2dac3db45b5b1435e2d7ea771e"
   }
  },
- "folder_sha256": "c60ec4584eb8abf09c226ec85657dab0ec184c52f52a06eace53c78ad8541458",
+ "folder_sha256": "d79521d6d17be71319bba898f1d849ad8df6e5bb9e312466a7d1922ab83dd369",
  "model": "xgb",
  "model_hash": "b8eae827f452612bae8a762b50be4072e8eef055bf42d48c7bf4ba6a89fb825b",
  "ticker": "CMG"

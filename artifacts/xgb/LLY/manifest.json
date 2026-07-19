@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 37100,
-   "sha256": "cda860e61c5941ade12d9cd398858fc28d09e4bad4605b4041e9972b73a098ab"
+   "bytes": 37103,
+   "sha256": "1256d386d6e78e74d44ab4cb6e034cc64e8aa8670a083dc7c35050d21380844c"
   },
   "metrics.json": {
    "bytes": 1103,
@@ -18,7 +18,7 @@
    "sha256": "706742f4adfbc9e047d3f9f894f3c675abf7b97ca0d69f498e86e906ad92a02d"
   }
  },
- "folder_sha256": "c0c16a13ea01e2cc824a2617840be24090a0ed756f64a1dca6595e6b247bb1fc",
+ "folder_sha256": "253ddbe8c1ccedb746a498e399a1901d903271a27996a59cecb1246fc0199971",
  "model": "xgb",
  "model_hash": "83284bcbebebb8104203036d35163631a786b05e4298dd1a31d4819846fe0829",
  "ticker": "LLY"

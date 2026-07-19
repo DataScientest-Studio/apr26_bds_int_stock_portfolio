@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 87038,
-   "sha256": "929e8bba85bfe9d5da5c1b423564bbc4a94603d06183d1d4a7db3949d83c1890"
+   "bytes": 87041,
+   "sha256": "d0ebd85d4fde1fa3b4ff5bbee589b9b7c4700e0017abf123b11e2fdb4b26bdb8"
   },
   "metrics.json": {
    "bytes": 1061,
@@ -18,7 +18,7 @@
    "sha256": "46ed240545a532d9aa678451ede7683416d8b1ef486b4a93b9e21599dd5ec5c2"
   }
  },
- "folder_sha256": "e92c3c2a597f097cf1d3c41ec4486c492ca5134e056ac9740058e9d87017a4ff",
+ "folder_sha256": "b5491825656a676212be37639ffbb2f32877a44056196b118549ad2dae252cc3",
  "model": "lstm",
  "model_hash": "4012fd1449275bc225c0837592d47562894eb930565b54272d6b617269ef4023",
  "ticker": "HON"

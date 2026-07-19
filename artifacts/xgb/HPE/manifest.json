@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 215242,
-   "sha256": "8bfeb7dc0a38dc498ad96403fff90145c4d6d9f0166bc0a196a1351c0888d5c0"
+   "bytes": 215245,
+   "sha256": "fee43cb9395e3640b7029a04f4dc428b38e6f38dcbbf87233312d4e5120fa39c"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "d63d0e3b2b5357347c823c3420d4385fe0f1d212168d3f6fcf46018d662a73a9"
   }
  },
- "folder_sha256": "42b0a732249dd31c414d75af0933b12314f7abea7ee5aaf3f699bc25a92fc96c",
+ "folder_sha256": "efc272f1bbf6655f2f52a8eec0a247950a4b36e9b726aee65f6ad9874e5135e8",
  "model": "xgb",
  "model_hash": "3f9091460724881faf32e4ac87546336f30c1c84bc53e8e38bddb1218bea4691",
  "ticker": "HPE"

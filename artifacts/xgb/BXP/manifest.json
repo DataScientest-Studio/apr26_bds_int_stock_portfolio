@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 130589,
-   "sha256": "d76c3e6ed58cf090c7f791da0b1da60d5fd7ca4387f2f389f3d5c499d1493788"
+   "bytes": 130592,
+   "sha256": "250aec1a8c9f000d43706a60302fdb217175bf9c2e0e9e53c76180e7519714fe"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "46257c78bf7d032a39c3993fd62b973a300da9856781d86257d004b2cb9a13c4"
   }
  },
- "folder_sha256": "706638e34fa388661ba3364600348485575c7f8e64b3306fd5757161a1a1cb18",
+ "folder_sha256": "ff4d768df6ed5f95e85444afd0c197f10443fc27951d8611ac9abb986bf78c4d",
  "model": "xgb",
  "model_hash": "ef2e480d5592bdd037ea8660ff7fe3ccc781a64e995ac0938656aee1712cdd2f",
  "ticker": "BXP"

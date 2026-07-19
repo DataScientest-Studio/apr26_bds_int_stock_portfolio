@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 91308,
-   "sha256": "cb7314edd43ae2fbf7d0a96d16eee90ddc5a7939a3f0220a4d8591d81e99fdb7"
+   "bytes": 91311,
+   "sha256": "7ed7ce62872e57f5179c5e458a5eff0ebb1f653092971d477cfb83e6367ecc83"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "d792af2452651a41892e994e4e4e3821424645a5f6f3cb2aad1bd1f6697b6dee"
   }
  },
- "folder_sha256": "2f9e3b4daa1b25816f294eca3a1bf38d45bddbae4c6a7fa5e4ac077768b9c9c8",
+ "folder_sha256": "2ee1b055918388547353220c0bc4ccf3aeecf84d5b5291280fa24d3388b01ba7",
  "model": "lstm",
  "model_hash": "1ddddce090c78cf08381e9723616c882950ab93f1ba10dfbb00e1b07c8f08664",
  "ticker": "AOS"

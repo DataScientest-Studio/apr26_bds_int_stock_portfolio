@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 86284,
-   "sha256": "755b4753494c01cb8b6b231030e283dda72687709ad32df092c84ab9017d44bc"
+   "bytes": 86287,
+   "sha256": "c0195e46f7334175a16ce2835241b55c3889b3f8cbe842d947b1f060867bcf0b"
   },
   "metrics.json": {
    "bytes": 1066,
@@ -18,7 +18,7 @@
    "sha256": "cfd3aaa2bac30acf0e2b96fd7e27a01303024d4d9e7acec92b8b4b18bfa7f920"
   }
  },
- "folder_sha256": "a4b5f4fa16b5ac0586b755c09e1eb535c6e0df63b4c21329dd5a47b6c4992df1",
+ "folder_sha256": "516bdfecc1aa0a16d27672a7164a1b2678ce094906d93520fddd2c055d33bf22",
  "model": "lstm",
  "model_hash": "a3e003f1340f4fe4425ac10cc8bd8c2065b22601329e2bc143eb57e05d0e1387",
  "ticker": "FOX"

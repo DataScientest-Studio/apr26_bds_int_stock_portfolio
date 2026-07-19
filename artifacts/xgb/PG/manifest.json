@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 39411,
-   "sha256": "ed86c69008cd4eb69849a6b11b85966fc3d0e659a8e24d9201cf8e96c2c8ff1a"
+   "bytes": 39414,
+   "sha256": "5e22ee635bee0220e305a50e749a96021e11ee0fe90b1f441d4ff29be04e1635"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "63eb4153bbfaac98051390916c420450028b54215d3e1d15b9c4be848a6d2a63"
   }
  },
- "folder_sha256": "430fccfc74f044d71617af2bbde4a360e2f1e2a704c597ad47616c68dec56d0e",
+ "folder_sha256": "6ef1a2a8dc27b758e746f05240e12786be8bce518f1e18709c06262a601cc585",
  "model": "xgb",
  "model_hash": "a9f7d6718cb1206012f40b3f3b43d94e12f04f139aa27d50abbffcc50b440274",
  "ticker": "PG"

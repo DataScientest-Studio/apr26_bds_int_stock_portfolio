@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 71115,
-   "sha256": "e974334ef42d5f61edeec783814ae5a0466b18c1f3643d50697247d972d1b2dd"
+   "bytes": 71118,
+   "sha256": "e03808d02a3a37e252dae367ff0e44d5e3ba2df24373c8bab9f8910c1924251d"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "446334b450184f844fc5277b49af0aba9ca92e25d80ed88269baa9b616f3052a"
   }
  },
- "folder_sha256": "48249e118ea0f7aef374d098a377b73d8f66dd7c41f8d8ad4efbb026ea91029d",
+ "folder_sha256": "1238c384a4cec13070daa39c3630c7fbe42032a06589dbc6b8a0b8f019ab7e43",
  "model": "xgb",
  "model_hash": "27c37eafe64008c22facddd08721ea2230535f0fff3a876222dffedc575f63e4",
  "ticker": "INTC"

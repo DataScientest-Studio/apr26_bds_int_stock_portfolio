@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 91226,
-   "sha256": "ecfaad87bd95cfa9c8bd5fb0dab503d81fae1a32d58fbd52abe263a2949108c7"
+   "bytes": 91229,
+   "sha256": "50d9c7d1cd1e791a2b54bc40f01ac35e127cb935e28206ac8d0fc8f53423c955"
   },
   "metrics.json": {
    "bytes": 1073,
@@ -18,7 +18,7 @@
    "sha256": "76d06fb70f62b55af9cad9c901a9a9efe3cb251e24cccd2942091081592c81b7"
   }
  },
- "folder_sha256": "12e8463bf040474d6ffd0987a9e8581961a0efaed391ae320c2c771c735cb842",
+ "folder_sha256": "3f29844287f18b95e7d9e07801e43ea89077f1b78ff5e858172c9eef9b1efd80",
  "model": "lstm",
  "model_hash": "d7d53879b9bf0177fb1b66db2945d98304fc636fc0cc6d04926ea6623a01c469",
  "ticker": "MA"

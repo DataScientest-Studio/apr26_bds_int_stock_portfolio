@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 36759,
-   "sha256": "dfc4b23c23efeb2847b4ce79b992672cdb455087f5acd69b2a23c8b8243c31fa"
+   "bytes": 36762,
+   "sha256": "44669d6eeea7a30003ca3acf3075b5b55bbf26bc99d4d08296d2cabd6846f640"
   },
   "metrics.json": {
    "bytes": 1101,
@@ -18,7 +18,7 @@
    "sha256": "70d9444fd170216952357499469b73cdce082cb4ca8d92cf35675b2d0e9629e0"
   }
  },
- "folder_sha256": "b222604c21a0bcf4e60a13a86614f59873099d65a8d78c10b05f063346cf82e7",
+ "folder_sha256": "78a92342aa06c112964f3788895869f182acb52cca28c0a93828fdfe221417ad",
  "model": "xgb",
  "model_hash": "5ee620dc5d2e2099440eedc058cd6c535b308c67e527122825a1d0e8b2163f02",
  "ticker": "STZ"

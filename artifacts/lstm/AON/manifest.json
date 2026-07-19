@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81233,
-   "sha256": "05b3ae9556a24f70688369f52df89783356e482e36989a1a8cf956770cdaa444"
+   "bytes": 81236,
+   "sha256": "96a31f7248bdfc4ef1d44f0e365c54da2c5a0e66817811a341e1bc5bf1c54dec"
   },
   "metrics.json": {
    "bytes": 1059,
@@ -18,7 +18,7 @@
    "sha256": "30e8fd569e478f15585c30c15dc9da0865a9b9a42017c29445ca1005311d7e32"
   }
  },
- "folder_sha256": "a57ef2a63c2111846a0f44e6afe2fc4887280c16a17d20bde1af8ac443baa183",
+ "folder_sha256": "e9cb6da1083b12fc0934af16d359df465943ad3eeeb92af9d29c70be6b439a9d",
  "model": "lstm",
  "model_hash": "5a83085d7c91cb9cc64e38ecc6a56fee24fcf9b479420814aa7bd12abd51c2a4",
  "ticker": "AON"

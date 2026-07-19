@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25901,
-   "sha256": "8a6931fddbb16a953a1695e0a742bb3ad245abf25789e8ff2e5fae38a4d4e36a"
+   "bytes": 25904,
+   "sha256": "99f09d222db4acca7e53b32922a8fdc10e8179f297006d1e70ff66744c0a857b"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "7db7547e7298710eaeae78f81008145fab93dd44038f999ebcf8dc5191ea41f8"
   }
  },
- "folder_sha256": "fcf7ab37f029f0364c29acff4dec8eb0e4ff736f600199d21e2ba84f3d65c084",
+ "folder_sha256": "cd3b075e47e78fa74607f2620101102842fa25c716985f134cca989e9ca88b26",
  "model": "xgb",
  "model_hash": "ec41aa99bd3e8452dedfc38d7177b914123cfa9923009f862bb3b098788f3a06",
  "ticker": "TGT"

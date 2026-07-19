@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 112560,
-   "sha256": "0fd9c88385a7584b023c07a01234b7f64503326f5178880900c1e68ad59d45ee"
+   "bytes": 112563,
+   "sha256": "19c471a30a265e4b04fe3f8726ebebb031a79597b83f3ee36f132b5e4181a4c2"
   },
   "metrics.json": {
    "bytes": 1106,
@@ -18,7 +18,7 @@
    "sha256": "babc5582e23aadaea29a79e7cf07e122473188a6217fcf156be00b5cd254cfb2"
   }
  },
- "folder_sha256": "d9a5227a7dd6082dae6085d1625145b21735af0a2f8143de531a2b71fee0bb7f",
+ "folder_sha256": "06e2a66ad257360bffb85dc70e7f878dea7e43a9667535df31f9d8b9b5d27d18",
  "model": "xgb",
  "model_hash": "c6cd007a23ca6d238677d69e4ce32bb2758fb9c7529f9ceb1f12ebf015fbdd1f",
  "ticker": "APD"

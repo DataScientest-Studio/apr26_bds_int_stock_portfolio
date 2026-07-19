@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81181,
-   "sha256": "83e0222a4d10ca504183e1e1874f1469f92e0c510aceff172f488c7369fa70e7"
+   "bytes": 81184,
+   "sha256": "8c2fab32ab6776fa2c6a1c14d436b2ffcaf86b37defb98ee092baccfb8e38e93"
   },
   "metrics.json": {
    "bytes": 1076,
@@ -18,7 +18,7 @@
    "sha256": "4b7bd21a5aacf1170925d60b47226f9a4271f3e7a7860983e9489e2ebba71643"
   }
  },
- "folder_sha256": "c285fa179726e3d708ae2927ca3d9182eaf17d780e73b1b67f0596a61bb1f3bb",
+ "folder_sha256": "b802e3bf4ddb3cda2a6990c4e8294eb8dd4b2625143578191d593b6e3ae5992c",
  "model": "lstm",
  "model_hash": "0912a2bef9dc577c6a8e90c9afc46d9d101d907b0f729c5a512f885b825a26d5",
  "ticker": "NUE"

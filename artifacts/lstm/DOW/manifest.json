@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76779,
-   "sha256": "d55c8dfe32083930a7750abdbdd33bd839f2324d65c0399f8478a49c43db5bc6"
+   "bytes": 76782,
+   "sha256": "88fcb0679333fe75093c5b554daf9d8e4890e3906525ad58f5a729d6d34dc12b"
   },
   "metrics.json": {
    "bytes": 1075,
@@ -18,7 +18,7 @@
    "sha256": "6e93d75df321faf2fd00032f4e121a0952a7072407c15739b1966c13208ffbe7"
   }
  },
- "folder_sha256": "bb8e32dac46dbe6aa3a9c139caba540890b48e98270aba78844e8dc28d3df029",
+ "folder_sha256": "6b4ff2240eeb28456dec0ce7efdcbb8e62a9e76f29fd9fd4186f55c25f03b6ff",
  "model": "lstm",
  "model_hash": "c1968a75b5ca36d9098e905c811b07b9a24f0810f2a23c512d51cd1903b45a92",
  "ticker": "DOW"

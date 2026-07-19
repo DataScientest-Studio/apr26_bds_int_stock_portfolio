@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 59148,
-   "sha256": "8301a76d847edcf9efc9c4494e060b349cb6355607b09e2e06a8c6a51e1b8d3c"
+   "bytes": 59151,
+   "sha256": "a17ad98befe7094ae734d5d16d24f9baf8df8323c59a685c62ccc5749260d46e"
   },
   "metrics.json": {
    "bytes": 1065,
@@ -18,7 +18,7 @@
    "sha256": "831c843e991ccb99f27248df40e2c727f9a6d2fe56805734604ff8817fe9b960"
   }
  },
- "folder_sha256": "fff61f62d4275a21fe9fd9f92678583dc192e0818288301daefde2feaa6f24b4",
+ "folder_sha256": "3e5cfba19dd0053dfb9fffa5a9afaef6907a50d84e9621858b516d9a90850435",
  "model": "lstm",
  "model_hash": "ae19039d087b96984b0941bbe8c83d789e017c99d73869ac7f47ca9efdd5decc",
  "ticker": "LRCX"

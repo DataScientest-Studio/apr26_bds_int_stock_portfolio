@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25923,
-   "sha256": "01e56517ab545538b538bc826c23ee5e7e1216da79c8d8ac870d203ef2d2b73d"
+   "bytes": 25926,
+   "sha256": "01d040306ab664a6eee1522d533ad5823b9ab050ab28c354e239b301adacb905"
   },
   "metrics.json": {
    "bytes": 1045,
@@ -18,7 +18,7 @@
    "sha256": "26499913ad6d7d7ee51c3afda457a2daf957db88a9d4e2704e51c3d2f85926c8"
   }
  },
- "folder_sha256": "7cc384bea025a5cd4e73f3712553fb5a890bac373fafc018f30e1000231481c6",
+ "folder_sha256": "73dc5efb00e42d552f6731a5dfa6b5aee84dd09addafda79c5dde5258717499c",
  "model": "xgb",
  "model_hash": "01f192f360d8fc7e3b8c0b1261a9ce54143feceef7889ad648029b1f210886cc",
  "ticker": "BF.B"

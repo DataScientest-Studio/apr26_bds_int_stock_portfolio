@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 67975,
-   "sha256": "8259047a0dbb9a68d94442c35ac1280c749f5d387ed16d8ab2bc819b818e3f0e"
+   "bytes": 67978,
+   "sha256": "370719335836f6752ed99168ad94cb35123a860657a3d4fb53d389f7ed60b917"
   },
   "metrics.json": {
    "bytes": 1048,
@@ -18,7 +18,7 @@
    "sha256": "a1aa17bf9d4aada5013685d5858cf63063eae3cc1e86989ce09a971863b43598"
   }
  },
- "folder_sha256": "7069fc14a8a3809196e63dc09d155bf68c66dfde65ba6bb6ef5ca2bf6cf764ab",
+ "folder_sha256": "1fc0c1981b3ff8c0ba68e9d97402bd9112dedaa9286ed83e626cf5f82a2f892c",
  "model": "lstm",
  "model_hash": "2b07f4c13b4b7012ea40f5b961892282551037cc1b83f44d60cad63c0f8bcae8",
  "ticker": "AFL"

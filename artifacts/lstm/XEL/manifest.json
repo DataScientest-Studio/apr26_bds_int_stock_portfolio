@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 87188,
-   "sha256": "bb492ec923edc14b78e61e06ffa0cad18a0feee832dc7cf15592d70cdf80a145"
+   "bytes": 87191,
+   "sha256": "461876c01ba4c9feb5500553bb2ce7773e040988273a19a58dbc05b43598c42e"
   },
   "metrics.json": {
    "bytes": 1075,
@@ -18,7 +18,7 @@
    "sha256": "d4a498760d5594bbadc21b9504b6a9efa281987149648c690e9d6cce6021e54c"
   }
  },
- "folder_sha256": "0047d5f2931ece5fd060862b8965114aa22a8f366d709171205143167bfc2a56",
+ "folder_sha256": "6c39898636ff271775fb95227fe5a2fc947d8d2533a5cc5c27afd1922b4b954f",
  "model": "lstm",
  "model_hash": "8a1b326a031aa01d428a01f8151a8adafcf5f83f0cb4143203e5dba806611d74",
  "ticker": "XEL"

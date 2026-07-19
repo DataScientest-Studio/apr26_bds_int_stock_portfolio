@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 61973,
-   "sha256": "19e2119f8d3b393434b45357424430aa0b8289e562980e42352fe5600fd1b5a7"
+   "bytes": 61976,
+   "sha256": "7f914e66b1622fa794186fd5147213f277b6c982655d06ad083dfcacdeefdd38"
   },
   "metrics.json": {
    "bytes": 1055,
@@ -18,7 +18,7 @@
    "sha256": "6a27dfad68471e7acd48f3179aee88cbd08a1903c5ea05ee8ec5810085d1aafd"
   }
  },
- "folder_sha256": "5c7f8fe06a588b56fce157de43b80ef47eb6fcf5487e21218651fcaa911ee85d",
+ "folder_sha256": "ca48d17f2268f7da0f064c281bbfdbaa3791c9f19b72710bef2298d17e9b57ab",
  "model": "lstm",
  "model_hash": "e955710d317a58c204ddc8d7ff5e7fbff565de5f77948993bef5a10f13c607a0",
  "ticker": "PPL"

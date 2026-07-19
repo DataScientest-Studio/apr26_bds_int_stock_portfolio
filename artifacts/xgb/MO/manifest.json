@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25952,
-   "sha256": "2b6947e23f1d192d5cbf5a3b4b9316456534897560b9dc59950463c09867ac39"
+   "bytes": 25955,
+   "sha256": "8258012ced0387f5a925f5455a3aa8642da308a1af789e5d45aebe609df30d8b"
   },
   "metrics.json": {
    "bytes": 1040,
@@ -18,7 +18,7 @@
    "sha256": "4d5991448c0a38489088f215a962102e1597962cd6f3d3d1795859c90898df04"
   }
  },
- "folder_sha256": "de93609e78637c5772a750a70074b2097d1d39fb021d4663fa1a68a1d613e353",
+ "folder_sha256": "cd29a930e9e9445f49be20ba9f71c2a23165a3291b8275acd181f9ee194b9fce",
  "model": "xgb",
  "model_hash": "f021fbfccb70ce534a3f7d80b064a7a6f50f055fc65077bfe055cc7cdaa6a1f9",
  "ticker": "MO"

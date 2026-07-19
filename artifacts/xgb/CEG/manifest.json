@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25887,
-   "sha256": "9f3217ac864c0b9c5a0ed17fbaf1d985a579a7675da6c9ccc036e10c7be7f4d7"
+   "bytes": 25890,
+   "sha256": "95979ec18347c0d20dcb793cd2d735ec27fa14875f030eb22710d95534207878"
   },
   "metrics.json": {
    "bytes": 1045,
@@ -18,7 +18,7 @@
    "sha256": "a38f8d408916aacf441d99468eadb9a424de818ac70d4e227196ae152868232e"
   }
  },
- "folder_sha256": "ec78dcbaf6f9a21e839efc62c062417287fbd36220b1572412e70c9369f48b62",
+ "folder_sha256": "bcb4bbbd0f5ee1a419604561500873f326a7246db90f423b17660cc53fb4b62d",
  "model": "xgb",
  "model_hash": "df315efbbe0ca1c39d07bba5912c2e8ac69af063fec025b340f7a5346af75b10",
  "ticker": "CEG"

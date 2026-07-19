@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 60268,
-   "sha256": "6a1c92bb4a7b4e846c3cdf7f3941ac5882322a2075d0a549c8f0de16a89c8bab"
+   "bytes": 60271,
+   "sha256": "a3d97e653b191772640541f76ab2bf35dc517b16c4e95d9e500cdfd8183156f3"
   },
   "metrics.json": {
    "bytes": 1055,
@@ -18,7 +18,7 @@
    "sha256": "ba5e77b877e82c46379f2f2eaa08b152555a96187cf9ed7ad96643845d7f1035"
   }
  },
- "folder_sha256": "36d1958fc109a4600d34925876c77240ecaf3a5a407955bd05cb18fca390648d",
+ "folder_sha256": "83d33143d3e2667c9d3d1e2b16ae4760b3e4eaa9aca20f6d29c928ad47fd2c15",
  "model": "lstm",
  "model_hash": "8309f464b0c30d931fac1d6f7895a3ed947d33edb8c2450127226863153b792d",
  "ticker": "GD"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 84150,
-   "sha256": "a3303550340b71ec34829c5857b2896c500f1ca9bc42eebf3c4974dbf5797d0e"
+   "bytes": 84153,
+   "sha256": "ef2a1af65e4c974a1736772a745969c24148098210279dc6136f60056588e22c"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "9b1af7c7a601be13007b208497c467366aad48a0dcb6790c177a5e8165faa51d"
   }
  },
- "folder_sha256": "55c224280f3e4954d46fd738cfeac499a8adf219da99d55ec1a59423867a3cb4",
+ "folder_sha256": "bd22e22c70dbc001f4a74b596dedff17d36288dea46a2901e76a12f094df50ef",
  "model": "xgb",
  "model_hash": "b64fddd8ba9cf888aa01d81b3d14c6a10cd6694d4d73b7b4d33bf4ba57da6452",
  "ticker": "ALGN"

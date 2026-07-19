@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85659,
-   "sha256": "a5d00bcd8decb2ac803b5736053804f63d46a8def7b4da5c0cd5dd997d8b8976"
+   "bytes": 85662,
+   "sha256": "dcf5f455b420f48132e1886b01ae97563766360bf3188ca90879f6a9f4cd5446"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "74157552b22b3f6255868f16332b5272abd2b62743dc159d5d51f5f525bb2c32"
   }
  },
- "folder_sha256": "9132fcd2fcace05c06d4f562d4150b0dc42e86f3a3c95f0f24981bb7386a555f",
+ "folder_sha256": "42ed3fb0ce0967e9fb576be03c90a95159f975a4050a2933490209ccbe508e9e",
  "model": "lstm",
  "model_hash": "30f7d528ec6f6dc76db07b6e4ff39163b19d5ee569d2f3bad72a504b2e885c34",
  "ticker": "MS"

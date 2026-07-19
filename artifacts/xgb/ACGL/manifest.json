@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 34166,
-   "sha256": "c7456147e8cb0a016d60c95e27fb27c3b2e6d3ae5256a715eadf254ee29bbcb4"
+   "bytes": 34169,
+   "sha256": "3a07bfff30cf175a9ba869676c615dbb0da826182b3ccc2013a91f847215c591"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "f8fed9dad7b7b46dbed128fc1771f5ecae3859ffa933547638eaafa66994c710"
   }
  },
- "folder_sha256": "323db4a3b5f6be4326e6d8673ff39f6048a87079119c631a02443bcdc87d9725",
+ "folder_sha256": "9ba53ff905c8b1e5fb4ad67a94f78e3b65e99494ab6e32668ab857fd5e4fe699",
  "model": "xgb",
  "model_hash": "aec832c958912e7f22e1e3a7a712c620be0ce160684cde18dc3c7f7524d1bb87",
  "ticker": "ACGL"

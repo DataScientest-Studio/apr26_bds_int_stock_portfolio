@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76082,
-   "sha256": "9904219cb847db8cbdaa20f527a27d047495adcf1c3756990c87c2d257fd2904"
+   "bytes": 76085,
+   "sha256": "cea14c1071f7d7224e0520272e1e443015ee10e597f7ad700bf3e7c52f2637c0"
   },
   "metrics.json": {
    "bytes": 1058,
@@ -18,7 +18,7 @@
    "sha256": "04ee27f87cdfac083ef2acad0f649c578ab18e9ed988f3b37cd7f54a978135be"
   }
  },
- "folder_sha256": "e75bf47ac05a19403ca35934c171b1b6c958651d69108c2b85a957ee17fdbc55",
+ "folder_sha256": "4beae4592c17d6f94d921477d1669fdead8392dde013802befaf59f18c1b142c",
  "model": "lstm",
  "model_hash": "c427711cd3dc009c73a9e1e9dcc37627462a00555165031a90af41e0d75340d4",
  "ticker": "VMC"

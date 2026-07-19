@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25893,
-   "sha256": "eda03935d330339df47871e1dfc091e752ebceda502811c452bcafd94030d7ec"
+   "bytes": 25896,
+   "sha256": "09e1a602df6e3feeb9271729658de52f4412a37b4b2a6fc3eee1a2e71508930e"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "16730732f302dc6bfcc8fddfcdbc3a23c1a19492cb06df232d10806da2ede540"
   }
  },
- "folder_sha256": "cb13974ba1133936bd7c5e8caf3bc7954794bba3269d12dd5531ad20a0784d2e",
+ "folder_sha256": "68aa5f4aa2761055f108b26b27cd30be8631e848aed49e852feb670c8fff53f7",
  "model": "xgb",
  "model_hash": "55f6a62e3bdd817abf1049f2e9eaed4b517c659393fd1611d94064b8c308a401",
  "ticker": "VRTX"

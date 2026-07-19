@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 34204,
-   "sha256": "6dfeada0b56400bdcd559871f133b92be19244694228c94c3a40fa58abc46096"
+   "bytes": 34207,
+   "sha256": "b6937761c4482ba3600f598fb6fa0ff3ce5ecb54807ec623cddf953ce37fd1ad"
   },
   "metrics.json": {
    "bytes": 1092,
@@ -18,7 +18,7 @@
    "sha256": "73952d2cca570a8a0947468d6065ff1951e4709f72b20fadc64de823f0660796"
   }
  },
- "folder_sha256": "11d6bb67188d82da9b6ef526e9f331860d1d94608ad605038e9ae467b0e0f4f8",
+ "folder_sha256": "56b182329f9f9573b230d95e62bf796844f1b6b38e0d2ca2ff1dbec315d2c02c",
  "model": "xgb",
  "model_hash": "29fab6ffd4e2e03894673acffb9945343bb14f0408c8a9c452a1b62c322b76e4",
  "ticker": "ICE"

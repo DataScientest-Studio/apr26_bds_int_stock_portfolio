@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 89690,
-   "sha256": "fa59be3c23f52b8bb85eab3f23760323479270495d66f135dceeefc311614aaa"
+   "bytes": 89693,
+   "sha256": "eaeeb795c0ac22980d2f23b801f3caa5af7155c5b6508810c2853db37ed80279"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "99c6978db133ff8b288e620f478d44bf78e52df00b3ae5393da7a8fadcaa0e31"
   }
  },
- "folder_sha256": "c42de436867547077d96846203f1e7db6a9a5d628e1e26251a6d57b4b8b6ca9a",
+ "folder_sha256": "1d501869fad1e6f8b979e88a6384319d20bcf670a0cb171ff003b91efe183fbb",
  "model": "xgb",
  "model_hash": "d72a993e86bfbec54c17ae90dae58b0bbc508db4d7faf3b9679f056ff380f137",
  "ticker": "AMD"

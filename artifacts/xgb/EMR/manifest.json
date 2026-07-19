@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 31484,
-   "sha256": "f2cb6bde4789788c0a462fc615458f8de5b75a14a618dac8e0868f89d8330abb"
+   "bytes": 31487,
+   "sha256": "d2ed5feb9145e0451336a19009559caa1979ceab9061dee2ddb9320da8fb26c4"
   },
   "metrics.json": {
    "bytes": 1087,
@@ -18,7 +18,7 @@
    "sha256": "3636c1380e03ee65f14c8bf81472679c5b174382702051aaf1e111aa09b5d856"
   }
  },
- "folder_sha256": "f9d4c41436b3d0548c0db4ef47e69c4c4cd0b3c4811431e4669a4e0d7d4428ba",
+ "folder_sha256": "fe06622dcf755e7891aa29971d2bbe9676ea9e27eb1495f82cc604ceb9964e89",
  "model": "xgb",
  "model_hash": "fc157126056309410a097a268369fb1c1021bccb20b2947aa8b059315c6d7734",
  "ticker": "EMR"

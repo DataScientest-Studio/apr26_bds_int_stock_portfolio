@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 104561,
-   "sha256": "984df35dfdc364969ba1095f858ffe864cd0f4d554c9467034ba48ad39f410d8"
+   "bytes": 104564,
+   "sha256": "1067146520809a487154ef126b8cc6f2e6809f3bbcf4b744324583be31fb7e1e"
   },
   "metrics.json": {
    "bytes": 1060,
@@ -18,7 +18,7 @@
    "sha256": "2b213e54c91e9060bf92152c40fc0a62090311db7b105b86437c674598f52d04"
   }
  },
- "folder_sha256": "4d8d9748d7c96cc9e54b9babbaa4eec147dad59ace079d2ed1887b0ec48eed9e",
+ "folder_sha256": "d3153c752b59188139f82b9a1a9c8edee1fbf337648413868f7ce467acdfe98c",
  "model": "lstm",
  "model_hash": "66403697af93c2f70313e5165d5b30e1b9c3dd2a95f3ad2f24484fcd310017bd",
  "ticker": "GPC"

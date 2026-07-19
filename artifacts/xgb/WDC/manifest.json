@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 37795,
-   "sha256": "8c656e31687903d14cfe5c467d9f1ed4e1162e9abafbd3a62311bee981416425"
+   "bytes": 37798,
+   "sha256": "21b4a5b950d2068a2238e4355455d07fbf43883478facc7c506965ba9b78c49c"
   },
   "metrics.json": {
    "bytes": 1106,
@@ -18,7 +18,7 @@
    "sha256": "94c7a239f259ea8634627e4f919edbc701423c3df173c4c97049cada56739e7e"
   }
  },
- "folder_sha256": "2a75113a8094b230de43e5194304195e1394f52da10ff823161ba2a481d342a8",
+ "folder_sha256": "a2d0d2838061c9f6a1de0fa44376cf497130b593061b94b5dd641c1824025b62",
  "model": "xgb",
  "model_hash": "2074cb5364223478be794035e3b838119da219e9dc7d21cda014f94725539046",
  "ticker": "WDC"

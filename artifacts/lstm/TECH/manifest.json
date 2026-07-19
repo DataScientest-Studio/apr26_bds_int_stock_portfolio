@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 69483,
-   "sha256": "cb7c88391a51ca924803684f6231c25973d58ad233013b7df391aa7087a1d6f6"
+   "bytes": 69486,
+   "sha256": "138ca762a3866e4b219a75553271bf97890a1179fcaeb83cfe03ddc4e6ccaf04"
   },
   "metrics.json": {
    "bytes": 1068,
@@ -18,7 +18,7 @@
    "sha256": "fd42f0dc317876316856781540c751c6c1181037eddaee2f4ae720797d89865a"
   }
  },
- "folder_sha256": "61179db277de36b38eafb5450eb9116a26152ea68a06f3aba5982bbd5614c866",
+ "folder_sha256": "b75973f8ca4ca7749e0dbf757c21db91c8e789e00697423473246c8d90a26160",
  "model": "lstm",
  "model_hash": "d58a2dcae0959de90c8a239d4f2e9b09560e9c6d2a5d1b83cc95b1b7932d5c2d",
  "ticker": "TECH"

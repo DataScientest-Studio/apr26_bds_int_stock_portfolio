@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 57111,
-   "sha256": "f2313d6184c118e7400e2b4ffaeec13796cba9337eeeb259f474daf895cb17a0"
+   "bytes": 57114,
+   "sha256": "3faff7ccac4ae3689a912b44566bd6ba42b6fd3497d48d18b32a8630f66f2a7e"
   },
   "metrics.json": {
    "bytes": 1110,
@@ -18,7 +18,7 @@
    "sha256": "9d7f4b3baf2d280682f2bf1ff0486cf4e84a2ba2dbee7cb55b22b16cfc8b2677"
   }
  },
- "folder_sha256": "6720c208f78d5a875da6cb116abc65d78ffb9e48e72ca0dfd173b58fb8f1d80f",
+ "folder_sha256": "8dff7aa1eae15a3c0824ba8f5b9eba680d9576a89e680b681f4428de239c48ae",
  "model": "xgb",
  "model_hash": "b9c5ab55be6ec4af0d945ef3452495310932d0cc66ff963a1d21e52d4a461e75",
  "ticker": "EXPE"

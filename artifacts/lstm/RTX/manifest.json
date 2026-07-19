@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 67423,
-   "sha256": "d122917b8448df77810196b36f88fb45c0310c2a6050fe1e0e19aae5d541cb7f"
+   "bytes": 67426,
+   "sha256": "da72f9e7ba2beba2b25c7f1b20dac0bca437ad9c34e1dbb1399163d472d78fa8"
   },
   "metrics.json": {
    "bytes": 1056,
@@ -18,7 +18,7 @@
    "sha256": "e83400d4da97fcd3e0e91bccefab16e278eb1fe10dfef514200228098f5329af"
   }
  },
- "folder_sha256": "0100dc264eaa9734bb0b89f07af52505c8507425a562a68837002707c86fa278",
+ "folder_sha256": "24af4e843c8e7c945979e5401bea808a7c4c7b002c48d9e4106ef811d7b77452",
  "model": "lstm",
  "model_hash": "be18cc872e86e83b1082241fed0bea078a16c162fc666b7256d0ba2069ab1414",
  "ticker": "RTX"

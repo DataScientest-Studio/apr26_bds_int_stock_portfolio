@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25949,
-   "sha256": "4d25f01856c224276c4f4d2d2edd7257c8f55b43466596bd001ae9b22a0c13ee"
+   "bytes": 25952,
+   "sha256": "8f19fca8b25351eec8e02c8539b7ce3529ae86742b0f460fc9b7d9c1a42c88c4"
   },
   "metrics.json": {
    "bytes": 1045,
@@ -18,7 +18,7 @@
    "sha256": "08aaf5423b1bf7d7e5d134926ef94a5bafe9d3e62422c713f8e8b92f8dfb8a0f"
   }
  },
- "folder_sha256": "3755fe8d99b1629818c78d5b967053386268b2e4aa36910ecc454d98f7116442",
+ "folder_sha256": "cd86ba2db97624b0ae3636c9b13fb3529d90b21d1ef4aca28d495c6e86f74d3f",
  "model": "xgb",
  "model_hash": "267f5cc0403358e04b8a88cf66cf10cb08ad828481db96e977bb1b13dc910077",
  "ticker": "CNP"

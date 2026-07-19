@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25908,
-   "sha256": "761cd6c234152732d794fe6f41249cdae2e9df77d0e6dd1a29749f674f073d88"
+   "bytes": 25911,
+   "sha256": "22db51f74c4e9652d3546924bd43e65ba889928f5e24faa86b8f94456eac99fc"
   },
   "metrics.json": {
    "bytes": 1047,
@@ -18,7 +18,7 @@
    "sha256": "58eddf770052dffc80963077bd797f82d43e16b297580f582b94cd48bc9e2de5"
   }
  },
- "folder_sha256": "9afcbe8ff6acccee0ed5805cc45752cc074f6d0f6d681b98433eeb72ba9a54b1",
+ "folder_sha256": "f3d416f1d9aaa99aef2dd3fc8f69ecddf492f41a2376de804032c85a51677726",
  "model": "xgb",
  "model_hash": "aa0ccbffc7bf42bd3057db47d9c92d3daf091fbcca982e6c8016ca470a2fd60e",
  "ticker": "AVB"

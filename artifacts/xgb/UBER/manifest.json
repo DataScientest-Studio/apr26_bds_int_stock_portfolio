@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 68335,
-   "sha256": "a6f1b417de9a51c0a2080aae0648f4b35c6e2cf4f43b9739dbdbb522a8bcdcad"
+   "bytes": 68338,
+   "sha256": "6b4ad1cf2475cd83b3a9e046af39fa29df5a74cb9bce2515b921d0d7f0a5dd80"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "f100c4dd14bd8f696ce914f2d69e9720898d993c453f7bcfbb2b09aaf82c0c38"
   }
  },
- "folder_sha256": "c4669445e45d9350bfe7ee09e461c7cf13104472b7785e6d1bf3d9495983ddd0",
+ "folder_sha256": "9333dd1d08897cf223326137de83e6e2d1e3cde4fa434bca81b5417dd2a54ccc",
  "model": "xgb",
  "model_hash": "2ba39261cb941ce2e4cafe014814288f8d21b45916c711835c3f8c5b1f851bc2",
  "ticker": "UBER"

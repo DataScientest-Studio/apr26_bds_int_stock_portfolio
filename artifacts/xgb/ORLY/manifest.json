@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 29248,
-   "sha256": "ff825a9929682c5b992292e10cdbf95302fee7276fabb3b3021871114791ac7a"
+   "bytes": 29251,
+   "sha256": "714848b3a1c33574c205d9c858729f9a871a784e7a4820459571ca1cb1c9904c"
   },
   "metrics.json": {
    "bytes": 1102,
@@ -18,7 +18,7 @@
    "sha256": "cf4d533162c1b02cc9a16102c3fd55184993c54ec388be21758e638768a734b4"
   }
  },
- "folder_sha256": "618e1d1cbdf09ba117a1c657ba5687a6f6c2bc045c0c659707741bbbe72982a6",
+ "folder_sha256": "1d68db6b53aa88f368538773c30508a8405101e7acecfaff562fd3ba0be4a43b",
  "model": "xgb",
  "model_hash": "f6179f022205398cd15cce3f04e8db7ae34d9dde437b71308dbf9643e8d299a6",
  "ticker": "ORLY"

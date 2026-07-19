@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 86868,
-   "sha256": "691f8d394694649365f09699b1ca0e164fb17e49e6bb8c8977bcfe6d56c8eb36"
+   "bytes": 86871,
+   "sha256": "16e7c7159425dd37e251e3d46db47093ba27e943a564d0966beeca153fb3b726"
   },
   "metrics.json": {
    "bytes": 1077,
@@ -18,7 +18,7 @@
    "sha256": "667660ed726f7fee89636fe2cede73dffdb0dab86523ff27f71989a1d9af7e3c"
   }
  },
- "folder_sha256": "5f9593765ef99374bcc553a1f6c167cff8c3c285da33977e975f092579368336",
+ "folder_sha256": "4ba66905dfc7bfcd507ee71a3b7cce648dd190b40d269bb16cc8e0b84f89ba52",
  "model": "lstm",
  "model_hash": "9f1e9d1467525c5e4eb11bec90abe20b6605875ee7a07661d961948289ce966a",
  "ticker": "TMO"

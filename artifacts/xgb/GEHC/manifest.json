@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25779,
-   "sha256": "297b2ef8eed125d5b7716885ed33046e8d82b2163f50de1d5c9a0556004800d5"
+   "bytes": 25782,
+   "sha256": "d7c88fbee7ceb1248b2abfcaaf2ba6ad321f00f5867de3b4489ebba6e427e9b2"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "7552b4d4a56e2b48e5bbdbdba94a77ad0c38cb60d4a18d5aadbca73b040874f1"
   }
  },
- "folder_sha256": "6d4efda5229fbbef610ea7c66b98ffe2cbea52165ed8fc6bc0dcb9cbed07f2da",
+ "folder_sha256": "a4cfe131310d19167b0b82d295d07ad0080b93f9fd3388e570bce3fbc8a14bf7",
  "model": "xgb",
  "model_hash": "289f32520cb32df88f599d996fc3df3998da9bee13849f86682c272813d67405",
  "ticker": "GEHC"

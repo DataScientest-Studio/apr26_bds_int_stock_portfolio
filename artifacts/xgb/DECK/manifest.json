@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 35785,
-   "sha256": "fa324967b93f2afe3683d9d998ef5e88535427701bd68bac62e4873feea2b065"
+   "bytes": 35788,
+   "sha256": "5547edde7d6e3c0a3cc9240a87f66870140235eb16cb68956da58d8829faab9d"
   },
   "metrics.json": {
    "bytes": 1112,
@@ -18,7 +18,7 @@
    "sha256": "70997332f981fadcb9cc8009c2d58fa7d86ac860d4f23bdf5547715f860ee4d5"
   }
  },
- "folder_sha256": "132033bf7ef0b823802b3b8da6bcf65d287daab7ba149ec46940a9e8df3bdc2b",
+ "folder_sha256": "e0138bbd06bff70c1bf208d90b4c775ac2d24b079a5797d77658bd77cb7e930e",
  "model": "xgb",
  "model_hash": "0aa713028cca5ba333a47ae9a9aeb9ef787132caafdc869b915c4f87b04f904c",
  "ticker": "DECK"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 74779,
-   "sha256": "b1568f0d0301eaafd05a66c200e1b950ec707ef23135bf1d9f55467f599867fc"
+   "bytes": 74782,
+   "sha256": "14b514aceb8c0c6fa11c0236d3c76e0fbd4e3a77a9ae58b95e2c3c44eb803166"
   },
   "metrics.json": {
    "bytes": 1065,
@@ -18,7 +18,7 @@
    "sha256": "cc04bc3de8680841b22bc1cac066dd66c2502c5fedcdb352387edd97f5f15113"
   }
  },
- "folder_sha256": "84666ff926cccc735b513e9694d9333360ecf41f2f65e5f127e35d789476a420",
+ "folder_sha256": "d513b8c60aa525c1ffce62814eb2dd515bbae6c49d5cee699492fbf03b925b1f",
  "model": "lstm",
  "model_hash": "992883495b47bf647438ec9dd165de62bbe71f06640cc20af391b2940d9cd96e",
  "ticker": "TDG"

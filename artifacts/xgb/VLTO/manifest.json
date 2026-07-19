@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25763,
-   "sha256": "55a7e6e7e8e5847ce48f5667011a8943dae2c52a2de032d1b421fa0cfb4d6933"
+   "bytes": 25766,
+   "sha256": "177bde980f7d17ab6c5eb6d55d02af8f0fd425af9e83f74cef711ea5d017c6ee"
   },
   "metrics.json": {
    "bytes": 1046,
@@ -18,7 +18,7 @@
    "sha256": "cfcf0476ac7d2a33671cf2fe327274d3f47c439051aa2d1cc2717ea0cfa54911"
   }
  },
- "folder_sha256": "f6eb250f51f6d64f582d016daefd1ae6fd5dc8751bf873d4653f0c0e4b8f7852",
+ "folder_sha256": "a4816da100dc0335b39a46383a75cbb94de546f7fd787d55eba40629197dab0b",
  "model": "xgb",
  "model_hash": "6d29c18575e5db91892fac6d17f9bd6675beb36f552f174292a12adbd23d040d",
  "ticker": "VLTO"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 84912,
-   "sha256": "f0e8c4e6cfea85f1b889df68c769e286be78a7a3c842ac059c154536e65cc8fc"
+   "bytes": 84915,
+   "sha256": "1be60c48b53cbdee999567b4a38ab709560f5c839bb6e74bc00dcdb38bd2359a"
   },
   "metrics.json": {
    "bytes": 1070,
@@ -18,7 +18,7 @@
    "sha256": "f9c609bfeda1a128ab7234a2a4240dcf7a18de6c372bb8c23d03930f457c9ac9"
   }
  },
- "folder_sha256": "3c5097d2094def4112b6fab550704814a6b29e30cbd03946872a86f1a3afa0c4",
+ "folder_sha256": "1a39a2ca212fd358cb65efd1ecb6043645fb535cd8f0a8d6bdcb323b03a82a0d",
  "model": "lstm",
  "model_hash": "48413ea906db86c14da5471d59325633c17560e533d506c7d1f1d59e59474a27",
  "ticker": "EOG"

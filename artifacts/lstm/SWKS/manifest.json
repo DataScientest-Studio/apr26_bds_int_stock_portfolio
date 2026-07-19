@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 82271,
-   "sha256": "426c14e655d7616194e7412c5f011a31c739a3462d5aeb22384778a8cda27d96"
+   "bytes": 82274,
+   "sha256": "9691c0cb6abd7ee38e5c0574daa02cc02f5e8a8538594656a7337a210c4ee28a"
   },
   "metrics.json": {
    "bytes": 1072,
@@ -18,7 +18,7 @@
    "sha256": "e646f7400f4a676f5c9763e734106a5f485fedb42b973bf26f23edb2cd6c5c37"
   }
  },
- "folder_sha256": "ae7f4fbb6a71577dd106b1208ef4c31db084d7584822e2b07a1994f2b716702d",
+ "folder_sha256": "4a067a56c4a974345ae4e9d8bf29008f00e7df618459b68b3369a847cfb61427",
  "model": "lstm",
  "model_hash": "f0eec53a96a5d9a9fa09f44066a595f14aa318861994f84b3f2165f704a30df0",
  "ticker": "SWKS"

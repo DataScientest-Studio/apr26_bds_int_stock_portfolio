@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 60982,
-   "sha256": "7d2ab58f978c42d069a4b72bd1fe78f7b4dbb84370884a3eef44c6b99bc7858e"
+   "bytes": 60985,
+   "sha256": "47171efbb350c3d29dc291a03c64e6fa3346cf69b630f1cf0a07f1a6ba72af09"
   },
   "metrics.json": {
    "bytes": 1059,
@@ -18,7 +18,7 @@
    "sha256": "5c6aacb89cc70b8e5ec8784d40f616fc7646e3c46db9a6fe1d23b6116f6b0aad"
   }
  },
- "folder_sha256": "5a832dea7b9bce064baf8a49694cae22d7e1fb7eec18d617ab473d950a446892",
+ "folder_sha256": "e42c4c20cbb050e3278128f18ffdc08a67a9f49e78834beb38c7124408e23fae",
  "model": "lstm",
  "model_hash": "feb1fa3bf4c9bd6dd68336a3584d5bb80ac4f444aac01c6af546b3a6e34ab3a7",
  "ticker": "BBY"

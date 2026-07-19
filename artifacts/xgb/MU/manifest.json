@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 28234,
-   "sha256": "755301c2d4c44f0c1a292614bc9b65f1da649a2bfbd22847d55476f7f0c8916e"
+   "bytes": 28237,
+   "sha256": "cf3c6c1494e98744f3413ddfe312fb40bb304aded13fa65e316405c728fde96e"
   },
   "metrics.json": {
    "bytes": 1102,
@@ -18,7 +18,7 @@
    "sha256": "7f92385e87dba9c19c3af59fc9eed97dd93e5c2e1fe089e0f379731f649a23c8"
   }
  },
- "folder_sha256": "b05922a7dc2947b69052e3b37305c5a1b09fdf0687d4c1419036f0cef4e449d7",
+ "folder_sha256": "33322da4d0c25c8ae32cea3b7d83efb9ee11cc313dd5b15056c02953d0e667cf",
  "model": "xgb",
  "model_hash": "c3aebd00eb40793ebd35ec2c33ce5e3d3bc916e8c708e15affa931e4c521387e",
  "ticker": "MU"

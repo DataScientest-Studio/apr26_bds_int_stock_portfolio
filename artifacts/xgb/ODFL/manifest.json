@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 44145,
-   "sha256": "b5a585ac1c7482b694d91c76fa2f0876fc197dc6ede50c312f057de6e9c5c235"
+   "bytes": 44148,
+   "sha256": "7abfa788071b7b0b11693c5051b20da413bd0dcf3068825ca605941637a351cc"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "1fe36ad476e21ffdc8361db6a4a26b090ecf7a6c7957f36508d0367f7c360743"
   }
  },
- "folder_sha256": "4fa68b3afa12856ef0c18aafef680eac927d737efe9badd13e905e9b89f2b5f9",
+ "folder_sha256": "e8e42a092027b77941601a6c6a4548bd5cad5723b25f34e37d6b6e5881c3fcf4",
  "model": "xgb",
  "model_hash": "ea3e0df6d964f35c163dea166c94858da892a8f502ca938bfa71b27c13d0f64b",
  "ticker": "ODFL"

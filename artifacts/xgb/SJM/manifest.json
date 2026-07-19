@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27363,
-   "sha256": "a315df894fd111bfb2920ef9373b7ca04a9501ea5571dcbf60dddeb7bee30cb1"
+   "bytes": 27366,
+   "sha256": "7962bdb56111deb8091db05f7394fca836c7fdc16e7f872574e6ac2290bd51d1"
   },
   "metrics.json": {
    "bytes": 1045,
@@ -18,7 +18,7 @@
    "sha256": "9d84e0588d10855536649fc2bbe10c3ebc65f4a68c16069269904b10322fe5f2"
   }
  },
- "folder_sha256": "0363c6693bdb88629165ed63dbf2131ec5ec751b7f9dd910d807548df302ca07",
+ "folder_sha256": "9af4d91020d466c44dd025bc833ecc913f39c7926305ca66a51d219a49abfb9b",
  "model": "xgb",
  "model_hash": "67d2f5c71d3293faad643f36cba292c5e0e7d148215606c8b49ecc193f5e5dba",
  "ticker": "SJM"

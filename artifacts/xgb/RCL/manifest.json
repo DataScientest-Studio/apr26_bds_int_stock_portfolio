@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 34960,
-   "sha256": "4a32483c9d4184405edf5beafa38c4a3cbb7d2e29f12513eee67ebb81a6711d8"
+   "bytes": 34963,
+   "sha256": "5229047b92ca325a2be6e1a4fa32440b47179ccba9365851eaf32f26c8a613c9"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "8a15769c61faee832b2157fdf25f175bad82c0b5bfdc8364dc3f7c91d9acad1a"
   }
  },
- "folder_sha256": "48f2f38bb7634e011214e7ae8be217fbf75ddc58746782bef9802c50c5733cbc",
+ "folder_sha256": "71b94ab94e63d6192f1f2af41abfcf08cb7ca06c79c62a49f59e4115f63376f2",
  "model": "xgb",
  "model_hash": "4c26660e8bf520b4b5db36d4f718ef15e1c837ef3796a9ee967cdb91463986a8",
  "ticker": "RCL"

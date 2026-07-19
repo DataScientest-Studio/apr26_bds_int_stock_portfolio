@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 88808,
-   "sha256": "8e77e0f1e77ae5a9e062debf1a81740ae07d6ad133235e19fc83f2a3ac23893f"
+   "bytes": 88811,
+   "sha256": "cdf61ee52ff176acb1bdc294dca421d82464a332afab7d214bb2485af834d04e"
   },
   "metrics.json": {
    "bytes": 1056,
@@ -18,7 +18,7 @@
    "sha256": "b4f84d807496c2f25a0cba4008e7f7256d8bf051583e8ccb447c27a350771e8e"
   }
  },
- "folder_sha256": "a81e547b96062c611c296ffff151465f780946386a293c12d19e73b17383643f",
+ "folder_sha256": "51d839d3a0d93646dd18acb7f9caac94bdad612acc1323d9493010b792d91b9b",
  "model": "lstm",
  "model_hash": "aa0c77f941ed2344e341691f7dd1df6f6a80c41640c7618d02e9b1a1aa98e253",
  "ticker": "PTC"

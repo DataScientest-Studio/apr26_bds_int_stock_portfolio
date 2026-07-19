@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 254785,
-   "sha256": "be24af3a85920bd6e303c7c8942b9dc0936e98059d8e0e3c6d7a67b052ededff"
+   "bytes": 254788,
+   "sha256": "73579f6a0937a24799a1a41184744eee2326a7e6a11a929ee3c0c9dfe1ec8621"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "44541aa66e29a628775648706fa3bb1f7df56403cc7d4ab09b5da8f954c6a3f5"
   }
  },
- "folder_sha256": "bb099a38bf053c495d8b190a339551f55bae09b4564b945294aa12d441113fdb",
+ "folder_sha256": "785e6d6a90bb8785e02bf4de22ecd0fc954368723504c4ec0411adaa87e71d42",
  "model": "xgb",
  "model_hash": "b0ad85bd78469c3ae7ba0b9dea724d60a19806925f39c044eb4600036c3a9e73",
  "ticker": "CASY"

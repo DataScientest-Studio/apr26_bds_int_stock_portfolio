@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 60139,
-   "sha256": "7b93677264fd62a7d0e67a50661c357614a3532a575e106a35bc48e9a5190d81"
+   "bytes": 60142,
+   "sha256": "76248351f199c88b9fff960d3920bc8ef3e01bb5f8d97f40fe4bca9604fba3d5"
   },
   "metrics.json": {
    "bytes": 1052,
@@ -18,7 +18,7 @@
    "sha256": "76d0ebf852afac16d8dbd8002e0f40c78387322e2b4adead6c672dd43bbe15a6"
   }
  },
- "folder_sha256": "3a9c29b686138181a912c364c0214a67f34be595d41525179459efe6c0ec76a2",
+ "folder_sha256": "c1c31cfaf2450dcfe33894d878e99a167e8a42c2e6685cc677467cb9ed82f98c",
  "model": "lstm",
  "model_hash": "a57e9260f6774981976ed020d179a92a65ddd3a850b4357c88d5490ee8def3f7",
  "ticker": "SYK"

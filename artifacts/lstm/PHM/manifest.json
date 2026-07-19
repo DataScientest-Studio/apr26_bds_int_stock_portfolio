@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 85573,
-   "sha256": "c39edc02d51641f1d5d9e8b02a6c620ea1f7d78f7ffb2bc8d7529f400f5d95ec"
+   "bytes": 85576,
+   "sha256": "1f7d94a3fc42f1d74469e07e66af8f1d30baf3d77d2a4a0d0bae6cb85ee6bba6"
   },
   "metrics.json": {
    "bytes": 1071,
@@ -18,7 +18,7 @@
    "sha256": "136ec90aa1612fe8445672783a4709ac6cb199355ebd8f630619aea8c40f34e1"
   }
  },
- "folder_sha256": "611178c8d259196fabb3d8e834e857b52a37c17a7563b6ba15912e5821b6f689",
+ "folder_sha256": "687c5246209677c5546499e5ef223df9f8f22361ac4efbcc6cf3768fb5ab7f62",
  "model": "lstm",
  "model_hash": "831911197fcf03f1aeb9e0f90c083b77751e2f043487f8a0f3d36d7ae34b6a9e",
  "ticker": "PHM"

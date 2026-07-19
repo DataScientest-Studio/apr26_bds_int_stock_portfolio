@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 30898,
-   "sha256": "aaa9da2f5b530b5a7ab996596b0cc387ea921c3628c25f2057f416be3995b206"
+   "bytes": 30901,
+   "sha256": "9b59a512d8196507cc5f1914b4c3ef74a1b4504377cb89159e8f042ba3953471"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "dc455fd2507fd393566fbaf65b5a40c442b3e9d53e84508a9509614364197c5f"
   }
  },
- "folder_sha256": "ec1795281dc477c754badba5fb7c408a77620f6afec7add65c32bbb403b243ca",
+ "folder_sha256": "ac32cba5184dcbc51ac47dd43c5d9f21874b9760cfdb7fd8cf0620433eb1ff67",
  "model": "xgb",
  "model_hash": "861a00c7e2ac210fe07c4450cebfe5f24fa2a29f12481c2bae64244af1ceb94d",
  "ticker": "KEYS"

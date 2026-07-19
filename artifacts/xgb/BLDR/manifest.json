@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 41127,
-   "sha256": "6194cb74dc74c04032ec331ed4beeb5e22c3fa0b56078bcbb28ab89bbe7b2743"
+   "bytes": 41130,
+   "sha256": "2dbc6e3616f544696548d5a7314f11ae289e52bcae575e6db0a96aa6625cd3a0"
   },
   "metrics.json": {
    "bytes": 1106,
@@ -18,7 +18,7 @@
    "sha256": "f06194839ea6bb6f7406d6b9878da42c4e9f7a399f95f8f0292662f446529bbb"
   }
  },
- "folder_sha256": "7598a2655afd19d1d43d1508b0fe65c7f7cc98b5b659e25276756065023752e7",
+ "folder_sha256": "27bd675455e29640d8b95e2c251b919c1189dc3a197c228f81907907fbf2f7c9",
  "model": "xgb",
  "model_hash": "37848fcef0a20fe6390c8e745b68e9f632d29922f6473656b4003ed5191931ab",
  "ticker": "BLDR"

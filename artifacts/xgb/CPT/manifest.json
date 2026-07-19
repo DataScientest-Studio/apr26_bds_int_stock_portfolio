@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25924,
-   "sha256": "f04b9c44f84afdae1b1f86c4dff69115c41bde90ebf59736b1ca2bf26124c792"
+   "bytes": 25927,
+   "sha256": "8b8d799ffd316bf449d1b8085ba88385dcef3335c2f6428e745ca5bdd2e0cb10"
   },
   "metrics.json": {
    "bytes": 1042,
@@ -18,7 +18,7 @@
    "sha256": "7096e642f361d5e3fcc1fa7393a334079f4f4f1e5b2137cb7cf808eda9089984"
   }
  },
- "folder_sha256": "11ba0e5da1dcf6d92c7341a34d92020dda40016aab2ff29b4b830fc87dbce6d2",
+ "folder_sha256": "0478c8061194f182c226d19d6f490abdc7886eebcc8f5240cf77dd0a3b1e789a",
  "model": "xgb",
  "model_hash": "08f6b3cfd6b9e8fc86a893bc8f452a7ea6a44ddef3ffcb351fe1c210a4b712bc",
  "ticker": "CPT"

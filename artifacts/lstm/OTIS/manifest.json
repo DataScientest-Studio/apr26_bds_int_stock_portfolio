@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 77268,
-   "sha256": "460aeecd06c39154cc4053db68069cccc76cd2040605f7a1d2b389f65123d7e7"
+   "bytes": 77271,
+   "sha256": "3787873fc7824607e9ac2c7c2fe735371068a19f0508acfb4187a34f88b41f14"
   },
   "metrics.json": {
    "bytes": 1082,
@@ -18,7 +18,7 @@
    "sha256": "f414a2c47bef8fe95e8e13564016f6bafbfc1bdcdf37576451f241bae7e7fed9"
   }
  },
- "folder_sha256": "b235441fe66bf70a41c8fbcaeecb95ad624e74ccf40bf6a389926b502bdc9af3",
+ "folder_sha256": "9dc492b7e972dd6e4bb1d9cab4db84c2c5c8e2493a123563910cc8895a139a54",
  "model": "lstm",
  "model_hash": "417f271a69849827ff4b6835ce664e7c6067467b9acdd1ec41f3833814e8e64c",
  "ticker": "OTIS"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 82969,
-   "sha256": "787fef45c78f65fdb752e61a2a887500670ef8fb568a263e346fe09c3e7b885b"
+   "bytes": 82972,
+   "sha256": "9332a2549577d8998b7545a7ae40332bcafcd7a3bd615f28c014d9c7fd12b29d"
   },
   "metrics.json": {
    "bytes": 1076,
@@ -18,7 +18,7 @@
    "sha256": "424ffa8104a35d670116842b7bb11c1be2b955fceb71096428a0b988bd5d01d0"
   }
  },
- "folder_sha256": "1546aaf77c13e399e6f60f65457457b228b9fe24c3b01d5878166436b8a76711",
+ "folder_sha256": "7d514aac13f49a2373d62b8560dbc612ac3ea0d8964e908039129d84b9461532",
  "model": "lstm",
  "model_hash": "cb8a17ecf5046c7fff2bc585c26b51a22e07cfcf82549ca343bba1fee2ae3993",
  "ticker": "AMT"

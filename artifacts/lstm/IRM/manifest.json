@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 76862,
-   "sha256": "46f61741ea89ad554557efcaea512c1c232605224b0a485b5aded7c296459e45"
+   "bytes": 76865,
+   "sha256": "649c31aab8abb046475a3683b18e8f476b9ab2e72943b437eeae01acca855343"
   },
   "metrics.json": {
    "bytes": 1066,
@@ -18,7 +18,7 @@
    "sha256": "6010ac3038dc41a7526d79d08b4a12633550d86fa6d2d46897da39170c118878"
   }
  },
- "folder_sha256": "948b5c028a9a6bb477a67486bc4a47bd35a42f6be0cab5269c44d21a04a6132d",
+ "folder_sha256": "76f0bee9f9195752ace9d44c4d9ff1bc3258536c0674c78e9174f1ee9c2f56c8",
  "model": "lstm",
  "model_hash": "6fc0640b0f3fb72e6049fa21f2a9fb6091219e5a614cf6c1e8062421cdba19e0",
  "ticker": "IRM"

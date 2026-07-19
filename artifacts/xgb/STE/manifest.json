@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 29166,
-   "sha256": "d9e178ca3be6951d5b328f88fa2cb61a1ab5d38597c3c3ce346f322aaa181468"
+   "bytes": 29169,
+   "sha256": "96ea87c5e0858a45e3d4026548e99f98c3d2f2ead4f9942451befef57075fd3e"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "e06468396990c1e2a686a66bf596ce18b3dfdc7dd09d066cca7d54398e53fcb7"
   }
  },
- "folder_sha256": "73b48ead238d560f10baceb254187f74449f535617e5a99c248ed6be1b355025",
+ "folder_sha256": "7382bdec565678fb5206cc768712c9c571bdd167ef5ddde0aa2fa9dc5fde66ef",
  "model": "xgb",
  "model_hash": "5860a2d3c668a88b746bd355149237a845ed21b1273f1a88c168b5636d39fb4c",
  "ticker": "STE"

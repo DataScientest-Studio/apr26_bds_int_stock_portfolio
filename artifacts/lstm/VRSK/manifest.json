@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 87365,
-   "sha256": "8f30cb3e0e76d0173db5f70d1cd55289908efc788ba9ac8a9cd0f62e8f7820f9"
+   "bytes": 87368,
+   "sha256": "54ee904546c51f4397af78b5ad1ec842324cd1d6004778bd6792d5e77cc99741"
   },
   "metrics.json": {
    "bytes": 1072,
@@ -18,7 +18,7 @@
    "sha256": "c7e898d8251acd96384481e6cfc854e70ca3bb416ee4a11e35c98fe3bbec11d8"
   }
  },
- "folder_sha256": "f6a527cf0f097fa3594aec0916cccb91dc3528669c01b5601d3b56fdc235f54c",
+ "folder_sha256": "8f57e35d3fd58fa34bbdd43565f798a68ecb10f45c9cf5c7acf6edddf0809da9",
  "model": "lstm",
  "model_hash": "f778cc2699496e2a1a822bbeec4f245c1dc00055bfae8a993642f717fafa8803",
  "ticker": "VRSK"

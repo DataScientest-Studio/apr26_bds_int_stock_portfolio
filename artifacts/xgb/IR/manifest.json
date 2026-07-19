@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 44216,
-   "sha256": "2061a7517d218fe3b712aaebd9acdda25bc8e338acd35d641318e21d11707ca5"
+   "bytes": 44219,
+   "sha256": "037e1493bd3bc0c0c7aa32401e973bd36c93202e546e5eacbf7970f34dd94db9"
   },
   "metrics.json": {
    "bytes": 1103,
@@ -18,7 +18,7 @@
    "sha256": "e679b38ec4047ff788af9cc49071dff60506eb354fbf9dc85439bd35c2a2d387"
   }
  },
- "folder_sha256": "1a213234308bb8010c7e3bf237a5b791bc5b736a439246390e888ff8d664e8d9",
+ "folder_sha256": "762ac6520c2496df3b0012c254b0e979fa05b74c29d85595c593ccae8a3665f9",
  "model": "xgb",
  "model_hash": "e05c6af6c8b1f2e9d552ff9a0cec5eff38f1d3715059fd78d5d3cd5b6ab2a355",
  "ticker": "IR"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 72037,
-   "sha256": "2c519657e4a73bd6e015b3ae355ed72d3f6fa4c8791bcd7eac5f67f3755688e7"
+   "bytes": 72040,
+   "sha256": "2a30a8f35686ebf018622072df2c4c0a8e214883a6e4e509ccf8466507d54cfc"
   },
   "metrics.json": {
    "bytes": 1058,
@@ -18,7 +18,7 @@
    "sha256": "d5da8e260d250205930fa32e89ca8dc0eb3118bac1e7a1371eaac53483d5d721"
   }
  },
- "folder_sha256": "40bb71ae03ed5c0de8539b6e28b8684ddef9ca149fcb5880f41f4f1e3fc5f892",
+ "folder_sha256": "45a806e945c004cf1a4e1079e9fc5cbad83da2ae458a65bd18617a59cc911de5",
  "model": "lstm",
  "model_hash": "e36f82e0ff0046402403ec2a2d1409bda4bb5eb1fc96b5993b422097c40d0ff0",
  "ticker": "BKNG"

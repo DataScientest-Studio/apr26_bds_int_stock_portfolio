@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 64466,
-   "sha256": "7789f1f96504b4905213389f899de23a1a9771f58f752b2e3ba2be69887e8ea7"
+   "bytes": 64469,
+   "sha256": "8e72f9309417c9bac994be4caedf4fbc61e1d5f5863aa0fe45b1b90b751f00b0"
   },
   "metrics.json": {
    "bytes": 1107,
@@ -18,7 +18,7 @@
    "sha256": "f1c4b846b2964034050abb8980c3a7a7df23475aafb49b70d1cc42fcdbae0deb"
   }
  },
- "folder_sha256": "d23df50bc119f333f02f549ae7a194e6b29a0f35ea762719a46a3eac29656afe",
+ "folder_sha256": "42777ce19f52295cec13ff078cf4dec3d056264b91da36263bf0255fd89438f6",
  "model": "xgb",
  "model_hash": "d611b100b0dfa98a3eca642b83f291bf30ef4d3d5eecb3ad39af42c4f9905fc4",
  "ticker": "ROP"

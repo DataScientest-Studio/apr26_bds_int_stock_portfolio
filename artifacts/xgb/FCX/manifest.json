@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25906,
-   "sha256": "643e87e293db09c1cd5532f5cb655be13938b38cecb780cef1581babf4fa0194"
+   "bytes": 25909,
+   "sha256": "d362de7b09798baa351b99a2bac2ce5bc45022acbd47c601d06a037e7931799e"
   },
   "metrics.json": {
    "bytes": 1045,
@@ -18,7 +18,7 @@
    "sha256": "7326c35e6f453a86a47c31b8bd5afca69a0422eba3f3c668e59ccb837195fb2a"
   }
  },
- "folder_sha256": "68414e282466e12b19719a188338fb9af6ac5bff42b853e50e7f8fa72010b112",
+ "folder_sha256": "f0228d32b1c027463601f30c0217c1d3d7ac90d2b101003eb897ceb0a34dc777",
  "model": "xgb",
  "model_hash": "130517ef5234af524056f3c147b6dbfd359f48660a08dd3e8e7326322b48cc16",
  "ticker": "FCX"

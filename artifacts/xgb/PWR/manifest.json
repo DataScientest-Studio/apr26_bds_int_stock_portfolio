@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 143209,
-   "sha256": "7619be4e6a1616834bfa65deaca68a1edaedea0bd9b180ce5f464082055391fb"
+   "bytes": 143212,
+   "sha256": "479abf4e64b30c5577693c649331779fdf936b5f27695b11c45089add6949719"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "25cf5c5f7dcbfb78b8e2a185cddeb6c7a6434eb11d3db657e2608bf6389c8bed"
   }
  },
- "folder_sha256": "3afc9274a0d2acafe45bad63effeaebda15e0285105642a9c3df818a7dc8cdf1",
+ "folder_sha256": "4425b92f52b06156301967a4cae91333d0e38b4708f36053ffc005d98c9a9d76",
  "model": "xgb",
  "model_hash": "0e5255fe17af4062dbd2773349b040432851fb0d7ed252186be241674c1ae1e4",
  "ticker": "PWR"

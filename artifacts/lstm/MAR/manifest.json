@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 81409,
-   "sha256": "cc07874658c80a6a62fff660fc00805dd02fb1f410817acbdcb14e221d6e1a2a"
+   "bytes": 81412,
+   "sha256": "30173303619bab95e730e5e73886cf947b481163a9bbbabac7d8d32a4cc54a16"
   },
   "metrics.json": {
    "bytes": 1059,
@@ -18,7 +18,7 @@
    "sha256": "87cb9221805e7d8ea1ea87e358eaeee72066dfae8f963c8eae5c5db2b2e4e447"
   }
  },
- "folder_sha256": "80dfe8d250e0fb86a9590ee03ab573b6ad5b07cb5fd9028329cf9f919ea3a168",
+ "folder_sha256": "ecc511f9e6b52e9a71706dd2d2cf70fe525e0debb6db32964df6a5bc92a02e21",
  "model": "lstm",
  "model_hash": "dbb4546e9c149bcffcbbeefcc25b882f7adf06b519d38daf448eba12b37249b6",
  "ticker": "MAR"

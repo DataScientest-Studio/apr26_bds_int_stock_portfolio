@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 86407,
-   "sha256": "1f283206dea8e8abd2bd9375287d7e71cd9b4535cd197ea539d20a5dc451f535"
+   "bytes": 86410,
+   "sha256": "365e4a9a90102987f8e2b13385587a599d9166c85fbc871837eac5f9897f3184"
   },
   "metrics.json": {
    "bytes": 1069,
@@ -18,7 +18,7 @@
    "sha256": "3e08c847575576fd7c88e5667272b68669de5aaebd4de22130fabc35928e5038"
   }
  },
- "folder_sha256": "07112f67476a63c908cd8eb672aba592936d4d4ee9eefb2d4ad6c2ef07a3f7bd",
+ "folder_sha256": "bb4d1244345c9ed041e663ba1cb3c530f207673426045853d214d7c6cd3ef881",
  "model": "lstm",
  "model_hash": "272145e8d376a1e5fcff3ed224d7715271d8988e23dd03be69fd43fb1f8f7cb2",
  "ticker": "VTR"

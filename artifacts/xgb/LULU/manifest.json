@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 59458,
-   "sha256": "9301f2422fb3f2e5b6b4b0d8897ee605a140fd0b286470114cb54df52df573a4"
+   "bytes": 59461,
+   "sha256": "c5dd8e56603312cd64bd4a6d66de8ac4dc7a661df0fed7c0d2fa33768e01d52e"
   },
   "metrics.json": {
    "bytes": 1108,
@@ -18,7 +18,7 @@
    "sha256": "8eec13b9742c49a427d00ee57c04fae49f285b95d1cb3e0bbc0909782aa451bb"
   }
  },
- "folder_sha256": "1d6f0aae941ed3090104b12efa8ee4aac370bdf3dc7a10104876f436ea5c57d9",
+ "folder_sha256": "220fee5e22a223292a59c165b48be2a8240d61189705426dbbec321954571591",
  "model": "xgb",
  "model_hash": "db9ab15bb5d7e4219ee441b7d893d541fae4b425b0bd709d46edd935cbc0fa8b",
  "ticker": "LULU"

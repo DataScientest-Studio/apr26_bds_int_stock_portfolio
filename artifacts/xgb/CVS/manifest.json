@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25902,
-   "sha256": "1c8006a1ff38e0ab05ea92bb055214e855d90341c708c0184293f635b4126979"
+   "bytes": 25905,
+   "sha256": "37c71793382522d9c45abb196f3e8af185cfcaeb6fd8794be3c63c5793a55075"
   },
   "metrics.json": {
    "bytes": 1043,
@@ -18,7 +18,7 @@
    "sha256": "54d37f033e507c917f1532846d088cf32f3e70d13c0e790c703efdc7d001b4da"
   }
  },
- "folder_sha256": "c9e8631482dcda5c2e5b2724dc177dbd7d361fb7367fd6347b4d3a244f81c7d4",
+ "folder_sha256": "4c334746830f3ea56b13645821fefc6ad2ce1b1d86dd9b8c7a3c6f937f950c4b",
  "model": "xgb",
  "model_hash": "96e951bbc36b1044337b98139ada3a5e7a9b10e27f542d134bf5be0a65eca650",
  "ticker": "CVS"

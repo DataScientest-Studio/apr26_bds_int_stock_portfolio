@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25928,
-   "sha256": "570eda3d942516b251efbc5acbfa2f2e65864d457e8b952cd9077b4858311aa8"
+   "bytes": 25931,
+   "sha256": "ea92dd9b8f5cc5ba80644141bce5f061684dfc5a6d1ff92a5d941d265cc223be"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "f59240b5ea896e40014c42128dfadec5740151787e059a47b57a06790cf13a1d"
   }
  },
- "folder_sha256": "cc525664e5f5c2855fd10c7305e27ee04deec826f377bfe97525e074b324b559",
+ "folder_sha256": "95d5fe5a37402cad3485f18504e78f7d32c2a47f41fe661cb426b89f8aef5af0",
  "model": "xgb",
  "model_hash": "2f026f9c0bb5af3726e365b550bbbb4cd480de3b2be829b21e04cf2f806df7ce",
  "ticker": "OMC"

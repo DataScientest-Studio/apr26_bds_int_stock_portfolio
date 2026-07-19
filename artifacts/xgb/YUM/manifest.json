@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 47577,
-   "sha256": "81fea55f2cce63c1732b92c356268fe1f17c830b88e2396256f884a63cf13cc4"
+   "bytes": 47580,
+   "sha256": "32f18a797464f9a505a9bf03b6be00fbe848550da96048a0a5ad29e37825c223"
   },
   "metrics.json": {
    "bytes": 1096,
@@ -18,7 +18,7 @@
    "sha256": "c8dda84699be317b62851f79ca9fd71c011771355bae6550551ecc86bbc2dadc"
   }
  },
- "folder_sha256": "bb507b22d1291d17ff77f61bb78408fcf4b8ec493ce8c39b97bc6f236a8c0219",
+ "folder_sha256": "0124755c682f4ef247865fca84abf72f58ddbad92663cd3355a23acf46adbcfc",
  "model": "xgb",
  "model_hash": "ac5c5d7870e026ca147bab09d8e46e64b372f90f429b3af8116447473e80ab81",
  "ticker": "YUM"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25918,
-   "sha256": "fc47a97deb783c9fc974445d6b3b65324b8739b0fece45558fab44db3a5776da"
+   "bytes": 25921,
+   "sha256": "2b673e3f3406f9223bf39223236411b027393936778de343cedb3845f1e8788d"
   },
   "metrics.json": {
    "bytes": 1040,
@@ -18,7 +18,7 @@
    "sha256": "09613212ad5df32d77fd7c320f1c4c0b5364ba7da14b6969de7c2e0ed77e3b9f"
   }
  },
- "folder_sha256": "b125509c27ea4caa7157608656b802475f0e8c3a030b44bf302f5a86e8e473f8",
+ "folder_sha256": "bc5d218bf2f4e8c2f005b2aeb3686a3fdc0160c3f0d1ba886b5cee5a2419470b",
  "model": "xgb",
  "model_hash": "9c58bd68c80bd2dfba83a6ecf9beac1559c7f68809eaa2afce5ddd707ef6233f",
  "ticker": "CAH"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 45441,
-   "sha256": "9bf6dcce0807b386af35f76a1e9eaa7979c45a9644b9b76aa3ff5c79d70be12d"
+   "bytes": 45444,
+   "sha256": "84ec198b71f471b798a6d93120f9330337e4dde7e7b86fb16a2bff973cb222a6"
   },
   "metrics.json": {
    "bytes": 1106,
@@ -18,7 +18,7 @@
    "sha256": "bec25fe864b68aeef480296d278bae0dd6f886e1a722c826155376fd992ad0fb"
   }
  },
- "folder_sha256": "86b92a568208484c93d3a4852e707a83ef271354630042c6f2845baff070a72d",
+ "folder_sha256": "0a856a75e602a8adfcb56efe3901f497d631a99557014ff524a7285cbfefc038",
  "model": "xgb",
  "model_hash": "b436f5ae708fe33624676f78d8fe43cd436cdbc6ac0d5787ab078fae5c3863cf",
  "ticker": "SHW"

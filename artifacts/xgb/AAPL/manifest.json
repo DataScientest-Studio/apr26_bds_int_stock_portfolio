@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 94564,
-   "sha256": "aa794c4162faeb2d6b636dd91a107706f3a41b6e0534be53a5dc8cdf09b87703"
+   "bytes": 94567,
+   "sha256": "0e9f06030b571ec27282ed45b854bc9f404d3e5d301ce96660e8dcfdcfc4de45"
   },
   "metrics.json": {
    "bytes": 1105,
@@ -18,7 +18,7 @@
    "sha256": "92a77728b0e08d4d2a3103b79cabacb57c0bd2d00a9692579ca4b537346abf87"
   }
  },
- "folder_sha256": "2494154324cbc9ac941b6df75b1aee87df5432a46d0c8c05f4f9b6d3985ee478",
+ "folder_sha256": "de42f984bc226b82ff01c72d723f7ac26c5f6e29f4555b3d20fe13da427730b5",
  "model": "xgb",
  "model_hash": "258183d923085027f8d93254a8bd0528dbe55f0ad5eed74ac202a22844593e62",
  "ticker": "AAPL"

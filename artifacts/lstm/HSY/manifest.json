@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 80640,
-   "sha256": "ef9b4ed27246bba7d91618009ab8e816db7a2e2a4bc0d9827174f2f902a2e01e"
+   "bytes": 80643,
+   "sha256": "5de34e7e91ccc90974af34aeee88cf2311a5cbf170cfc050f4a71cee0e08a44d"
   },
   "metrics.json": {
    "bytes": 1078,
@@ -18,7 +18,7 @@
    "sha256": "e8821f656ec24613b423bd98221289d48a55e2b2edd43b00cf03140f6c3e4ee7"
   }
  },
- "folder_sha256": "da912139a0959910b5935f2d22ed1f87e030f8b41834b4df44e68dc5a0bd1c1e",
+ "folder_sha256": "f2d5c2b7b3043fe8a97240b5e0b4c01b3455e8bceff3d51ef3c5900e6a7a1a31",
  "model": "lstm",
  "model_hash": "51f2d69a183cd003fef14474e43eddd38f83e175ee19dc42c218a1fdc7136632",
  "ticker": "HSY"

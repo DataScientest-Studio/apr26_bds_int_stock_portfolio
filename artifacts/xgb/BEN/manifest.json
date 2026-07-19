@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 34888,
-   "sha256": "f60d00c0057f78afc7eef778d314775ac529f5491810e8aad52d9c0c8c770bc9"
+   "bytes": 34891,
+   "sha256": "8f715e1b0ad069ff7018cb28955ac09d3e43e9ab3daec1f6c3827154feec1af6"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "0baf332e313bbb41525032b722fbe8e48acf1577297d5c1ea9052866005a77e7"
   }
  },
- "folder_sha256": "096aacc68ed2752710ff2f41660d6794e082d0eed0c993e6e4fc654449148fc1",
+ "folder_sha256": "eec5ccfb7dd9f5febbe286cd35e7863522a5141b6376e3149f8dc77f8428d6ae",
  "model": "xgb",
  "model_hash": "4d54737056f4c114ef558c1d119bd558ecf6cf13a76fd00b77e15abd12e0ecdb",
  "ticker": "BEN"

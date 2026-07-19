@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 51107,
-   "sha256": "fe6c2bff9408092ca36bb1d4fabd18a73a2a8484cd8cbbf74c78413066e9e207"
+   "bytes": 51110,
+   "sha256": "1f06ff49da8f703d68d2572e891dec0b59cf1f7e22888dd082b932e71f749074"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "717f07f7218f7a5433044e98fee48310e0a16fa5d88c29c1d4f3eeae0a35ddc0"
   }
  },
- "folder_sha256": "a5f4911f77c0355290216cbef6f61f5db3011fb7f0e19284c060c878be7a8c1f",
+ "folder_sha256": "d3701fac2d828ed8f8fb5c92b965d49ae83c230e5648870cfc83a9191e04a853",
  "model": "xgb",
  "model_hash": "eee06f217a980ce255491a8a55a41d3a49545262e7e522f1c8c7f02b73ac2107",
  "ticker": "UDR"

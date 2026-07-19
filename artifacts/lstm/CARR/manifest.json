@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 87017,
-   "sha256": "963f133df15311cae5b8291982749f38f2dbeaa37a4231063f875fe1e8318fbf"
+   "bytes": 87020,
+   "sha256": "0a811687b6bfa90b750b31cf670a3866dbcb66e0d12b9707ed0b63a4df099c2a"
   },
   "metrics.json": {
    "bytes": 1081,
@@ -18,7 +18,7 @@
    "sha256": "b885c6fd14b45ec4fda6e97d86497b5d29ac1ef8052226a36844c4550613d99b"
   }
  },
- "folder_sha256": "95a6cdbc0f36b7ca6089adc74d1a36860f016637a48fe6d4065075cf1d55d6f3",
+ "folder_sha256": "8c68943e670cde1e52cf09f4b5d072cc77d09525dc270ea047c10da476f52452",
  "model": "lstm",
  "model_hash": "0e11375e47b71133f5e1b20e4761796c53bf748540b4eb2b9869e5044f7744d1",
  "ticker": "CARR"

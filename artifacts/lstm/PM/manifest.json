@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 86595,
-   "sha256": "0a31d6ddbbcd4ed0cb7136f1f2e33e1bffac14b443ed877985bdbd47f4e13adf"
+   "bytes": 86598,
+   "sha256": "94722bd54b42bfcc5b8011b00cdc177e25a79460bab47373e171d9b47b71edde"
   },
   "metrics.json": {
    "bytes": 1057,
@@ -18,7 +18,7 @@
    "sha256": "f397502f0f8e433ed69b66c6d54d9692bb61693667374790aaecefae83bb0106"
   }
  },
- "folder_sha256": "2e2be9b1fc1ccaadd6b3ae7b3e49f0cfeb4762fcafddbceb08a1a18cee23f663",
+ "folder_sha256": "c9be0fe5ead6a6fedb75c7076dd4ce10bda69300d4274f13613be19e80fedecd",
  "model": "lstm",
  "model_hash": "0babd3207bfa726bb2afa6ea319843204c5b609a40952437d8ecabf53dcc5887",
  "ticker": "PM"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 86156,
-   "sha256": "fa9018b5d798f0c5144fa2aa394d518e7ffdf6d36655556c41399a5ab7efe0cd"
+   "bytes": 86159,
+   "sha256": "43acf7d2c38c048fc688789db3f1d72b060172be193854d86ab0da3a7a76ce9e"
   },
   "metrics.json": {
    "bytes": 1079,
@@ -18,7 +18,7 @@
    "sha256": "207b304844c76662d4271a4e82b8f96bffcf7f0dd6f0616153b45b0ba1237ef2"
   }
  },
- "folder_sha256": "8a1d25494428762dd2b725fb54ac6beb49795054a16778241ab245a2c7391dfe",
+ "folder_sha256": "15064c34085b68a856d13b8cdeb5443a8b4c4d2ea771f3566c5b63cb97c552cc",
  "model": "lstm",
  "model_hash": "a00ed98dc091189a50949609245c779e6de18da25b4b61f8b8772a5e27d17b35",
  "ticker": "EQT"

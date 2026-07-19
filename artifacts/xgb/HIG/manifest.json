@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 45709,
-   "sha256": "0d15d35a54416287391ffcf03c024ab0a2769e1330ab5fa0bca4fd96ec1f4027"
+   "bytes": 45712,
+   "sha256": "b28b29afd9dcfec782c3375a5d59a70fd3ad6baa0c6b5b1dc56d859defb260d8"
   },
   "metrics.json": {
    "bytes": 1104,
@@ -18,7 +18,7 @@
    "sha256": "5a78e05da5b9079d17a774ce1affb7e87137e8b6dc5f311a5352292037432aaa"
   }
  },
- "folder_sha256": "3100beb4dcccdd9b548bb0f6d76b7d26e828fa5af605f035800c050849e56217",
+ "folder_sha256": "813eec8df4178dc87bf566a161f82034d33143a1e89effab685785892a0d7616",
  "model": "xgb",
  "model_hash": "d1d43ace03b1fa86265eb061a39ee8b48ed958e2de62632ba7e9e74c8d161dc2",
  "ticker": "HIG"

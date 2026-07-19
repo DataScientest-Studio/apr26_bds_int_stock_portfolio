@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 59666,
-   "sha256": "e8cb353419b23cb618d201399db8bb7a9bbff30be1afa5eca5975ba96dedb74a"
+   "bytes": 59669,
+   "sha256": "c5280a080be20549ddc8af5a8adc45ce5e433c72f875f9131c19bac03b4f9a2b"
   },
   "metrics.json": {
    "bytes": 1067,
@@ -18,7 +18,7 @@
    "sha256": "e4c38a2b256120e96906313037ead8c96929cad0561e62547b3086456157c289"
   }
  },
- "folder_sha256": "620bc95b5d30566630c70a1715901d25d80297a13e1915b21696550f40967b08",
+ "folder_sha256": "290e0bbd1a787d493f56bd1bc20cdf07f3bda38e3f9e4b7f78e42b295e4e6fe4",
  "model": "lstm",
  "model_hash": "d4b255d552bf283401c1cf794a3740214cde720fbe84f070297887d05b6867e7",
  "ticker": "ELV"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 80153,
-   "sha256": "f6bdeab1d3e57dfd91f01002eeb6b4aae457520071ef55771ebe1a6b879e3b34"
+   "bytes": 80156,
+   "sha256": "bb9d7f87a835adb6849543f2ac4406ceb0ef292dc5f11acdd5cda0c9d9437dd3"
   },
   "metrics.json": {
    "bytes": 1074,
@@ -18,7 +18,7 @@
    "sha256": "c0571e031b935c4e0756fc567afb84305364e65fed3843ad4643e57848fa923c"
   }
  },
- "folder_sha256": "e4d3c4c29ee3419bfce2aa43d88b21e33524f89a50c8ae650d640088b01eaacf",
+ "folder_sha256": "7de4d3af47cb25d30930e1a890f6f8291255e6654cbf9b0e373919bc1f7eeb4e",
  "model": "lstm",
  "model_hash": "ffe50d26e5e78e8bdd31bf798d8327d9494f69ab03b975d2f1c665f868139c52",
  "ticker": "ETN"

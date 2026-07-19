@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 39770,
-   "sha256": "c28bf7b75ae991ec4b379f212b98d060c388252c5778f45d36f9289da82ab9c9"
+   "bytes": 39773,
+   "sha256": "f5e513dd41a8f7209f4892f09d33199a97c96597ceb2cc07de24a3f93fd5480b"
   },
   "metrics.json": {
    "bytes": 1101,
@@ -18,7 +18,7 @@
    "sha256": "5b0cb7db485ffd02f0e2f0264c14ae48aa7b5f0171148d68adb0144e6b122d08"
   }
  },
- "folder_sha256": "91dc03ab96c5b3926cbd58cc87a311ca758b599eb4169547fb6e2bb8df6dad8e",
+ "folder_sha256": "07fc5567d5fc7ea00dd3fceed5e50c1851a85f1d02aba35f0cf92adf9c5e40b8",
  "model": "xgb",
  "model_hash": "86a3c4f0dc69e2733ab6922bf942faf43f65347c4982dc024413b1b0906c4698",
  "ticker": "TDY"

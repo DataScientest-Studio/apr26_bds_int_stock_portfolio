@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 157037,
-   "sha256": "11641befbade3ae2b9d2859274178a2d5f0633ee18150128e03850b5e8c95310"
+   "bytes": 157040,
+   "sha256": "7fd5a07bc017a69a2054fc37ff32147c2bf5df61cc0cad12ca409cfcacfccaad"
   },
   "metrics.json": {
    "bytes": 1110,
@@ -18,7 +18,7 @@
    "sha256": "462bd3ca07366e1d9b4c0362092806a1d0e3925085c0656109f9104bc71d22af"
   }
  },
- "folder_sha256": "aef8f7a7f90891b0bfa46ed7603c616c01556d109208555e2ef9a2736c92351e",
+ "folder_sha256": "b937ecd0e5618f090cb7fe9ed8e978bef0b73eece806fd083327280df4f629c2",
  "model": "xgb",
  "model_hash": "322af9e96250b320d3cbed0e5a003d727192485813e6e0f317bc16900c4165b6",
  "ticker": "POOL"

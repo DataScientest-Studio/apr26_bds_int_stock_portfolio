@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 42169,
-   "sha256": "2dd1808536398ccf1dc19223764526f3395f8dc49ea68394da288867e6f61f84"
+   "bytes": 42172,
+   "sha256": "e83a4bd6ace0e95fcc44b3927bb74e0550cae33d238ce1f62bcec6ce779c6fe5"
   },
   "metrics.json": {
    "bytes": 1095,
@@ -18,7 +18,7 @@
    "sha256": "0e538e4e99f257fec93501c336acc39778ea92123e3fdd45b318669435f98efb"
   }
  },
- "folder_sha256": "c6d61743ab4ce3ed2f17d1e6790a22b3730526b5f816e1b7ba548ef9a0121c41",
+ "folder_sha256": "71ab796ee3aec9e75daafa3bce3c6223a5ad6f22bedaf617adc2355186562703",
  "model": "xgb",
  "model_hash": "69310bf4e49c29e81cd9819a9b0fbaa93f8b6c3e91db4cf0739da8382feaab00",
  "ticker": "CSX"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 27395,
-   "sha256": "1c7241ce74ccc8fb12a563203edf891bb1a650b0258d9058472156aafa0efc37"
+   "bytes": 27398,
+   "sha256": "68dbe5a9964933dc5fc0ecaee17c1bf910412d1b3ef3be7000b4e5f34dde42c6"
   },
   "metrics.json": {
    "bytes": 1083,
@@ -18,7 +18,7 @@
    "sha256": "5e1529c2afaa529448ce011f46f45f743263c6525e2759eb7f85a77c0702d951"
   }
  },
- "folder_sha256": "fe94f46ec21c8a0b979205b8e31146d7cff4f348d22981c4e0eabca645b4506e",
+ "folder_sha256": "a22e92954a0accb8849540a2580d577be32066da8ccd077cd84e4c3f84134599",
  "model": "xgb",
  "model_hash": "c17e0f2d446161ae5999ae3c3e014de7aebd4c530d0d4ba109eeea6cb48d3366",
  "ticker": "CF"

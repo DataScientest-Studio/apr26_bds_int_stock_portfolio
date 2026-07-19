@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 28893,
-   "sha256": "4f154e1c47eece14d4b6e35abca8cc9431941ed577f6c648bd4904594c432a4c"
+   "bytes": 28896,
+   "sha256": "4d5f27cd9bf97b4f699a609fbe048173d2941783abfc115e5d2914d26b7fca68"
   },
   "metrics.json": {
    "bytes": 1041,
@@ -18,7 +18,7 @@
    "sha256": "661dfaafb3137a959f13f93e93d453d635f77f76de1128f09fe36d1b772e6be7"
   }
  },
- "folder_sha256": "0be6d39f4bbcb74e29e8aa9780204b2dc59c8f515657f8a82f25ee31e978c911",
+ "folder_sha256": "078c4d68c18d8bb78b39a6a2449d941049a138a6aecb72101f7cae6269aee61b",
  "model": "xgb",
  "model_hash": "58fb021f12c772e0d907458be3b4cdcf86fe841b366d68c3232964b9a3217ecc",
  "ticker": "XOM"

@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 83555,
-   "sha256": "3fa415b2a8ed6c1c95302dfa45ea721687af32e1ae19a46ceaa31ddf6ebbd492"
+   "bytes": 83558,
+   "sha256": "06aece114d3916bd30e4193fe23ded34afecc696024c3bf8b135db6a0c03b1e1"
   },
   "metrics.json": {
    "bytes": 1073,
@@ -18,7 +18,7 @@
    "sha256": "c137bfeedbe1bfcb1b9a0284e24e23d837e4add47a0bdba1e8d516de0279a6e8"
   }
  },
- "folder_sha256": "16a63ee7835c61503c7de5c674a1570d2918c2856768d14d7257f30f83dc02c1",
+ "folder_sha256": "8b89ada41af97a2cd6a9006cd1dd37f676d5e311d33aa9932d80846d76137f7a",
  "model": "lstm",
  "model_hash": "00193a354393bde6b4963f73865c922226999f4ab2fa0e687d9bc0db7b476ada",
  "ticker": "SMCI"

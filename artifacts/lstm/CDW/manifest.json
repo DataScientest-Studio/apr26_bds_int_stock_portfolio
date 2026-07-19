@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 64586,
-   "sha256": "7e573bf6adfc74e89ffa525d4af122df75925b9f1c4fd89715f88a9d1666689f"
+   "bytes": 64589,
+   "sha256": "81268476455ebb47caa2a1ca2a0242d6a3f6a437666a9d93a9c6e53115a66892"
   },
   "metrics.json": {
    "bytes": 1067,
@@ -18,7 +18,7 @@
    "sha256": "3ff9b99944a8e879492835b328305382ab881c70d6c50461e8c5098dbc57d4b7"
   }
  },
- "folder_sha256": "32ac310268ac578854b57d6266f9333061c8abec8e06173f9347d6d0d3bd5686",
+ "folder_sha256": "62294149f96e18ce1788cc40fce521b108356a8ebd0702d0cca73790600c9ddd",
  "model": "lstm",
  "model_hash": "95f889910844e9f804e17e2d84c373e8d16b8b987af23d4b5caf8fd548f8d08c",
  "ticker": "CDW"

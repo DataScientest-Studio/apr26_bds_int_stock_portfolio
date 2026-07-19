@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 74974,
-   "sha256": "ef2e49a006f4be24572d8e5e97cce1bd3ffd9ec6edbec106ee688ddbb9640ae0"
+   "bytes": 74977,
+   "sha256": "68484e15ae59f5a67f0f93b99eeda08f9b760790cf23f67912e033b90c5c4835"
   },
   "metrics.json": {
    "bytes": 1065,
@@ -18,7 +18,7 @@
    "sha256": "6c969c0014fb318687dad3932996d4fad7987a69005924492f84bff68e772c19"
   }
  },
- "folder_sha256": "e6b0745bcbdebb6e91d41298099fea8853800a0688fcbd4d608bb219a7913506",
+ "folder_sha256": "7f4f17a628e8f345d668abcf4cde5ac168bbf9b37eaf5a336675bf40b7236910",
  "model": "lstm",
  "model_hash": "487a17b988fc8f180e986289652dfd8b82b9e19a1752acc201b92928be0dba5f",
  "ticker": "OXY"

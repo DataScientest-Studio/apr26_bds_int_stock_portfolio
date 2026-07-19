@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 96769,
-   "sha256": "9bda6cc8c96568a0107c324fa0e1216a662f47f5d893572619adb1d77f2ab534"
+   "bytes": 96772,
+   "sha256": "f344723fb8a48300ea0c951b624081985326133020f84f8dff2d9ab9774b731c"
   },
   "metrics.json": {
    "bytes": 1068,
@@ -18,7 +18,7 @@
    "sha256": "be19aeaa0691e8bd9fcf13f476f6a79cf32b0ada12d98f891203e783e201396e"
   }
  },
- "folder_sha256": "c30afc335d9dedafa5fed707a468bd0ee5a5127305d24681e4b2890dda3db6c5",
+ "folder_sha256": "6bff43c1617776b4d9a6ca3156b181e1e00f2be5b4487c3e189bcc9c3e3b65a0",
  "model": "lstm",
  "model_hash": "3368e28b82152997f828ec7ab658f3a4114ea47a9cfd63871db0350dd7f2e5de",
  "ticker": "PAYX"

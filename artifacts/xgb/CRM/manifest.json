@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 78277,
-   "sha256": "3a7314f1c704e2d6291cadadc29d5f7d8d195fe5e3fd2c868996dff93978f5f0"
+   "bytes": 78280,
+   "sha256": "bffc750169b9eaa63cf8d999982ca6bab552b6124d5c918e8348c3c2d36d5bab"
   },
   "metrics.json": {
    "bytes": 1108,
@@ -18,7 +18,7 @@
    "sha256": "5e6aff7e54c1163aa7d457c0c1cee1b1f6939bc4227444e171953699c6bb2bb7"
   }
  },
- "folder_sha256": "1297daefae8d78f2cfca5fe8af67af854036beac7c622a0b939e9ab52a4d8dbd",
+ "folder_sha256": "2ee7f8e777fb89b42b3dbd7228705b0d5b219755ad469948a4cd22d01b2a8dc3",
  "model": "xgb",
  "model_hash": "6c46f60e969d3d36a3c9b01fbe8efbeed67882b4a7ba17d44dc9978dccefaf47",
  "ticker": "CRM"

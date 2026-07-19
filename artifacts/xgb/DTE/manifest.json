@@ -2,8 +2,8 @@
  "epoch": "2026-07-golden-v5",
  "files": {
   "interpretation.json": {
-   "bytes": 25929,
-   "sha256": "f0047b3605259948b632db6b45732295405a3112c449d3d8c703b8c7fb47281e"
+   "bytes": 25932,
+   "sha256": "0a02a63bb87c35ab8222a53f23e23ed96309fd11fad2c2b98113619d917be443"
   },
   "metrics.json": {
    "bytes": 1044,
@@ -18,7 +18,7 @@
    "sha256": "abbc180d03814555a1a8db78e21e47e0427b3f48d3395600aa8aeec190045264"
   }
  },
- "folder_sha256": "0bc4e6cadcaff2491971218e759ebdfe8cb6e3e1e0ab9a9906e7af934f8ce7fe",
+ "folder_sha256": "574d5721357ad96e1781ee8b007887c29d202f21308b283ac7ac36b5ed2df5b1",
  "model": "xgb",
  "model_hash": "3c9138f650d0e0443ffcea06ed58f41354d31660249e7d193610bf08bec49aab",
  "ticker": "DTE"
