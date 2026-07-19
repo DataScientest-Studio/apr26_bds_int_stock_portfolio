@@ -6,7 +6,7 @@ import streamlit as st
 import data
 import theme
 
-# result_mode -> short operational label (full mode is always shown alongside in mono)
+# result_mode -> short operational label
 STATUS_LABELS = {
     "ML_MULTI_TRADE": "ACTIVE",
     "ML_ONE_TRADE_LOW_EVIDENCE": "LOW EVIDENCE",
@@ -14,14 +14,6 @@ STATUS_LABELS = {
     "TRAIN_OOF_FLOOR_NOT_MET": "NO-TRADE (floor)",
     "NO_VALID_FOLDS": "NO VALID FOLDS",
     "TRAINING_FAILED": "FAILED",
-}
-STATUS_CSS = {
-    "ML_MULTI_TRADE": "status-pass",
-    "ML_ONE_TRADE_LOW_EVIDENCE": "status-warn",
-    "HODL_FALLBACK_NO_MODEL_TRADES": "status-dim",
-    "TRAIN_OOF_FLOOR_NOT_MET": "status-dim",
-    "NO_VALID_FOLDS": "status-warn",
-    "TRAINING_FAILED": "status-fail",
 }
 
 
@@ -46,20 +38,6 @@ def guard(stop=True):
 
 def status_label(mode):
     return STATUS_LABELS.get(mode, mode or "—")
-
-
-def status_html(mode):
-    css = STATUS_CSS.get(mode, "status-dim")
-    return (f'<span class="{css}">{html.escape(status_label(mode))}</span> '
-            f'<span class="mono status-dim">{html.escape(str(mode))}</span>')
-
-
-def mono(text):
-    return f'<span class="mono">{html.escape(str(text))}</span>'
-
-
-def pct(x, digits=1):
-    return "—" if x is None else f"{x:+.{digits}f}%"
 
 
 def num(x):
@@ -93,11 +71,6 @@ def integrity_footer():
         f"sealed dataset · built {run.get('created_at', '—')} · "
         f"integrity {n_pass}/{len(checks)} PASS · "
         f"XGB OOS {run.get('xgb_oos', '—')} · LSTM OOS {run.get('lstm_oos', '—')}")
-
-
-def goto_asset(ticker):
-    st.session_state["selected_ticker"] = ticker
-    st.switch_page("app/pages/asset.py")
 
 
 def ticker_picker():

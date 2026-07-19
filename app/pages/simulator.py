@@ -438,7 +438,7 @@ st.caption(
 if len(det) > MAX_TIP_ROWS:
     st.dataframe(det, hide_index=True, width="stretch")
     st.caption(f"Over {MAX_TIP_ROWS} assets the per-ticker feature tooltips are switched off — "
-               "open a single asset on the Asset Indicator page to read its manifest.")
+               "narrow the basket to bring them back.")
 else:
     st.markdown(_detail_css(), unsafe_allow_html=True)
     st.markdown(_detail_table_html(det, model), unsafe_allow_html=True)

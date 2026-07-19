@@ -3,7 +3,7 @@
 The ONLY place in the app that:
 - opens data/results.db (sqlite, mode=ro),
 - verifies the schema and dataset completeness (fail-closed statuses),
-- holds every SQL query the nine pages need,
+- holds every SQL query the seven pages need,
 - caches small aggregates (lru_cache; the db is sealed, so caches never go stale),
 - lazy-loads per-asset JSONs ONLY after an asset is selected, strictly via
   asset_results.artifact_path -> manifest.json / parameters.json / metrics.json /
@@ -132,24 +132,6 @@ def family_contribution_summary():
 
 
 # ---------------------------------------------------------------- page DataFrames (cached)
-
-@lru_cache(maxsize=1)
-def universe_df():
-    """Universe page: one row per ticker, both models pivoted. HODL is taken
-    explicitly from the XGB row — the two models have different OOS windows, so a
-    cross-model max() (as in v_universe_summary) would belong to neither window."""
-    rows = _rows(
-        "select ticker,"
-        " max(case when model='xgb'  then result_mode end)  as xgb_status,"
-        " max(case when model='lstm' then result_mode end)  as lstm_status,"
-        " max(case when model='xgb'  then return_pct end)   as xgb_return_pct,"
-        " max(case when model='lstm' then return_pct end)   as lstm_return_pct,"
-        " max(case when model='xgb'  then hodl_return_pct end) as hodl_return_pct,"
-        " max(case when model='xgb'  then model_trades end) as xgb_trades,"
-        " max(case when model='lstm' then model_trades end) as lstm_trades"
-        " from asset_results group by ticker order by ticker")
-    return pd.DataFrame(rows)
-
 
 @lru_cache(maxsize=1)
 def results_df():
@@ -308,10 +290,6 @@ def asset(ticker, model):
     return rows[0] if rows else None
 
 
-def asset_models(ticker):
-    return _rows("select * from asset_results where ticker=? order by model", (ticker,))
-
-
 def features(ticker, model):
     return _rows("select * from asset_features where ticker=? and model=? order by feature_id",
                  (ticker, model))
@@ -446,21 +424,6 @@ def interpretation_labels(ticker, model):
 
 def parameters(ticker, model):
     return artifact_json(ticker, model, "parameters.json")
-
-
-def manifest(ticker, model):
-    return artifact_json(ticker, model, "manifest.json")
-
-
-def metrics(ticker, model):
-    return artifact_json(ticker, model, "metrics.json")
-
-
-def calibration(ticker, model):
-    """metrics.json['calibration'] — the ONLY source of direction_mode (the DB
-    column is null for every row); also theta/floor/OOF details per model."""
-    doc = metrics(ticker, model)
-    return (doc or {}).get("calibration")
 
 
 @lru_cache(maxsize=1)

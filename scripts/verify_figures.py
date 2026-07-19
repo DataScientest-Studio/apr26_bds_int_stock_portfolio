@@ -156,13 +156,19 @@ def main():
     # a page left stale counts behind in prose nobody re-reads. app.py is the only source of
     # truth — it is what Streamlit actually builds the sidebar from.
     n_pages = APP.read_text(encoding="utf-8").count("st.Page(")
-    words = {10: "ten", 11: "eleven", 12: "twelve", 9: "nine", 8: "eight"}
+    # Spelled out because the prose spells them out. The list covers 1..20 rather than the
+    # handful in use: a dict that has to be extended every time a page is added is a gate
+    # that fails on its own vocabulary instead of on the thing it is watching, which is
+    # exactly what happened the first time this ran after a two-page removal.
+    WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen "
+             "fourteen fifteen sixteen seventeen eighteen nineteen twenty").split()
+    word = WORDS[n_pages] if n_pages < len(WORDS) else str(n_pages)
     check("page count (blueprint knob)", f"pages={n_pages} in 3 sections", BLUEPRINT)
-    check("page count (blueprint prose)", f"a {words.get(n_pages, n_pages)}-page", BLUEPRINT)
-    check("page count (README)", f"## The {words.get(n_pages, n_pages)} pages", README)
-    stale = [w for n, w in words.items() if n != n_pages
-             and (f"{w} pages" in README.read_text(encoding="utf-8")
-                  or f"{w}-page" in BLUEPRINT.read_text(encoding="utf-8"))]
+    check("page count (blueprint prose)", f"a {word}-page", BLUEPRINT)
+    check("page count (README)", f"## The {word} pages", README)
+    stale = [w for i, w in enumerate(WORDS) if i != n_pages and i > 1
+             and (f"The {w} pages" in README.read_text(encoding="utf-8")
+                  or f"a {w}-page" in BLUEPRINT.read_text(encoding="utf-8"))]
     print(f"  {'PASS' if not stale else 'FAIL'}  no stale page count survives: "
           f"{n_pages} pages in app.py{'' if not stale else '  — found ' + ', '.join(stale)}")
     if stale:
