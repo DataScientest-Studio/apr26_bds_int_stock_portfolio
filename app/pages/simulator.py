@@ -10,6 +10,7 @@ grid writes the basket, and nothing ever writes back into the preset widget. Whe
 diverge the caption says so in words rather than silently resetting a control.
 """
 import html
+import random
 import sys
 from pathlib import Path
 
@@ -222,11 +223,16 @@ def _toggle(ticker):
         st.session_state.basket_source = "manual"
 
 
-def _select_all(tickers):
-    st.session_state.basket.update(tickers)
-    st.session_state.basket_edited = True
-    if not st.session_state.get("basket_source"):
-        st.session_state.basket_source = "manual"
+RANDOM_MIN, RANDOM_MAX = 5, 15
+
+
+def _random_basket(tickers):
+    """A fresh draw every click — unseeded on purpose, unlike the seeded preset, so the
+    demo can keep pulling new baskets instead of replaying one."""
+    n = min(random.randint(RANDOM_MIN, RANDOM_MAX), len(tickers))
+    st.session_state.basket = set(random.sample(list(tickers), n))
+    st.session_state.basket_source = "random"
+    st.session_state.basket_edited = False
 
 
 def _clear_basket():
@@ -305,9 +311,12 @@ if dropped:
 n_sel = len(covered)
 source = st.session_state.basket_source
 edited = (", edited by hand" if st.session_state.basket_edited else "")
-if source and source != "manual":
+if source in data.PRESET_LABELS:
     st.caption(f"Basket: **{n_sel}** ticker(s) — preset “{data.PRESET_LABELS[source]}”"
                f"{edited}. ${B.ENTRY_USD * n_sel:,.0f} to invest.")
+elif source == "random" and n_sel:
+    st.caption(f"Basket: **{n_sel}** ticker(s), drawn at random{edited}. "
+               f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
 elif n_sel:
     st.caption(f"Basket: **{n_sel}** ticker(s), picked by hand. "
                f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
@@ -322,7 +331,9 @@ st.button("Calculate basket", type="primary", disabled=(n_sel == 0),
 # a fragment kept the counter here in step while the caption and button above it lagged.
 st.subheader(f"Pick by hand — the {len(tickers)}-tile grid")
 b1, b2, _ = st.columns([2, 2, 6])
-b1.button("Select all", width="stretch", on_click=_select_all, args=(tickers,))
+b1.button(f"Random {RANDOM_MIN}–{RANDOM_MAX}", width="stretch",
+          help=f"Draw a fresh basket of {RANDOM_MIN} to {RANDOM_MAX} tickers",
+          on_click=_random_basket, args=(tickers,))
 b2.button("Clear", width="stretch", on_click=_clear_basket)
 
 st.markdown(GRID_CSS, unsafe_allow_html=True)
