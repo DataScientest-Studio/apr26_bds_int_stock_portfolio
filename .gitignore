@@ -9,6 +9,8 @@
 xgb/.venv
 lstm/.venv
 
+HANDOFF.md
+
 # The FULL XGB 1h bars (160 MB) stay LOCAL; the committed mini bars_demo.duckdb cover demo verify.
 xgb/data/liora.duckdb
 

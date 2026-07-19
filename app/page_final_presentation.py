@@ -102,6 +102,31 @@ the pick**.
     _, mid, _ = st.columns([1, 5, 1])
     with mid:
         _img(FIG_PIPELINE, "From raw prices to a beginner-friendly portfolio — the end-to-end shape")
+
+    f1, f2 = st.columns(2, gap="large")
+    with f1:
+        st.markdown(
+            """
+**🎯 What the model predicts (target)**
+- The **63-trading-day forward return** of each stock — *"how much does this stock return over the
+  next ~3 months?"* In code: `adj_close.shift(-63) / adj_close − 1`.
+- We don't need the exact number — we use it to **rank** stocks (best expected return first).
+            """
+        )
+    with f2:
+        st.markdown(
+            """
+**🧩 Features we selected (the model's inputs)**
+- **Momentum:** returns over 5, 20, 60 days + average daily return (20d, 60d).
+- **Risk:** volatility (20d, 60d) and 252-day drawdown.
+- **Liquidity:** log average volume (20d).
+- **Sector** (one-hot). → **9 price/volume features + sector**.
+- *Removed on purpose:* `history_days` (a data-leakage shortcut — see next slides).
+            """
+        )
+    st.caption("All inputs are engineered from Alpaca OHLCV only — no fundamentals. "
+               "Source: `train_random_forest_no_history_model.py`.")
+
     st.markdown(
         "That same shape runs **twice**, at **two levels of rigour** — the reason why is the next slide."
     )
