@@ -13,7 +13,7 @@ OHLCV (1h / 1d)
   -> XGB | LSTM  (sealed per-asset models)
   -> per-asset artifact  (strategy + manifest + parameters + metrics + interpretation)
   -> data/results.db  (SQLite, read-only)
-  -> Streamlit console  (eleven pages)
+  -> Streamlit console  (ten pages)
 ```
 
 ## Quickstart
@@ -56,7 +56,7 @@ Both models only decide ENTRY; take-profit and stop-loss are a mechanical ATR
 triple-barrier contract. An asset with no robust Train operating point stays idle by
 design. See `docs/METHODOLOGY.md`.
 
-## The eleven pages
+## The ten pages
 
 The sidebar groups them the way a defence walks: **Playground** (do something), **Results**
 (what the models did), **Method & proof** (how it was built, and how to check it).
@@ -73,20 +73,20 @@ The sidebar groups them the way a defence walks: **Playground** (do something), 
 6. **Feature Logic** — what each sealed model reads: XGB ENTRY ranges, LSTM occlusion
    and trajectories (Train-derived interpretation).
 7. **Model Comparison** — four charts: return, profit factor, trades, beats-HODL share.
-8. **Architecture** — the data flow above plus a map from the presentation to the code.
-9. **Integrity** — the dataset's own record: epoch and recipe hashes, the frozen
+8. **Integrity** — the dataset's own record: epoch and recipe hashes, the frozen
    parameters, the OOS read ledger (reads per pipeline, and the spread of the cumulative
    per-asset counter), interpretation coverage, when the model is not promoted, every
    integrity check, and the known limits.
-10. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
+9. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
    lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
-11. **Data Flow** — the per-asset build path as a 2.5D canvas map, both pipelines in one
-   ladder, with the universe-level verdicts on the OOS scenes.
+10. **Data Flow** — the build path drawn twice and captioned nowhere: the whole study as
+   eight boxes, then the same path as a 2.5D canvas map — sixteen levels, both pipelines
+   in one ladder, every contract a click away.
 
 ## Repository structure
 
 ```text
-app.py            Streamlit entry point (eleven pages under app/pages/, in three sections)
+app.py            Streamlit entry point (ten pages under app/pages/, in three sections)
 app/              console code; app/data.py is the ONLY module opening the database
 src/xgb/          XGB research code (pipeline L4-L9, feature search, artifact writers)
 src/lstm/         LSTM research code (pipeline D1-D6, model D7-D8, feature search)

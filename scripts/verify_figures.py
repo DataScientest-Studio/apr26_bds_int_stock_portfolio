@@ -28,6 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DB = ROOT / "data" / "results.db"
 BLUEPRINT = ROOT / "pipeline_lego_blueprint.html"
 FLOW = ROOT / "data_flow_3d.html"
+APP = ROOT / "app.py"
+README = ROOT / "README.md"
 
 FAILURES = []
 
@@ -147,6 +149,24 @@ def main():
     # ---- corporate actions ----------------------------------------------------
     check("split events", "83 events / 69 tickers", FLOW)
     check("split events (blueprint form)", "83 events across 69 tickers", BLUEPRINT)
+
+    # ---- the page count -------------------------------------------------------
+    # Not a store figure, but the same failure mode: the number of console pages is asserted
+    # by hand in a dozen places and nothing used to check any of them, so adding or removing
+    # a page left stale counts behind in prose nobody re-reads. app.py is the only source of
+    # truth — it is what Streamlit actually builds the sidebar from.
+    n_pages = APP.read_text(encoding="utf-8").count("st.Page(")
+    words = {10: "ten", 11: "eleven", 12: "twelve", 9: "nine", 8: "eight"}
+    check("page count (blueprint knob)", f"pages={n_pages} in 3 sections", BLUEPRINT)
+    check("page count (blueprint prose)", f"a {words.get(n_pages, n_pages)}-page", BLUEPRINT)
+    check("page count (README)", f"## The {words.get(n_pages, n_pages)} pages", README)
+    stale = [w for n, w in words.items() if n != n_pages
+             and (f"{w} pages" in README.read_text(encoding="utf-8")
+                  or f"{w}-page" in BLUEPRINT.read_text(encoding="utf-8"))]
+    print(f"  {'PASS' if not stale else 'FAIL'}  no stale page count survives: "
+          f"{n_pages} pages in app.py{'' if not stale else '  — found ' + ', '.join(stale)}")
+    if stale:
+        FAILURES.append("stale page count")
 
     print()
     if FAILURES:

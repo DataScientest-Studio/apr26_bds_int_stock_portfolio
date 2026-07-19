@@ -132,12 +132,12 @@ Fail-closed statuses, bannered by the app:
 README.md, Makefile, requirements.txt, LICENSE
 app.py                      Streamlit entry point
 app/data.py                 the single data-access layer (section 7)
-app/pages/                  11 pages in three sidebar sections —
+app/pages/                  10 pages in three sidebar sections —
                             Playground: Basket Simulator, Jupyter Notebook;
                             Results: Overview, Universe, Asset Indicator,
                             Feature Logic, Model Comparison;
-                            Method & proof: Architecture, Integrity,
-                            Pipeline Blueprint, Data Flow
+                            Method & proof: Integrity, Pipeline Blueprint,
+                            Data Flow
 app/basket.py               basket arithmetic (no Streamlit): the three-number split
 app/venn.py                 the pixel agreement diagram (no imports at all)
 src/xgb/                    pipeline.py (L4-L9), feature_search.py, artifact.py, train_cv_eval.py

@@ -1,11 +1,18 @@
-"""Data Flow — the per-asset build path as a standalone 2.5D canvas map.
+"""Data Flow — the build path, twice: one glance and one ladder.
 
-The map is a self-contained HTML file at the repository root: zero dependencies, zero network
-requests, and it opens in any browser on its own. This page only embeds it.
+Two drawings, no prose. The graphviz sketch is the whole study in eight boxes — bars to
+features to Train-only calibration, the two models side by side, one artifact per asset,
+the sealed store, this console. Below it, the standalone 2.5D map draws the same path at
+full depth: sixteen levels, every contract clickable.
 
-The map's own figures are frozen (the research snapshot is frozen too). The caption below is
-DERIVED from the store on every render, so if the two ever disagree, the disagreement is on
-screen rather than hidden — the same house rule the Architecture page follows.
+The map is a self-contained HTML file at the repository root — zero dependencies, zero
+network requests, and it opens in any browser on its own. This page only embeds it, and
+everything the reader needs to know is written inside the drawings themselves: the scenes
+that illustrate rather than measure carry their own SCHEMATIC mark on the canvas.
+
+The graphviz source is a raw DOT string, so Streamlit ships it to the browser and renders
+it there with its bundled viz.js — no `graphviz` package and no system `dot` binary, which
+is what keeps this page working on a fresh clone from requirements.txt.
 """
 import sys
 from pathlib import Path
@@ -15,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import streamlit as st
 
 import components as C
-import data
+import theme
 
 ROOT = Path(__file__).resolve().parents[2]
 FLOW = ROOT / "data_flow_3d.html"
@@ -27,36 +34,31 @@ def _load(mtime: float) -> str:
     return FLOW.read_text(encoding="utf-8")
 
 
-C.page_header("Data Flow", "The per-asset build path — two independent sealed pipelines, drawn "
-                           "as one ladder.")
+C.page_header("Data Flow", "")
 C.guard(stop=False)  # static page: banner without stopping
 
-_run = data.research_run()
-_n_xgb, _n_lstm = _run.get("xgb_assets", 0), _run.get("lstm_assets", 0)
-
-st.write(
-    "The ladder is **one pass** of the procedure: split-adjusted bars → time split with purge and "
-    "embargo → ATR Triple-Barrier labels → profit-aligned Train-only tuning (per-asset Optuna for "
-    "XGB; one warm-started committed backbone for LSTM) → sealed artifact → the ledgered OOS "
-    "read → Train-derived interpretation. The same pass runs independently for every asset — "
-    "nothing is pooled, and each ticker gets its own model. The models decide **ENTRY only**: "
-    "take-profit and stop-loss are a mechanical ATR contract, never a model decision."
-)
-st.caption(
-    f"Sealed indicators in this release: {_n_xgb} XGB (1h) · {_n_lstm} LSTM (daily) — "
-    f"{_n_xgb + _n_lstm} artifacts, presentation freeze "
-    f"`{_run.get('presentation_freeze') or '—'}`. Counts and freeze read from the store; the "
-    f"map's own figures are frozen. "
-    "Some scenes are marked SCHEMATIC (the tuning-trial scatter and the sample OHLCV rows carry "
-    "the mark; the detector wall and feature-matrix cells are likewise illustrative): they "
-    "illustrate the shape of a process and are not measurements."
-)
-st.caption(
-    "Drag to pan · **Ctrl + wheel** (or trackpad pinch) to zoom · a plain wheel scrolls this "
-    "page · click a node for its contract · Esc closes. The map is deliberately tall: sixteen "
-    "ladder levels need vertical room before their labels stop colliding, so scroll down "
-    "through it rather than expecting it on one screen."
-)
+DOT = f"""
+digraph flow {{
+  rankdir=LR;
+  bgcolor="{theme.BG}";
+  node [shape=box, style=filled, fillcolor="{theme.SURFACE}", color="{theme.BORDER}",
+        fontcolor="{theme.TEXT}", fontname="monospace", fontsize=11];
+  edge [color="{theme.TEXT_DIM}"];
+  ohlcv [label="OHLCV\\n1h / 1d bars"];
+  feat  [label="features /\\nsequences"];
+  cal   [label="Train-only\\ncalibration"];
+  xgb   [label="XGB", fillcolor="{theme.ACCENT}", fontcolor="{theme.BG}"];
+  lstm  [label="LSTM", fillcolor="{theme.ACCENT}", fontcolor="{theme.BG}"];
+  art   [label="per-asset\\nartifact"];
+  db    [label="results.db\\n(read-only)"];
+  app   [label="Streamlit\\nconsole"];
+  ohlcv -> feat -> cal;
+  cal -> xgb; cal -> lstm;
+  xgb -> art; lstm -> art;
+  art -> db -> app;
+}}
+"""
+st.graphviz_chart(DOT, width="stretch")
 
 if not FLOW.exists():
     st.error(f"Flow map not found: {FLOW.name} (expected at the repository root).")
@@ -68,5 +70,3 @@ if not FLOW.exists():
 # the mess this height exists to fix. 4750 puts the fit just past that font floor, so text and
 # artwork are drawn in the proportion the map was designed for, ~306px per level.
 st.iframe(_load(FLOW.stat().st_mtime), height=4750)
-st.caption("Standalone file: data_flow_3d.html (repository root — opens in any browser, with "
-           "its own title, the whole ladder on one screen, and plain-wheel zoom).")

@@ -1,4 +1,4 @@
-"""Entry point: `streamlit run app.py` (or `make on`). Eleven read-only pages in three
+"""Entry point: `streamlit run app.py` (or `make on`). Ten read-only pages in three
 sections: Playground (build a basket, read a notebook), Results (what the models did),
 Method & proof (how it was built and how to check it)."""
 import sys
@@ -27,7 +27,6 @@ pages = st.navigation({
         st.Page("app/pages/comparison.py", title="Model Comparison", url_path="comparison"),
     ],
     "Method & proof": [
-        st.Page("app/pages/architecture.py", title="Architecture", url_path="architecture"),
         st.Page("app/pages/integrity.py", title="Integrity", url_path="integrity"),
         st.Page("app/pages/blueprint.py", title="Pipeline Blueprint", url_path="blueprint"),
         st.Page("app/pages/flow.py", title="Data Flow", url_path="flow"),

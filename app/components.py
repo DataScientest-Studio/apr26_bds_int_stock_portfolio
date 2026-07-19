@@ -26,9 +26,12 @@ STATUS_CSS = {
 
 
 def page_header(title, purpose):
+    """Title, and a one-line purpose under it. Pass "" for a page that carries no prose —
+    an empty caption would still occupy a line."""
     st.markdown(theme.CSS, unsafe_allow_html=True)
     st.title(title)
-    st.caption(purpose)
+    if purpose:
+        st.caption(purpose)
 
 
 def guard(stop=True):
