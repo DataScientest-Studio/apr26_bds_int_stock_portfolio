@@ -13,7 +13,7 @@ OHLCV (1h / 1d)
   -> XGB | LSTM  (sealed per-asset models)
   -> per-asset artifact  (strategy + manifest + parameters + metrics + interpretation)
   -> data/results.db  (SQLite, read-only)
-  -> Streamlit console  (seven pages)
+  -> Streamlit console  (nine pages)
 ```
 
 ## Quickstart
@@ -48,7 +48,7 @@ Both models only decide ENTRY; take-profit and stop-loss are a mechanical ATR
 triple-barrier contract. An asset with no robust Train operating point stays idle by
 design. See `docs/METHODOLOGY.md`.
 
-## The seven pages
+## The nine pages
 
 1. **Overview** — what the study is, Train/OOS timeline, median outcomes, main finding.
 2. **Universe** — one operational table over all assets; search, filter, jump to an asset.
@@ -61,11 +61,15 @@ design. See `docs/METHODOLOGY.md`.
 7. **Integrity** — the dataset's own record: epoch and recipe hashes, the one-shot OOS
    read ledger (cumulative per-asset read counts), interpretation coverage, when the model
    stays idle, every integrity check, and the known limits.
+8. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
+   lesson per brick, with the layer id the code uses (XGB L1-L9, LSTM D1-D9).
+9. **Data Flow** — the per-asset build path as a 2.5D canvas map, both pipelines in one
+   ladder, with the universe-level verdicts on the OOS scenes.
 
 ## Repository structure
 
 ```text
-app.py            Streamlit entry point (seven pages under app/pages/)
+app.py            Streamlit entry point (nine pages under app/pages/)
 app/              console code; app/data.py is the ONLY module opening the database
 src/xgb/          XGB research code (pipeline L4-L9, feature search, artifact writers)
 src/lstm/         LSTM research code (pipeline D1-D6, model D7-D8, feature search)
@@ -76,6 +80,8 @@ artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.js
 data/results.db   sealed SQLite results store (read-only)
 examples/         two executed notebooks: the full XGB path for AAPL and NVDA
 docs/             METHODOLOGY.md, ARCHITECTURE.md
+pipeline_lego_blueprint.html   standalone 18-brick pipeline map (embedded by the Blueprint page)
+data_flow_3d.html              standalone 2.5D build-path map (embedded by the Data Flow page)
 ```
 
 The code under `src/` is the real research code, kept complete and importable for

@@ -47,7 +47,7 @@ st.graphviz_chart(DOT, width="stretch")
 st.subheader("Repository map")
 st.dataframe(
     [
-        {"path": "app.py + app/", "role": "this console — six read-only pages; app/data.py is the ONLY module that opens the database"},
+        {"path": "app.py + app/", "role": "this console — nine read-only pages; app/data.py is the ONLY module that opens the database"},
         {"path": "src/xgb/", "role": "XGB research code: pipeline.py (layers L4–L9), feature_search.py, train_cv_eval.py, artifact.py"},
         {"path": "src/lstm/", "role": "LSTM research code: pipeline.py (D1–D6), model.py (D7–D8), features.py, universal.py, feature_search.py, artifact.py"},
         {"path": "src/shared/", "role": "contracts shared by both pipelines: op_select.py (operating point), golden_calibration.py (search policy), interpretation.py (range math)"},

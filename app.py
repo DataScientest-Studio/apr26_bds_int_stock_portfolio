@@ -1,4 +1,4 @@
-"""Entry point: `streamlit run app.py` (or `make app`). Six read-only pages."""
+"""Entry point: `streamlit run app.py` (or `make app`). Nine read-only pages."""
 import sys
 from pathlib import Path
 
@@ -20,5 +20,7 @@ pages = st.navigation([
     st.Page("app/pages/comparison.py", title="Model Comparison", url_path="comparison"),
     st.Page("app/pages/architecture.py", title="Architecture", url_path="architecture"),
     st.Page("app/pages/integrity.py", title="Integrity", url_path="integrity"),
+    st.Page("app/pages/blueprint.py", title="Pipeline Blueprint", url_path="blueprint"),
+    st.Page("app/pages/flow.py", title="Data Flow", url_path="flow"),
 ])
 pages.run()

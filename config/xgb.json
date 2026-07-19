@@ -110,7 +110,7 @@
   "PF_ZERO_GROSS_LOSS_POLICY": "not_rankable",
   "MIN_TRAIN_ACCEPTANCE_TRADES": null,
   "MIN_OOS_TRADES_FOR_INTERPRETATION": 2,
-  "CORP_ACTIONS_POLICY": "deferred",
+  "CORP_ACTIONS_POLICY": "A_adjusted",
   "UNIVERSE_MODE": "current_constituents_research",
   "splits": {
     "warmup_start": "2016-01-04",

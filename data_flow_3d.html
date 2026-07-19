@@ -1,0 +1,1848 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>S&P 500 ML Indicator Study — per-asset build path (XGB 1h · LSTM daily)</title>
+<style>
+:root{
+  --color-background-primary:#1e1e1c;
+  --color-background-secondary:#2b2b28;
+  --color-text-primary:#ece9e1;
+  --color-text-secondary:#a8a69d;
+  --color-text-tertiary:#a09d93;
+  --color-border-secondary:rgba(255,255,255,0.18);
+  --color-border-tertiary:rgba(255,255,255,0.12);
+  --border-radius-md:8px;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --color-background-primary:#f5f4ee;
+    --color-background-secondary:#e7e5dc;
+    --color-text-primary:#2b2b28;
+    --color-text-secondary:#5f5e57;
+    --color-text-tertiary:#67665e;
+    --color-border-secondary:rgba(0,0,0,0.18);
+    --color-border-tertiary:rgba(0,0,0,0.12);
+  }
+}
+html,body{margin:0}
+html{height:100%}
+body{
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  font-family:"Anthropic Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  line-height:1.5;
+  height:100vh;height:100dvh;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:14px 24px 0;box-sizing:border-box;
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+h1.tlc-h{font-size:17px;margin:0 0 2px;font-weight:650}
+.tlc-sub{font-size:12.5px;color:var(--color-text-secondary);margin:0 0 8px;max-width:1100px}
+.tlc-sub b{color:var(--color-text-primary);font-weight:600}
+.tlc-stage{position:relative;margin-top:2px;flex:1 1 auto;min-height:0;overflow:hidden}
+#tlc{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:grab}
+#tip{position:absolute;display:none;pointer-events:none;z-index:3;max-width:280px;
+  background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);
+  border-radius:8px;padding:7px 10px;font-size:12px;color:var(--color-text-primary);white-space:pre-line;line-height:1.45}
+#panel{position:absolute;top:10px;right:10px;width:272px;max-height:calc(100% - 20px);overflow:auto;display:none;z-index:4;
+  background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:10px}
+#panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;
+  border-bottom:1px solid var(--color-border-tertiary);font-size:13px;font-weight:600}
+#panelClose{border:0;background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:15px;line-height:1}
+#panelBody{padding:8px 10px;font-size:12.5px;color:var(--color-text-secondary)}
+#panelBody b{color:var(--color-text-primary)}
+#panelBody pre{font-family:var(--font-mono);font-size:10.5px;white-space:pre-wrap;word-break:break-all;
+  background:var(--color-background-secondary);border-radius:6px;padding:7px;color:var(--color-text-primary);margin:6px 0}
+.tlc-leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 10px;font-size:12.5px;color:var(--color-text-secondary)}
+.tlc-leg span{display:inline-flex;align-items:center;gap:6px}
+.tlc-leg i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tlc-leg .cav{color:var(--color-text-tertiary)}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Per-asset build path: one split-adjusted data root feeding two independent sealed
+pipelines drawn as one vertical ladder — the 1-hour XGBoost path (layers L4 to L9) and the daily LSTM
+path (phases D1 to D9) — both converging on 993 sealed per-asset artifacts and a Train-derived
+interpretation layer. The ladder shows ONE pass of the procedure; the same pass runs independently for
+every ticker in the universe. Universe figures on the scenes are the sealed store's own aggregates.</h2>
+<h1 class="tlc-h">S&P 500 ML Indicator Study — per-asset build path · XGB (1h) · LSTM (daily)</h1>
+<p class="tlc-sub"><b>One dedicated ENTRY indicator per asset, built twice:</b>
+split-adjusted bars → time split (purge + embargo) → Triple-Barrier labels → profit-aligned Optuna →
+sealed artifact → <b>one-shot OOS read</b> → Train-derived interpretation.
+The models decide ENTRY only; take-profit and stop-loss are a mechanical ATR contract.
+Drag · zoom · click a scene.</p>
+<div class="tlc-stage">
+  <canvas id="tlc"></canvas>
+  <div id="tip"></div>
+  <div id="panel"><div id="panelHead"><span id="panelTitle"></span><button id="panelClose">×</button></div><div id="panelBody"></div></div>
+</div>
+<div class="tlc-leg">
+  <span><i style="background:#8a8980"></i>Source</span>
+  <span><i style="background:#1D9E75"></i>Store / artifact</span>
+  <span><i style="background:#639922"></i>Transform</span>
+  <span><i style="background:#BA7517"></i>Gate / calibration</span>
+  <span><i style="background:#22C55E"></i>Result / endproduct</span>
+  <span class="cav">Prices are split-adjusted before any roll-up (83 events / 69 tickers). Dividends and
+  spin-offs are deliberately not adjusted, so buy-and-hold stays a price benchmark, symmetric with the strategy.</span>
+</div>
+<script>
+'use strict';
+/* ============================================================================================
+   S&P 500 ML Indicator Study — per-asset build path. 2.5D fixed-front canvas, ported scene-for-scene
+   from the reference visualization (main_data_flow.html of the sp500 pipeline-viz repo).
+   Single file, zero external requests.
+
+   SCOPE. The ladder is ONE pass of the per-asset procedure. The same pass runs independently for
+   every ticker; nothing is pooled across assets. Universe-level figures are the sealed store's own
+   aggregates (results.db). Where a concrete ticker appears, it is labelled a WORKED EXAMPLE.
+
+   SCHEMATIC LAYERS. Two scenes illustrate the SHAPE of a process rather than recorded data: the
+   Optuna trial scatter and the sample OHLCV rows. Both are drawn from a seeded PRNG and are marked
+   SCHEMATIC on the canvas. They are not measurements and must not be read as any.
+   ============================================================================================ */
+
+/* ================= palette + theme helpers (ported) ================= */
+var RED='#E24B4A',TEAL='#1D9E75',GREEN='#639922',AMB='#BA7517',CAN='#8a8980',PINK='#D8568E',TP='#22C55E',SL='#FF3B30',GRAY='#6B7280',BLU='#3E9BFF';
+var THEME=null;
+function themeRefresh(){THEME=null;}
+function vget(n,f){
+  if(!THEME){THEME={};try{THEME._cs=getComputedStyle(document.body);}catch(e){}}
+  var v=THEME[n];
+  if(v==null){try{v=THEME._cs?THEME._cs.getPropertyValue(n).trim():'';}catch(e){v='';}THEME[n]=v;}
+  return v||f;}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',themeRefresh);}catch(e){}
+function rgba(hex,a){var n=parseInt(hex.slice(1),16);return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';}
+var TEXT_SAFE={};
+TEXT_SAFE[RED]='--c-error-text';  TEXT_SAFE[SL]='--c-fail-text';
+TEXT_SAFE[TEAL]='--c-store-text'; TEXT_SAFE[GREEN]='--c-train-text';
+TEXT_SAFE[AMB]='--c-control-text';TEXT_SAFE[CAN]='--c-source-text';
+TEXT_SAFE[PINK]='--c-gate-text';  TEXT_SAFE[TP]='--c-good-text';
+TEXT_SAFE[BLU]='--c-embargo-text';
+function txc(col){var v=TEXT_SAFE[col];return v?vget(v,col):col;}
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+var EXPORT_FONT=1;
+function zScale(){return clamp(CAM.z,0.8,1.45)*EXPORT_FONT;}
+function pulse(){return 0.5+0.5*Math.sin(performance.now()/260);}
+function uiFont(wt,fz){return (wt?wt+' ':'')+fz.toFixed(1)+'px "Anthropic Sans",system-ui,sans-serif';}
+function lerp2(p,q,t){return {x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t};}
+function rng(seed){var t=seed>>>0;return function(){t+=0x6D2B79F5;var r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296;};}
+function byD(arr){return arr.slice().sort(function(p,q){return q.d-p.d;});}
+
+/* runtime state (slim: no modes, no label editor) */
+var STATE={labels:true,flow:true,names:'off',inspect:null,detFocus:'lw'};
+var LOD={cap:0.55,obj:0.55,name:0.75,micro:1.1};
+var CLK=0,flash=0;
+var HL={key:null,pending:false};
+function tVal(key,def){return def;}
+function T(key,def){return def;}
+function anameV(){return '';}
+function dqCol(s){return s==='OK'?TP:(s==='WARN'?AMB:SL);}
+
+/* ================= THE LADDER — the per-asset procedure, run across the whole universe =================
+   Every scene describes ONE pass of the procedure. The same pass runs independently for each asset:
+   498 sealed XGB indicators + 495 sealed LSTM indicators = 993 artifacts. Universe-level figures are
+   the sealed store's own aggregates; nothing here is a per-ticker story.
+   ============================================================================================ */
+var PIPELINE={
+ nodes:[
+  {id:'asset',num:'per asset',role:'source',section:'S1',
+   title:'S&P 500 universe — one dedicated indicator per asset',
+   subtitle:'the same sealed procedure, run once per ticker',
+   summary:'The study builds ONE dedicated ENTRY indicator per asset, twice: an XGBoost model on 1h bars and an LSTM on daily bars. The ladder below is a single pass; it runs independently for every ticker in the universe.',
+   input_contract:'Alpaca OHLCV, split-adjusted (A_adjusted)',transform_verb:'run per asset',
+   output_contract:'498 sealed XGB + 495 sealed LSTM indicators',metric:{label:'sealed indicators',value:'498 · 495'},
+   invariants:['prices split-adjusted before any roll-up','universe = present-day constituents (survivorship)'],status:'ok'},
+
+  {id:'xgb_db',num:'L·in',role:'store',section:'S2',
+   title:'upstream 1h bar store · bars_1h',
+   subtitle:'one shared read path for every asset',
+   summary:'The upstream hourly store is read through one loader. An unknown ticker is a hard error, never a silent empty frame.',
+   input_contract:'DuckDB table bars_1h (2016 → 2026)',transform_verb:'read',
+   output_contract:'one canonical OHLCV frame per ticker',metric:{label:'timeframe',value:'1h regular session'},
+   invariants:['one loader, OHLCV columns only','missing ticker raises, never cleans'],status:'ok'},
+  {id:'xgb_l4',num:'L4',role:'transform',section:'S2',
+   title:'Split adjustment → snapshot → parquet + roll-ups (fail-closed QC)',
+   subtitle:'corporate actions applied at 1h, BEFORE any roll-up',
+   summary:'Split factors are applied to the 1h bars first — scaling commutes exactly with first/max/min/last but NOT with an integer volume sum, so adjusting after the roll-up would corrupt volume. 83 split events across 69 tickers (splits only; dividends deliberately not adjusted, so HODL stays a price benchmark). Three cross-bar gates then run fail-closed.',
+   input_contract:'raw 1h bars + corporate-action table',transform_verb:'adjust + materialize',
+   output_contract:'clean 1h parquet + deterministic 1d / 1w roll-ups',metric:{label:'split events',value:'83 / 69 tickers'},
+   invariants:['prices × factor, volume ÷ factor, at 1h','overnight gap outside −55 % … +120 % fails closed','thin sessions > 10 % or flat bars > 15 % fail closed','1d = ET calendar day, 1w = ISO week'],status:'ok'},
+  {id:'xgb_l5',num:'L5',role:'transform',section:'S2',
+   title:'Temporal split — warm-up / Train / OOS · purge = H, embargo 35 · OOS frozen until L9',
+   subtitle:'time split with purge + embargo at the seam',
+   summary:'Warmup/Train/OOS masks over the 1h clock. Purge equals the label horizon H; the embargo covers the longest feature lookback. The OOS window is written once and not read again until L9.',
+   input_contract:'clean 1h parquet (+ 1d/1w context)',transform_verb:'split',
+   output_contract:'Train 2016-10-17 → 2023-12-29 · OOS 2024-01-02 → 2026-05-29 (frozen)',metric:{label:'boundary',value:'2023-12-29 → 2024-01-02'},
+   invariants:['no split without purge + embargo','t0 + H + embargo ≤ oos_start','OOS frozen until L9'],status:'ok'},
+  {id:'xgb_l6',num:'L6',role:'transform',section:'S2',
+   title:'candidates + Triple-Barrier (TP 2×ATR14 / SL 1×ATR14, H=24) → Output B',
+   subtitle:'17 CORE 1h features + per-asset searched optionals',
+   summary:'Causal entry candidates labeled by the asymmetric ATR Triple Barrier. The 17 CORE 1h features are frozen and never searched; a Train-only forward search may add optionals from a 45-id pool across 12 families. XGB outcome: 280 assets took searched features, 59 stayed CORE-only, 159 were too thin to search.',
+   input_contract:'clean bars + split masks',transform_verb:'label',
+   output_contract:'Output-B matrix: X + label + uniqueness weight',metric:{label:'searchable pool',value:'45 ids · 12 families'},
+   invariants:['every input ≤ decision close (causality)','CORE ids 1–99 are frozen, never overridden','label lane never enters X'],status:'ok'},
+  {id:'xgb_l7',num:'L7',role:'control',section:'S2',
+   title:'Optuna 80 trials (TPE seed 42) · objective = Train out-of-fold trading log-growth',
+   subtitle:'profit-aligned HPO · purged walk-forward CV (4 folds)',
+   summary:'XGBoost is tuned by Train out-of-fold trading log-growth replayed through the real engine at the deployed all-in sizing — not by a classification score. AUC-PR is reported, never optimized. The operating point θ is chosen per asset from an 11-point grid; one shared floor-respecting θ per trial, never a per-fold best.',
+   input_contract:'Output-B matrix (train only)',transform_verb:'optimize',
+   output_contract:'best params + per-asset θ from grid 0.40 … 0.60',metric:{label:'objective',value:'train_oof_log_growth'},
+   invariants:['objective = Train OOF log-growth (AUC-PR is report-only)','θ per asset, 11-point grid — never pinned','trade floor: ≥ 8 OOF trades over ≥ 2 active folds','nothing OOS read yet'],status:'ok'},
+  {id:'xgb_l8',num:'L8',role:'store',section:'S2',
+   title:'final fit on full Train → self-contained strategy_<T>.py (acceptance ✓)',
+   subtitle:'base64-embedded booster + golden-vector selfcheck',
+   summary:'Final fit on full Train; the booster is base64-embedded into strategy_<T>.py with a golden-vector selfcheck. The deliverable folder carries five files per asset: strategy, parameters, metrics, interpretation, manifest.',
+   input_contract:'best params + Train X/y + feature manifest',transform_verb:'seal',
+   output_contract:'artifacts/xgb/<T>/ — 5 files, folder_sha256 chained',metric:{label:'acceptance',value:'accepted ✓'},
+   invariants:['booster embedded + selfcheck','single-threaded, seed 42 — deterministic','deliverable contract asserted'],status:'ok'},
+  {id:'xgb_l9',num:'L9',role:'output',section:'S2',
+   title:'one-shot OOS verdict — 498 assets, read once each',
+   subtitle:'median PF 0.935 · beats HODL on 72 of 498',
+   summary:'The frozen window is scored once per asset. Universe verdict: median strategy return −1.78 % against a median buy-and-hold of +22.16 % over the same window; 72 assets (14.5 %) beat their own HODL. 328 assets traded multiple times, 136 never cleared the Train trade floor and stay idle BY DESIGN, 33 produced no model trades and fall back to HODL, 1 traded once with low evidence.',
+   input_contract:'frozen OOS window, scored once',transform_verb:'read once',
+   output_contract:'498 sealed rows · median PF 0.935 (328 rankable)',metric:{label:'beats HODL',value:'72 / 498'},
+   invariants:['idle is a reported result, not a failure','model decides ENTRY only — TP/SL are mechanical'],status:'ok'},
+
+  {id:'lstm_db',num:'D1',role:'store',section:'S3',
+   title:'bundled daily bar store · bars_1d',
+   subtitle:'the frozen input of the daily pipeline',
+   summary:'The daily store is the frozen input of the LSTM pipeline, rolled up from the same split-adjusted 1h bars. Source QC raises on violation; frames are never silently cleaned.',
+   input_contract:'DuckDB table bars_1d',transform_verb:'read',
+   output_contract:'one daily OHLCV frame per ticker',metric:{label:'timeframe',value:'1d session'},
+   invariants:['same split-adjusted source as the 1h path','fail-closed QC — violations raise, never cleaned'],status:'ok'},
+  {id:'lstm_d23',num:'D2–D3',role:'transform',section:'S3',
+   title:'Load + QC → time split (purge 10 + embargo 10)',
+   subtitle:'warm-up / Train / OOS with integer bounds',
+   summary:'The daily path keeps its own calendar: Train 2017-01-01 → 2023-12-31, OOS 2024-01-02 → 2026-04-30. Split masks carry integer bounds; the OOS window is not read again until D9.',
+   input_contract:'daily bars',transform_verb:'split',
+   output_contract:'Train 2017-01-01 → 2023-12-31 · OOS 2024-01-02 → 2026-04-30 (frozen)',metric:{label:'purge · embargo',value:'10 · 10 sessions'},
+   invariants:['purge at the OOS boundary','embargo after each fold','OOS frozen until D9'],status:'ok'},
+  {id:'lstm_d4',num:'D4',role:'transform',section:'S3',
+   title:'causal features + Train-only z-score · 13 CORE + searched optionals',
+   subtitle:'superset 58 ids · searchable pool 45',
+   summary:'13 CORE daily indicators are always on and never searched. A two-stage family-first search may add up to 6 optionals from a 45-id pool (23 optional + 2 cross-asset + 20 DSL-proposed). LSTM outcome: 486 assets took searched features, 8 stayed CORE-only, 1 was too thin. Normalization stats are frozen from Train only; CV folds get fold-causal stats.',
+   input_contract:'daily bars (every input ≤ decision close)',transform_verb:'featurize',
+   output_contract:'per-asset manifest of normalized channels',metric:{label:'CORE · pool',value:'13 · 45'},
+   invariants:['z-score stats from Train only','CV folds get fold-causal stats','proposed features enter only through a causal DSL'],status:'ok'},
+  {id:'lstm_d56',num:'D5–D6',role:'transform',section:'S3',
+   title:'Triple-Barrier labels → 60-session sequences',
+   subtitle:'60-day windows + uniqueness weights',
+   summary:'Causal candidates labeled by the same asymmetric ATR barrier (TP 2×ATR / SL 1×ATR, H = 10 sessions); overlapping labels get uniqueness weights so concurrent outcomes cannot be double-counted.',
+   input_contract:'train candidates (purged at the OOS boundary)',transform_verb:'label',
+   output_contract:'weighted Train sequences, 60 × manifest width',metric:{label:'window',value:'60 sessions'},
+   invariants:['TP 2×ATR / SL 1×ATR, H = 10 sessions','uniqueness weights on overlapping labels'],status:'ok'},
+  {id:'lstm_d7',num:'D7',role:'control',section:'S3',
+   title:'Optuna 20 trials · purged walk-forward CV · fold-causal scalers',
+   subtitle:'each fold’s scaler sees only rows before its embargo boundary',
+   summary:'Objective = Train OOF trading log-growth, the same profit-aligned target as the 1h path. Each fold’s normalization is fold-causal. Training is deterministic: torch pinned to 2 threads, seed 42.',
+   input_contract:'sequences + purged folds',transform_verb:'optimize',
+   output_contract:'hidden / lr / dropout / weight_decay / num_layers',metric:{label:'objective',value:'oof_log_growth'},
+   invariants:['scaler never sees the validation region','deterministic: 2 threads, seed 42'],status:'ok'},
+  {id:'lstm_d8',num:'D8',role:'control',section:'S3',
+   title:'joint (threshold, direction) on Train OOF → refit → artifact (all-in sizing)',
+   subtitle:'operating point + final refit on full-Train stats',
+   summary:'Entry threshold and trade direction are calibrated JOINTLY on Train OOF over a 6-point θ grid (0.50 … 0.60) and two direction modes. Sizing is all-in: every trade reinvests the full running capital. Final refit → base64 state_dict inside strategy_<T>.py.',
+   input_contract:'best params + Train OOF',transform_verb:'calibrate + seal',
+   output_contract:'artifacts/lstm/<T>/ — 5 files, θ + direction frozen',metric:{label:'θ grid · directions',value:'0.50 … 0.60 · 2'},
+   invariants:['nothing OOS read yet','artifact: base64 state_dict + selfcheck'],status:'ok'},
+  {id:'lstm_d9',num:'D9',role:'output',section:'S3',
+   title:'one-shot OOS verdict — 495 assets, read once each',
+   subtitle:'median PF 1.013 · beats HODL on 129 of 495',
+   summary:'OOS candidates scored once, direction-filtered, replayed through the same engine (1 bp commission + 2 bp slippage per side, all-in compounding). Universe verdict: median strategy return +2.25 % against a median buy-and-hold of +23.09 %; 129 assets (26.1 %) beat their own HODL. 446 traded multiple times, 37 fell back to HODL, 11 traded once with low evidence, 1 stayed idle.',
+   input_contract:'frozen OOS window, scored once',transform_verb:'read once',
+   output_contract:'495 sealed rows · median PF 1.013 (445 rankable)',metric:{label:'beats HODL',value:'129 / 495'},
+   invariants:['same engine and costs as the 1h path','HODL fallback only on zero model trades'],status:'ok'},
+
+  {id:'sealed',num:'✓',role:'output',section:'S4',
+   title:'SEALED — 993 artifacts · interpretation layer · 16/16 integrity checks',
+   subtitle:'what the model reads, made inspectable without re-reading OOS',
+   summary:'The sealed artifacts are projected into a Train-derived interpretation layer: for XGB, each feature’s axis is cut at the model’s own split thresholds into ENTRY value ranges (raw and in Train sigmas) with TP-before-SL rates; for LSTM, deterministic channel occlusion, ENTRY-conditioned. 16 601 feature-stat rows, 16 601 contribution rows, 45 021 ENTRY-range segments. Every integrity check passes.',
+   input_contract:'993 sealed artifacts (5 files per asset)',transform_verb:'interpret + verify',
+   output_contract:'results.db — read-only store behind the console',metric:{label:'integrity',value:'16 / 16 PASS'},
+   invariants:['TRAIN-DERIVED INTERPRETATION — NOT AN OOS RESULT','NOT A LIVE TRADING SIGNAL','interpretation reads artifacts only, never the OOS window'],status:'ok'}
+ ],
+ primaryPath:['asset','xgb_db','xgb_l4','xgb_l5','xgb_l6','xgb_l7','xgb_l8','xgb_l9',
+              'lstm_db','lstm_d23','lstm_d4','lstm_d56','lstm_d7','lstm_d8','lstm_d9','sealed'],
+ edges:[
+  {from:'asset',to:'xgb_db',verb:'select',payload:'one ticker at a time, 498 times over',detail:'the procedure is per asset — no cross-asset pooling, no shared model'},
+  {from:'xgb_db',to:'xgb_l4',verb:'materialize',payload:'raw 1h bars → split adjustment → QC + snapshot',detail:'corporate actions applied at 1h; three cross-bar gates fail closed'},
+  {from:'xgb_l4',to:'xgb_l5',verb:'split',payload:'clean 1h + 1d/1w context (merge_asof backward)',detail:'coarser frames join as causal completed-bar context'},
+  {from:'xgb_l5',to:'xgb_l6',verb:'label',payload:'Train mask → candidates + Triple-Barrier',detail:'TP 2×ATR / SL 1×ATR, H=24 → Output B'},
+  {from:'xgb_l6',to:'xgb_l7',verb:'optimize',payload:'labeled events → Output-B matrix',detail:'80 Optuna trials, Train-only profit objective at all-in sizing'},
+  {from:'xgb_l7',to:'xgb_l8',verb:'seal',payload:'best params + per-asset θ (all-in) → final fit on full Train',detail:'booster serialized, base64-embedded, acceptance gate recorded'},
+  {from:'xgb_l8',to:'xgb_l9',verb:'read once',payload:'sealed strategy → the one and only OOS read of this epoch',detail:'one-shot verdict; no tuning feedback from the result'},
+  {from:'xgb_l9',to:'lstm_db',verb:'switch path',payload:'498 sealed rows · now the independent daily path',detail:'the second pipeline repeats the whole procedure on daily bars'},
+  {from:'lstm_db',to:'lstm_d23',verb:'split',payload:'daily bars → QC + split',detail:'the daily path keeps its own calendar and its own purge/embargo'},
+  {from:'lstm_d23',to:'lstm_d4',verb:'featurize',payload:'Train mask → causal channels + frozen stats',detail:'13 CORE + searched optionals · z-score stats from Train only'},
+  {from:'lstm_d4',to:'lstm_d56',verb:'label',payload:'manifest → labels + 60-session sequences',detail:'weighted Train sequences, 60 × manifest width'},
+  {from:'lstm_d56',to:'lstm_d7',verb:'optimize',payload:'weighted sequences → purged folds',detail:'20 trials, fold-causal scalers'},
+  {from:'lstm_d7',to:'lstm_d8',verb:'calibrate',payload:'best params → joint calibration + refit',detail:'joint (threshold, direction) on Train OOF → artifact · all-in sizing'},
+  {from:'lstm_d8',to:'lstm_d9',verb:'read once',payload:'sealed LSTM strategy → the one and only OOS read of this epoch',detail:'engine replay net of costs'},
+  {from:'lstm_d9',to:'sealed',verb:'seal + interpret',payload:'993 artifacts → interpretation + integrity checks',detail:'the interpretation layer is Train-derived and never re-reads OOS'}
+ ]
+};
+var NODE_BY_ID={},NODE_BY_LEV=[];
+PIPELINE.nodes.forEach(function(n){NODE_BY_ID[n.id]=n;});
+PIPELINE.primaryPath.forEach(function(id,lev){NODE_BY_ID[id].lev=lev;NODE_BY_LEV[lev]=NODE_BY_ID[id];});
+var NLEV=PIPELINE.primaryPath.length;
+function primaryEdge(a,b){return PIPELINE.edges.filter(function(e){return e.from===a&&e.to===b;})[0];}
+function edgeAt(i){return primaryEdge(PIPELINE.primaryPath[i],PIPELINE.primaryPath[i+1]);}
+var DEFAULT_BOUNDARY_DZ=272;
+var BND_DZ=[],BND_DEF=[];
+for(var _bi=0;_bi<NLEV-1;_bi++){var _be=edgeAt(_bi);
+  BND_DZ.push((_be&&_be.boundaryDz!=null)?_be.boundaryDz:DEFAULT_BOUNDARY_DZ);
+  BND_DEF.push(_be?_be.detail:'');}
+var SECTIONS=[
+  {lev:0,t:'S1 · UNIVERSE — one dedicated indicator per asset'},
+  {lev:1,t:'S2 · XGB path — 1h bars · L4 → L9'},
+  {lev:8,t:'S3 · LSTM path — daily bars · D1 → D9'},
+  {lev:15,t:'S4 · SEALED — 993 artifacts · interpretation · integrity'}];
+
+/* ================= projection + camera (ported; taller bands for the scene artwork) ================= */
+var ISO={W:260,D:150,LEVH:330};
+var PD0=5400;
+var FRONT_CP=Math.cos(0.08), FRONT_SP=Math.sin(0.08);
+function P3(x,y,z){
+  var d=y*FRONT_CP-z*FRONT_SP;
+  var f=PD0/(PD0+d);
+  return {x:x*f, y:-(y*FRONT_SP+z*FRONT_CP)*f, d:d};}
+function lp(lev,a,b,dz){return P3((a-0.5)*ISO.W,(b-0.5)*ISO.D,lev*ISO.LEVH+(dz||0));}
+function bp(i,a,b){return P3((a-0.5)*ISO.W,(b-0.5)*ISO.D,i*ISO.LEVH+BND_DZ[i]);}
+function faceVis(nx,ny,nz){return (ny*FRONT_CP-nz*FRONT_SP)<-1e-4;}
+
+function Camera2D(){this.x=0;this.y=0;this.z=1;this.t={x:0,y:0,z:1};}
+Camera2D.prototype.step=function(dt){var k=Math.min(1,dt*5);
+  this.x+=(this.t.x-this.x)*k;this.y+=(this.t.y-this.y)*k;this.z+=(this.t.z-this.z)*k;};
+Camera2D.prototype.S=function(p){return {x:(p.x-this.x)*this.z+cw/2,y:(p.y-this.y)*this.z+chh/2};};
+var CAM=new Camera2D();
+function SS(lev,a,b,dz){return CAM.S(lp(lev,a,b,dz));}
+
+var cv=document.getElementById('tlc'),ctx=cv.getContext('2d'),cw=940,chh=600,DPR=1;
+
+/* hit-test index (payloads get the drawing level stamped on, for tooltips/panel) */
+var CUR_LEV=null;
+function HitTestIndex(){this.items=[];}
+HitTestIndex.prototype.clear=function(){this.items.length=0;};
+HitTestIndex.prototype.addPts=function(pts,payload){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i;
+  if(payload&&payload.lev==null)payload.lev=CUR_LEV;
+  for(i=0;i<pts.length;i++){var p=CAM.S(pts[i]);if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  this.items.push({x0:x0,y0:y0,x1:x1,y1:y1,p:payload});};
+HitTestIndex.prototype.addRect=function(x,y,w,h,payload){
+  if(payload&&payload.lev==null)payload.lev=CUR_LEV;
+  this.items.push({x0:x,y0:y,x1:x+w,y1:y+h,p:payload});};
+HitTestIndex.prototype.find=function(mx,my){
+  for(var i=this.items.length-1;i>=0;i--){var it=this.items[i];
+    if(mx>=it.x0&&mx<=it.x1&&my>=it.y0&&my<=it.y1)return it.p;}
+  return null;};
+var HITS=new HitTestIndex();
+
+/* ================= primitives (ported) ================= */
+function poly(pts,fill,stroke,lw,dash){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){var s=CAM.S(pts[i]);if(i)ctx.lineTo(s.x,s.y);else ctx.moveTo(s.x,s.y);}
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.save();ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.setLineDash(dash||[]);ctx.stroke();ctx.restore();}
+  return pts.map(function(p){return CAM.S(p);});}
+function polyS(pts,fill,stroke,lw,dash){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){if(i)ctx.lineTo(pts[i].x,pts[i].y);else ctx.moveTo(pts[i].x,pts[i].y);}
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.save();ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.setLineDash(dash||[]);ctx.stroke();ctx.restore();}}
+function line2(p1,p2,col,w,dash){var a=CAM.S(p1),b=CAM.S(p2);
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=w||1;ctx.setLineDash(dash||[]);ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();}
+var CUR_FONT='';
+function setFont(f){if(f!==CUR_FONT){CUR_FONT=f;ctx.font=f;}}
+function txtS(s,x,y,col,al,sz,wt){
+  var fz=(sz||11)*zScale();
+  setFont(uiFont(wt,fz));
+  ctx.textAlign=al||'left';ctx.textBaseline='alphabetic';
+  if(HL.pending){HL.pending=false;
+    var tw=Math.max(10,ctx.measureText(s).width);
+    var ax=(al==='center')?x-tw/2:((al==='right')?x-tw:x);
+    var ph=pulse();
+    fillRR(ax-5,y-fz-3,tw+10,fz+8,5,rgba(TEAL,0.14+0.14*ph),rgba(TEAL,0.55+0.4*ph),1.3);}
+  ctx.fillStyle=txc(col);ctx.fillText(s,x,y);}
+function txt(s,p,col,al,sz,wt,dx,dy){var q=CAM.S(p);txtS(s,q.x+(dx||0),q.y+(dy||0),col,al,sz,wt);}
+function rrectS(x,y,w,h,r){if(ctx.roundRect){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}else{ctx.beginPath();ctx.rect(x,y,w,h);}}
+function fillRR(x,y,w,h,r,fillStyle,strokeStyle,lw){
+  ctx.fillStyle=fillStyle;rrectS(x,y,w,h,r);ctx.fill();
+  ctx.save();ctx.strokeStyle=strokeStyle;ctx.lineWidth=lw||1.2;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
+function strokeRR(x,y,w,h,r,col,lw){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw||1;ctx.setLineDash([]);rrectS(x,y,w,h,r);ctx.stroke();ctx.restore();}
+function triUpS(x,y,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4.5,y+7);ctx.lineTo(x+4.5,y+7);ctx.closePath();ctx.fill();}
+
+function prism(lev,a0,b0,a1,b1,base,h,col,topA){
+  var B0=lp(lev,a0,b0,base),B1=lp(lev,a1,b0,base),B2=lp(lev,a1,b1,base),B3=lp(lev,a0,b1,base);
+  var T0=lp(lev,a0,b0,base+h),T1=lp(lev,a1,b0,base+h),T2=lp(lev,a1,b1,base+h),T3=lp(lev,a0,b1,base+h);
+  var F=[
+    {n:[0,0,1], p:[T0,T1,T2,T3], a:(topA==null?0.14:topA), s:true},
+    {n:[0,0,-1],p:[B0,B3,B2,B1], a:0.26},
+    {n:[1,0,0], p:[B1,B2,T2,T1], a:0.30},
+    {n:[-1,0,0],p:[B0,T0,T3,B3], a:0.30},
+    {n:[0,1,0], p:[B2,B3,T3,T2], a:0.20},
+    {n:[0,-1,0],p:[B0,B1,T1,T0], a:0.20}];
+  var vis=[],i;
+  for(i=0;i<6;i++)if(faceVis(F[i].n[0],F[i].n[1],F[i].n[2]))vis.push(F[i]);
+  vis.sort(function(p,q){return (q.p[0].d+q.p[2].d)-(p.p[0].d+p.p[2].d);});
+  var topScr=null;
+  for(i=0;i<vis.length;i++){var f=vis[i];
+    var scr2=poly(f.p,rgba(col,f.a),f.s?col:null,1.1);
+    if(f.s)topScr=scr2;}
+  return topScr||[CAM.S(T0),CAM.S(T1),CAM.S(T2),CAM.S(T3)];}
+
+function roleColor(role){var m={source:CAN,store:TEAL,transform:GREEN,control:AMB,output:TP};return m[role]||CAN;}
+function caption(lev){if(!STATE.labels)return;
+  var n=NODE_BY_LEV[lev];if(!n)return;
+  var s=T('lvl_'+n.id,(n.num||('L'+(lev+1)))+' · '+n.title,'Levels');if(!s)return;
+  var by=(BNDY[lev]!=null)?BNDY[lev]:CAM.S(P3(0,0,lev*ISO.LEVH+255)).y;
+  txtS(s,10,by+15,roleColor(n.role),'left',12.5,'700');
+  var fz=12.5*zScale(),w=ctx.measureText(s).width;
+  obstacle(10,by+15-fz-2,10+w,by+18);
+  HITS.addRect(8,by+15-fz-4,w+10,fz+10,{type:'layercap',lev:lev});
+}
+
+function drawFlowArrowHQ(p1,p2,col,dotCol){
+  var a=CAM.S(p1),b=CAM.S(p2);
+  var dx=b.x-a.x,dy=b.y-a.y,L=Math.max(1,Math.hypot(dx,dy)),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+  var head=clamp(L*0.34,7,12),hw=head*0.6,bx=b.x-ux*head,by=b.y-uy*head;
+  ctx.save();ctx.setLineDash([]);ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle=rgba(col,0.22);ctx.lineWidth=4.5;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();
+  ctx.strokeStyle=rgba(col,0.9);ctx.lineWidth=2.0;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(bx+nx*hw,by+ny*hw);ctx.lineTo(bx-nx*hw,by-ny*hw);ctx.closePath();ctx.fill();
+  ctx.restore();
+  if(STATE.flow){var k=((CLK*0.5)%1),px=a.x+dx*k,py=a.y+dy*k;
+    ctx.save();ctx.fillStyle=rgba(dotCol||col,0.95);ctx.beginPath();ctx.arc(px,py,2.8,0,7);ctx.fill();ctx.restore();}
+}
+function arrowHQ(a,b,col){
+  var dx=b.x-a.x,dy=b.y-a.y,L=Math.max(1,Math.hypot(dx,dy)),ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+  var head=clamp(L*0.34,10,17),hw=head*0.62,bx=b.x-ux*head,by=b.y-uy*head;
+  ctx.save();ctx.setLineDash([]);ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle=rgba(col,0.22);ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();
+  ctx.strokeStyle=rgba(col,0.95);ctx.lineWidth=2.8;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(bx,by);ctx.stroke();
+  ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(bx+nx*hw,by+ny*hw);ctx.lineTo(bx-nx*hw,by-ny*hw);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+function flowArrow(lev){
+  var tert=vget('--color-text-tertiary','#777');
+  var p1=lp(lev,0.5,0.30,58),p2=lp(lev+1,0.5,0.30,2);
+  drawFlowArrowHQ(p1,p2,tert,TEAL);
+  var a=CAM.S(p1),b=CAM.S(p2),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+  HITS.addRect(mx-16,my-34,32,68,{type:'edge',i:lev,lev:lev});
+}
+
+/* dashed layer boundaries (screen-wide) — BNDY[i] = boundary screen y, read by captions/bands */
+var BNDY=[];
+function boundaryLines(){
+  BNDY.length=0;
+  var col=vget('--color-border-tertiary','rgba(255,255,255,0.12)'),i,y;
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([7,6]);
+  for(i=0;i<BND_DEF.length;i++){
+    y=CAM.S(bp(i,0.5,0.5)).y;BNDY[i]=y;
+    if(y<-8||y>chh+8)continue;
+    y=Math.round(y)+0.5;
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();
+  }
+  ctx.restore();
+}
+function sectionTitles(){
+  var prim=vget('--color-text-primary','#eee');
+  for(var i=0;i<SECTIONS.length;i++){var s=SECTIONS[i];
+    var y=(s.lev>0&&BNDY[s.lev-1]!=null)?BNDY[s.lev-1]-8:CAM.S(P3(0,0,-52)).y;
+    if(y<-20||y>chh+20)continue;
+    txtS(s.t,10,y,prim,'left',11.5,'800');
+    var w=ctx.measureText(s.t).width;obstacle(10,y-14,10+w,y+4);
+  }
+}
+
+/* ================= obstacle + deferred-label pass (ported, trimmed) ================= */
+var LQ=[],OBST=[];
+function obstacle(x0,y0,x1,y1){OBST.push({x0:x0,y0:y0,x1:x1,y1:y1});}
+function qLabel(q){
+  if(q.text==null){
+    var s=tVal(q.key,q.def,q.grp);
+    if(!s)return;
+    q.text=s;
+  }
+  if(!q.text)return;
+  LQ.push(q);
+}
+function lblBoxes(q,dx,dy){
+  var x=q.x+dx,y=q.y+dy,out=[],i,k;
+  var x0=(q.al==='center')?-q.w/2:((q.al==='right')?-q.w:0),x1=x0+q.w,y0=-q.fz-2,y1=3;
+  if(q.rot){
+    var c=Math.cos(q.rot),s=Math.sin(q.rot),n=3;
+    for(k=0;k<n;k++){
+      var sx0=x0+(x1-x0)*k/n,sx1=x0+(x1-x0)*(k+1)/n,
+          P=[[sx0,y0],[sx1,y0],[sx1,y1],[sx0,y1]],bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9;
+      for(i=0;i<4;i++){var X=P[i][0]*c-P[i][1]*s,Y=P[i][0]*s+P[i][1]*c;
+        if(X<bx0)bx0=X;if(Y<by0)by0=Y;if(X>bx1)bx1=X;if(Y>by1)by1=Y;}
+      out.push({x0:x+bx0,y0:y+by0,x1:x+bx1,y1:y+by1});
+    }
+  }else out.push({x0:x+x0,y0:y+y0,x1:x+x1,y1:y+y1});
+  return out;
+}
+function boxUnion(bs){
+  var u={x0:1e9,y0:1e9,x1:-1e9,y1:-1e9},i;
+  for(i=0;i<bs.length;i++){var b=bs[i];
+    if(b.x0<u.x0)u.x0=b.x0;if(b.y0<u.y0)u.y0=b.y0;if(b.x1>u.x1)u.x1=b.x1;if(b.y1>u.y1)u.y1=b.y1;}
+  return u;
+}
+function ovl(a,b,m){return a.x0-m<b.x1&&a.x1+m>b.x0&&a.y0-m<b.y1&&a.y1+m>b.y0;}
+function ovlArea(a,b){
+  var w=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),h=Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0);
+  return (w>0&&h>0)?w*h:0;}
+function drawLabels(){
+  var placed=[],ord=[],i,j,k,q;
+  for(i=0;i<LQ.length;i++){q=LQ[i];
+    if(q.lod!=null&&CAM.z<q.lod)continue;
+    q.fz=(q.sz||11)*zScale();
+    setFont(uiFont(q.wt,q.fz));
+    q.w=Math.max(6,ctx.measureText(q.text).width);
+    q.pr=q.pr||1;
+    ord.push(q);
+  }
+  ord.sort(function(p,r){return (r.pr-p.pr)||(p.y-r.y);});
+  for(i=0;i<ord.length;i++){q=ord[i];
+    var dyS=q.fz+7,dxS=q.w/2+8,CAND,best=null,bestA=1e18,chosen=null;
+    if(q.rot){
+      var uc=Math.cos(q.rot),us=Math.sin(q.rot);
+      CAND=[[0,0],
+        [-uc*dyS,-us*dyS],[uc*dyS,us*dyS],
+        [-uc*2*dyS,-us*2*dyS],[uc*2*dyS,us*2*dyS],
+        [us*dyS,-uc*dyS],[-us*dyS,uc*dyS],
+        [-uc*3*dyS,-us*3*dyS],[uc*3*dyS,us*3*dyS]];
+    }else{
+      CAND=[[0,0],[0,-dyS],[0,dyS],[0,-2*dyS],[0,2*dyS],[dxS,0],[-dxS,0],
+            [dxS,-dyS],[-dxS,-dyS],[dxS,dyS],[-dxS,dyS],[0,-3*dyS],[0,3*dyS]];
+    }
+    for(k=0;k<CAND.length;k++){
+      var bs=lblBoxes(q,CAND[k][0],CAND[k][1]),u=boxUnion(bs),a=0,m,n;
+      var sx=0,sy=0;
+      if(u.x0<4)sx=4-u.x0;else if(u.x1>cw-4)sx=cw-4-u.x1;
+      if(u.y0<12)sy=12-u.y0;else if(u.y1>chh-4)sy=chh-4-u.y1;
+      if(sx||sy)for(m=0;m<bs.length;m++){var bb=bs[m];bb.x0+=sx;bb.y0+=sy;bb.x1+=sx;bb.y1+=sy;}
+      for(m=0;m<bs.length&&a<1e17;m++){
+        for(j=0;j<placed.length;j++){var P2=placed[j];
+          for(n=0;n<P2.length;n++)if(ovl(bs[m],P2[n],2))a+=ovlArea(bs[m],P2[n])+40;}
+        for(j=0;j<OBST.length;j++)if(ovl(bs[m],OBST[j],2))a+=ovlArea(bs[m],OBST[j])+40;
+      }
+      if(a===0){chosen={bs:bs,dx:CAND[k][0]+sx,dy:CAND[k][1]+sy};break;}
+      if(a<bestA){bestA=a;best={bs:bs,dx:CAND[k][0]+sx,dy:CAND[k][1]+sy};}
+    }
+    if(!chosen){
+      if(q.pr<=2)continue;                        // drop — pr3 never disappears
+      chosen=best;
+    }
+    var fx=q.x+chosen.dx,fy=q.y+chosen.dy;
+    placed.push(chosen.bs);
+    var ub=boxUnion(chosen.bs);
+    if(q.ax!=null&&Math.abs(chosen.dx)+Math.abs(chosen.dy)>12){
+      var axx=q.ax,ayy=(q.ay!=null)?q.ay:q.y,
+          tx=clamp(axx,ub.x0,ub.x1),ty=clamp(ayy,ub.y0,ub.y1);
+      ctx.save();ctx.strokeStyle=rgba(vget('--color-text-tertiary','#777'),0.8);ctx.lineWidth=1;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(axx,ayy);ctx.lineTo(tx,ty);ctx.stroke();ctx.restore();
+    }
+    if(q.rot){ctx.save();ctx.translate(fx,fy);ctx.rotate(q.rot);
+      txtS(q.text,0,0,q.col,q.al,q.sz,q.wt);ctx.restore();CUR_FONT='';}
+    else txtS(q.text,fx,fy,q.col,q.al,q.sz,q.wt);
+  }
+}
+
+/* ================= GLYPH PASS (ported) ================= */
+var GLYPHS={};
+function scr(p){return CAM.S(p);}
+function addObstacleRect(x,y,w,h){obstacle(x,y,x+w,y+h);}
+function addObstaclePts(pts,pad){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i,p;
+  pad=pad||0;
+  for(i=0;i<pts.length;i++){p=pts[i];if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  obstacle(x0-pad,y0-pad,x1+pad,y1+pad);
+}
+function ctr(pts){var x=0,y=0,i;for(i=0;i<pts.length;i++){x+=pts[i].x;y+=pts[i].y;}return {x:x/pts.length,y:y/pts.length};}
+function pathPtsS(pts,close){
+  ctx.beginPath();
+  for(var i=0;i<pts.length;i++){if(i)ctx.lineTo(pts[i].x,pts[i].y);else ctx.moveTo(pts[i].x,pts[i].y);}
+  if(close)ctx.closePath();
+}
+function ringPts(lev,ca,cb,ra,rb,dz,n){
+  var pts=[],i,ang;
+  for(i=0;i<n;i++){ang=Math.PI*2*i/n;pts.push(lp(lev,ca+ra*Math.cos(ang),cb+rb*Math.sin(ang),dz));}
+  return pts;
+}
+function ringScr(lev,ca,cb,ra,rb,dz,n){return ringPts(lev,ca,cb,ra,rb,dz,n).map(scr);}
+function monoS(s,x,y,col,al,sz){
+  var fz=(sz||9)*zScale();
+  setFont(fz.toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  ctx.textAlign=al||'left';ctx.textBaseline='alphabetic';
+  ctx.fillStyle=col;ctx.fillText(s,x,y);}
+function foldedSheetPath(x,y,w,h,f){
+  f=f||8;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w-f,y);ctx.lineTo(x+w,y+f);
+  ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.closePath();
+}
+function drawFold(x,y,w,h,f,col,fillA){
+  foldedSheetPath(x,y,w,h,f);
+  ctx.fillStyle=rgba(col,fillA==null?0.13:fillA);ctx.fill();
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([]);foldedSheetPath(x,y,w,h,f);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+w-f,y);ctx.lineTo(x+w-f,y+f);ctx.lineTo(x+w,y+f);ctx.stroke();ctx.restore();
+}
+function tagPathS(x,y,w,h){
+  var cut=Math.min(10,w*0.18);
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w-cut,y);ctx.lineTo(x+w,y+h/2);
+  ctx.lineTo(x+w-cut,y+h);ctx.lineTo(x,y+h);ctx.closePath();
+}
+function drawTagS(x,y,w,h,col,label,fillA,fz){
+  ctx.fillStyle=rgba(col,fillA==null?0.12:fillA);tagPathS(x,y,w,h);ctx.fill();
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([]);tagPathS(x,y,w,h);ctx.stroke();
+  ctx.beginPath();ctx.arc(x+w-9,y+h/2,2.2,0,7);ctx.stroke();ctx.restore();
+  if(label)txtS(label,x+w/2-4,y+h/2+(fz||8)*0.35,vget('--color-text-primary','#eee'),'center',fz||8,'600');
+  addObstacleRect(x,y,w,h);
+}
+function drawCheckbox(x,y,s,col,label){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=rgba(col,0.12);ctx.lineWidth=1.1;ctx.setLineDash([]);
+  rrectS(x-s*0.5,y-s*0.5,s,s,2);ctx.fill();ctx.stroke();
+  ctx.strokeStyle=TP;ctx.lineWidth=1.6;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x-s*0.28,y);ctx.lineTo(x-s*0.08,y+s*0.22);ctx.lineTo(x+s*0.32,y-s*0.25);ctx.stroke();
+  ctx.restore();
+  if(label&&CAM.z>=LOD.micro)txtS(label,x,y+s*0.85,col,'center',6.5,'700');
+}
+function drawStatusIcon(x,y,col,status){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.lineCap='round';ctx.setLineDash([]);
+  ctx.beginPath();
+  if(status==='OK'){ctx.moveTo(x-4,y);ctx.lineTo(x-1,y+3);ctx.lineTo(x+5,y-4);}
+  else if(status==='WARN'){ctx.moveTo(x,y-5);ctx.lineTo(x,y+2);ctx.moveTo(x,y+5);ctx.lineTo(x,y+5.2);}
+  else{ctx.moveTo(x-4,y-4);ctx.lineTo(x+4,y+4);ctx.moveTo(x+4,y-4);ctx.lineTo(x-4,y+4);}
+  ctx.stroke();ctx.restore();
+}
+function dqFit(s,maxW,sz,wt){
+  var t=String(s),fz=(sz||8)*zScale();
+  setFont(uiFont(wt||'400',fz));
+  if(ctx.measureText(t).width<=maxW)return t;
+  while(t.length>1&&ctx.measureText(t+'…').width>maxW)t=t.slice(0,-1);
+  return t+'…';
+}
+function drawStatusBadge(x,y,status,label,opts){
+  opts=opts||{};
+  var col=dqCol(status),txt2=label||status,w=opts.w||((txt2.length>4)?42:34),h=opts.h||16,sz=opts.sz||7;
+  fillRR(x,y,w,h,5,rgba(col,0.13),col,1);
+  drawStatusIcon(x+8,y+h/2,col,status);
+  txtS(txt2,x+w-6,y+h/2+sz*0.42,col,'right',sz,'700');
+  return {x:x,y:y,w:w,h:h};
+}
+function drawFamilyMarker(x,y,fam,col){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=rgba(col,0.18);ctx.lineWidth=1.15;ctx.setLineDash([]);
+  if(fam==='price_action'){
+    ctx.beginPath();ctx.moveTo(x-3,y+4);ctx.lineTo(x-3,y-4);ctx.moveTo(x+3,y+5);ctx.lineTo(x+3,y-5);ctx.stroke();
+    ctx.fillRect(x-5,y-1,4,5);ctx.fillRect(x+1,y-4,4,6);
+  }else if(fam==='volume'){
+    ctx.fillRect(x-5,y+1,3,5);ctx.fillRect(x-1,y-3,3,9);ctx.fillRect(x+3,y-6,3,12);
+  }else{
+    ctx.beginPath();ctx.moveTo(x-6,y+4);ctx.lineTo(x-1,y-2);ctx.lineTo(x+2,y+0);ctx.lineTo(x+6,y-6);ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawMicroSheet(x,y,w,h,col){
+  drawFold(x,y,w,h,Math.min(6,w*0.26),col,0.10);
+  ctx.save();ctx.strokeStyle=rgba(col,0.7);ctx.lineWidth=1;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(x+4,y+h*0.45);ctx.lineTo(x+w-5,y+h*0.45);
+  ctx.moveTo(x+4,y+h*0.66);ctx.lineTo(x+w-7,y+h*0.66);ctx.stroke();ctx.restore();
+}
+function drawDbCylinder(g){
+  var top=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz+g.h,28),bot=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz,28),i,body=[];
+  for(i=0;i<bot.length;i++)body.push(bot[i]);for(i=top.length-1;i>=0;i--)body.push(top[i]);
+  ctx.save();pathPtsS(body,true);ctx.fillStyle=rgba(g.col,0.18);ctx.fill();ctx.strokeStyle=rgba(g.col,0.55);ctx.lineWidth=1;ctx.stroke();
+  pathPtsS(bot,true);ctx.strokeStyle=rgba('#4B5563',0.45);ctx.stroke();
+  pathPtsS(top,true);ctx.fillStyle=rgba(g.col,0.18);ctx.fill();ctx.strokeStyle=g.col;ctx.lineWidth=1.3;ctx.stroke();
+  if(CAM.z>=0.7){for(i=1;i<=4;i++){var mid=ringScr(g.lev,g.a,g.b,g.ra,g.rb,g.dz+g.h*i/5,28);pathPtsS(mid,true);ctx.strokeStyle=rgba(g.col,0.28);ctx.stroke();}}
+  ctx.restore();
+  var c=ctr(top),cb=ctr(bot),cMid={x:(c.x+cb.x)/2,y:(c.y+cb.y)/2};
+  var nm=T(g.badgeKey||'db_badge',g.badge||'DuckDB',g.badgeGrp||'Store');
+  if(nm){
+    var minx=1e9,maxx=-1e9;for(i=0;i<top.length;i++){if(top[i].x<minx)minx=top[i].x;if(top[i].x>maxx)maxx=top[i].x;}
+    setFont(uiFont('800',10));var wpp=Math.max(1,ctx.measureText(nm).width)/10;
+    var fpx=clamp((maxx-minx)*0.82/wpp,6,15),fsz=fpx/zScale();
+    txtS(nm,cMid.x+1.1,cMid.y+fpx*0.35+1,'rgba(0,0,0,0.6)','center',fsz,'800');
+    txtS(nm,cMid.x,cMid.y+fpx*0.35,'#ffffff','center',fsz,'800');
+  }
+  HITS.addPts([lp(g.lev,g.a-g.ra*1.15,g.b-g.rb*1.15,g.dz+g.h+4),lp(g.lev,g.a+g.ra*1.15,g.b+g.rb*1.15,g.dz)],{type:g.hit||'db'});
+  addObstaclePts(top.concat(bot),4);
+  return c;
+}
+function drawOhlcvMatrix(g){
+  var bord=vget('--color-border-secondary','#555'),
+      sec=vget('--color-text-secondary','#999'),prim=vget('--color-text-primary','#eee'),
+      cols=g.cols,rows=g.rows,NCOL=cols.length,NROW=rows.length+1,
+      base=g.base,h=g.h,b=g.b,lev=g.lev,col=g.col,
+      showVal=(CAM.z>=(g.showValZ||2.0)),r,c,i;
+  var ub=[0],tot=0;
+  if(g.cwd){for(i=0;i<NCOL;i++)tot+=g.cwd[i];for(i=0;i<NCOL;i++)ub.push(ub[i]+g.cwd[i]/tot);}
+  else{for(i=1;i<=NCOL;i++)ub.push(i/NCOL);}
+  var A=CAM.S(lp(lev,g.a0,b,base)),B=CAM.S(lp(lev,g.a1,b,base)),
+      T1=CAM.S(lp(lev,g.a0,b,base+h)),T2=CAM.S(lp(lev,g.a1,b,base+h));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],g.bg||rgba(col,0.06),bord,1,[]);
+  for(r=0;r<NROW;r++)for(c=0;c<NCOL;c++){
+    var u0=ub[c],cwd=ub[c+1]-ub[c],u1=ub[c]+cwd*0.94,
+        v0=r/NROW,v1=(r+0.92)/NROW,
+        p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),
+        pc=PT((u0+u1)/2,(v0+v1)/2),hdr=(r===0);
+    polyS([p00,p10,p11,p01],hdr?rgba(col,0.22):rgba(col,0.09),bord,0.8,[]);
+    if(hdr)txtS(cols[c],pc.x,pc.y+3,prim,'center',8,'700');
+    else if(showVal)txtS(rows[r-1][c],pc.x,pc.y+3,sec,'center',6.9);
+  }
+  var pf=lerp2(A,B,0.03);
+  txtS(g.title||'',pf.x,pf.y+11,rgba(col,0.85),'left',8,'600');
+  HITS.addPts([lp(lev,g.a0-0.02,b-0.02,base+h+4),lp(lev,g.a1+0.02,b+0.02,base-4)],{type:g.hitType||'view'});
+  addObstaclePts([A,B,T1,T2],4);
+  return ctr([A,B,T1,T2]);
+}
+function drawParquetFile(g){
+  var c=SS(g.lev,g.a,g.b,g.z0||16), e=SS(g.lev,g.a+0.027,g.b,g.z0||16);
+  var w=Math.max(9,2*Math.hypot(e.x-c.x,e.y-c.y)), h=w*1.32, f=Math.min(7,w*0.24);
+  var col=g.sel?GREEN:(g.col||AMB), prim=vget('--color-text-primary','#eee');
+  var kind=g.kind||'parquet', hit=g.hit||'parquet';
+  drawFold(c.x-w/2,c.y-h/2,w,h,f,col,g.sel?0.20:0.13);
+  if(kind==='code'){
+    if(CAM.z>=0.85){
+      ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+      for(var ci=0;ci<3;ci++){var ly=c.y-h*0.14+ci*h*0.16;ctx.beginPath();ctx.moveTo(c.x-w*0.26,ly);ctx.lineTo(c.x+w*0.26-ci*w*0.12,ly);ctx.stroke();}
+      ctx.restore();
+    }
+    if(CAM.z>=1.2)txtS(g.ext||'.py',c.x,c.y+h*0.34,col,'center',(w*0.16)/zScale(),'700');
+  }else{
+    if(CAM.z>=0.85){
+      ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+      for(var i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(c.x+i*w*0.18,c.y-h*0.16);ctx.lineTo(c.x+i*w*0.18,c.y+h*0.04);ctx.stroke();}
+      ctx.restore();
+    }
+    if(CAM.z>=1.2)txtS('parquet',c.x,c.y+h*0.34,prim,'center',(w*0.18)/zScale(),'700');
+  }
+  HITS.addPts([lp(g.lev,g.a-0.030,g.b-0.060,(g.z0||16)+10),lp(g.lev,g.a+0.030,g.b+0.060,(g.z0||16)-10)],{type:hit,k:g.i});
+  addObstacleRect(c.x-w/2,c.y-h/2,w,h);
+  return c;
+}
+function drawFolderS(cx,cy,w,col){
+  var h=w*0.74, x=cx-w/2, y=cy-h/2, bt=y+h*0.24, tx=w*0.10, tw=w*0.34, sl=w*0.09;
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(x,y+h);
+  ctx.lineTo(x,bt);
+  ctx.lineTo(x+tx,bt);
+  ctx.lineTo(x+tx+sl,y);
+  ctx.lineTo(x+tx+tw,y);
+  ctx.lineTo(x+tx+tw+sl,bt);
+  ctx.lineTo(x+w,bt);
+  ctx.lineTo(x+w,y+h);
+  ctx.closePath();
+  ctx.fillStyle=rgba(col,0.16);ctx.fill();
+  ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.stroke();ctx.restore();
+  var fw=w*0.19,fh=w*0.32,mi;
+  for(mi=0;mi<3;mi++){var mcx=cx-w*0.24+mi*w*0.24;
+    drawFold(mcx-fw/2,bt-fh*0.5,fw,fh,Math.min(3,fw*0.26),col,0.30);}
+  addObstacleRect(x,y-fh*0.5,w,h+fh*0.5);
+}
+function drawParquetFolder(g){
+  var c=SS(g.lev,g.a,g.b,g.z0||16), e=SS(g.lev,g.a+0.040,g.b,g.z0||16);
+  var w=Math.max(14,2*Math.hypot(e.x-c.x,e.y-c.y)), col=g.col||AMB;
+  drawFolderS(c.x,c.y,w,col);
+  HITS.addPts([lp(g.lev,g.a-0.046,g.b-0.078,(g.z0||16)+10),lp(g.lev,g.a+0.046,g.b+0.078,(g.z0||16)-10)],{type:g.hit||'parquet',k:g.i});
+  return c;
+}
+function drawEndproductFolder(cx,cy,w,col,files){
+  var h=w*0.62,x=cx-w/2,y=cy-h/2,bt=y+h*0.26,tx=w*0.06,tw=w*0.24,sl=w*0.055;
+  ctx.save();ctx.beginPath();
+  ctx.moveTo(x,y+h);ctx.lineTo(x,bt);ctx.lineTo(x+tx,bt);
+  ctx.lineTo(x+tx+sl,y);ctx.lineTo(x+tx+tw,y);ctx.lineTo(x+tx+tw+sl,bt);
+  ctx.lineTo(x+w,bt);ctx.lineTo(x+w,y+h);ctx.closePath();
+  ctx.fillStyle=rgba(col,0.13);ctx.fill();
+  ctx.strokeStyle=col;ctx.lineWidth=1.6;ctx.setLineDash([]);ctx.stroke();ctx.restore();
+  var N=files.length,inX=x+w*0.06,inY=bt+h*0.08,inW=w*0.88,inH=(y+h)-inY-h*0.10,
+      fw=Math.min(inW*0.17,inW/N*0.82),fh=inH*0.80,f=Math.min(5,fw*0.24),
+      icy=inY+inH*0.46,mi,li,ly,icons=[];
+  for(mi=0;mi<N;mi++){
+    var fk=files[mi]||{},icx=inX+inW*((mi+0.5)/N),fcol=fk.col||col;icons.push({x:icx,y:icy});
+    drawFold(icx-fw/2,icy-fh/2,fw,fh,f,fcol,0.16);
+    if(CAM.z>=0.85){ctx.save();ctx.strokeStyle=rgba(fcol,0.5);ctx.lineWidth=1;ctx.setLineDash([]);
+      for(li=0;li<2;li++){ly=icy-fh*0.12+li*fh*0.22;ctx.beginPath();ctx.moveTo(icx-fw*0.26,ly);ctx.lineTo(icx+fw*0.22-li*fw*0.12,ly);ctx.stroke();}
+      ctx.restore();}
+    if(CAM.z>=1.2&&fk.ext)txtS(fk.ext,icx,icy+fh*0.5+6,fcol,'center',(fw*0.30)/zScale(),'700');
+  }
+  return {x:x,y:y,w:w,h:h,bt:bt,icons:icons,ifh:fh/2};
+}
+function drawPyFile(x,y,w,h,col,label,ext){
+  var prim=vget('--color-text-primary','#eee'),i;
+  var f=Math.min(10,h*0.25),nl=Math.max(2,Math.min(4,Math.round(h/10))),ly0=y-h/2+h*0.425,ls=h*0.2;
+  drawFold(x-w/2,y-h/2,w,h,f,col,0.14);
+  for(i=0;i<nl;i++){ctx.save();ctx.strokeStyle=rgba(col,0.55);ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(x-w/2+w*0.09,ly0+i*ls);ctx.lineTo(x+w/2-w*0.10-i*w*0.05,ly0+i*ls);ctx.stroke();ctx.restore();}
+  if(label)txtS(label,x,y+h*0.025,prim,'center',Math.min(7,h*0.18),'700');
+  txtS(ext||'.py',x,y+h*0.35,col,'center',Math.min(8,h*0.2),'700');
+}
+function drawModelTree(x,y,col,sc){
+  sc=sc||1;
+  var pts=[[0,-17],[-16,0],[0,0],[16,0],[-24,16],[-8,16],[8,16],[24,16]],i;
+  ctx.save();ctx.strokeStyle=rgba(col,0.85);ctx.fillStyle=rgba(col,0.22);ctx.lineWidth=1;ctx.setLineDash([]);
+  for(i=1;i<4;i++){ctx.beginPath();ctx.moveTo(x+pts[0][0]*sc,y+pts[0][1]*sc);ctx.lineTo(x+pts[i][0]*sc,y+pts[i][1]*sc);ctx.stroke();}
+  for(i=4;i<8;i++){ctx.beginPath();ctx.moveTo(x+pts[2+(i>5?1:0)][0]*sc,y+pts[2+(i>5?1:0)][1]*sc);ctx.lineTo(x+pts[i][0]*sc,y+pts[i][1]*sc);ctx.stroke();}
+  for(i=0;i<pts.length;i++){ctx.beginPath();ctx.arc(x+pts[i][0]*sc,y+pts[i][1]*sc,3.2*sc,0,7);ctx.fill();ctx.stroke();}
+  ctx.restore();
+}
+function drawFileSerpentine(o){
+  var SERP=o.serp,i,k,N=SERP.length,lev=o.lev,col=o.col||AMB,
+      z0=(o.z0!=null?o.z0:16),loff=(o.lineDz!=null?o.lineDz-z0:-3);
+  function zOf(n){return n.dz!=null?n.dz:z0;}
+  for(i=0;i<N-1;i++){
+    var p1=lp(lev,SERP[i].a,SERP[i].b,zOf(SERP[i])+loff),p2=lp(lev,SERP[i+1].a,SERP[i+1].b,zOf(SERP[i+1])+loff);
+    line2(p1,p2,rgba(col,0.5),1.3,[]);
+    if(STATE.flow){var kk=((CLK*0.4+i*0.08)%1),aS=CAM.S(p1),bS=CAM.S(p2);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(aS.x+(bS.x-aS.x)*kk,aS.y+(bS.y-aS.y)*kk,2.3,0,7);ctx.fill();}
+  }
+  var list=[];
+  for(i=0;i<N;i++)list.push({i:i,a:SERP[i].a,b:SERP[i].b,dz:zOf(SERP[i]),d:lp(lev,SERP[i].a,SERP[i].b,zOf(SERP[i])).d});
+  list=byD(list);
+  for(k=0;k<list.length;k++){
+    var t=list[k],last=(t.i===N-1),useFolder=last&&(o.tail!=='file');
+    var cPq=useFolder?GLYPHS.parquetFolder({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,hit:o.hit})
+                :GLYPHS.parquetFile({lev:lev,a:t.a,b:t.b,i:t.i,z0:t.dz,col:col,kind:o.kind,ext:o.ext,hit:o.hit});
+    if(STATE.labels){
+      if(last){
+        var llx=cPq.x,lly=cPq.y-26,lal=o.allLabelAl||'center',lax=cPq.x,lay=cPq.y-8;
+        if(o.allLabelLp){var lls=SS(lev,o.allLabelLp.a,o.allLabelLp.b,o.allLabelLp.dz);llx=lls.x;lly=lls.y;lax=llx;lay=lly;}
+        qLabel({key:o.allKey,def:o.allName?o.allDef+'  '+o.allName:o.allDef,grp:o.allGrp,
+          x:llx,y:lly,col:vget('--color-text-secondary','#999'),al:lal,sz:8.5,wt:'700',pr:3,ax:lax,ay:lay});
+      }
+    }
+  }
+}
+function drawFileSerpentineScreen(o){
+  var N=o.nodes.length,W=o.fw||44,H=o.fh||34,col=o.col||AMB,i;
+  for(i=0;i<N-1;i++){
+    var a=o.nodes[i],b=o.nodes[i+1];
+    ctx.save();ctx.strokeStyle=rgba(col,0.5);ctx.lineWidth=1.3;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore();
+    if(STATE.flow){var kk=((CLK*0.4+i*0.08)%1);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(a.x+(b.x-a.x)*kk,a.y+(b.y-a.y)*kk,2.3,0,7);ctx.fill();}
+  }
+  for(i=0;i<N;i++){
+    var n=o.nodes[i];
+    if(i===N-1){drawFolderS(n.x,n.y,W*0.92,col);HITS.addRect(n.x-W*0.55,n.y-H*0.55,W*1.1,H*1.1,{type:o.hit||'strategy'});}
+    else{drawPyFile(n.x,n.y,W,H,col,o.label||'',o.ext||'.py');HITS.addRect(n.x-W/2,n.y-H/2,W,H,{type:o.hit||'strategy'});}
+  }
+  if(STATE.labels&&o.allText&&o.allTextAt)
+    txtS(o.allText,o.allTextAt.x,o.allTextAt.y,vget('--color-text-secondary','#999'),o.allTextAl||'center',o.allSz||8.5,'700');
+}
+GLYPHS.parquetFile=drawParquetFile;
+GLYPHS.parquetFolder=drawParquetFolder;
+GLYPHS.dbCylinder=drawDbCylinder;
+GLYPHS.ohlcvMatrix=drawOhlcvMatrix;
+GLYPHS.pyFile=drawPyFile;
+GLYPHS.modelTree=drawModelTree;
+GLYPHS.fileSerpentine=drawFileSerpentine;
+GLYPHS.fileSerpentineScreen=drawFileSerpentineScreen;
+GLYPHS.folderS=drawFolderS;
+GLYPHS.endproductFolder=drawEndproductFolder;
+
+/* ============================================================================================
+   DRAWER CLASSES — ported from the reference and made lev-agnostic + cfg-driven.
+   Every class reads this.lev / this.node (stamped by the dispatch) and this.cfg (per instance).
+   ============================================================================================ */
+
+/* --- lev 0 · the source universe; one prism is highlighted as THE CURRENT PASS -------------
+   The grid is the sealed XGB universe (498 assets). The highlighted prism is not a particular
+   ticker — it marks that the ladder below is one pass, repeated per asset.
+   ------------------------------------------------------------------------------------------ */
+var UNIVERSE_XGB=498;                                  // sealed XGB indicators (results.db)
+function SourceLayer(cfg){this.cfg=cfg;}
+SourceLayer.prototype.draw=function(){
+  var lev=this.lev;
+  caption(lev);
+  var cols=36,rows=14,n=0,r,c;
+  ctx.save();ctx.fillStyle=rgba(CAN,0.30);ctx.beginPath();
+  for(r=0;r<rows&&n<UNIVERSE_XGB;r++)for(c=0;c<cols&&n<UNIVERSE_XGB;c++,n++){
+    var a0=0.05+0.90*(c/cols),b0=0.56+0.42*(r/rows),da=0.90/cols*0.72,db=0.42/rows*0.62;
+    var q=[SS(lev,a0,b0,1),SS(lev,a0+da,b0,1),SS(lev,a0+da,b0+db,1),SS(lev,a0,b0+db,1)];
+    ctx.moveTo(q[0].x,q[0].y);ctx.lineTo(q[1].x,q[1].y);ctx.lineTo(q[2].x,q[2].y);ctx.lineTo(q[3].x,q[3].y);ctx.closePath();
+  }
+  ctx.fill();ctx.restore();
+  HITS.addPts([lp(lev,0.05,0.56,0),lp(lev,0.95,0.99,0)],{type:'universe'});
+  addObstaclePts([SS(lev,0.05,0.56,0),SS(lev,0.95,0.56,0),SS(lev,0.95,0.98,0),SS(lev,0.05,0.98,0)],6);
+  if(STATE.labels){var pu=SS(lev,0.5,1.06,0);
+    qLabel({key:'uni_caption',def:'S&P 500 universe — one dedicated indicator per asset',
+      x:pu.x,y:pu.y,col:vget('--color-text-secondary','#999'),al:'center',sz:10,pr:1});}
+  var a=0.47;                                          // the highlighted prism = the current pass
+  prism(lev,a,0.30,a+0.062,0.46,1,28,GREEN,0.30);
+  HITS.addPts([lp(lev,a-0.008,0.28,32),lp(lev,a+0.07,0.48,0)],{type:'asset'});
+  if(STATE.labels){var s=SS(lev,a+0.031,0.52,0),sa=SS(lev,a+0.031,0.46,0);
+    qLabel({key:'asset_one',def:'one asset',x:s.x,y:s.y,col:GREEN,al:'right',sz:11,wt:'700',rot:-0.55,pr:3,ax:sa.x,ay:sa.y});}
+  GLYPHS.ohlcvMatrix({lev:lev,a0:-0.34,a1:0.22,b:0.08,base:10,h:72,col:GRAY,
+    bg:rgba(vget('--color-background-primary','#1e1e1c'),0.92),
+    hitType:'universe',showValZ:0.45,
+    cols:['ts','O','H','L','C','V'],cwd:[30,15,15,15,15,15],
+    rows:[['01-04 14:00','100.00','100.40','99.70','100.10','1.0M'],
+          ['01-04 15:00','100.10','100.20','99.60','99.80','0.9M'],
+          ['01-04 16:00','99.80','100.00','99.50','99.60','1.2M'],
+          ['01-05 09:30','99.90','100.60','99.85','100.50','1.1M']],
+    title:'SCHEMATIC · the 1h OHLCV column contract (not real bars)'});
+  if(STATE.labels){
+    var oCnt=CAM.S(lp(lev,-0.46,0.08,46));
+    var glyph=String(UNIVERSE_XGB);
+    setFont(uiFont('800',20*zScale()));var w1=ctx.measureText(glyph).width;
+    txtS(glyph,oCnt.x,oCnt.y-4,GREEN,'center',20,'800');
+    txtS('sealed indicators',oCnt.x,oCnt.y+14,vget('--color-text-primary','#eee'),'center',10,'600');
+    obstacle(oCnt.x-w1/2-6,oCnt.y-26,oCnt.x+w1/2+6,oCnt.y+20);
+  }
+  if(STATE.labels){var pf=SS(lev,0.45,0.0,0);
+    qLabel({key:'raw_flow',def:'split-adjusted prices · 1h regular session 09:30–16:00 ET · 2016 → 2026 · one pass per asset',
+      x:pf.x,y:pf.y,col:vget('--color-text-tertiary','#777'),al:'center',sz:8.5,pr:1});}
+};
+
+/* --- DuckDB bar store: sample-table wall + DB cylinder (used at L·in and D1) ---------------- */
+function DuckDBLayer(cfg){this.cfg=cfg;}
+DuckDBLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  GLYPHS.ohlcvMatrix({lev:lev,a0:-0.30,a1:0.36,b:0.50,base:8,h:82,col:GRAY,
+    bg:rgba(vget('--color-background-primary','#1e1e1c'),0.92),hitType:'view',showValZ:0.45,
+    cols:cfg.cols,cwd:cfg.cwd,rows:cfg.rows,title:cfg.tableTitle});
+  if(STATE.labels){
+    var pv1=SS(lev,0.03,0.50,104),pva=SS(lev,0.03,0.50,90);
+    qLabel({key:K+'_view',def:cfg.viewNote,x:pv1.x,y:pv1.y-2,col:vget('--color-text-secondary','#999'),
+      al:'center',sz:8.5,wt:'600',pr:3,ax:pva.x,ay:pva.y});
+  }
+  GLYPHS.dbCylinder({lev:lev,a:0.54,b:0.52,ra:0.13,rb:0.26,dz:48,h:30,col:cfg.col,
+    badge:cfg.badge,badgeKey:K+'_badge',hit:'db'});
+  if(STATE.labels){
+    var pd1=SS(lev,0.54,0.52,96),pd2=SS(lev,0.54,0.52,28),pda=SS(lev,0.54,0.52,82);
+    qLabel({key:K+'_name',def:cfg.name,x:pd1.x,y:pd1.y-2,col:vget('--color-text-primary','#eee'),
+      al:'center',sz:9,wt:'600',pr:3,ax:pda.x,ay:pda.y});
+    qLabel({key:K+'_rows',def:cfg.countLabel,x:pd2.x,y:pd2.y,col:vget('--color-text-tertiary','#777'),
+      al:'center',sz:8,pr:2});
+  }
+};
+
+/* --- L4 · snapshot DB → parquet roll-up chain (three serpentines) → artifacts folder --------- */
+function TransformLayer(cfg){this.cfg=cfg;}
+TransformLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  var sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  var Z=70;
+  GLYPHS.dbCylinder({lev:lev,a:0.10,b:0.52,ra:0.12,rb:0.28,dz:Z-14,h:28,col:GRAY,
+    badge:'DuckDB',badgeKey:K+'_badge',hit:'snapshot'});
+  if(STATE.labels){
+    var pd1=SS(lev,0.10,0.52,Z+40),pd2=SS(lev,0.10,0.52,Z-34);
+    qLabel({key:K+'_snapdb',def:'L4 snapshot · one per asset',x:pd1.x,y:pd1.y-2,
+      col:vget('--color-text-primary','#eee'),al:'center',sz:9,wt:'600',pr:2,ax:pd1.x,ay:pd1.y});
+    qLabel({key:K+'_qc',def:'split-adjusted · fail-closed cross-bar QC',x:pd2.x,y:pd2.y,col:tert,al:'center',sz:7.5,pr:1});
+  }
+  HITS.addPts([lp(lev,-0.03,0.22,Z+34),lp(lev,0.23,0.82,Z-24)],{type:'snapshot'});
+  var H1=Z+60,D1=Z+34,W1=Z+8,NB=Z-46;
+  var arrA=lp(lev,0.20,0.52,Z),arrF=lp(lev,0.30,0.52,Z);
+  line2(arrA,arrF,rgba(AMB,0.65),1.6,[]);
+  GLYPHS.parquetFolder({lev:lev,a:0.95,b:0.50,z0:Z,col:AMB,hit:'parquet'});
+  GLYPHS.fileSerpentine({lev:lev,serp:[
+    {a:0.42,b:0.50,dz:H1},{a:0.53,b:0.50,dz:H1},{a:0.64,b:0.50,dz:H1},{a:0.75,b:0.50,dz:H1},{a:0.83,b:0.50,dz:H1-2}],
+    col:AMB,z0:16,lineDz:13,tail:'file',hit:'parquet',
+    allKey:K+'_p1h',allDef:'×1',allName:'<T>_ohlcv_1h.parquet · split-adjusted',
+    allLabelLp:{a:1.05,b:0.50,dz:H1},allLabelAl:'left'});
+  GLYPHS.fileSerpentine({lev:lev,serp:[
+    {a:0.42,b:0.50,dz:D1},{a:0.53,b:0.50,dz:D1},{a:0.64,b:0.50,dz:D1},{a:0.75,b:0.50,dz:D1},{a:0.83,b:0.50,dz:D1-2}],
+    col:AMB,z0:16,lineDz:13,tail:'file',hit:'parquet',
+    allKey:K+'_p1d',allDef:'×1',allName:'<T>_ohlcv_1d.parquet · ET-day roll-up',
+    allLabelLp:{a:1.05,b:0.50,dz:D1},allLabelAl:'left'});
+  GLYPHS.fileSerpentine({lev:lev,serp:[
+    {a:0.42,b:0.50,dz:W1},{a:0.53,b:0.50,dz:W1},{a:0.64,b:0.50,dz:W1},{a:0.75,b:0.50,dz:W1},{a:0.83,b:0.50,dz:W1-2}],
+    col:AMB,z0:16,lineDz:13,tail:'file',hit:'parquet',
+    allKey:K+'_p1w',allDef:'×1',allName:'<T>_ohlcv_1w.parquet · ISO-week roll-up',
+    allLabelLp:{a:1.05,b:0.50,dz:W1},allLabelAl:'left'});
+  GLYPHS.fileSerpentine({lev:lev,serp:[
+    {a:0.42,b:0.50,dz:NB},{a:0.53,b:0.50,dz:NB},{a:0.64,b:0.50,dz:NB},{a:0.75,b:0.50,dz:NB},{a:0.83,b:0.50,dz:NB+2}],
+    col:PINK,z0:16,lineDz:13,tail:'file',kind:'code',ext:'.py',hit:'notebook',
+    allKey:K+'_nb',allDef:'×1',allName:'run_asset.py · the per-asset runner',
+    allLabelLp:{a:1.05,b:0.50,dz:NB},allLabelAl:'left'});
+  drawFlowArrowHQ(arrF, lp(lev,0.40,0.50,H1), AMB, AMB);                  // snapshot → 1h serpentine
+  drawFlowArrowHQ(lp(lev,0.87,0.50,H1-2), lp(lev,0.40,0.50,D1), AMB, AMB); // 1h → 1d (ET-day roll-up)
+  drawFlowArrowHQ(lp(lev,0.87,0.50,D1-2), lp(lev,0.40,0.50,W1), AMB, AMB); // 1d → 1w (ISO-week roll-up)
+  drawFlowArrowHQ(lp(lev,0.87,0.50,W1-2), lp(lev,0.95,0.50,Z), AMB, AMB);  // 1w → per-asset parquet folder
+  line2(lp(lev,0.87,0.50,H1-2),lp(lev,0.95,0.50,Z),rgba(AMB,0.16),1.0,[3,3]);
+  line2(lp(lev,0.87,0.50,D1-2),lp(lev,0.95,0.50,Z),rgba(AMB,0.16),1.0,[3,3]);
+  line2(lp(lev,0.83,0.50,NB+2),lp(lev,0.95,0.50,Z),rgba(PINK,0.28),1.0,[3,3]);
+  line2(lp(lev,0.40,0.50,NB),arrF,rgba(PINK,0.45),1.1,[4,3]);
+  if(STATE.labels){
+    var pt1=SS(lev,0.5,0.50,Z+96),pf=SS(lev,0.95,0.50,Z-32),pi=SS(lev,0.5,0.50,Z-88);
+    qLabel({key:K+'_zero',def:'three clean-OHLCV parquets (1h · 1d · 1w) · zero derived columns — features are computed downstream',
+      x:pt1.x,y:pt1.y,col:sec,al:'center',sz:8.5,pr:1});
+    qLabel({key:K+'_folder',def:'per-asset parquet · zstd',x:pf.x,y:pf.y,col:tert,al:'center',sz:8,pr:2});
+    qLabel({key:K+'_ipynb',def:'run_asset.py — the runner orchestrates L4 → L9 for one ticker (operational, not an OHLCV output)',
+      x:pi.x,y:pi.y,col:tert,al:'center',sz:8,pr:1});
+    var r1=SS(lev,0.265,0.50,Z+44),r2=SS(lev,0.265,0.50,Z+18),rn=SS(lev,0.265,0.50,Z-30);
+    qLabel({key:K+'_roll1d',def:'ET-day roll-up',x:r1.x,y:r1.y,col:tert,al:'center',sz:7,pr:1});
+    qLabel({key:K+'_roll1w',def:'ISO-week roll-up',x:r2.x,y:r2.y,col:tert,al:'center',sz:7,pr:1});
+    qLabel({key:K+'_runner',def:'runner · orchestrates L4 → L9',x:rn.x,y:rn.y,col:tert,al:'center',sz:7,pr:1});
+  }
+};
+
+/* --- split time-bar with purge + embargo (used at L5 and D2–D3) ----------------------------- */
+function buildSplit(bands){
+  function dord(s){var p=s.split('-');return Math.floor(365.25*p[0])+Math.floor(30.6*(+p[1]+1))+ +p[2];}
+  var t0=dord(bands[0].from),span=Math.max(1,dord(bands[bands.length-1].to)-t0);
+  var S={bands:bands,embargoCol:BLU};
+  S.dfrac=function(s){return (dord(s)-t0)/span;};
+  bands.forEach(function(b){b._f0=S.dfrac(b.from);b._f1=S.dfrac(b.to);});
+  S.edgeF=[];for(var i=0;i<bands.length-1;i++)S.edgeF.push((bands[i]._f1+bands[i+1]._f0)/2);
+  S.years=[];for(var y=+bands[0].from.slice(0,4);y<=+bands[bands.length-1].to.slice(0,4);y++)
+    S.years.push({y:y,f:clamp(S.dfrac(y+'-01-01'),0,1)});
+  return S;
+}
+function aOf(f){return 0.06+0.88*f;}
+function SplitLayer(cfg){this.cfg=cfg;}
+SplitLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id,S=cfg.split;
+  caption(lev);
+  var tert=vget('--color-text-tertiary','#777');
+  var i,nb=S.bands.length;
+  var AX0=aOf(0),AX1=aOf(1),BAX0=0.45,BAX1=0.55,axB=0.5,AXZ=86,AXH=10,axTop=AXZ+AXH;
+  var TOPA=0.85,NAME_DZ=axTop+14;
+  var ord=[],sa0,sa1;
+  for(i=0;i<nb;i++){sa0=aOf(i===0?0:S.edgeF[i-1]);sa1=aOf(i===nb-1?1:S.edgeF[i]);
+    ord.push({i:i,a0:sa0,a1:sa1,d:lp(lev,(sa0+sa1)/2,axB,AXZ+AXH/2).d});}
+  ord.sort(function(p,q){return q.d-p.d;});
+  for(i=0;i<ord.length;i++)prism(lev,ord[i].a0,BAX0,ord[i].a1,BAX1,AXZ,AXH,S.bands[ord[i].i].col,TOPA);
+  line2(lp(lev,AX0,BAX0,AXZ),lp(lev,AX1,BAX0,AXZ),rgba(tert,0.6),1.2);
+  var eB=aOf(S.edgeF[S.edgeF.length-1]),gw=0.014;
+  var peL=CAM.S(lp(lev,eB-gw,axB,axTop)),peR=CAM.S(lp(lev,eB+gw,axB,axTop));
+  if(Math.abs(peR.x-peL.x)>=6){
+    prism(lev,eB-gw,BAX0,eB,BAX1,AXZ,AXH+0.6,SL,0.9);                    // purge (Train side) = red
+    prism(lev,eB,BAX0,eB+gw,BAX1,AXZ,AXH+0.6,S.embargoCol,0.85);}         // embargo (OOS side) = blue
+  var emphF=[{f:0,col:CAN,key:K+'_ax0',date:cfg.d0},
+             {f:S.edgeF[S.edgeF.length-1],col:SL,key:K+'_axb',date:cfg.dBoundary},
+             {f:1,col:AMB,key:K+'_ax1',date:cfg.d1}];
+  var firstY=S.years[0].y,lastY=S.years[S.years.length-1].y;
+  for(i=0;i<S.years.length;i++){
+    var Y=S.years[i],ay=aOf(Y.f),dup=false,e2,keep;
+    for(e2=0;e2<emphF.length;e2++)if(Math.abs(Y.f-emphF[e2].f)<0.004)dup=true;
+    if(dup)continue;
+    if(CAM.z>=0.75)keep=true;
+    else if(CAM.z>=0.55)keep=(Y.y%2===0)||Y.y===firstY||Y.y===lastY;
+    else keep=(Y.y%4===0)||Y.y===firstY||Y.y===lastY;
+    if(!keep)continue;
+    line2(lp(lev,ay,BAX0,AXZ),lp(lev,ay,BAX0,AXZ-9),tert,1.1,[]);
+    if(STATE.labels){var sy=CAM.S(lp(lev,ay,BAX0,AXZ-9)),fz=7.5*zScale();
+      txtS(String(Y.y),sy.x,sy.y+13,tert,'center',7.5);
+      var tw=ctx.measureText(String(Y.y)).width;
+      obstacle(sy.x-tw/2-2,sy.y+13-fz-2,sy.x+tw/2+2,sy.y+16);}
+  }
+  var DATE_DZ=AXZ-32;
+  for(i=0;i<emphF.length;i++){
+    var E=emphF[i],ae=aOf(E.f),dz=DATE_DZ+(E.lo||0);
+    line2(lp(lev,ae,BAX0,AXZ),lp(lev,ae,BAX0,dz),E.col,1.7,[]);
+    if(STATE.labels){var se=SS(lev,ae,BAX0,dz);
+      qLabel({key:E.key,def:E.date,x:se.x,y:se.y+13,col:E.col,al:'center',sz:8,wt:'700',pr:2,lod:0.5});}
+  }
+  var pe=CAM.S(lp(lev,AX1,axB,axTop)),
+      pk1=CAM.S(lp(lev,AX1-0.018,BAX0,axTop)),pk2=CAM.S(lp(lev,AX1-0.018,BAX1,axTop));
+  ctx.save();ctx.strokeStyle=tert;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(pk1.x,pk1.y);ctx.lineTo(pe.x,pe.y);ctx.lineTo(pk2.x,pk2.y);ctx.stroke();ctx.restore();
+  if(STATE.labels)txt('time',lp(lev,AX1,axB,axTop),tert,'left',7.5,null,8,4);
+  for(i=0;i<nb;i++){var ha0=aOf(i===0?0:S.edgeF[i-1]),ha1=aOf(i===nb-1?1:S.edgeF[i]);
+    HITS.addPts([lp(lev,ha0,BAX0,0),lp(lev,ha1,BAX1,axTop)],{type:'split',k:i});}
+  HITS.addPts([lp(lev,eB-gw,BAX0,0),lp(lev,eB,BAX1,axTop+0.4)],{type:'purge'});
+  HITS.addPts([lp(lev,eB,BAX0,0),lp(lev,eB+gw,BAX1,axTop+0.4)],{type:'embargo'});
+  if(STATE.labels){
+    for(i=0;i<nb;i++){var lb=S.bands[i],
+        la0=aOf(i===0?0:S.edgeF[i-1]),la1=aOf(i===nb-1?1:S.edgeF[i]),ps=SS(lev,(la0+la1)/2,axB,NAME_DZ);
+      qLabel({key:K+'_split_'+lb.id,def:lb.name,x:ps.x,y:ps.y,col:lb.col,al:'center',sz:9.5,wt:'600',pr:3});}
+    if(CAM.z>=0.7){
+      var pRoot=lp(lev,eB-gw/2,axB,axTop+1),eRoot=lp(lev,eB+gw/2,axB,axTop+1);
+      line2(eRoot,lp(lev,eB-0.06,axB,NAME_DZ+22),rgba(S.embargoCol,0.85),1.3,[]);
+      line2(pRoot,lp(lev,eB-0.165,axB,NAME_DZ+2),rgba(SL,0.85),1.3,[]);
+    }
+    var seg=SS(lev,eB-0.06,axB,NAME_DZ+26),spg=SS(lev,eB-0.165,axB,NAME_DZ+6);
+    qLabel({key:K+'_embargo',def:'embargo',x:seg.x,y:seg.y,col:S.embargoCol,al:'center',sz:8.5,wt:'700',pr:3,lod:0.7});
+    qLabel({key:K+'_purge',def:'purge',x:spg.x,y:spg.y,col:SL,al:'center',sz:8.5,wt:'700',pr:3,lod:0.7});
+    var pn=SS(lev,0.5,0.5,AXZ-58);
+    qLabel({key:K+'_note',def:cfg.note,x:pn.x,y:pn.y,col:tert,al:'center',sz:8.5,pr:2});
+    if(cfg.note2){var pn2=SS(lev,0.5,0.5,AXZ+52);
+      qLabel({key:K+'_note2',def:cfg.note2,x:pn2.x,y:pn2.y,col:vget('--color-text-secondary','#999'),al:'center',sz:8.5,wt:'600',pr:2});}
+  }
+};
+
+/* --- feature matrix: setups t × features X + label Y + weight (used at L6 and D4) ----------- */
+function FeatureForest(cfg){this.cfg=cfg;}
+FeatureForest.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
+      bord=vget('--color-border-secondary','#555'),ai=lev;
+  var bw=0.55,base=4,HZ6=150,nf=cfg.features.length;
+  var NCOL=nf+2,NROW=6,ycol=NCOL-1;
+  var A=CAM.S(lp(lev,0.08,bw,base)),B=CAM.S(lp(lev,0.92,bw,base)),
+      T1=CAM.S(lp(lev,0.08,bw,base+HZ6)),T2=CAM.S(lp(lev,0.92,bw,base+HZ6));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(vget('--color-background-primary','#1e1e1c'),0.92),bord,1,[]);
+  polyS([T1,T2,B,A],rgba(CAN,0.06),null,0,[]);
+  var SUB='₁₂₃₄₅₆₇₈₉',rr,cc,showVal=(CAM.z>=1.0);
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var u0=cc/NCOL,u1=(cc+0.94)/NCOL,v0=rr/NROW,v1=(rr+0.92)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    var hdrRow=(rr===0),hdrCol=(cc===0),isY=(cc===ycol),isEll=(rr===NROW-1);
+    if(hdrCol&&hdrRow){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.14),bord,0.8,[]);
+      ctx.save();ctx.strokeStyle=prim;ctx.lineWidth=1.4;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(p00.x,p00.y);ctx.lineTo(p11.x,p11.y);ctx.stroke();ctx.restore();
+      var px=lerp2(p10,pc,0.4),pt=lerp2(p01,pc,0.4);
+      txtS('x',px.x,px.y+4,prim,'center',11,'700');txtS('t',pt.x,pt.y+4,prim,'center',11,'700');
+    }else if(hdrRow){
+      polyS([p00,p10,p11,p01],isY?rgba(TP,0.20):rgba(GREEN,0.18),bord,0.8,[]);
+      if(isY)txtS('Y',pc.x,pc.y+5,TP,'center',12,'700');
+      else drawFamilyMarker(pc.x,pc.y+3,cfg.features[cc-1].fam,GREEN);
+    }else if(hdrCol){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.10),bord,0.8,[]);
+      txtS(isEll?'…':('t'+SUB.charAt(rr-1)),pc.x,pc.y+4,prim,'center',10,'700');
+    }else if(isY){
+      var yv=isEll?-1:(rng(ai*23+rr*557+131)()<0.5?0:1);
+      polyS([p00,p10,p11,p01],yv<0?null:rgba(TP,0.10+0.45*yv),bord,0.8,[]);
+      if(showVal&&yv>=0)txtS(String(yv),pc.x,pc.y+3,yv?TP:tert,'center',8.5,'700');
+    }else{
+      polyS([p00,p10,p11,p01],rgba(CAN,0.09),bord,0.8,[]);
+      if(showVal&&!isEll)txtS((rng(ai*7+rr*131+cc*977)()*4-2).toFixed(1),pc.x,pc.y+3,tert,'center',7.5);
+    }
+  }
+  for(cc=1;cc<NCOL;cc++){
+    var q0=PT(cc/NCOL,0),q1=PT((cc+0.94)/NCOL,0),q2=PT(cc/NCOL,1),q3=PT((cc+0.94)/NCOL,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,cc===ycol?{type:'label'}:{type:'feature',f:cc-1});
+  }
+  addObstaclePts([T1,T2,B,A],2);
+  if(STATE.labels){
+    for(cc=1;cc<ycol;cc++){var ph=PT((cc+0.47)/NCOL,-0.07),pg=PT((cc+0.47)/NCOL,0.0);
+      qLabel({key:K+'_f'+(cc-1),def:cfg.features[cc-1].ab,x:ph.x,y:ph.y,col:vget('--color-text-secondary','#999'),
+        al:'left',sz:8.5,rot:-0.62,pr:3,lod:LOD.name,ax:pg.x,ay:pg.y});}
+    var phY=PT((ycol+0.47)/NCOL,-0.07),pgY=PT((ycol+0.47)/NCOL,0.0);
+    qLabel({key:K+'_fY',def:cfg.yLabel,x:phY.x,y:phY.y,col:TP,
+      al:'left',sz:9,wt:'600',rot:-0.62,pr:3,lod:LOD.name,ax:pgY.x,ay:pgY.y});
+    var pw=PT(1.02,0.12),pwa=PT(0.99,0.12);
+    qLabel({key:K+'_fw',def:cfg.weightLabel,x:pw.x,y:pw.y,col:vget('--color-text-secondary','#999'),
+      al:'left',sz:8.5,rot:-0.62,pr:2,lod:LOD.name,ax:pwa.x,ay:pwa.y});
+    var pcap=PT(0.5,-0.17);
+    qLabel({key:K+'_causal',def:cfg.capTop,x:pcap.x,y:pcap.y,col:GREEN,al:'center',sz:10.5,wt:'600',pr:3});
+    var pch=PT(0.5,-0.27);
+    qLabel({key:K+'_chip',def:cfg.chip,x:pch.x,y:pch.y,col:prim,al:'center',sz:9,wt:'700',pr:3});
+    var pn=PT(0.5,1.12);
+    qLabel({key:K+'_setup',def:cfg.note,x:pn.x,y:pn.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+/* --- D5–D6 · trendline / Triple-Barrier wall (ported detector, single focused wall) --------- */
+function detTri(sx,sy,s,col){
+  ctx.save();ctx.fillStyle=col;ctx.beginPath();
+  ctx.moveTo(sx,sy+s*2);ctx.lineTo(sx-6,sy+s*13);ctx.lineTo(sx+6,sy+s*13);ctx.closePath();ctx.fill();ctx.restore();}
+function detArrow(cx,cy,dir,col){
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.6;ctx.lineCap='round';ctx.lineJoin='round';
+  var tip=cy+dir*7,tail=cy-dir*7;
+  ctx.beginPath();ctx.moveTo(cx,tail);ctx.lineTo(cx,tip);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,tip);ctx.lineTo(cx-5,tip-dir*6);ctx.lineTo(cx+5,tip-dir*6);ctx.closePath();ctx.fill();ctx.restore();}
+function detBadge(text,cx,cy,col){
+  ctx.save();setFont(uiFont('700',11*zScale()));
+  var w=ctx.measureText(text).width+12,h=17,x=cx-w/2,y=cy-h/2;
+  fillRR(x,y,w,h,5,col,col,1);
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cx,cy+0.5);ctx.restore();
+  return {x:x,y:y,w:w,h:h};}
+var DET_LAYOUT={N:30,ENTRY:22,topo:[2,10,18],safety:[14,20],actionSolid:[1,18],safetySolid:[14,20]};
+var DET_SERIES={
+  long:{
+    seed:72,topoHi:true,
+    act:function(i){return 82-0.72*i;},
+    saf:function(i){return 52+(2/3)*(i-14);},
+    closes:[74,78,79,73,69,74,67,72,74,73,73,69,64,60,56,61,65,67,66,62,57,62,71],
+    win:[73,76,74,78,81,85,84],
+    loss:[67,63,60,57,54,51,49],
+    actionLabel:'trendline · resistance ↘',
+    safetyLabel:'SL line · support ↗'
+  }
+};
+function detHas(arr,i){return arr.indexOf(i)>=0;}
+function detBuildBars(cfg,all){
+  var bars=[],minP=1e9,maxP=-1e9,i;
+  for(i=0;i<all.length;i++){
+    var c=all[i],o=i?all[i-1]:cfg.seed,hi=Math.max(o,c)+1.4,lo=Math.min(o,c)-1.4;
+    if(detHas(DET_LAYOUT.topo,i)){if(cfg.topoHi)hi=cfg.act(i);else lo=cfg.act(i);}
+    if(detHas(DET_LAYOUT.safety,i)){if(cfg.topoHi)lo=cfg.saf(i);else hi=cfg.saf(i);}
+    hi=Math.max(hi,o,c);lo=Math.min(lo,o,c);
+    bars.push({i:i,o:o,h:hi,l:lo,c:c});
+    minP=Math.min(minP,lo,cfg.act(i),cfg.saf(i));
+    maxP=Math.max(maxP,hi,cfg.act(i),cfg.saf(i));
+  }
+  return {bars:bars,minP:minP,maxP:maxP};
+}
+function drawTrendlineBreakWall(lev,a0,b0,a1,b1,base,V,focused){
+  var tert=vget('--color-text-tertiary','#777'),bord=vget('--color-border-secondary','#555');
+  var hgt=150,N=DET_LAYOUT.N,t0=DET_LAYOUT.ENTRY,s=V.dir,win=V.win,i;
+  var cfg=DET_SERIES.long,all=cfg.closes.concat(win?cfg.win:cfg.loss),built=detBuildBars(cfg,all);
+  var entryClose=cfg.closes[t0],actionAtT0=cfg.act(t0),safetyAtT0=cfg.saf(t0),riskR=s*(actionAtT0-safetyAtT0),tp=actionAtT0+s*riskR;
+  var minP=Math.min(built.minP,tp)-4,maxP=Math.max(built.maxP,tp)+4,span=Math.max(1,maxP-minP);
+  function xU(i){return i/(N-1);}
+  function pH(p){return (p-minP)/span;}
+  function W(u,h){return lp(lev,a0+u*(a1-a0),b0+u*(b1-b0),base+h*hgt);}
+  function PW(i,p){return W(xU(i),pH(p));}
+  function drawSegment(fn,a,b,col,w,dash){line2(PW(a,fn(a)),PW(b,fn(b)),col,w,dash||[]);}
+  function outcomeIndex(){
+    for(var j=t0+1;j<N;j++){
+      if(win){if(s*all[j]>=s*tp)return j;}
+      else if(s*all[j]<s*cfg.saf(j))return j;
+    }
+    return N-1;
+  }
+  var exitIdx=outcomeIndex();
+  ctx.save();ctx.globalAlpha=focused?1:0.14;
+  polyS([CAM.S(W(0,1.02)),CAM.S(W(1,1.02)),CAM.S(W(1,0)),CAM.S(W(0,0))],focused?rgba(vget('--color-background-primary','#1e1e1c'),0.9):rgba(TEAL,0.05),bord,1,[]);
+  drawSegment(cfg.act,DET_LAYOUT.actionSolid[0],DET_LAYOUT.actionSolid[1],RED,2.4,[]);
+  drawSegment(cfg.act,DET_LAYOUT.actionSolid[1],N-1,RED,2.4,[6,4]);
+  drawSegment(cfg.saf,DET_LAYOUT.safetySolid[0],DET_LAYOUT.safetySolid[1],TEAL,2.2,[]);
+  drawSegment(cfg.saf,DET_LAYOUT.safetySolid[1],N-1,TEAL,2.2,[6,4]);
+  if(focused){
+  var step=1/(N-1),du=step*0.26,pathPts=[];
+  for(i=0;i<N;i++){
+    var b=built.bars[i],u=xU(i),bodyA=pH(Math.max(b.o,b.c)),bodyB=pH(Math.min(b.o,b.c)),up=b.c>=b.o;
+    line2(PW(i,b.l),PW(i,b.h),CAN,1.05,[]);
+    poly([W(u-du,bodyA),W(u+du,bodyA),W(u+du,bodyB),W(u-du,bodyB)],up?null:rgba(CAN,0.72),CAN,0.9);
+    if(i>=t0)pathPts.push(PW(i,b.c));
+    if(detHas(DET_LAYOUT.topo,i)){
+      var st=CAM.S(PW(i,cfg.act(i))),tdi=DET_LAYOUT.topo.indexOf(i)+1;ctx.fillStyle='#A32D2D';ctx.beginPath();ctx.arc(st.x,st.y,3.5,0,7);ctx.fill();
+      HITS.addRect(st.x-6,st.y-6,12,12,{type:'setupTouch'});
+      if(STATE.labels)qLabel({key:'det_topo'+tdi+'_'+V.id,def:'touch '+tdi,x:st.x,y:st.y+(s>0?-9:16),col:tert,al:'center',sz:7.5,pr:1,lod:LOD.micro});
+    }
+  }
+  for(var k=1;k<pathPts.length;k++)line2(pathPts[k-1],pathPts[k],win?GREEN:RED,2.4,[]);
+  line2(W(xU(t0),0),W(xU(t0),1.0),rgba(GREEN,0.45),1.4,[2,3]);
+  var se=CAM.S(PW(t0,entryClose));detTri(se.x,se.y,s,GREEN);
+  txtS('t0',se.x,se.y+s*19,GREEN,'center',8.5,'700');
+  HITS.addRect(se.x-8,se.y-15,16,30,{type:'setupEntry'});
+  var rbA=xU(t0)-step*0.8,rbB=xU(t0)+step*0.8;
+  poly([W(rbA,pH(actionAtT0)),W(rbB,pH(actionAtT0)),W(rbB,pH(safetyAtT0)),W(rbA,pH(safetyAtT0))],rgba(PINK,0.22),PINK,0.8);
+  var sRBr=CAM.S(W(rbB,pH((actionAtT0+safetyAtT0)/2))),sRBl=CAM.S(W(rbA,pH((actionAtT0+safetyAtT0)/2)));
+  txtS('RB',sRBr.x+7,sRBr.y+3,PINK,'left',9,'700');txtS('1R',sRBl.x-5,sRBl.y+3,PINK,'right',8,'600');
+  HITS.addRect(sRBr.x-8,sRBr.y-22,30,44,{type:'RB'});
+  var sEx=CAM.S(PW(exitIdx,win?tp:all[exitIdx]));
+  detArrow(sEx.x,sEx.y,win?-s:s,win?TP:SL);
+  txtS(win?'TP trigger':'SL trigger',sEx.x-9,sEx.y+4,win?TP:SL,'right',8.5,'700');
+  var lastS=CAM.S(PW(N-1,all[N-1])),badgeDy=win?(s>0?-22:24):(s>0?24:-22);
+  var bdg=detBadge(win?'TP (2×ATR)':'SL (1×ATR)',lastS.x+1,lastS.y+badgeDy,win?GREEN:RED);
+  HITS.addRect(bdg.x,bdg.y,bdg.w,bdg.h,{type:'setupOutcome'});
+  }
+  HITS.addPts([W(0,0),W(1,0),W(0,1.02),W(1,1.02)],{type:'detector'});
+  if(focused&&STATE.labels){
+    var pla=CAM.S(PW(3,cfg.act(3))),pls=CAM.S(PW(15,cfg.saf(15))),pe=CAM.S(W(xU(t0),1.05));
+    qLabel({key:'det_action_'+V.id,def:cfg.actionLabel,x:pla.x+4,y:pla.y+(s>0?-8:14),col:RED,al:'left',sz:8,wt:'600',pr:2,lod:LOD.name});
+    qLabel({key:'det_safety_'+V.id,def:cfg.safetyLabel,x:pls.x+4,y:pls.y+(s>0?14:-8),col:TEAL,al:'left',sz:8,pr:2,lod:LOD.name});
+    qLabel({key:'det_t0_'+V.id,def:'signal candle t0 · entry fill open[t0+1]',x:pe.x,y:pe.y,col:GREEN,al:'center',sz:8.5,wt:'600',pr:2,lod:LOD.name});
+  }
+  ctx.restore();
+}
+function TBWallLayer(cfg){this.cfg=cfg;}
+TBWallLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  var tert=vget('--color-text-tertiary','#777'),prim=vget('--color-text-primary','#eee');
+  drawTrendlineBreakWall(lev,0.10,0.42,0.90,0.42,4,{id:K,dir:+1,win:true},true);
+  if(STATE.labels){
+    var p1=SS(lev,0.5,0.85,180),p2=SS(lev,0.5,0.85,-16);
+    qLabel({key:K+'_seq',def:cfg.count,x:p1.x,y:p1.y,col:prim,al:'center',sz:9.5,wt:'700',pr:3});
+    qLabel({key:K+'_tb',def:cfg.tb,x:p2.x,y:p2.y,col:tert,al:'center',sz:8.5,pr:1});
+  }
+};
+
+/* --- Optuna trial matrix + best-params json + operating-point tags (used at L7 and D7) ------ */
+function OptunaSearchLayer(cfg){this.cfg=cfg;this._t=null;}
+OptunaSearchLayer.prototype.trials=function(){
+  if(this._t)return this._t;
+  var cfg=this.cfg,r=rng(cfg.seed),out=[],best=0,i;
+  var span=cfg.bestY-cfg.yLo;
+  for(i=0;i<cfg.nTrials;i++){
+    var explore=Math.exp(-i/(cfg.nTrials*0.6));
+    var v=cfg.yLo+span*(0.28+0.52*(1-explore))+(r()-0.5)*span*0.55;
+    if(v>=cfg.bestY-0.002)v=cfg.bestY-0.004-span*0.05*r();
+    if(v<cfg.yLo*0.92)v=cfg.yLo*0.92+span*0.05*r();
+    var pruned=(i>2)&&(v<best-span*0.12)&&(r()<0.6);
+    v=Math.round(v*10000)/10000;
+    var pp=cfg.params.map(function(p){return p.mock(r);});
+    out.push({i:i,v:v,pruned:pruned,params:pp});
+    if(!pruned&&v>best)best=v;
+  }
+  var bi=cfg.bestAt;
+  out[bi].pruned=false;out[bi].v=cfg.bestY;out[bi].params=cfg.bestVals.slice();
+  var b=0;
+  for(i=0;i<out.length;i++){if(!out[i].pruned&&out[i].v>b)b=out[i].v;out[i].best=Math.round(b*10000)/10000;}
+  this._t=out;return out;
+};
+OptunaSearchLayer.prototype.drawMatrix=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id,TR=this.trials(),BEST=cfg.bestAt;
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
+      bord=vget('--color-border-secondary','#555');
+  function stat(ti){var t=TR[ti];if(t.pruned)return{t:'pruned',c:SL};
+    if(ti===BEST)return{t:'new best',c:TP};
+    var lead=true,j;for(j=0;j<ti;j++)if(!TR[j].pruned&&TR[j].v>=t.v){lead=false;break;}
+    return lead?{t:'leader',c:AMB}:{t:'tested',c:CAN};}
+  function trialLabel(i){return 'Trial_'+(i+1<100?('0'+(i+1)).slice(-2):''+(i+1));}
+  var BW=0.5,A0=0.02,A1=0.72,base=4,HZ=165,showVal=(CAM.z>=0.9);
+  var COLS=[0,1,2,-1,BEST],NCOL=1+COLS.length,NP=cfg.params.length,NROW=NP+4,SEP=NP+1,rr,cc;
+  var A=CAM.S(lp(lev,A0,BW,base)),B=CAM.S(lp(lev,A1,BW,base)),
+      T1=CAM.S(lp(lev,A0,BW,base+HZ)),T2=CAM.S(lp(lev,A1,BW,base+HZ));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(vget('--color-background-primary','#1e1e1c'),0.93),bord,1.2,[]);
+  polyS([T1,T2,B,A],rgba(GREEN,0.05),null,0,[]);
+  var LBLS=[cfg.yRowLabel,'best Y so far','current status'],li2;
+  for(li2=0;li2<NP;li2++)LBLS.push(cfg.params[li2].k);
+  setFont((6.4*zScale()).toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  var maxLab=0;for(li2=0;li2<LBLS.length;li2++){var lw=ctx.measureText(LBLS[li2]).width;if(lw>maxLab)maxLab=lw;}
+  var matWpx=Math.max(1,Math.min(Math.abs(B.x-A.x),Math.abs(T2.x-T1.x)));
+  var W0=Math.min(0.52,Math.max(0.30,(maxLab+14)/matWpx)),tw=(1-W0)/(NCOL-1);
+  function colU(c){return c===0?{l:0,r:W0*0.985}:{l:W0+(c-1)*tw,r:W0+(c-1)*tw+tw*0.965};}
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var cu=colU(cc),u0=cu.l,u1=cu.r,v0=rr/NROW,v1=(rr+0.93)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    var ti=(cc>=1)?COLS[cc-1]:null,isEll=(ti===-1),isBest=(ti===BEST);
+    if(rr===0&&cc===0){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.14),bord,0.8,[]);
+      ctx.save();ctx.strokeStyle=prim;ctx.lineWidth=1.2;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(p00.x,p00.y);ctx.lineTo(p11.x,p11.y);ctx.stroke();ctx.restore();
+      var ptr=lerp2(p10,pc,0.42),ppa=lerp2(p01,pc,0.42);
+      txtS('trial',ptr.x,ptr.y+3,prim,'center',7.5,'700');txtS('param',ppa.x,ppa.y+3,prim,'center',7.5,'700');
+    }else if(rr===0){
+      polyS([p00,p10,p11,p01],isBest?rgba(AMB,0.26):rgba(GREEN,0.22),bord,0.9,[]);
+      if(isEll)txtS('…',pc.x,pc.y+4,prim,'center',11,'700');
+      else txtS(trialLabel(ti)+(isBest?' ★':''),pc.x,pc.y+3,isBest?AMB:prim,'center',7,'700');
+    }else if(cc===0){
+      var isRes=(rr>=SEP),resLbl=(rr===SEP)?cfg.yRowLabel:(rr===SEP+1?'best Y so far':(rr===SEP+2?'current status':''));
+      polyS([p00,p10,p11,p01],isRes?rgba(TP,0.16):rgba(CAN,0.12),bord,0.9,[]);
+      if(showVal)monoS(isRes?resLbl:cfg.params[rr-1].k,lerp2(p00,p10,0.03).x,pc.y+3,isRes?TP:prim,'left',6.4);
+      else txtS(isRes?'Y':String(rr),pc.x,pc.y+4,isRes?TP:prim,'center',8,'700');
+    }else if(isEll){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.05),bord,0.8,[]);if(showVal)txtS('…',pc.x,pc.y+3,tert,'center',8);
+    }else{
+      var t=TR[ti];
+      if(rr<SEP){
+        polyS([p00,p10,p11,p01],isBest?rgba(AMB,0.08):rgba(CAN,0.09),bord,0.8,[]);
+        if(showVal)txtS(t.params[rr-1],pc.x,pc.y+3,tert,'center',6.4);
+      }else if(rr===SEP){
+        var sc=Math.max(0,Math.min(1,(t.v-cfg.yLo)/(cfg.bestY-cfg.yLo)));
+        polyS([p00,p10,p11,p01],rgba(TP,0.10+0.42*sc),bord,0.8,[]);
+        if(showVal)txtS(t.v.toFixed(4),pc.x,pc.y+3,isBest?AMB:TP,'center',6.4,'700');
+      }else if(rr===SEP+1){
+        polyS([p00,p10,p11,p01],rgba(AMB,0.08),bord,0.8,[]);
+        if(showVal)txtS(t.best.toFixed(4),pc.x,pc.y+3,AMB,'center',6.4);
+      }else{
+        var st=stat(ti);
+        polyS([p00,p10,p11,p01],rgba(st.c,0.13),bord,0.8,[]);
+        if(showVal)txtS(st.t,pc.x,pc.y+3,st.c,'center',6.4,'700');
+      }
+    }
+  }
+  var sp0=PT(0,SEP/NROW),sp1=PT(1,SEP/NROW);
+  ctx.save();ctx.strokeStyle=rgba(prim,0.5);ctx.lineWidth=1.6;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(sp0.x,sp0.y);ctx.lineTo(sp1.x,sp1.y);ctx.stroke();ctx.restore();
+  for(cc=1;cc<NCOL;cc++){var tj=COLS[cc-1];if(tj===-1)continue;var hu=colU(cc);
+    var q0=PT(hu.l,0),q1=PT(hu.r,0),q2=PT(hu.l,1),q3=PT(hu.r,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,{type:'trial',i:tj});}
+  addObstaclePts([T1,T2,B,A],2);
+  if(STATE.labels){var ptl=PT(0.5,-0.13),ptt=PT(0.5,-0.06);
+    qLabel({key:K+'_mt',def:cfg.title,x:ptl.x,y:ptl.y,col:GREEN,al:'center',sz:9,wt:'600',pr:3});
+    qLabel({key:K+'_ms',def:cfg.sub,x:ptt.x,y:ptt.y,col:tert,al:'center',sz:7.5,pr:1,lod:LOD.name});}
+  return {a1:A1,yDz:base+HZ*(1-(SEP+0.465)/NROW),cDz:base+HZ*0.5};
+};
+OptunaSearchLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  var sec=vget('--color-text-secondary','#999'),tert=vget('--color-text-tertiary','#777');
+  var mx=this.drawMatrix();
+  var e=CAM.S(lp(lev,mx.a1,0.5,mx.yDz)),js=SS(lev,1.08,0.5,mx.yDz);
+  arrowHQ({x:e.x+6,y:e.y},{x:js.x-60,y:js.y},AMB);
+  GLYPHS.pyFile(js.x,js.y,104,42,GREEN,cfg.jsonL1,'.json');
+  HITS.addRect(js.x-52,js.y-21,104,42,{type:'optunaOut'});addObstacleRect(js.x-52,js.y-21,104,42);
+  if(STATE.labels)qLabel({key:K+'_x1',def:'×1  '+cfg.jsonName,x:js.x,y:js.y+40,col:sec,al:'center',sz:8.5,wt:'700',pr:3,ax:js.x,ay:js.y+22});
+  /* operating-point tags — right of the json, vertically centred (stay inside this band) */
+  var tx0=js.x+72,ty0=js.y-((cfg.tags.length-1)*27)/2-10,i;
+  for(i=0;i<cfg.tags.length;i++){
+    var tw2=Math.max(66,cfg.tags[i].length*6.4+24);
+    drawTagS(tx0,ty0+i*27,tw2,20,AMB,cfg.tags[i],0.14,8.5);
+    HITS.addRect(tx0,ty0+i*27,tw2,20,{type:'kelly'});
+  }
+  if(STATE.labels&&cfg.tagNote)qLabel({key:K+'_kn',def:cfg.tagNote,x:tx0+40,y:ty0+cfg.tags.length*27+12,col:tert,al:'center',sz:7.5,pr:2});
+};
+
+/* --- strategy export: manifest strip + json → model cube → B64 tag → strategy_<T>.py -------- */
+function StrategyExportLayer(cfg){this.cfg=cfg;}
+StrategyExportLayer.prototype.drawManifest=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777'),
+      bord=vget('--color-border-secondary','#555');
+  var BW=0.5,A0=0.05,A1=0.95,base=92,HZ=60,showVal=(CAM.z>=0.9);
+  var MF=cfg.manifest,NCOL=1+MF.length,NROW=3,rr,cc;
+  var A=CAM.S(lp(lev,A0,BW,base)),B=CAM.S(lp(lev,A1,BW,base)),
+      T1=CAM.S(lp(lev,A0,BW,base+HZ)),T2=CAM.S(lp(lev,A1,BW,base+HZ));
+  function PT(u,v){return lerp2(lerp2(T1,T2,u),lerp2(A,B,u),v);}
+  polyS([T1,T2,B,A],rgba(vget('--color-background-primary','#1e1e1c'),0.93),bord,1.2,[]);
+  polyS([T1,T2,B,A],rgba(GREEN,0.05),null,0,[]);
+  setFont((6.6*zScale()).toFixed(1)+'px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace');
+  var maxLab=Math.max(ctx.measureText('FEATURE_MANIFEST').width,ctx.measureText('sample x').width);
+  var matWpx=Math.max(1,Math.min(Math.abs(B.x-A.x),Math.abs(T2.x-T1.x)));
+  var W0=Math.min(0.30,Math.max(0.14,(maxLab+12)/matWpx)),tw=(1-W0)/(NCOL-1);
+  function colU(c){return c===0?{l:0,r:W0*0.99}:{l:W0+(c-1)*tw,r:W0+(c-1)*tw+tw*0.94};}
+  var ROWLBL=['','name','sample x'];
+  for(rr=0;rr<NROW;rr++)for(cc=0;cc<NCOL;cc++){
+    var cu=colU(cc),u0=cu.l,u1=cu.r,v0=rr/NROW,v1=(rr+0.9)/NROW;
+    var p00=PT(u0,v0),p10=PT(u1,v0),p11=PT(u1,v1),p01=PT(u0,v1),pc=PT((u0+u1)/2,(v0+v1)/2);
+    if(cc===0){
+      polyS([p00,p10,p11,p01],rgba(CAN,0.12),bord,0.9,[]);
+      txtS(rr===0?'FEATURE_MANIFEST':ROWLBL[rr],lerp2(p00,p10,0.05).x,pc.y+3,rr===0?GREEN:prim,'left',rr===0?6.4:6.8,'700');
+    }else{
+      var m=MF[cc-1];
+      if(rr===0){
+        polyS([p00,p10,p11,p01],rgba(GREEN,0.22),bord,0.9,[]);
+        var gx=lerp2(p00,p10,0.30),txx=lerp2(p00,p10,0.70);drawFamilyMarker(gx.x,pc.y,m.fam,GREEN);
+        txtS('X'+cc,txx.x,pc.y+3,prim,'center',7,'700');
+      }else if(rr===1){
+        polyS([p00,p10,p11,p01],rgba(CAN,0.10),bord,0.8,[]);
+        if(showVal){var cwpx=Math.abs(p10.x-p00.x)*0.96;
+          txtS(dqFit(m.ab,cwpx,5.4),pc.x,pc.y+3,tert,'center',5.4);}
+      }else{
+        polyS([p00,p10,p11,p01],rgba(TP,0.10),bord,0.8,[]);
+        if(showVal)txtS(cfg.sample[cc-1],pc.x,pc.y+3,TP,'center',6.4,'700');
+      }
+    }
+  }
+  for(cc=1;cc<NCOL;cc++){var hu=colU(cc);
+    var q0=PT(hu.l,0),q1=PT(hu.r,0),q2=PT(hu.l,1),q3=PT(hu.r,1);
+    var x0=Math.min(q0.x,q1.x,q2.x,q3.x),x1=Math.max(q0.x,q1.x,q2.x,q3.x),
+        y0=Math.min(q0.y,q1.y,q2.y,q3.y),y1=Math.max(q0.y,q1.y,q2.y,q3.y);
+    HITS.addRect(x0,y0,x1-x0,y1-y0,{type:'manifestRow',r:cc-1});}
+  addObstaclePts([T1,T2,B,A],2);
+  if(STATE.labels){var pt=PT(0.5,-0.42);
+    qLabel({key:K+'_manifest',def:cfg.manifestTitle,x:pt.x,y:pt.y,col:GREEN,al:'center',sz:9,wt:'600',pr:3});}
+};
+StrategyExportLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id;
+  caption(lev);
+  var prim=vget('--color-text-primary','#eee'),tert=vget('--color-text-tertiary','#777');
+  this.drawManifest();
+  var FB=0.5,DZ=40,y0=SS(lev,0.5,FB,DZ).y;
+  var GAP=9,ARW=46,JW=104,JH=40,CUBEW=78,MBW=cfg.tagW||80,MBH=22;
+  var cx=SS(lev,0.03,FB,DZ).x;
+  var jcx=cx+JW/2;
+  GLYPHS.pyFile(jcx,y0,JW,JH,GREEN,cfg.jsonL1,cfg.jsonExt||'.json');
+  HITS.addRect(jcx-JW/2,y0-JH/2,JW,JH,{type:'optunaOut'});addObstacleRect(jcx-JW/2,y0-JH/2,JW,JH);
+  cx+=JW;
+  arrowHQ({x:cx+GAP,y:y0},{x:cx+GAP+ARW,y:y0},AMB);cx+=2*GAP+ARW;
+  var DPX=11,DPY=9,fw=CUBEW-DPX,fh=56,x0=cx,x1=cx+fw,ccx=cx+fw/2,yt=y0-fh/2,yb=y0+fh/2,bg=vget('--color-background-primary','#1e1e1c');
+  polyS([{x:x1,y:yt},{x:x1+DPX,y:yt-DPY},{x:x1+DPX,y:yb-DPY},{x:x1,y:yb}],rgba(TEAL,0.18),rgba(TEAL,0.6),1,[]);
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1+DPX,y:yt-DPY},{x:x0+DPX,y:yt-DPY}],rgba(TEAL,0.34),rgba(TEAL,0.8),1,[]);
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1,y:yb},{x:x0,y:yb}],rgba(bg,0.92),TEAL,1.4,[]);
+  polyS([{x:x0,y:yt},{x:x1,y:yt},{x:x1,y:yb},{x:x0,y:yb}],rgba(TEAL,0.18),null,0,[]);
+  GLYPHS.modelTree(ccx,y0-9,'#4FD8A8',0.62);
+  var cbsz=cfg.cube.length>3?12:15;
+  txtS(cfg.cube,ccx+1.3,y0+20.5,'rgba(0,0,0,0.6)','center',cbsz,'800');
+  txtS(cfg.cube,ccx,y0+19,'#ffffff','center',cbsz,'800');
+  HITS.addRect(x0-2,yt-DPY-2,fw+DPX+4,fh+DPY+4,{type:'model'});addObstacleRect(x0-2,yt-DPY-2,fw+DPX+4,fh+DPY+4);
+  cx+=CUBEW;
+  var a4=cx+GAP+ARW/2;
+  arrowHQ({x:cx+GAP,y:y0},{x:cx+GAP+ARW,y:y0},AMB);cx+=2*GAP+ARW;
+  drawTagS(cx,y0-MBH/2,MBW,MBH,TEAL,cfg.tag,0.16,7.5);HITS.addRect(cx,y0-MBH/2,MBW,MBH,{type:'b64'});
+  cx+=MBW;
+  var midY=(BNDY[lev-1]+BNDY[lev])/2;if(!isFinite(midY))midY=y0;
+  var SW2=54,SH2=36,sx0=cx+GAP+ARW+26+SW2/2;
+  arrowHQ({x:cx+GAP,y:y0},{x:sx0-SW2/2-4,y:midY},AMB);
+  GLYPHS.fileSerpentineScreen({nodes:[{x:sx0,y:midY},{x:sx0+84,y:midY}],col:AMB,ext:'.py',fw:SW2,fh:SH2,hit:'strategy',
+    allText:'×1  '+cfg.pyName,allTextAt:{x:sx0+42,y:midY+SH2*0.55+16},allTextAl:'center',allSz:8.5});
+  if(STATE.labels){
+    qLabel({key:K+'_cube',def:cfg.cubeCap,x:ccx,y:y0-48,col:prim,al:'center',sz:9,wt:'700',pr:2});
+    qLabel({key:K+'_b64',def:'serialize → base64',x:a4,y:y0-24,col:AMB,al:'center',sz:7,pr:1,lod:LOD.name});
+    qLabel({key:K+'_in',def:cfg.inputCap,x:(jcx+ccx)/2,y:y0+38,col:tert,al:'center',sz:8,pr:1});
+    var cc1=SS(lev,0.60,0.98,8);
+    qLabel({key:K+'_cap',def:cfg.cap,x:cc1.x,y:cc1.y,col:tert,al:'center',sz:8,pr:1});
+  }
+};
+
+/* --- one-shot OOS wall: SQLite cylinder + sealed metric matrix + status badge --------------- */
+function OOSWall(cfg){this.cfg=cfg;}
+OOSWall.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id,i,bw=0.60;
+  caption(lev);
+  var bgc=vget('--color-background-primary','#1e1e1c'),sec=vget('--color-text-secondary','#999'),
+      tert=vget('--color-text-tertiary','#777'),prim=vget('--color-text-primary','#eee');
+  var cyc=GLYPHS.dbCylinder({lev:lev,a:0.07,b:0.55,ra:0.10,rb:0.23,dz:50,h:30,col:TEAL,
+    badge:'SQLite',badgeKey:K+'_badge',hit:'sqliteDb'});
+  if(STATE.labels){
+    qLabel({key:K+'_file',def:cfg.db,x:cyc.x,y:cyc.y+46,col:sec,al:'center',sz:8.5,wt:'700',pr:3,ax:cyc.x,ay:cyc.y+30});
+    if(CAM.z>=0.85){
+      for(i=0;i<cfg.tables.length;i++)
+        qLabel({key:K+'_tbl'+i,def:cfg.tables[i],x:cyc.x,y:cyc.y+60+i*10.5,col:tert,al:'center',sz:6.8,pr:1,lod:0.82});
+    }
+  }
+  arrowHQ(SS(lev,0.20,0.57,62),SS(lev,0.33,0.57,62),AMB);
+  var zb=6,HZ=118;
+  GLYPHS.ohlcvMatrix({lev:lev,a0:0.37,a1:0.79,b:bw,base:zb,h:HZ,col:GRAY,
+    bg:rgba(bgc,0.93),hitType:'sqliteDb',cwd:[30,26],showValZ:0.4,
+    cols:['metric','universe'],rows:cfg.rows,title:cfg.matrixTitle});
+  if(STATE.labels){
+    var pcap=SS(lev,0.58,bw,zb+HZ+14);
+    qLabel({key:K+'_cap',def:cfg.cap,x:pcap.x,y:pcap.y,col:prim,al:'center',sz:9.5,wt:'600',pr:3});
+  }
+  var bs=SS(lev,0.97,bw,zb+HZ-12);
+  var bb=drawStatusBadge(bs.x-28,bs.y-10,cfg.status,cfg.status,{w:56,h:19,sz:8});
+  HITS.addRect(bb.x,bb.y,bb.w,bb.h,{type:'oosStatus'});addObstacleRect(bb.x,bb.y,bb.w,bb.h);
+  if(STATE.labels){
+    for(i=0;i<cfg.notes.length;i++){
+      var pn=SS(lev,0.97,bw,zb+HZ-40-i*24);
+      qLabel({key:K+'_n'+i,def:cfg.notes[i],x:pn.x,y:pn.y,col:(cfg.status==='WARN'?AMB:tert),al:'center',sz:8,wt:'600',pr:2});
+    }
+  }
+};
+
+/* --- endproduct: the per-asset artifact folder + the integrity checklist -------------------- */
+function EndproductLayer(cfg){this.cfg=cfg;}
+EndproductLayer.prototype.draw=function(){
+  var lev=this.lev,cfg=this.cfg,K=this.node.id,i;
+  caption(lev);
+  var tert=vget('--color-text-tertiary','#777'),sec=vget('--color-text-secondary','#999'),
+      prim=vget('--color-text-primary','#eee');
+  var Z=120;
+  var c=SS(lev,0.38,0.5,Z),e=SS(lev,0.54,0.5,Z);
+  var W=Math.max(210,2*Math.hypot(e.x-c.x,e.y-c.y));
+  var fc=GLYPHS.endproductFolder(c.x,c.y,W,TP,cfg.files);
+  HITS.addRect(fc.x,fc.y,fc.w,fc.h,{type:'endproduct'});
+  addObstacleRect(fc.x,fc.y,fc.w,fc.h+28);
+  txtS('1 ×',fc.x-14,fc.y+fc.h*0.52,TP,'right',13,'800');
+  if(CAM.z>=0.7)monoS(cfg.folder,fc.x+fc.w*0.5,fc.y+fc.h+18,sec,'center',11);
+  if(CAM.z>=0.7){var ebw=232;ctx.save();ctx.fillStyle=rgba(TP,0.12);ctx.strokeStyle=rgba(TP,0.7);ctx.lineWidth=1;
+    rrectS(fc.x+fc.w*0.5-ebw/2,fc.y+fc.h+28,ebw,17,5);ctx.fill();ctx.stroke();ctx.restore();
+    txtS(cfg.badge,fc.x+fc.w*0.5,fc.y+fc.h+40,TP,'center',8.5,'700');}
+  if(STATE.labels)
+    qLabel({key:K+'_groups',def:cfg.groupsCap,x:fc.x+fc.w*0.5,y:fc.y+fc.h+58,col:tert,al:'center',sz:8.5,pr:1});
+  /* the integrity checklist — the checks recorded in results.db */
+  var chx=fc.x+fc.w+46,chy=fc.y+fc.h-28,rowH=21,cbW=250;
+  fillRR(chx-14,chy-24,cbW,cfg.checks.length*rowH+34,8,
+    rgba(TP,0.05),vget('--color-border-secondary','#555'),1.05);
+  txtS('integrity checks',chx-4,chy-9,TP,'left',8.6,'700');
+  for(i=0;i<cfg.checks.length;i++){
+    var ry=chy+10+i*rowH;
+    drawCheckbox(chx,ry,11,TP,'');
+    drawStatusIcon(chx+15,ry,TP,'OK');
+    txtS(cfg.checks[i],chx+26,ry+3,prim,'left',8.3,'600');
+  }
+  HITS.addRect(chx-14,chy-24,cbW,cfg.checks.length*rowH+34,{type:'verify'});
+  addObstacleRect(chx-14,chy-24,cbW,cfg.checks.length*rowH+34);
+  if(STATE.labels&&CAM.z>=0.9&&cfg.call){
+    var ci,cb,ic,tw,ox;
+    for(ci=0;ci<cfg.call.length;ci++){
+      cb=cfg.call[ci];ic=fc.icons[ci];
+      var ax=fc.x+fc.w*cb.fx+(cb.dx||0),ay=fc.y+cb.dy;
+      ctx.save();ctx.strokeStyle=rgba(cb.col,0.8);ctx.lineWidth=1.2;ctx.setLineDash([]);
+      ctx.beginPath();ctx.moveTo(ic.x,ic.y-fc.ifh);ctx.lineTo(ax,ay-3);ctx.stroke();ctx.restore();
+      txtS(cb.nm,ax,ay,cb.col,cb.al,8.5,'700');
+      txtS(cb.role,ax,ay+11,sec,cb.al,7.5);
+      tw=cb.nm.length*4.9;ox=cb.al==='right'?ax-tw:(cb.al==='center'?ax-tw/2:ax);
+      addObstacleRect(ox,ay-9,tw,23);
+    }
+  }
+};
+
+/* ============================================================================================
+   WIRING — per-node drawer instances (cfg = the sealed universe content of results.db)
+   ============================================================================================ */
+/* The CORE feature blocks below are the REAL frozen registries: XGB ids 1-99 (17 CORE 1h features,
+   8 shown) and LSTM ids 1-13 (all 13 CORE daily channels). CORE is never searched; a Train-only
+   search may add optionals per asset from a 45-id pool. */
+var XGB_FEATS=[
+  {ab:'log_return_1',fam:'momentum_return'},{ab:'log_return_5',fam:'momentum_return'},{ab:'log_return_20',fam:'momentum_return'},
+  {ab:'close_z_score_20',fam:'range_position'},{ab:'dist_to_sma_20',fam:'price_distance'},{ab:'atr_pct_14',fam:'volatility_level'},
+  {ab:'realized_volatility_20',fam:'volatility_regime'},{ab:'rsi_14',fam:'oscillator_rsi'}];
+var LSTM_FEATS=[
+  {ab:'log_return_1',fam:'momentum_return'},{ab:'log_return_5',fam:'momentum_return'},{ab:'log_return_20',fam:'momentum_return'},
+  {ab:'dist_to_sma_20',fam:'price_distance'},{ab:'dist_to_sma_50',fam:'price_distance'},{ab:'sma_20_sma_50_ratio',fam:'trend_slope_ma'},
+  {ab:'volume_z_score_20',fam:'volume_liquidity'},{ab:'atr_pct_14',fam:'volatility_level'},{ab:'realized_volatility_20',fam:'volatility_regime'},
+  {ab:'rsi_14',fam:'oscillator_rsi'},{ab:'bollinger_percent_b_20_2',fam:'range_position'},{ab:'bollinger_bandwidth_20_2',fam:'volatility_regime'},
+  {ab:'macd_hist_12_26_9',fam:'divergence_gap'}];
+function mInt(lo,hi){return function(r){return ''+Math.round(lo+r()*(hi-lo));};}
+function mF(lo,hi,dp){return function(r){return (lo+r()*(hi-lo)).toFixed(dp);};}
+function mLog(lo,hi,dp){return function(r){return (lo*Math.pow(hi/lo,r())).toFixed(dp);};}
+function mExp(lo,hi){return function(r){var v=lo*Math.pow(hi/lo,r());return v.toExponential(1).replace('e-','e-').replace('.0e','e');};}
+
+var LAYERS={
+ src:new SourceLayer({}),
+ xdb:new DuckDBLayer({
+   col:GRAY,badge:'DuckDB',
+   name:'upstream store · bars_1h',countLabel:'1h regular-session bars · 2016 → 2026',
+   viewNote:'one shared loader — unknown ticker raises',tableTitle:'bars_1h · SCHEMATIC',
+   cols:['ts','o','h','l','c','v'],cwd:[30,16,16,16,16,16],
+   rows:[['09:30','100.00','100.40','99.70','100.10','0.8M'],
+         ['10:30','100.10','100.35','99.90','100.05','0.6M'],
+         ['11:30','100.05','100.20','99.60','99.75','0.7M'],
+         ['12:30','99.75','100.00','99.55','99.95','0.5M']]}),
+ xtf:new TransformLayer({}),
+ xsplit:new SplitLayer({
+   split:buildSplit([
+     {id:'warmup',name:'WARM-UP',from:'2016-01-04',to:'2016-10-14',col:CAN},
+     {id:'train', name:'TRAIN',  from:'2016-10-17',to:'2023-12-29',col:TEAL},
+     {id:'oos',   name:'OOS',    from:'2024-01-02',to:'2026-05-29',col:AMB}]),
+   d0:'2016-01-04',dBoundary:'2023-12-29 → 2024-01-02',d1:'2026-05-29',
+   note:'purge = H = 24 bars (the Triple-Barrier window) · embargo 35 bars ≥ the longest feature lookback · OOS frozen until L9',
+   note2:'assert: t0 + H + embargo ≤ oos_start — the training side crashes if it can ever touch OOS'}),
+ xfeat:new FeatureForest({
+   features:XGB_FEATS,yLabel:'Y_outcome',weightLabel:'uniqueness weight',
+   capTop:'Features computed at t0 — only bars ≤ t0 (causality) · namespaces [1h · 1h_ext · 1d · 1w · multi_tf]',
+   chip:'17 CORE + searched optionals',
+   note:'row = entry candidate · 17 frozen CORE 1h features (8 shown) + per-asset searched optionals from a 45-id pool (12 families) + Y_outcome + weight · Triple-Barrier: TP 2×ATR14 / SL 1×ATR14, H=24'}),
+ xopt:new OptunaSearchLayer({
+   seed:4242,nTrials:80,bestAt:57,yLo:0.34,bestY:0.62,yRowLabel:'Y: objective (schematic)',
+   params:[
+     {k:'max_depth',mock:mInt(2,5)},{k:'eta',mock:mLog(0.02,0.3,3)},{k:'subsample',mock:mF(0.6,1.0,3)},
+     {k:'colsample_bytree',mock:mF(0.6,1.0,3)},{k:'min_child_weight',mock:mF(1,10,2)},{k:'n_estimators',mock:mInt(40,300)}],
+   bestVals:['3','0.263','0.893','0.839','2.40','196'],
+   title:'OPTUNA · SEARCH SHAPE — 80 trials (TPE seed 42 + MedianPruner) → trials in time · SCHEMATIC',
+   sub:'SCHEMATIC — trial points illustrate the shape of a TPE search, they are NOT recorded trials. Real: 9-parameter space (6 shown), objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds), Train only.',
+   jsonL1:'parameters',jsonName:'parameters.json',
+   tags:['θ per asset 0.40–0.60','all-in'],tagNote:'operating point — one shared floor-respecting θ per trial, chosen per asset; never a per-fold best, never pinned'}),
+ xexp:new StrategyExportLayer({
+   manifest:XGB_FEATS,sample:['-0.8','1.2','0.6','0.3','0.45','1.1','-0.2','+1'],
+   manifestTitle:'FEATURE_MANIFEST — 17 CORE + optionals (8 shown) · embedded in strategy_<T>.py',
+   jsonL1:'parameters',jsonExt:'.json',cube:'XGB',tag:'MODEL_B64',tagW:80,pyName:'strategy_<T>.py',
+   cubeCap:'final fit on full Train · binary:logistic',
+   inputCap:'input: best params + Train X/y + feature manifest + per-asset θ · all-in',
+   cap:'final XGB → base64 → MODEL_B64 inside ONE self-contained strategy_<T>.py (acceptance ✓)'}),
+ xoos:new OOSWall({
+   db:'results.db',tables:['research_run','asset_results','integrity_checks'],
+   matrixTitle:'sealed OOS rows · one read per asset · 2024-01-02 → 2026-05-29',
+   rows:[['assets','498'],['median return','−1.78 %'],['median HODL','+22.16 %'],['median PF','0.935'],['beats HODL','72 / 498']],
+   cap:'XGB · the universe verdict, read once per asset',
+   status:'OK',
+   notes:['328 traded · 136 idle by design · 33 HODL fallback · 1 low evidence','an honest negative: the median strategy trails buy-and-hold']}),
+ ldb:new DuckDBLayer({
+   col:TEAL,badge:'DuckDB',
+   name:'bundled daily store · bars_1d',countLabel:'daily bars · same split-adjusted source',
+   viewNote:'frozen input of the daily pipeline — read as-is',tableTitle:'bars_1d · SCHEMATIC',
+   cols:['ts','o','h','l','c','v'],cwd:[34,16,16,16,16,16],
+   rows:[['2016-01-04','100.00','100.90','99.20','99.60','8.2M'],
+         ['2016-01-05','99.60','100.40','99.10','100.20','7.9M'],
+         ['2016-01-06','100.20','100.70','99.40','99.70','9.4M'],
+         ['2016-01-07','99.70','100.10','98.80','99.05','11.1M']]}),
+ lsplit:new SplitLayer({
+   split:buildSplit([
+     {id:'warmup',name:'WARM-UP',from:'2016-01-01',to:'2016-12-31',col:CAN},
+     {id:'train', name:'TRAIN',  from:'2017-01-01',to:'2023-12-31',col:TEAL},
+     {id:'oos',   name:'OOS',    from:'2024-01-02',to:'2026-04-30',col:AMB}]),
+   d0:'2016-01-01',dBoundary:'2023-12-31 → 2024-01-02',d1:'2026-04-30',
+   note:'purge 10 sessions at the OOS boundary · embargo 10 after each fold · OOS frozen until D9',
+   note2:'the daily path keeps its OWN calendar — it is not the 1h split re-sampled'}),
+ lfeat:new FeatureForest({
+   features:LSTM_FEATS,yLabel:'Y (TB)',weightLabel:'uniqueness weight',
+   capTop:'D4 — causal channels + Train-only z-score · every input ≤ decision close',
+   chip:'13 CORE + up to 6 searched',
+   note:'13 CORE daily channels (all shown) + per-asset optionals from a 45-id pool (23 optional · 2 cross-asset · 20 DSL-proposed) · z-score stats frozen from Train · CV folds get fold-causal stats'}),
+ ltb:new TBWallLayer({
+   count:'weighted Train sequences · 60 sessions × manifest width · purged at the OOS boundary',
+   tb:'Triple Barrier: TP 2×ATR14 / SL 1×ATR14 · H = 10 sessions · overlapping labels → uniqueness weights'}),
+ lopt:new OptunaSearchLayer({
+   seed:777,nTrials:20,bestAt:11,yLo:0.42,bestY:0.68,yRowLabel:'Y: objective (schematic)',
+   params:[
+     {k:'hidden',mock:mInt(32,128)},{k:'lr',mock:mLog(0.0005,0.01,4)},{k:'dropout',mock:mF(0.0,0.5,3)},
+     {k:'weight_decay',mock:mExp(1e-6,1e-4)},{k:'num_layers',mock:mInt(1,2)}],
+   bestVals:['64','0.0041','0.152','2.5e-6','1'],
+   title:'OPTUNA · SEARCH SHAPE — 20 trials → trials in time · SCHEMATIC',
+   sub:'SCHEMATIC — trial points illustrate the shape of the search, they are NOT recorded trials. Real: objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds), fold-causal scalers, seed 42.',
+   jsonL1:'parameters',jsonName:'parameters.json',
+   tags:['θ per asset 0.50–0.60','direction','all-in'],tagNote:'threshold and direction calibrated JOINTLY on Train OOF · full-capital sizing'}),
+ lexp:new StrategyExportLayer({
+   manifest:LSTM_FEATS,sample:['0.4','-0.1','0.9','-0.6','0.2','1.3','-0.4','0.7','0.1','-1.1','0.5','0.8','-0.3'],
+   manifestTitle:'FEATURE_MANIFEST — 13 CORE + searched optionals · frozen order, embedded in strategy_<T>.py',
+   jsonL1:'parameters',jsonExt:'.json',cube:'LSTM',tag:'STATE_DICT_B64',tagW:104,pyName:'strategy_<T>.py',
+   cubeCap:'refit on full Train · deterministic, 2 threads',
+   inputCap:'input: best params + Train sequences + channel manifest + per-asset θ · direction · all-in',
+   cap:'refit LSTM → base64 → STATE_DICT_B64 inside ONE self-contained strategy_<T>.py'}),
+ loos:new OOSWall({
+   db:'results.db',tables:['research_run','asset_results','integrity_checks'],
+   matrixTitle:'sealed OOS rows · one read per asset · 2024-01-02 → 2026-04-30',
+   rows:[['assets','495'],['median return','+2.25 %'],['median HODL','+23.09 %'],['median PF','1.013'],['beats HODL','129 / 495']],
+   cap:'LSTM · the universe verdict, read once per asset',
+   status:'OK',
+   notes:['446 traded · 37 HODL fallback · 11 low evidence · 1 idle','engine replay · 1 bp commission + 2 bp slippage per side · all-in compounding']}),
+ endp:new EndproductLayer({
+   folder:'artifacts/<pipe>/<T>/',badge:'▣ 993 sealed artifacts · interpretation · 16/16 integrity checks',
+   files:[{col:TP,ext:'.py'},{col:GREEN,ext:'.json'},{col:GREEN,ext:'.json'},
+          {col:BLU,ext:'.json'},{col:AMB,ext:'.json'}],
+   groupsCap:'five files per asset · strategy (.py) │ parameters + metrics (.json) │ interpretation (.json) │ manifest (.json, folder_sha256 chained)',
+   checks:['993 artifacts == manifest counts ✓','interpretation coverage complete ✓','OOS reads cover the store ✓'],
+   call:[
+     {nm:'strategy_<T>.py',role:'strategy + base64 model · L8 / D8',col:TP,fx:-0.02,dx:-24,dy:36,al:'right'},
+     {nm:'parameters.json',role:'frozen params + θ + feature manifest',col:GREEN,fx:0.10,dy:-64,al:'right'},
+     {nm:'metrics.json',role:'the one-shot OOS row + calibration',col:GREEN,fx:0.30,dy:-112,al:'right'},
+     {nm:'interpretation.json',role:'TRAIN-DERIVED · NOT AN OOS RESULT',col:BLU,fx:0.5,dy:-148,al:'center'},
+     {nm:'manifest.json',role:'folder_sha256 — the artifact’s own identity',col:AMB,fx:0.78,dy:-112,al:'left'},
+     {nm:'results.db',role:'read-only store behind the console',col:PINK,fx:0.96,dy:-64,al:'left'},
+     {nm:'NOT A LIVE TRADING SIGNAL',role:'research output over fixed historical windows',col:BLU,fx:1.02,dx:24,dy:36,al:'left'}]})
+};
+var DRAWERS={asset:[LAYERS.src],xgb_db:[LAYERS.xdb],xgb_l4:[LAYERS.xtf],xgb_l5:[LAYERS.xsplit],
+  xgb_l6:[LAYERS.xfeat],xgb_l7:[LAYERS.xopt],xgb_l8:[LAYERS.xexp],xgb_l9:[LAYERS.xoos],
+  lstm_db:[LAYERS.ldb],lstm_d23:[LAYERS.lsplit],lstm_d4:[LAYERS.lfeat],lstm_d56:[LAYERS.ltb],
+  lstm_d7:[LAYERS.lopt],lstm_d8:[LAYERS.lexp],lstm_d9:[LAYERS.loos],sealed:[LAYERS.endp]};
+PIPELINE.nodes.forEach(function(n){(DRAWERS[n.id]||[]).forEach(function(d){d.lev=n.lev;d.node=n;});});
+
+/* ================= scene ================= */
+function drawScene(){
+  ctx.clearRect(0,0,cw,chh);
+  ctx.fillStyle=vget('--color-background-primary','#1e1e1c');ctx.fillRect(0,0,cw,chh);
+  HITS.clear();LQ.length=0;OBST.length=0;CUR_LEV=null;
+  boundaryLines();
+  sectionTitles();
+  var i;
+  for(i=0;i<NLEV-1;i++)flowArrow(i);
+  var ord=PIPELINE.nodes.map(function(n){return {l:n.lev,d:lp(n.lev,0.5,0.5,30).d};})
+    .sort(function(p,q){return q.d-p.d;});
+  for(i=0;i<ord.length;i++){
+    var l=ord[i].l,nd=NODE_BY_LEV[l];
+    CUR_LEV=l;
+    (DRAWERS[nd.id]||[]).forEach(function(d){d.draw();});
+  }
+  CUR_LEV=null;
+  drawLabels();
+}
+
+/* ================= view fitting ================= */
+function fitView(pts,padL,padR,padT,padB,zCap){
+  var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9,i;
+  for(i=0;i<pts.length;i++){var p=pts[i];if(p.x<x0)x0=p.x;if(p.y<y0)y0=p.y;if(p.x>x1)x1=p.x;if(p.y>y1)y1=p.y;}
+  x0-=padL;x1+=padR;y0-=padT;y1+=padB;
+  var z=Math.min((cw-20)/(x1-x0),(chh-20)/(y1-y0));
+  if(zCap)z=Math.min(z,zCap);
+  return {x:(x0+x1)/2,y:(y0+y1)/2,z:clamp(z,0.05,4)};
+}
+function homeFit(){
+  var TOP=NLEV-1;
+  return fitView([lp(0,0,1.1,0),lp(0,1,1.1,0),lp(0,1,0,0),lp(0,0,0,0),
+           lp(TOP,0,0,60),lp(TOP,1,0,60),lp(TOP,0,1,60),lp(TOP,0.5,0.6,226)],104,104,28,36,null);
+}
+function goHome(){var f=homeFit();CAM.x=CAM.t.x=f.x;CAM.y=CAM.t.y=f.y;CAM.z=CAM.t.z=f.z;}
+
+/* ================= tooltip + panel ================= */
+var tip=document.getElementById('tip'),panel=document.getElementById('panel'),
+    panelBody=document.getElementById('panelBody'),panelTitle=document.getElementById('panelTitle');
+var SELECTED=null;
+document.getElementById('panelClose').onclick=function(){SELECTED=null;panel.style.display='none';};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function openPanel(n){
+  SELECTED=n;panelTitle.textContent=n.num+' · '+n.title.split('·')[0].trim();
+  var inc=PIPELINE.edges.filter(function(e){return e.to===n.id;})[0];
+  var out=PIPELINE.edges.filter(function(e){return e.from===n.id;})[0];
+  var inv=n.invariants.map(function(s){return '<li>'+esc(s)+'</li>';}).join('');
+  var h=
+    '<div style="color:'+roleColor(n.role)+';font-weight:600">'+esc(n.subtitle)+'</div>'+
+    '<p>'+esc(n.summary)+'</p>'+
+    '<b>Input</b><pre>'+esc(n.input_contract)+'</pre>'+
+    '<b>Operation</b><pre>'+esc(n.transform_verb)+'</pre>'+
+    '<b>Output</b><pre>'+esc(n.output_contract)+'</pre>'+
+    '<b>'+esc(n.metric.label)+'</b>: <span style="color:'+roleColor(n.role)+';font-weight:700">'+esc(n.metric.value)+'</span>'+
+    '<br><b>Invariants</b><ul style="margin:4px 0 6px;padding-left:18px">'+inv+'</ul>';
+  if(inc)h+='<b>← '+esc(inc.from)+':</b> '+esc(inc.verb)+' — '+esc(inc.payload)+'<br>';
+  if(out)h+='<b>'+esc(out.to)+' →:</b> '+esc(out.verb)+' — '+esc(out.payload)+'<br>';
+  h+='<span style="color:var(--color-text-tertiary)">status: '+(n.status==='warn'?'⚠ flagged edge case':'ok')+'</span>';
+  panelBody.innerHTML=h;
+  panel.style.display='block';
+}
+var TIP_BY_TYPE={
+  universe:'S&P 500 universe — the procedure below runs once per asset: 498 sealed XGB + 495 sealed LSTM indicators.',
+  asset:'one asset — the ladder below is a single pass. Nothing is pooled across assets; every ticker gets its own model.',
+  view:'SCHEMATIC sample rows — they show the column contract, not recorded bars.',
+  db:'the bar store — the pipeline input, split-adjusted before any roll-up.',
+  snapshot:'L4 snapshot — one atomic snapshot per asset; split adjustment then three fail-closed cross-bar gates.',
+  parquet:'clean OHLCV parquet — zero derived columns; features are computed downstream.',
+  notebook:'the per-asset runner — orchestrates the whole path for one ticker.',
+  split:'time window of the split bar (warm-up / Train / OOS).',
+  purge:'purge — Triple-Barrier windows at the Train edge are dropped so no label crosses the boundary.',
+  embargo:'embargo — a buffer after the boundary against rolling-feature autocorrelation.',
+  feature:'feature column (X) — causal at t0; CORE ids are frozen and never searched.',
+  label:'label column Y — Triple-Barrier outcome (TP 2×ATR14 / SL 1×ATR14).',
+  trial:'SCHEMATIC trial point — it illustrates the shape of a TPE search, not a recorded trial.',
+  optunaOut:'parameters.json — frozen parameters only; no model, no OOS here.',
+  kelly:'operating point — calibrated ONLY on Train out-of-fold scores; θ is chosen per asset and sizing is all-in (full capital).',
+  model:'the final model, fit on full Train with the best params.',
+  b64:'the serialized model, base64-embedded into the strategy file.',
+  strategy:'strategy_<T>.py — self-contained artifact with embedded model + manifest + calibrated θ (all-in sizing).',
+  manifestRow:'one manifest feature — frozen order, embedded in the artifact.',
+  sqliteDb:'results.db — the read-only sealed store behind the console.',
+  oosStatus:'the universe verdict — read once per asset over the frozen window.',
+  endproduct:'the per-asset artifact folder — five files, identity pinned by folder_sha256.',
+  verify:'the integrity checks recorded in results.db — all of them pass.',
+  detector:'trendline-break setup wall — candles, trendline, SL line, entry t0, Risk Box, TP/SL.',
+  setupTouch:'a trendline touch — part of the setup geometry.',
+  setupEntry:'signal forms on close[t0]; entry fills at open[t0+1].',
+  setupOutcome:'barrier outcome — TP 2×ATR or SL 1×ATR decides the label.',
+  RB:'Risk Box (1R) — trendline ↔ SL line at t0.'
+};
+function tipFor(p){
+  if(!p)return null;
+  if(p.type==='edge'){var e=edgeAt(p.i);return e?(e.verb+' — '+e.payload):null;}
+  var n=(p.lev!=null)?NODE_BY_LEV[p.lev]:null;
+  var head=n?(n.num+' · '+n.title+'\n'):'';
+  if(p.type==='layercap')return head+(n?n.summary:'')+'\nclick = full contract';
+  var body=TIP_BY_TYPE[p.type]||'';
+  return head+(body||((n&&n.summary)||''));
+}
+
+/* ================= input ================= */
+var dragging=false,moved=false,lx=0,ly=0,HOVER=null;
+function localXY(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+cv.addEventListener('mousedown',function(e){dragging=true;moved=false;lx=e.clientX;ly=e.clientY;cv.style.cursor='grabbing';});
+window.addEventListener('mouseup',function(e){
+  if(dragging&&!moved){var p=localXY(e),h=HITS.find(p.x,p.y);
+    if(h&&h.lev!=null)openPanel(NODE_BY_LEV[h.lev]);
+    else{SELECTED=null;panel.style.display='none';}}
+  dragging=false;cv.style.cursor='grab';});
+window.addEventListener('mousemove',function(e){
+  var p=localXY(e);
+  if(dragging){var dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;
+    if(Math.abs(dx)+Math.abs(dy)>2)moved=true;
+    CAM.x-=dx/CAM.z;CAM.y-=dy/CAM.z;CAM.t.x=CAM.x;CAM.t.y=CAM.y;return;}
+  HOVER=HITS.find(p.x,p.y);
+  var tt=tipFor(HOVER);
+  if(tt){tip.style.display='block';
+    tip.textContent=tt;
+    var tx=clamp(p.x+16,0,cw-300),ty=clamp(p.y+14,0,chh-90);
+    tip.style.left=tx+'px';tip.style.top=ty+'px';cv.style.cursor='pointer';}
+  else{tip.style.display='none';cv.style.cursor=dragging?'grabbing':'grab';}});
+cv.addEventListener('wheel',function(e){
+  e.preventDefault();
+  var p=localXY(e),z2=clamp(CAM.z*Math.exp(-e.deltaY*0.0011),0.3,4);
+  var wx=(p.x-cw/2)/CAM.z+CAM.x,wy=(p.y-chh/2)/CAM.z+CAM.y;
+  CAM.z=z2;CAM.x=wx-(p.x-cw/2)/z2;CAM.y=wy-(p.y-chh/2)/z2;
+  CAM.t.x=CAM.x;CAM.t.y=CAM.y;CAM.t.z=CAM.z;
+},{passive:false});
+window.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){SELECTED=null;panel.style.display='none';}
+  if(e.key==='0'||e.key==='f')goHome();});
+
+/* ================= main loop ================= */
+function resize(){var st=cv.parentElement.getBoundingClientRect();
+  DPR=window.devicePixelRatio||1;cw=st.width;chh=st.height;
+  cv.width=Math.round(cw*DPR);cv.height=Math.round(chh*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);CUR_FONT='';}
+new ResizeObserver(function(){resize();goHome();drawScene();}).observe(cv.parentElement);
+resize();goHome();drawScene();
+var lastT=0;
+(function frame(ts){
+  ts=ts||0;
+  var dt=Math.min(0.05,(ts-lastT)/1000||0.016);lastT=ts;
+  CLK+=dt;CAM.step(dt);
+  drawScene();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

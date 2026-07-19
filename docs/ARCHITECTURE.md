@@ -10,7 +10,7 @@ database, one read-only Streamlit console. All 16/16 integrity checks PASS.
 OHLCV bars
   -> features (XGB) / normalized sequences (LSTM)
   -> Train-only calibration (purged walk-forward CV, shared operating-point selection)
-  -> XGB pipeline (L4-L9)  |  LSTM pipeline (D1-D8)
+  -> XGB pipeline (L4-L9)  |  LSTM pipeline (D1-D9)
   -> per-asset sealed artifact (5 files, hash-manifested)
   -> data/results.db (collector output, sealed)
   -> Streamlit console (read-only, fail-closed)
@@ -41,7 +41,8 @@ and writes nothing.
 | D5 | Momentum-sided candidates and asymmetric ATR Triple-Barrier labels (entry next open, costs both sides, label-uniqueness weights). |
 | D6 | The per-candidate sequence tensor: the SEQ_LEN x n_features window of normalized features ending at t0. |
 | D7 | The LSTM classifier with deterministic CPU training and Optuna HPO (BCE loss weighted by class balance and label uniqueness), warm-started from the universal backbone. |
-| D8 | Operating-point calibration (theta_entry, direction mode) via shared op_select, the sealed strategy artifact, and the single OOS read. |
+| D8 | Operating-point calibration (theta_entry, direction mode) via shared op_select, then the final refit and the sealed strategy artifact. |
+| D9 | The single OOS read: the frozen window is scored exactly once per asset, into one metrics row. Nothing downstream may feed back into D1-D8. |
 
 ## 4. Shared modules (src/shared/)
 
@@ -123,11 +124,14 @@ Fail-closed statuses, bannered by the app:
 README.md, Makefile, requirements.txt, LICENSE
 app.py                      Streamlit entry point
 app/data.py                 the single data-access layer (section 7)
-app/pages/                  6 pages: Overview, Universe, Asset Indicator,
-                            Feature Logic, Model Comparison, Architecture
+app/pages/                  9 pages: Overview, Universe, Asset Indicator,
+                            Feature Logic, Model Comparison, Architecture,
+                            Integrity, Pipeline Blueprint, Data Flow
 src/xgb/                    pipeline.py (L4-L9), feature_search.py, artifact.py, train_cv_eval.py
 src/lstm/                   pipeline.py (D1-D6), model.py (D7-D8), features.py,
                             feature_search.py, universal.py, artifact.py
+                            (the D9 read is driven by the research runner, which
+                             is not part of this presentation branch)
 src/shared/                 op_select.py, golden_calibration.py, interpretation.py
 config/                     xgb.json, lstm.json, feature_namespaces_xgb.json,
                             feature_families_{xgb,lstm}.json, xgboost_optuna_search_space.json,
