@@ -1,4 +1,4 @@
-"""Entry point: `streamlit run app.py` (or `make app`). Eleven read-only pages in three
+"""Entry point: `streamlit run app.py` (or `make on`). Eleven read-only pages in three
 sections: Playground (build a basket, read a notebook), Results (what the models did),
 Method & proof (how it was built and how to check it)."""
 import sys

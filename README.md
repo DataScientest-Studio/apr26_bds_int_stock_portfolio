@@ -26,10 +26,11 @@ cd liora-project-ml-engineering
 
 make verify     # optional, stdlib only: recompute every artifact hash
 make setup
-make app
+make on
 ```
 
-The app serves on `http://localhost:8503`. The shallow clone is ~260 MB (every sealed
+The app serves on `http://localhost:8503`; `make off` stops it again (it kills only the
+process listening on that port), and both accept `PORT=…` if 8503 is taken. The shallow clone is ~260 MB (every sealed
 artifact travels with the repo — 993 in this release). `make setup` installs only the presentation
 dependencies (`streamlit`, `pandas`, `plotly`); nothing is trained, recomputed or
 written at runtime.
