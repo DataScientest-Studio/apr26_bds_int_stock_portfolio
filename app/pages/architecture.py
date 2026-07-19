@@ -47,14 +47,14 @@ st.graphviz_chart(DOT, width="stretch")
 st.subheader("Repository map")
 st.dataframe(
     [
-        {"path": "app.py + app/", "role": "this console — nine read-only pages; app/data.py is the ONLY module that opens the database"},
+        {"path": "app.py + app/", "role": "this console — eleven read-only pages in three sections; app/data.py is the ONLY module that opens the database"},
         {"path": "src/xgb/", "role": "XGB research code: pipeline.py (layers L4–L9), feature_search.py, train_cv_eval.py, artifact.py"},
         {"path": "src/lstm/", "role": "LSTM research code: pipeline.py (D1–D6), model.py (D7–D8), features.py, universal.py, feature_search.py, artifact.py"},
         {"path": "src/shared/", "role": "contracts shared by both pipelines: op_select.py (operating point), golden_calibration.py (search policy), interpretation.py (range math)"},
         {"path": "config/", "role": "the frozen configuration the code reads: xgb.json, lstm.json, feature families, feature registries"},
         {"path": "artifacts/xgb/<T>/, artifacts/lstm/<T>/", "role": f"{_n_assets} sealed per-asset artifacts (strategy, manifest, parameters, metrics, interpretation) + artifacts/manifest.json completeness contract"},
         {"path": "data/results.db", "role": "SQLite results store (9 tables + 2 views), opened read-only"},
-        {"path": "examples/", "role": "two executed notebooks: the full XGB path for AAPL and NVDA"},
+        {"path": "examples/", "role": "two executed notebooks — the full XGB and LSTM paths for one asset (NVDA)"},
         {"path": "docs/", "role": "METHODOLOGY.md and ARCHITECTURE.md"},
     ],
     hide_index=True, width="stretch")

@@ -13,7 +13,7 @@ OHLCV (1h / 1d)
   -> XGB | LSTM  (sealed per-asset models)
   -> per-asset artifact  (strategy + manifest + parameters + metrics + interpretation)
   -> data/results.db  (SQLite, read-only)
-  -> Streamlit console  (nine pages)
+  -> Streamlit console  (eleven pages)
 ```
 
 ## Quickstart
@@ -54,29 +54,37 @@ Both models only decide ENTRY; take-profit and stop-loss are a mechanical ATR
 triple-barrier contract. An asset with no robust Train operating point stays idle by
 design. See `docs/METHODOLOGY.md`.
 
-## The nine pages
+## The eleven pages
 
-1. **Overview** — what the study is, Train/OOS timeline, median outcomes, main finding.
-2. **Universe** — one operational table over all assets; search, filter, jump to an asset.
-3. **Asset Indicator** — the dedicated indicator of one asset: results, calibrated
+The sidebar groups them the way a defence walks: **Playground** (do something), **Results**
+(what the models did), **Method & proof** (how it was built, and how to check it).
+
+1. **Basket Simulator** — pick assets, by preset or by hand, and read what the sealed
+   models did with them against the same basket simply held. Three numbers, never one:
+   the executed path, the model result, and the price-only benchmark.
+2. **Jupyter Notebook** — one asset end-to-end, once per model: narrative, exact code and
+   the outputs that actually ran.
+3. **Overview** — what the study is, Train/OOS timeline, median outcomes, main finding.
+4. **Universe** — one operational table over all assets; search, filter, jump to an asset.
+5. **Asset Indicator** — the dedicated indicator of one asset: results, calibrated
    threshold, direction mode, selected features, artifact path.
-4. **Feature Logic** — what each sealed model reads: XGB ENTRY ranges, LSTM occlusion
+6. **Feature Logic** — what each sealed model reads: XGB ENTRY ranges, LSTM occlusion
    and trajectories (Train-derived interpretation).
-5. **Model Comparison** — four charts: return, profit factor, trades, beats-HODL share.
-6. **Architecture** — the data flow above plus a map from the presentation to the code.
-7. **Integrity** — the dataset's own record: epoch and recipe hashes, the frozen
+7. **Model Comparison** — four charts: return, profit factor, trades, beats-HODL share.
+8. **Architecture** — the data flow above plus a map from the presentation to the code.
+9. **Integrity** — the dataset's own record: epoch and recipe hashes, the frozen
    parameters, the OOS read ledger (reads per pipeline, and the spread of the cumulative
    per-asset counter), interpretation coverage, when the model is not promoted, every
    integrity check, and the known limits.
-8. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
+10. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
    lesson per brick, with the layer id the code uses (XGB L1-L9, LSTM D1-D9).
-9. **Data Flow** — the per-asset build path as a 2.5D canvas map, both pipelines in one
+11. **Data Flow** — the per-asset build path as a 2.5D canvas map, both pipelines in one
    ladder, with the universe-level verdicts on the OOS scenes.
 
 ## Repository structure
 
 ```text
-app.py            Streamlit entry point (nine pages under app/pages/)
+app.py            Streamlit entry point (eleven pages under app/pages/, in three sections)
 app/              console code; app/data.py is the ONLY module opening the database
 src/xgb/          XGB research code (pipeline L4-L9, feature search, artifact writers)
 src/lstm/         LSTM research code (pipeline D1-D6, model D7-D8, feature search)
@@ -85,8 +93,10 @@ src/shared/       contracts shared by both pipelines (op_select, golden_calibrat
 config/           frozen configuration the code reads
 artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.json
 data/results.db   sealed SQLite results store (read-only)
-examples/         two executed notebooks: the full XGB path for AAPL and NVDA
-scripts/          verify_artifacts.py — the offline hash verifier behind `make verify`
+examples/         two executed notebooks for one asset (NVDA), one per model:
+                  Example_XGB.ipynb (L4→L9) and Example_LSTM.ipynb (D2→D9)
+scripts/          the offline verifiers behind `make verify`: artifact hashes and
+                  the notebooks' parity with the store
 docs/             METHODOLOGY.md, ARCHITECTURE.md
 docs-facts-infos/ written audits (Polish): OHLCV data, methodological integrity,
                   and the research-consistency report
@@ -101,7 +111,8 @@ bar loading with the corporate-action correction, the per-asset runner, the comp
 harness — stays on the research branch, together with the raw bar stores and the training
 stack (`torch`, `xgboost`, `optuna`, `duckdb`). So `src/` is here to be read and audited,
 not to re-run the universe; what you can re-verify on this branch is the artifact tree
-(`make verify`) and the two executed notebooks under `examples/`.
+(`make verify`) and the two executed notebooks under `examples/`, one per model on the
+same ticker.
 
 ## Limitation
 

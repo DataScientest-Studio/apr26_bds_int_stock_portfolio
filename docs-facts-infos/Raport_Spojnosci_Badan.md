@@ -257,7 +257,8 @@ pozwala.
    wybranych wierszy, **nie** identyczność bajtowa i **nie** całe uniwersum — pełny store
    godzinowy XGB nie jest częścią repozytorium. Na tej gałęzi drzewo artefaktów jest weryfikowane
    skrótami SHA-256 per katalog (`artifacts/manifest.json`), a dwa wykonane notebooki w
-   `examples/` pokazują odtworzone wiersze XGB.
+   `examples/` pokazują odtworzone wiersze XGB **i LSTM** (ten sam ticker, po jednym
+   notebooku na model).
 8. **Interpretacja jest in-sample.** Opisuje zachowanie modelu na oknie Train. Nie jest wynikiem
    OOS ani sygnałem transakcyjnym.
 
@@ -294,7 +295,11 @@ ze ścieżką warm-start. Wszystkie cztery przebiegi wykonano wobec **scratch st
 (`OOS_METRICS_DB`), więc nie były to odczyty pieczętujące i ledgery pozostały nietknięte. Wynik:
 **4 / 4 odtwarzają zapieczętowane wiersze** (XGB NVDA `3390,0761316752228`, XGB AAPL
 `941,9721600160755`, LSTM NVDA `1363,2486792394723`, LSTM AAPL `874,7211883830511`). Na tej
-gałęzi dwa wykonania XGB są zacommitowane jako `examples/{AAPL,NVDA}_XGB.ipynb`.
+gałęzi zacommitowane są dwa wykonania **na tym samym tickerze, po jednym na model** —
+`examples/Example_XGB.ipynb` (XGB NVDA) i `examples/Example_LSTM.ipynb` (LSTM NVDA) —
+żeby porównanie ML↔DL było apples-to-apples. Notebook LSTM niesie własną bramkę
+reprodukcji (porównanie z zapieczętowanym wierszem w 1e-6); zgodność obu z bazą jest
+egzekwowana przez `make verify`.
 
 **Poprawki potrafią wprowadzać błędy.** Zacieśnienie predykatu strategii promowanej przesunęło CEG
 do kubełka „nie promowane", przez co podpis tego kubełka — „ich ścieżka kapitału jest ścieżką

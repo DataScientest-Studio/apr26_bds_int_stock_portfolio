@@ -72,10 +72,12 @@ is excluded): sort the filenames, join `"<filename>:<sha256>"` pairs with a sing
 (no trailing newline), UTF-8 encode, SHA-256. `make verify` recomputes all of it — every
 per-file hash, every folder hash and the manifest's own count arithmetic.
 
-Manifest sizes of the AAPL example shipped under `examples/`: the XGB feature manifest
-carries 22 features (17 frozen 1h core + 5 selected context features) and the LSTM input has
-17 channels (13 core daily indicators + 4 selected optional) at SEQ_LEN = 60. Both counts are
-per asset — the feature search selects a different subset for every ticker.
+Manifest sizes of the NVDA example shipped under `examples/`: the XGB manifest is the frozen
+1h core alone — 17 features, because the per-asset search selected nothing for this ticker,
+one of 218 XGB assets where that is the outcome — while the LSTM input has 17 channels
+(13 core daily indicators + 4 selected optional) at SEQ_LEN = 60. Both counts are per asset;
+the feature search selects a different subset for every ticker, and selecting none is a
+result, not a gap.
 
 ## 6. results.db schema
 
@@ -130,9 +132,14 @@ Fail-closed statuses, bannered by the app:
 README.md, Makefile, requirements.txt, LICENSE
 app.py                      Streamlit entry point
 app/data.py                 the single data-access layer (section 7)
-app/pages/                  9 pages: Overview, Universe, Asset Indicator,
-                            Feature Logic, Model Comparison, Architecture,
-                            Integrity, Pipeline Blueprint, Data Flow
+app/pages/                  11 pages in three sidebar sections —
+                            Playground: Basket Simulator, Jupyter Notebook;
+                            Results: Overview, Universe, Asset Indicator,
+                            Feature Logic, Model Comparison;
+                            Method & proof: Architecture, Integrity,
+                            Pipeline Blueprint, Data Flow
+app/basket.py               basket arithmetic (no Streamlit): the three-number split
+app/venn.py                 the pixel agreement diagram (no imports at all)
 src/xgb/                    pipeline.py (L4-L9), feature_search.py, artifact.py, train_cv_eval.py
 src/lstm/                   pipeline.py (D1-D6), model.py (D7-D8), features.py,
                             feature_search.py, universal.py, artifact.py
@@ -145,7 +152,9 @@ config/                     xgb.json, lstm.json, feature_namespaces_xgb.json,
 artifacts/{xgb,lstm}/<TICKER>/   5 sealed files per asset (section 5)
 artifacts/manifest.json     global counts + per-asset folder hashes
 data/results.db             the sealed results database (section 6)
-examples/                   AAPL_XGB.ipynb, NVDA_XGB.ipynb — one asset end-to-end
+examples/                   Example_XGB.ipynb, Example_LSTM.ipynb — one asset (NVDA)
+                            end-to-end, once per model
+scripts/                    verify_artifacts.py, verify_notebooks.py (`make verify`)
 docs/                       METHODOLOGY.md, ARCHITECTURE.md
 ```
 
