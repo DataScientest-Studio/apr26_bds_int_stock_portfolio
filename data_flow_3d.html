@@ -222,7 +222,7 @@ var PIPELINE={
    subtitle:'median PF 0.935 · beats HODL on 72 of 498',
    summary:'The frozen window is scored at the verdict step and every read is counted. Universe verdict: median strategy return −1.78 % against a median buy-and-hold of +22.16 % over the same window; 72 assets (14.5 %) beat their own HODL. 328 assets are promoted strategies, 136 never cleared the Train trade floor and are not promoted (none of them traded), 33 produced no model trades and fall back to HODL, 1 traded once with low evidence.',
    input_contract:'frozen OOS window, scored at the verdict step',transform_verb:'score + ledger',
-   output_contract:'498 sealed rows · median PF 0.935 (328 rankable)',metric:{label:'beats HODL',value:'72 / 498'},
+   output_contract:'498 sealed rows · median PF 0.935 over the 328 with a computable PF',metric:{label:'beats HODL',value:'72 / 498'},
    invariants:['idle is a reported result, not a failure','model decides ENTRY only — TP/SL are mechanical'],status:'ok'},
 
   {id:'lstm_db',num:'D1',role:'store',section:'S3',
@@ -272,7 +272,7 @@ var PIPELINE={
    subtitle:'median PF 1.013 · beats HODL on 129 of 495',
    summary:'OOS candidates scored at the verdict step, direction-filtered, replayed through the same engine (1 bp commission + 2 bp slippage per side, all-in compounding); every read is counted. Universe verdict: median strategy return +2.25 % against a median buy-and-hold of +23.09 %; 129 assets (26.1 %) beat their own HODL. 446 traded multiple times, 37 fell back to HODL, 11 traded once with low evidence, and 1 (CEG) traded 40 times but never cleared the Train trade floor, so it is not promoted — not idle.',
    input_contract:'frozen OOS window, scored at the verdict step',transform_verb:'score + ledger',
-   output_contract:'495 sealed rows · median PF 1.013 (445 rankable)',metric:{label:'beats HODL',value:'129 / 495'},
+   output_contract:'495 sealed rows · median PF 1.013 over the 445 with a computable PF',metric:{label:'beats HODL',value:'129 / 495'},
    invariants:['same engine and costs as the 1h path','HODL fallback only on zero model trades'],status:'ok'},
 
   {id:'sealed',num:'✓',role:'output',section:'S4',
@@ -1665,7 +1665,7 @@ var LAYERS={
  xoos:new OOSWall({
    db:'results.db',tables:['research_run','asset_results','integrity_checks'],
    matrixTitle:'sealed OOS rows · every read ledgered · 2024-01-02 → 2026-05-29',
-   rows:[['assets','498'],['median return','−1.78 %'],['median HODL','+22.16 %'],['median PF','0.935'],['beats HODL','72 / 498']],
+   rows:[['assets','498'],['median return (all rows)','−1.78 %'],['median HODL','+22.16 %'],['median PF (n=328)','0.935'],['beats HODL','72 / 498']],
    cap:'XGB · the universe verdict — every read counted in the ledger',
    status:'OK',
    notes:['328 promoted · 136 not promoted, none traded · 33 HODL fallback · 1 low evidence','an honest negative: the median strategy trails buy-and-hold']}),
@@ -1714,7 +1714,7 @@ var LAYERS={
  loos:new OOSWall({
    db:'results.db',tables:['research_run','asset_results','integrity_checks'],
    matrixTitle:'sealed OOS rows · every read ledgered · 2024-01-01 → 2026-04-30',
-   rows:[['assets','495'],['median return','+2.25 %'],['median HODL','+23.09 %'],['median PF','1.013'],['beats HODL','129 / 495']],
+   rows:[['assets','495'],['median return (all rows)','+2.25 %'],['median HODL','+23.09 %'],['median PF (n=445)','1.013'],['beats HODL','129 / 495']],
    cap:'LSTM · the universe verdict — every read counted in the ledger',
    status:'OK',
    notes:['446 traded · 37 HODL fallback · 11 low evidence · 1 traded but not promoted','engine replay · 1 bp commission + 2 bp slippage per side · all-in compounding']}),

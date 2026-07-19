@@ -205,14 +205,26 @@ przetwarzaniu: `TRAIN-DERIVED INTERPRETATION`, `NOT AN OOS RESULT`, `NOT A LIVE 
 
 ### 3.7 Wynik — raportowany bez wygładzania
 
-| | XGB (1h) | LSTM (dzienny) |
-|---|---|---|
-| Aktywa | 498 | 495 |
-| Mediana zwrotu strategii | **−1,78 %** | **+2,25 %** |
-| Mediana buy & hold (to samo okno) | **+22,16 %** | **+23,09 %** |
-| Mediana profit factor | **0,935** (n = 328) | **1,013** (n = 445) |
-| Pokonuje własny benchmark | **72 / 498 (14,5 %)** | **129 / 495 (26,1 %)** |
-| Mediana transakcji modelu | 86,5 | 28 |
+| | XGB (1h) | LSTM (dzienny) | populacja |
+|---|---|---|---|
+| Aktywa | 498 | 495 | całe uniwersum |
+| Mediana zwrotu | **−1,78 %** | **+2,25 %** | wszystkie wiersze |
+| Mediana buy & hold (to samo okno) | **+22,16 %** | **+23,09 %** | wszystkie wiersze |
+| Mediana transakcji modelu | 86,5 | 28 | wszystkie wiersze |
+| Mediana profit factor | **0,935** (n = 328) | **1,013** (n = 445) | wiersze z policzalnym PF |
+| Pokonuje własny benchmark | **72 / 498 (14,5 %)** | **129 / 495 (26,1 %)** | całe uniwersum |
+| Mediana zwrotu — tylko promowane | **−7,58 %** (n = 328) | **+0,75 %** (n = 446) | `ML_MULTI_TRADE` |
+| Mediana transakcji — tylko promowane | 160,5 | 30 | `ML_MULTI_TRADE` |
+
+**Populacje trzeba czytać dosłownie, bo różnią się między wierszami.** Mediany zwrotu, benchmarku
+i transakcji liczone są po **wszystkich** wierszach — łącznie z aktywami niepromowanymi i tymi,
+które spadły do fallbacku, a więc z wynikami, których model nie wypracował. Profit factor istnieje
+tylko tam, gdzie model handlował, więc jego mediana ma własne `n`: 328 dla XGB (tu zbiór pokrywa
+się dokładnie z promowanymi) i 445 dla LSTM (443 promowane + 1 bez spełnionego progu + 1 z jedną
+transakcją; trzy wiersze `ML_MULTI_TRADE` mają PF pusty). Dodane dwa ostatnie wiersze pokazują ten
+sam wynik **wyłącznie na promowanych strategiach** — jest tam wyraźnie gorszy dla XGB
+(−7,58 % wobec −1,78 %), bo mediana po całym uniwersum jest podciągana przez ścieżki benchmarku.
+Wersja surowsza jest tą uczciwszą i podajemy obie.
 
 Podział `result_mode`: XGB — 328 promowanych, 136 bez spełnionego progu, 33 fallback do benchmarku,
 1 pojedyncza transakcja; LSTM — 446 / 1 / 37 / 11.
