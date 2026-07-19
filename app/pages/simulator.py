@@ -186,13 +186,25 @@ def _select_method():
     rather than crashing every lookup downstream."""
     if st.session_state.method_sel:
         st.session_state.method = st.session_state.method_sel
+        # A ranking preset means "top ten of the model you are looking at", so switching the
+        # model has to re-derive it. Without this the basket keeps the previous model's
+        # ranking while the caption still calls it a preset — the caption would be lying.
+        source = st.session_state.get("basket_source")
+        if data.PRESET_PER_MODEL.get(source):
+            st.session_state.basket = set(
+                data.preset_tickers(source, st.session_state.method))
 
 
 def _apply_preset():
     """Preset -> basket. The only other writer is the grid; nothing writes back into the
-    preset widget, so the two can never fight over a value."""
-    key = st.session_state.get("preset_sel")
-    if not key:
+    preset widget, so the two can never fight over a value.
+
+    st.pills round-trips its value as the FORMATTED label and only converts back if that
+    label is still in the table built during the current render. So accept either form,
+    and ignore anything that is neither rather than raising in a callback."""
+    raw = st.session_state.get("preset_sel")
+    key = data.PRESET_KEY_BY_LABEL.get(raw, raw)
+    if key not in data.PRESET_LABELS:
         return
     st.session_state.basket = set(data.preset_tickers(key, st.session_state.method))
     st.session_state.basket_source = key
@@ -245,11 +257,14 @@ with col_m:
                          key="method_sel", on_change=_select_method)
 with col_n:
     st.markdown("**Basket preset** — every membership is derived from the sealed store")
-    labels = {}
-    for key, label, per_model in data.PRESETS:
-        labels[key] = f"{label} ({method})" if per_model else label
-    st.pills("preset", list(labels), format_func=lambda k: labels[k],
+    # The labels are CONSTANT: st.pills matches its value by formatted string, so a label
+    # that changed with the model (".. (XGBoost)") stopped matching after a switch and the
+    # raw label landed in session_state. Which model a ranking preset uses is said below.
+    st.pills("preset", list(data.PRESET_LABELS),
+             format_func=lambda k: data.PRESET_LABELS[k],
              key="preset_sel", on_change=_apply_preset, label_visibility="collapsed")
+    st.caption(f"Top / bottom / busiest rank the **{method}** rows; the other presets are "
+               "the same set whichever model is selected.")
 
 if dropped:
     st.caption(f"{len(dropped)} ticker(s) dropped — no {method} row: "

@@ -249,6 +249,11 @@ PRESETS = (
 )
 PRESET_LABELS = {key: label for key, label, _ in PRESETS}
 PRESET_PER_MODEL = {key: per_model for key, _, per_model in PRESETS}
+# Reverse map. st.pills sends the FORMATTED label over the wire and maps it back through
+# the label->option table it built during the current render; when that lookup misses it
+# hands the raw label to session_state instead of the option. The labels above are constant
+# for exactly that reason, and this map lets a caller recover from a label anyway.
+PRESET_KEY_BY_LABEL = {label: key for key, label, _ in PRESETS}
 
 
 @lru_cache(maxsize=32)
