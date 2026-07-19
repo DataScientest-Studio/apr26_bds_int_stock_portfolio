@@ -52,8 +52,17 @@
 
   BLOCK IDS. The blueprint's own ids (A/B/C/E + G) are CONCEPTUAL stages shared
   by both models. They are NOT the pipelines' internal layer names - those are
-  XGB L1-L9 and LSTM D1-D9, printed on each block so the map teaches the names
-  the code actually uses.
+  XGB L4-L9 and LSTM D1-D9, printed on each block so the map teaches the names
+  the code actually uses. Precisely: L4-L8 and D1-D8 are real section banners in
+  src/xgb/pipeline.py and src/lstm/{pipeline,model}.py; L9 and D9 name the one-shot
+  OOS read as docs/ARCHITECTURE.md defines it, and carry no banner of their own.
+  The acquisition layers that used to be numbered L1-L3 live in the upstream data
+  repo and are named, not numbered, here - ARCHITECTURE.md defines L4-L9 only, and
+  the 3D flow map likewise opens the XGB path at L4.
+  Four bricks carry NO layer id at all - E2, E3, E4 and G.3. That is deliberate:
+  the benchmark feed, the interpretation layer, the console and the reproduction
+  gate all sit downstream of the last rung (L9 / D9), so no L or D code describes
+  them. The ladder ends at E1; what follows is product, not pipeline.
   The G.x ids stay G even though the lane that holds them is displayed as
   VALIDATORS: they are data keys, joined by depends:[] arrays and by the viz
   registry, so renaming them to V.x would break dependencies for a caption.
@@ -266,7 +275,9 @@
            assets:495, pf:'1.013', beats:'129/495', trades:'28'}};
     function isVariant(v){return !!v&&typeof v==='object'&&!Array.isArray(v)&&('xgb' in v)&&('lstm' in v);}
     function pick(v){return isVariant(v)?v[MODEL]:v;}
-    function hasVariants(m){return ['title','kind','short','input','transform','output','invariant','knobs','test'].some(k=>isVariant(m[k]));}
+    /* `layer` belongs in this list: A3, B1 and G.2 vary ONLY in their layer mapping, so without
+       it they render model-specific text (the cyan layer chip) with no "XGBoost view" badge. */
+    function hasVariants(m){return ['title','kind','short','layer','input','transform','output','invariant','knobs','test'].some(k=>isVariant(m[k]));}
     function MM(){return MODEL_META[MODEL];}
 
     /* ==================================================================
@@ -290,7 +301,7 @@
 
     const MODULES = [
       {id:"A1", group:"s1", title:"OHLCV acquisition (upstream provenance)", kind:"documented data provenance", viz:"ohlcv",
-       layer:{xgb:"L1 upstream provenance", lstm:"D1 bundled store"},
+       layer:{xgb:"upstream provenance (outside this repo)", lstm:"D1 bundled store"},
        short:{xgb:"Alpaca 1h SIP bars 2016->2026, split-adjusted", lstm:"Alpaca daily bars 2016->2026, split-adjusted"},
        input:["Alpaca Market Data API (acquired by the upstream source repo - never by this repo)",
               {xgb:"1-hour regular-session bars, full S&P 500 universe, 2016 -> 2026-05-29",
@@ -309,9 +320,9 @@
        depends:[]},
 
       {id:"A2", group:"s1", title:"committed bar stores (clone-and-show)", kind:"frozen input stores", viz:"duckdb",
-       layer:{xgb:"L3 build_db", lstm:"D1 bundled store"},
+       layer:{xgb:"committed stores (build_db, upstream)", lstm:"D1 bundled store"},
        short:{xgb:"993 sealed artifacts ship; the raw 1h store stays on the research branch", lstm:"993 sealed artifacts ship; the daily store stays on the research branch"},
-       input:["raw OHLCV from the upstream acquisition (A1)"],
+       input:["split-adjusted OHLCV from the upstream acquisition (A1) - the adjustment happens there, at 1h, before any roll-up"],
        transform:[{xgb:"The full 1h bar store is hundreds of megabytes and stays local and gitignored; what SHIPS is the sealed output - one artifact folder per asset plus the results store.",
                    lstm:"The daily store is far smaller, but it is an input rather than a result, so it stays with the research branch too - this branch carries what the pipelines produced from it."},
                   "Ship the sealed RESULT rows committed next to the artifacts: the console renders instantly with nothing to train (clone-and-show). 993 artifact folders, five files each, identity pinned by folder_sha256."],
@@ -325,7 +336,7 @@
        depends:["A1"]},
 
       {id:"A3", group:"s1", title:"canonical per-asset frames", kind:"single read transformation", viz:"frames",
-       layer:{xgb:"L2 bars.load_bars", lstm:"D2 load_bars"},
+       layer:{xgb:"bars.load_bars (shared loader)", lstm:"D2 load_bars"},
        short:"one loader, one clean OHLCV frame per ticker",
        input:["the committed/local bar store (A2)", "a ticker symbol"],
        transform:["ONE canonical function turns the store into the per-ticker frame every consumer uses - identical frames come from shared code, not from parity assertions between two readers.",
@@ -356,12 +367,12 @@
        depends:["A3"]},
 
       {id:"G.1", group:"sg", title:"split leakage validator", kind:"fail-closed split gate", viz:"guard",
-       layer:{xgb:"L4 source QC + split validator", lstm:"D2 source QC + D3 validator"},
+       layer:{xgb:"L4 source QC → L5 split validator (the gate spans both rungs)", lstm:"D2 source QC → D3 split validator (both rungs)"},
        short:"partitions ordered, purge >= H, embargo >= max lookback, OOS frozen",
        input:["partition marks from A4", "label horizon H and max feature lookback from the CONFIGURATION contracts"],
        transform:["SOURCE GATES FIRST: three fail-closed cross-bar checks run at the L4 read - an overnight return outside -55%..+120%, sessions thinner than 3 bars covering >10% of days, or flat bars (o==h==l==c) over >15% of the frame all stop the run. Documented corporate-action dates are exempt from the gap gate; an UNDOCUMENTED break fails closed. The overnight gate alone would have caught every unadjusted corporate action on day one.",
                   "Assert the 5 partitions exist in strict order on one continuous index, non-overlapping, warm-up covering the feature roll-in.",
-                  "Assert purge >= the maximum label horizon and embargo >= the maximum rolling feature lookback; recompute all boundaries from frozen config and compare bit-exact.",
+                  "Assert purge >= the maximum label horizon and embargo >= the maximum ROLLING-STATISTIC lookback (the window a feature averages over, e.g. rv20 or ATR14) - that is what the embargo is sized against, and it is what correlates a training row with a test row across the seam. It is NOT the model's input width: the LSTM reads a 60-session sequence, far wider than its 10-session embargo, but that window reaches backwards from the decision bar into data the model is entitled to see, so it is a lookback of the INPUT rather than of a statistic straddling the boundary. Recompute all boundaries from frozen config and compare bit-exact.",
                   "Any mismatch on the OOS boundary is a frozen-OOS violation - the run stops."],
        output:"one fail-closed verdict; FAIL blocks CONFIGURATION and everything downstream for the asset",
        invariant:["The validator only reads marks - it never moves a boundary, never touches data.",
@@ -396,15 +407,15 @@
                   "Barrier geometry is a fixed global contract - never searched, never tuned per asset.",
                   "Costs are part of the label, not an afterthought: Y already encodes them.",
                   "Bar highs and lows are in the data but never read. A close-only scan misses intraday touches, and since the stop sits nearer (1xATR) than the target (2xATR) it misses stops more often - conservative for win-rate, but a real simplification of the contract, named here rather than buried.",
-                  "b = 2 is the NOMINAL geometry, not the realized payoff. Measured median win/loss over promoted rows: 1.447 (XGB, n=328) and 1.241 (LSTM, n=435); only 1.2% and 7.6% of them reach 2.0. Triggering on the close, filling at next opens, gaps and two-sided costs take the rest."],
+                  "b = 2 is the NOMINAL geometry, not the realized payoff. Measured median win/loss over promoted rows that have both a win and a loss to divide: 1.447 (XGB, n=328) and 1.241 (LSTM, n=435) - a narrower population than the 443 with a computable profit factor, which is itself narrower than the 446 that traded repeatedly; only 1.2% and 7.6% of them reach 2.0. Triggering on the close, filling at next opens, gaps and two-sided costs take the rest."],
        knobs:["TP=2xATR(14)", "SL=1xATR(14)", {xgb:"H=24 bars (1h)", lstm:"H=10 sessions (1d)"}, "costs=1bp+2bp per side", "BARRIER_MODE=close", "ENTRY_FILL=next_bar_open · EXIT_FILL=trigger_next_open · SCHEDULED_EXIT_FILL=scheduled_moc_close"],
-       test:["b = TP/SL = 2 verified in the event stream", "recomputing labels reproduces Y bit-identically"],
+       test:["the barrier PARAMETERS satisfy b = TP/SL = 2 in the event stream (the geometry, not the realized payoff - see the invariant above)", "recomputing labels reproduces Y bit-identically"],
        depends:["B1"]},
 
       {id:"B3", group:"s2", title:"causal features X", kind:"feature engineering (causal, OOS-isolated)", viz:"featmx",
-       layer:{xgb:"L6 build_feature_context", lstm:"D4 feature_frame · D6 build_sequences"},
+       layer:{xgb:"L6 build_feature_context", lstm:"D4 feature_frame → D6 build_sequences (spans D4 and D6; the labels it joins come from D5)"},
        short:{xgb:"namespaced multi-timeframe X (1h/1d/1w), merge_asof backward", lstm:"60-session window of causal daily features"},
-       input:["bars + candidates (B1)", "feature registry / catalog"],
+       input:["bars + candidates (B1)", "labeled events (B2) - Y travels with the matrix, it is never computed from X", "feature registry / catalog"],
        transform:[{xgb:"Namespaced multi-timeframe features: 1h base plus 1d/1w context joined by CLOSE-TIME availability (merge_asof backward) - an in-progress daily or weekly bar can never leak into an intraday decision.",
                    lstm:"A 60-session window of causal daily features feeds the recurrent model - each feature at session t uses data <= close[t]."},
                   "Fold-causal normalization: every CV fold's scaling statistics come only from rows before that fold's embargo boundary; the OOS window uses statistics frozen on the full Train set.",
@@ -419,11 +430,11 @@
 
       {id:"B4", group:"s2", title:"per-asset forward feature search (Train-only)", kind:"feature selection loop", viz:"loop",
        layer:{xgb:"S.1 feature_search", lstm:"feature search (Train-only)"},
-       short:{xgb:"live per-asset search: 280 auto-selected · 59 CORE-only · 159 too thin", lstm:"live per-asset search: 486 applied · 8 CORE-only · 1 too thin"},
+       short:{xgb:"per-asset search, sealed: 280 auto-selected · 59 CORE-only · 159 too thin", lstm:"per-asset search, sealed: 486 applied · 8 CORE-only · 1 too thin"},
        input:["X/Y events (B2, B3) - Train window only", "candidate feature pool (core + optional + DSL proposals)"],
        transform:["TWO-STAGE, FAMILY-FIRST search (policy golden-family-v2): pick the best representative of a feature FAMILY before spending trials on its variants, so 12 correlated families cannot each buy their own seat. CORE ids are frozen and never enter the search - the loop may only ADD optionals.",
-                  {xgb:"Live per-asset search over a 45-id pool: 280 assets accepted searched features, 59 kept CORE only, 159 were too thin to search at all. The median asset takes ONE optional feature - the search is conservative by construction.",
-                   lstm:"Live per-asset search over a 45-id pool (23 optional + 2 cross-asset + 20 DSL-proposed): 486 assets accepted, 8 kept CORE only, 1 was too thin. A language-model agent may PROPOSE features, but only through a safe causal DSL - proposals compile to causal transforms or are rejected."},
+                  {xgb:"Per-asset search over a 45-id pool: 280 assets accepted searched features, 59 kept CORE only, 159 were too thin to search at all. The median asset takes ONE optional feature - the search is conservative by construction.",
+                   lstm:"Per-asset search over a 45-id pool (23 optional + 2 cross-asset + 20 DSL-proposed): 486 assets accepted, 8 kept CORE only, 1 was too thin. A language-model agent may PROPOSE features, but only through a safe causal DSL - proposals compile to causal transforms or are rejected."},
                   "2-SEED gate: single-seed evaluation noise was LARGER than the acceptance threshold, so candidate gains are averaged over two model initializations before acceptance - otherwise the loop would happily accept noise. Two thresholds do different jobs: min_gain 0.005 is the step gain, min_feature_gain 0.008 the per-feature bar, and a complexity penalty of 0.004 taxes every added dimension.",
                   "Every accepted subset is a Train-only output of one uniform procedure - not hand-tuning, not OOS-derived."],
        output:"per-asset feature manifest (CORE + accepted optionals), sealed into the artifact with the run lineage",
@@ -455,12 +466,12 @@
                   {xgb:"Search space: max_depth, eta, subsample, colsample_bytree, min_child_weight, reg_lambda, n_estimators + reg_alpha and gamma - which the old trainer accepted but silently IGNORED (found and fixed: params are now forwarded).",
                    lstm:"WHAT ACTUALLY RAN: nothing searched here. the research runner takes the architecture from the committed backbone instead of calling the HPO - ONE shape for all 495 assets: hidden 32, num_layers 1, dropout 0.3, lr 0.001, weight_decay 1e-4, and every refit is warm-started from it. The 20-trial per-asset study still exists in model.py and is reachable with LSTM_COLD_START=1; it did not seal this epoch. What remains per asset: the feature search (B4) and the operating point (C2)."},
                   "Purged walk-forward CV inside Train: no validation fold ever precedes its training fold; a purge sits between folds; deterministic sampler (fixed seed)."],
-       output:{xgb:"best hyper-parameters per asset + Train-CV score, persisted with lineage", lstm:"one shared architecture + warm-started per-asset weights + Train-CV score, persisted with lineage"},
+       output:{xgb:"best hyper-parameters per asset + out-of-fold predictions + Train-CV score, persisted with lineage", lstm:"one shared architecture + warm-started per-asset weights + out-of-fold predictions + Train-CV score, persisted with lineage"},
        invariant:["Optimization strictly inside Train; the OOS is never read (G.2 assert).",
                   "The label geometry (Triple-Barrier) is never a search dimension.",
                   "Same seed -> identical trial sequence (deterministic HPO).",
                   "LSTM only, declared: the backbone was pretrained across the WHOLE Train region, so a fold's initialization has seen Train rows from outside that fold. This never touches OOS, and every architecture and subset ranking shares the identical initialization so comparisons stay fair - but LSTM Train-CV is not fully fold-causal. OOS-isolated, not unconditionally leak-free."],
-       knobs:["objective=train_oof_log_growth (AUC-PR is report-only)", "cv=purged walk-forward, 4 folds", {xgb:"space=9 XGB params · 80 trials", lstm:"architecture NOT searched this epoch · backbone hidden 32 / layers 1 / dropout 0.3 / lr 1e-3 / wd 1e-4"}, {xgb:"sampler=TPE(seed 42) + MedianPruner", lstm:"warm-start; cold-start study behind LSTM_COLD_START=1"}],
+       knobs:["objective=train_oof_log_growth (AUC-PR is report-only)", "cv=purged walk-forward, 4 folds where the history allowed (497/498 XGB · 488/495 LSTM; the rest fell back to 3 or fewer)", {xgb:"space=9 XGB params · 80 trials", lstm:"space=NOT searched this epoch · backbone hidden 32 / layers 1 / dropout 0.3 / lr 1e-3 / wd 1e-4"}, {xgb:"sampler=TPE(seed 42) + MedianPruner", lstm:"sampler=warm-start from the committed backbone (the cold-start study sits behind the LSTM_COLD_START flag)"}],
        test:["re-running HPO reproduces best params exactly (pinned env, seeded)", "objective replays through the SAME trade engine used at the verdict"],
        depends:["B3","B4","G.2"]},
 
@@ -469,7 +480,7 @@
        short:{xgb:"all-in sizing; theta calibrated per asset over an 11-point grid", lstm:"theta and direction calibrated jointly on Train OOF; all-in sizing"},
        input:["OOF predictions from the tuned model (C1)", "the trade engine + barrier geometry (b = TP/SL = 2)"],
        transform:["Capital policy: ALL-IN COMPOUNDING - every trade reinvests the FULL running capital (f = 1, no position sizing). This is the same capital game buy-and-hold plays, which makes the strategy-vs-HODL comparison honest: each asset is traded separately, with no portfolio-level capital accumulation.",
-                  {xgb:"Entry threshold theta is calibrated PER ASSET over an 11-point grid (0.40 ... 0.60, step 0.02). An earlier epoch pinned it at 0.60 after a naive per-asset calibration overfit; the knob was un-pinned only once selection became floor-respecting - ONE shared operating point per trial, never a per-fold best theta. The observed sealed thetas span the whole grid, so the calibration is doing real work.",
+                  {xgb:"Entry threshold theta is calibrated PER ASSET over an 11-point grid (0.40 ... 0.60, step 0.02). An earlier epoch pinned it at 0.60 after a naive per-asset calibration overfit; the knob was un-pinned only once selection became floor-respecting - ONE shared operating point per trial, never a per-fold best theta. The observed sealed thetas land on ten of the eleven grid points - only 0.58 was never selected - and both endpoints are heavily populated, so the calibration is doing real work rather than drifting to a default.",
                    lstm:"Theta and trade direction are calibrated JOINTLY on Train out-of-fold log-growth over a 6-point theta grid (0.50 ... 0.60) and two direction modes."},
                   "THE TRADE FLOOR is what makes a per-asset threshold safe: an operating point must produce at least 8 out-of-fold trades across at least 2 active folds, with no single fold carrying more than 80% of them. An asset that clears nothing is not forced to trade - it is recorded as TRAIN_OOF_FLOOR_NOT_MET. Usually such an asset never trades at all; it can also trade and simply not be promoted, which is a diagnostic replay rather than a strategy result.",
                   "All calibration inputs are Train OOF - the same G.2 assert guards this layer. (A previous epoch sized trades with a generalized fractional Kelly formula; it was removed because fractional sizing is not comparable to buy-and-hold in a per-asset game.)"],
@@ -502,8 +513,8 @@
        input:["frozen artifact (C3)", "the untouched OOS window (A4)"],
        transform:["Generate and score the OOS window at the verdict step - the number reported is exactly what you would have gotten standing on the first OOS day with only prior data. Every read is ledgered rather than assumed to be single.",
                   {xgb:"Full-universe verdict (498 assets, window -> 2026-05-29): median strategy return -1.78% against a median buy-and-hold of +22.16% over the same window; median 86.5 model trades. Both are medians over ALL 498 rows, idle and fallback assets included. Profit factor only exists where the model traded: median 0.935 over the 328 assets with a computable PF - those same 328 have a median of 160.5 trades. 72 assets (14.5%) beat their own HODL. An honest negative.",
-                   lstm:"Full-universe verdict (495 assets, window -> 2026-04-30): median strategy return +2.25% against a median buy-and-hold of +23.09%; median 28 model trades - medians over ALL 495 rows. Median profit factor 1.013 over the 445 assets with a computable PF (median 30 trades among them). 129 assets (26.1%) beat their own HODL - better than the 1h path, still short of holding."},
-                  "EVERY OUTCOME GETS A NAME, including the ones that did not trade. result_mode partitions the universe: ML_MULTI_TRADE (xgb 328 / lstm 446), TRAIN_OOF_FLOOR_NOT_MET - not promoted; 136 of them never traded, 1 traded and was not promoted (136 / 1), HODL_FALLBACK_NO_MODEL_TRADES (33 / 37), ML_ONE_TRADE_LOW_EVIDENCE (1 / 11). An idle model is a reported result, not a gap in the table.",
+                   lstm:"Full-universe verdict (495 assets, window -> 2026-04-30): median strategy return +2.25% against a median buy-and-hold of +23.09%; median 28 model trades - medians over ALL 495 rows. Median profit factor 1.013 over the 443 assets with a computable PF - the 446 that traded repeatedly, less three whose gross loss was zero and whose PF is therefore not rankable (median 30 trades among them). 129 assets (26.1%) beat their own HODL - better than the 1h path, still short of holding."},
+                  "EVERY OUTCOME GETS A NAME, including the ones that did not trade. result_mode partitions the universe: ML_MULTI_TRADE (xgb 328 / lstm 446), TRAIN_OOF_FLOOR_NOT_MET (xgb 136 / lstm 1) - not promoted; all 136 on the 1h path never traded at all, while the single daily one (CEG) traded 40 times and still was not promoted, HODL_FALLBACK_NO_MODEL_TRADES (xgb 33 / lstm 37), ML_ONE_TRADE_LOW_EVIDENCE (xgb 1 / lstm 11). Each pair sums to its own universe: 328+136+33+1 = 498 and 446+1+37+11 = 495. An idle model is a reported result, not a gap in the table.",
                   "Seal every per-asset row (capital path, profit factor, drawdown, win rate, trades, Train-CV score, window, result_mode, audit flags) into results.db - the single source the product reads."],
        output:{xgb:"results.db - 498 sealed rows, read-only downstream",
                lstm:"results.db - 495 sealed rows, read-only downstream"},
@@ -511,13 +522,13 @@
                   "READS ACCUMULATE ACROSS EPOCHS, and the ledger says so out loud. This epoch: 588 XGB reads over 498 assets, 495 LSTM reads over 495. Cumulative per-asset read counts run 4-9 (mean 5.18) for XGB and 4-6 (mean 4.00) for LSTM. A sealed result is therefore conditioned on knowledge from earlier reads of the same period - an UNCOUNTED re-read would be indistinguishable from OOS shopping, so every read is counted.",
                   "Negative results are committed with the same ceremony as positive ones.",
                   "A small development sample flattered these levers; only the verdict over the full universe is the honest test."],
-       knobs:["reads: 588 XGB over 498 assets · 495 LSTM over 495 (cumulative per asset 4-9, all ledgered)", {xgb:"universe=498 · oos_end=2026-05-29", lstm:"universe=495 · oos_end=2026-04-30"}, "store=results.db (sealed)"],
+       knobs:["reads=588 XGB over 498 assets · 495 LSTM over 495 (cumulative per asset 4-9, all ledgered)", {xgb:"universe=498 · oos_end=2026-05-29", lstm:"universe=495 · oos_end=2026-04-30"}, "store=results.db (sealed)"],
        test:["the append-only ledger's read count covers every sealed row", "the store's row count and window match the frozen config"],
-       depends:["C3","G.2"]},
+       depends:["C3","G.2","A4"]},
 
       {id:"E2", group:"s4", title:"honest benchmark feed (buy & hold)", kind:"transparent baseline", viz:"hodl",
        short:{xgb:"model beats its own buy & hold on 72/498 assets", lstm:"model beats its own buy & hold on 129/495 assets"},
-       input:["sealed OOS rows (E1)", "the committed daily bar store (A2)"],
+       input:["sealed OOS rows (E1)", {xgb:"the committed 1h bar store (A2)", lstm:"the committed daily bar store (A2)"}],
        transform:["Compute each ticker's buy-and-hold return over the SAME OOS window (first open -> last close) from the committed store and seal it into the dashboard feed next to the model's result.",
                   "Show the comparison ON the result page, not in a footnote: in the strong 2024->2026 bull window most per-asset strategies do NOT beat simply holding the same stock.",
                   "Lesson embedded here: after a re-seal this feed silently carried the benchmark for 0 assets - the default view lost its baseline until a gate (coverage == universe) was added."],
@@ -556,7 +567,7 @@
        invariant:["Read-only over sealed artifacts - the app can display results, never create them.",
                   "Evidence tiers stay separated: sealed numbers never share a table with Train-derived interpretation.",
                   "Every displayed comparison carries its honest benchmark; every interpretation view carries its three labels."],
-       knobs:["pages=11 in 3 sections", "runtime=read-only, mode=ro", "counts=derived from the store"],
+       knobs:["pages=11 in 3 sections (Playground 2 · Results 5 · Method & proof 4)", "runtime=read-only, mode=ro", "counts=derived from the store"],
        test:["a fresh clone renders every page without training", "automated gates walk every page"],
        depends:["E1","E2","E3"]},
 
@@ -572,7 +583,7 @@
                   "The gate uses only committed inputs - reproducibility cannot depend on local state."],
        knobs:[{xgb:"samples=15 demo tickers (research mini store) · 5 fields", lstm:"samples=10-ticker manifest sample · 4 fields"}, "comparison=selected fields within 1e-6", "artifact tree=SHA-256 per file, all 993 folders", "scope=sample rows, not the full universe"],
        test:["the reproduction gate passes on a fresh clone of the research branch; this branch verifies the artifact-tree hashes", "corrupting one committed input makes the gate fail loudly"],
-       depends:["E1"]},
+       depends:["E1","C3","A2"]},
     ];
 
     /* ==================================================================
@@ -854,7 +865,7 @@
           <tr class="o-auc"><td class="o-name">OOF log-growth</td><td>-.012</td><td>-.031</td><td>...</td><td class="o-best">+.044</td></tr>
           <tr><td class="o-name">status</td><td>tested</td><td class="st-p">pruned</td><td>...</td><td class="o-best st-b">best</td></tr>
         </tbody></table>
-        <div class="viz-label">SCHEMATIC cell values · real: objective = Train-OOF trading log-growth, purged WF CV, ${MODEL==='xgb'?'80':'20'} trials</div>`},
+        <div class="viz-label">SCHEMATIC cell values · real: objective = Train-OOF trading log-growth, purged WF CV, ${MODEL==='xgb'?'80 trials':'no per-asset search this epoch — one committed backbone'}</div>`},
 
       /* C2 - all-in capital policy */
       kelly:{h:100,render:()=>`

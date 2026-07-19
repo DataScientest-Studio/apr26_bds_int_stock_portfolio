@@ -36,6 +36,7 @@ off:
 verify:
 	python3 scripts/verify_artifacts.py
 	python3 scripts/verify_notebooks.py
+	python3 scripts/verify_figures.py
 
 clean:
 	rm -rf __pycache__ app/__pycache__ app/pages/__pycache__ .streamlit/cache

@@ -103,8 +103,8 @@ Drag · zoom · click a scene.</p>
   <span><i style="background:#8a8980"></i>Source</span>
   <span><i style="background:#1D9E75"></i>Store / artifact</span>
   <span><i style="background:#639922"></i>Transform</span>
-  <span><i style="background:#BA7517"></i>Gate / calibration</span>
-  <span><i style="background:#22C55E"></i>Result / endproduct</span>
+  <span><i style="background:#BA7517"></i>Control / calibration</span>
+  <span><i style="background:#22C55E"></i>Output / endproduct</span>
   <span class="cav">Prices are split-adjusted before any roll-up (83 events / 69 tickers). Dividends and
   spin-offs are deliberately not adjusted, so buy-and-hold stays a price benchmark, symmetric with the strategy.
   Universe = present-day index members applied backwards (survivorship). Barriers are 2×ATR / 1×ATR by
@@ -189,7 +189,7 @@ var PIPELINE={
    subtitle:'the same sealed procedure, run once per ticker',
    summary:'The study builds ONE dedicated ENTRY indicator per asset, twice: an XGBoost model on 1h bars and an LSTM on daily bars. The ladder below is a single pass; it runs independently for every ticker in the universe.',
    input_contract:'Alpaca OHLCV, split-adjusted (A_adjusted)',transform_verb:'run per asset',
-   output_contract:'498 sealed XGB + 495 sealed LSTM indicators',metric:{label:'sealed indicators',value:'498 · 495'},
+   output_contract:"one ticker's split-adjusted bars, handed to the ladder below — 498 times for XGB, 495 for LSTM",metric:{label:'sealed indicators',value:'498 · 495'},
    invariants:['prices split-adjusted before any roll-up','universe = present-day constituents (survivorship)'],status:'ok'},
 
   {id:'xgb_db',num:'L·in',role:'store',section:'S2',
@@ -222,7 +222,7 @@ var PIPELINE={
    invariants:['every input ≤ decision close (causality)','CORE ids 1–99 are frozen, never overridden','label lane never enters X','barriers tested on close; entry next open, exit trigger-next-open, time exit at close','2×/1×ATR is NOMINAL geometry — realized median win/loss is 1.447 (XGB), 1.241 (LSTM)'],status:'ok'},
   {id:'xgb_l7',num:'L7',role:'control',section:'S2',
    title:'Optuna 80 trials (TPE seed 42) · objective = Train out-of-fold trading log-growth',
-   subtitle:'profit-aligned HPO · purged walk-forward CV (4 folds)',
+   subtitle:'profit-aligned HPO · purged walk-forward CV (4 folds where the history allowed)',
    summary:'XGBoost is tuned by Train out-of-fold trading log-growth replayed through the real engine at the deployed all-in sizing — not by a classification score. AUC-PR is reported, never optimized. The operating point θ is chosen per asset from an 11-point grid; one shared floor-respecting θ per trial, never a per-fold best.',
    input_contract:'Output-B matrix (train only)',transform_verb:'optimize',
    output_contract:'best params + per-asset θ from grid 0.40 … 0.60',metric:{label:'objective',value:'train_oof_log_growth'},
@@ -269,7 +269,7 @@ var PIPELINE={
    summary:'Causal candidates labeled by the same asymmetric ATR barrier (TP 2×ATR / SL 1×ATR, H = 10 sessions), tested on the CLOSE only and under the same execution contract and costs as the 1h path; overlapping labels get uniqueness weights so concurrent outcomes cannot be double-counted.',
    input_contract:'train candidates (purged at the OOS boundary)',transform_verb:'label',
    output_contract:'weighted Train sequences, 60 × manifest width',metric:{label:'window',value:'60 sessions'},
-   invariants:['TP 2×ATR / SL 1×ATR, H = 10 sessions','barriers tested on close — intraday highs/lows never read','uniqueness weights on overlapping labels'],status:'ok'},
+   invariants:['TP 2×ATR14 / SL 1×ATR14, H = 10 sessions','2×/1×ATR is NOMINAL geometry — the realized median win/loss on this path is 1.241, and only 7.6 % of promoted assets reach 2.0','barriers tested on close — intraday highs/lows never read','uniqueness weights on overlapping labels'],status:'ok'},
   {id:'lstm_d7',num:'D7',role:'control',section:'S3',
    title:'universal warm-start backbone · purged walk-forward CV · fold-causal scalers',
    subtitle:'one shared architecture — no per-asset Optuna in this epoch',
@@ -281,7 +281,7 @@ var PIPELINE={
    title:'joint (threshold, direction) on Train OOF → refit → artifact (all-in sizing)',
    subtitle:'operating point + final refit on full-Train stats',
    summary:'Entry threshold and trade direction are calibrated JOINTLY on Train OOF over a 6-point θ grid (0.50 … 0.60) and two direction modes. Sizing is all-in: every trade reinvests the full running capital. Final refit → base64 state_dict inside strategy_<T>.py.',
-   input_contract:'best params + Train OOF',transform_verb:'calibrate + seal',
+   input_contract:'shared architecture + warm-started weights + Train OOF scores',transform_verb:'calibrate + seal',
    output_contract:'artifacts/lstm/<T>/ — 5 files, θ + direction frozen',metric:{label:'θ grid · directions',value:'0.50 … 0.60 · 2'},
    invariants:['nothing OOS read yet','artifact: base64 state_dict + selfcheck'],status:'ok'},
   {id:'lstm_d9',num:'D9',role:'output',section:'S3',
@@ -289,14 +289,14 @@ var PIPELINE={
    subtitle:'median PF 1.013 · beats HODL on 129 of 495',
    summary:'OOS candidates scored at the verdict step, direction-filtered, replayed through the same engine (1 bp commission + 2 bp slippage per side, all-in compounding); every read is counted. Universe verdict: median strategy return +2.25 % against a median buy-and-hold of +23.09 %; 129 assets (26.1 %) beat their own HODL. 446 traded multiple times, 37 fell back to HODL, 11 traded once with low evidence, and 1 (CEG) traded 40 times but never cleared the Train trade floor, so it is not promoted — not idle.',
    input_contract:'frozen OOS window, scored at the verdict step',transform_verb:'score + ledger',
-   output_contract:'495 sealed rows · median PF 1.013 over the 445 with a computable PF',metric:{label:'beats HODL',value:'129 / 495'},
+   output_contract:'495 sealed rows · median PF 1.013 over the 443 with a computable PF',metric:{label:'beats HODL',value:'129 / 495'},
    invariants:['same engine and costs as the 1h path','HODL fallback only on zero model trades'],status:'ok'},
 
   {id:'sealed',num:'✓',role:'output',section:'S4',
    title:'SEALED — 993 artifacts · interpretation layer · 16/16 integrity checks',
    subtitle:'what the model reads, made inspectable without re-reading OOS',
    summary:'The sealed artifacts are projected into a Train-derived interpretation layer: for XGB, each feature’s axis is cut at the model’s own split thresholds into ENTRY value ranges (raw and in Train sigmas) with TP-before-SL rates; for LSTM, deterministic channel occlusion, ENTRY-conditioned. 16 601 feature-stat rows, 16 601 contribution rows, 45 021 ENTRY-range segments. Every integrity check passes.',
-   input_contract:'993 sealed artifacts (5 files per asset)',transform_verb:'interpret + verify',
+   input_contract:'993 sealed artifacts (5 files per asset) — the JOIN of both paths: 498 from L9 and 495 from D9, not a continuation of the daily one',transform_verb:'interpret + verify',
    output_contract:'results.db — read-only store behind the console',metric:{label:'integrity',value:'16 / 16 PASS'},
    invariants:['TRAIN-DERIVED INTERPRETATION — NOT AN OOS RESULT','NOT A LIVE TRADING SIGNAL','interpretation reads artifacts only, never the OOS window'],status:'ok'}
  ],
@@ -315,7 +315,7 @@ var PIPELINE={
   {from:'lstm_d23',to:'lstm_d4',verb:'featurize',payload:'Train mask → causal channels + frozen stats',detail:'13 CORE + searched optionals · z-score stats from Train only'},
   {from:'lstm_d4',to:'lstm_d56',verb:'label',payload:'manifest → labels + 60-session sequences',detail:'weighted Train sequences, 60 × manifest width'},
   {from:'lstm_d56',to:'lstm_d7',verb:'warm-start',payload:'weighted sequences → purged folds',detail:'committed backbone supplies the architecture — no per-asset Optuna in this epoch; fold-causal scalers'},
-  {from:'lstm_d7',to:'lstm_d8',verb:'calibrate',payload:'best params → joint calibration + refit',detail:'joint (threshold, direction) on Train OOF → artifact · all-in sizing'},
+  {from:'lstm_d7',to:'lstm_d8',verb:'calibrate',payload:'shared architecture + warm-started weights → joint calibration + refit',detail:'joint (threshold, direction) on Train OOF → artifact · all-in sizing'},
   {from:'lstm_d8',to:'lstm_d9',verb:'score + ledger',payload:'sealed LSTM strategy → the OOS verdict of the sealed final epoch',detail:'engine replay net of costs — every read written to the append-only ledger'},
   {from:'lstm_d9',to:'sealed',verb:'seal + interpret',payload:'993 artifacts → interpretation + integrity checks',detail:'the interpretation layer is Train-derived and never re-reads OOS'}
  ]
@@ -955,7 +955,9 @@ SourceLayer.prototype.draw=function(){
     var glyph=String(UNIVERSE_XGB);
     setFont(uiFont('800',20*zScale()));var w1=mwidth(glyph);
     txtS(glyph,oCnt.x,oCnt.y-4,GREEN,'center',20,'800');
-    txtS('sealed indicators',oCnt.x,oCnt.y+14,vget('--color-text-primary','#eee'),'center',10,'600');
+    /* The grid counts the XGB universe, so the caption must say so: the ladder ends at 993
+       (498 XGB + 495 LSTM) and an unqualified "sealed indicators" over 498 reads as a total. */
+    txtS('XGB indicators (+495 LSTM)',oCnt.x,oCnt.y+14,vget('--color-text-primary','#eee'),'center',10,'600');
     obstacle(oCnt.x-w1/2-6,oCnt.y-26,oCnt.x+w1/2+6,oCnt.y+20);
   }
   if(STATE.labels){var pf=SS(lev,0.45,0.0,0);
@@ -1435,7 +1437,7 @@ OptunaSearchLayer.prototype.draw=function(){
   for(i=0;i<cfg.tags.length;i++){
     var tw2=Math.max(66,cfg.tags[i].length*6.4+24);
     drawTagS(tx0,ty0+i*27,tw2,20,AMB,cfg.tags[i],0.14,8.5);
-    HITS.addRect(tx0,ty0+i*27,tw2,20,{type:'kelly'});
+    HITS.addRect(tx0,ty0+i*27,tw2,20,{type:'operatingPoint'});
   }
   if(STATE.labels&&cfg.tagNote)qLabel({key:K+'_kn',def:cfg.tagNote,x:tx0+40,y:ty0+cfg.tags.length*27+12,col:tert,al:'center',sz:7.5,pr:2});
 };
@@ -1660,7 +1662,7 @@ var LAYERS={
  xfeat:new FeatureForest({
    features:XGB_FEATS,yLabel:'Y_outcome',weightLabel:'uniqueness weight',
    capTop:'Features computed at t0 — only bars ≤ t0 (causality) · namespaces [1h · 1h_ext · 1d · 1w · multi_tf]',
-   chip:'17 CORE + searched optionals',
+   chip:'17 CORE + searched optionals · SCHEMATIC cell values',
    note:'row = entry candidate · 17 frozen CORE 1h features (8 shown) + per-asset searched optionals from a 45-id pool (12 families) + Y_outcome + weight · Triple-Barrier: TP 2×ATR14 / SL 1×ATR14, H=24'}),
  xopt:new OptunaSearchLayer({
    seed:4242,nTrials:80,bestAt:57,yLo:0.34,bestY:0.62,yRowLabel:'Y: objective (schematic)',
@@ -1669,7 +1671,7 @@ var LAYERS={
      {k:'colsample_bytree',mock:mF(0.6,1.0,3)},{k:'min_child_weight',mock:mF(1,10,2)},{k:'n_estimators',mock:mInt(40,300)}],
    bestVals:['3','0.263','0.893','0.839','2.40','196'],
    title:'OPTUNA · SEARCH SHAPE — 80 trials (TPE seed 42 + MedianPruner) → trials in time · SCHEMATIC',
-   sub:'SCHEMATIC — trial points illustrate the shape of a TPE search, they are NOT recorded trials. Real: 9-parameter space (6 shown), objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds), Train only.',
+   sub:'SCHEMATIC — trial points illustrate the shape of a TPE search, they are NOT recorded trials. Real: 9-parameter space (6 shown), objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds where the history allowed), Train only.',
    jsonL1:'parameters',jsonName:'parameters.json',
    tags:['θ per asset 0.40–0.60','all-in'],tagNote:'operating point — one shared floor-respecting θ per trial, chosen per asset; never a per-fold best, never pinned'}),
  xexp:new StrategyExportLayer({
@@ -1706,19 +1708,22 @@ var LAYERS={
  lfeat:new FeatureForest({
    features:LSTM_FEATS,yLabel:'Y (TB)',weightLabel:'uniqueness weight',
    capTop:'D4 — causal channels + Train-only z-score · every input ≤ decision close',
-   chip:'13 CORE + up to 6 searched',
+   chip:'13 CORE + up to 6 searched · SCHEMATIC cell values',
    note:'13 CORE daily channels (all shown) + per-asset optionals from a 45-id pool (23 optional · 2 cross-asset · 20 DSL-proposed) · z-score stats frozen from Train · CV folds get fold-causal stats'}),
  ltb:new TBWallLayer({
    count:'weighted Train sequences · 60 sessions × manifest width · purged at the OOS boundary',
-   tb:'Triple Barrier: TP 2×ATR14 / SL 1×ATR14 · H = 10 sessions · overlapping labels → uniqueness weights'}),
+   tb:'Triple Barrier: TP 2×ATR14 / SL 1×ATR14 · H = 10 sessions · overlapping labels → uniqueness weights — SCHEMATIC: the candles and the trendline draw the SHAPE of a setup, they are not a recorded trade'}),
  lopt:new OptunaSearchLayer({
    seed:777,nTrials:20,bestAt:11,yLo:0.42,bestY:0.68,yRowLabel:'Y: objective (schematic)',
    params:[
      {k:'hidden',mock:mInt(32,128)},{k:'lr',mock:mLog(0.0005,0.01,4)},{k:'dropout',mock:mF(0.0,0.5,3)},
      {k:'weight_decay',mock:mExp(1e-6,1e-4)},{k:'num_layers',mock:mInt(1,2)}],
-   bestVals:['64','0.0041','0.152','2.5e-6','1'],
+   /* The backbone that actually sealed this epoch, NOT a trial result — the scene draws a
+      cold-start search that did not run, so showing invented winners here would be the most
+      legible wrong number on the map. */
+   bestVals:['32','0.001','0.3','1e-4','1'],
    title:'COLD-START PATH · 20 trials → trials in time · SCHEMATIC — NOT USED IN THIS EPOCH',
-   sub:'SCHEMATIC, and describing a path that DID NOT SEAL this epoch. The 20-trial per-asset Optuna search exists behind LSTM_COLD_START=1; with the committed backbone present it is skipped entirely. What actually ran: ONE shared architecture for all 495 assets — hidden 32, num_layers 1, dropout 0.3, lr 0.001, weight_decay 1e-4 — warm-starting every refit. Objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds), fold-causal scalers, seed 42.',
+   sub:'SCHEMATIC, and describing a path that DID NOT SEAL this epoch. The 20-trial per-asset Optuna search exists behind LSTM_COLD_START=1; with the committed backbone present it is skipped entirely. What actually ran: ONE shared architecture for all 495 assets — hidden 32, num_layers 1, dropout 0.3, lr 0.001, weight_decay 1e-4 — warm-starting every refit. Objective = Train-OOF trading log-growth, purged walk-forward CV (4 folds where the history allowed), fold-causal scalers, seed 42.',
    jsonL1:'parameters',jsonName:'parameters.json',
    tags:['θ per asset 0.50–0.60','direction','all-in'],tagNote:'per asset this epoch calibrates ONLY the operating point (θ, direction) and the feature set — the architecture is shared'}),
  lexp:new StrategyExportLayer({
@@ -1731,7 +1736,7 @@ var LAYERS={
  loos:new OOSWall({
    db:'results.db',tables:['research_run','asset_results','integrity_checks'],
    matrixTitle:'sealed OOS rows · every read ledgered · 2024-01-01 → 2026-04-30',
-   rows:[['assets','495'],['median return (all rows)','+2.25 %'],['median HODL','+23.09 %'],['median PF (n=445)','1.013'],['beats HODL','129 / 495']],
+   rows:[['assets','495'],['median return (all rows)','+2.25 %'],['median HODL','+23.09 %'],['median PF (n=443)','1.013'],['beats HODL','129 / 495']],
    cap:'LSTM · the universe verdict — every read counted in the ledger',
    status:'OK',
    notes:['446 traded · 37 HODL fallback · 11 low evidence · 1 traded but not promoted','engine replay · 1 bp commission + 2 bp slippage per side · all-in compounding']}),
@@ -1740,7 +1745,7 @@ var LAYERS={
    files:[{col:TP,ext:'.py'},{col:GREEN,ext:'.json'},{col:GREEN,ext:'.json'},
           {col:BLU,ext:'.json'},{col:AMB,ext:'.json'}],
    groupsCap:'five files per asset · strategy (.py) │ parameters + metrics (.json) │ interpretation (.json) │ manifest (.json, folder_sha256 chained)',
-   checks:['993 artifacts == manifest counts ✓','interpretation coverage complete ✓','OOS reads cover the store ✓'],
+   checks:['993 artifacts == manifest counts ✓','interpretation coverage complete ✓','OOS reads cover the store ✓','— 3 of 16 shown; all 16 pass —'],
    call:[
      {nm:'strategy_<T>.py',role:'strategy + base64 model · L8 / D8',col:TP,fx:-0.02,dx:-24,dy:36,al:'right'},
      {nm:'parameters.json',role:'frozen params + θ + feature manifest',col:GREEN,fx:0.10,dy:-64,al:'right'},
@@ -1845,7 +1850,7 @@ var TIP_BY_TYPE={
   label:'label column Y — Triple-Barrier outcome (TP 2×ATR14 / SL 1×ATR14).',
   trial:'SCHEMATIC trial point — it illustrates the shape of a TPE search, not a recorded trial.',
   optunaOut:'parameters.json — frozen parameters only; no model, no OOS here.',
-  kelly:'operating point — calibrated ONLY on Train out-of-fold scores; θ is chosen per asset and sizing is all-in (full capital).',
+  operatingPoint:'operating point — calibrated ONLY on Train out-of-fold scores; θ is chosen per asset and sizing is all-in (full capital).',
   model:'the final model, fit on full Train with the best params.',
   b64:'the serialized model, base64-embedded into the strategy file.',
   strategy:'strategy_<T>.py — self-contained artifact with embedded model + manifest + calibrated θ (all-in sizing).',

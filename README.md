@@ -79,7 +79,7 @@ The sidebar groups them the way a defence walks: **Playground** (do something), 
    per-asset counter), interpretation coverage, when the model is not promoted, every
    integrity check, and the known limits.
 10. **Pipeline Blueprint** — the procedure as an 18-brick ladder: contract, reasoning and
-   lesson per brick, with the layer id the code uses (XGB L1-L9, LSTM D1-D9).
+   lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
 11. **Data Flow** — the per-asset build path as a 2.5D canvas map, both pipelines in one
    ladder, with the universe-level verdicts on the OOS scenes.
 
