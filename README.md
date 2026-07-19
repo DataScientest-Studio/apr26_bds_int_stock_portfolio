@@ -24,6 +24,7 @@ git clone --depth 1 --branch Stable_Presentable_Version \
 
 cd liora-project-ml-engineering
 
+make verify     # optional, stdlib only: recompute every artifact hash
 make setup
 make app
 ```
@@ -32,6 +33,11 @@ The app serves on `http://localhost:8503`. The shallow clone is ~260 MB (every s
 artifact travels with the repo — 993 in this release). `make setup` installs only the presentation
 dependencies (`streamlit`, `pandas`, `plotly`); nothing is trained, recomputed or
 written at runtime.
+
+Do not take the numbers on trust: `make verify` needs no dependencies and no network. It
+recomputes the SHA-256 of every file in all 993 artifact folders, rebuilds each
+`folder_sha256` from those digests, checks the manifest's count arithmetic, and confirms
+every sealed row resolves to a folder the manifest knows.
 
 ## The two models
 
@@ -80,6 +86,7 @@ config/           frozen configuration the code reads
 artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.json
 data/results.db   sealed SQLite results store (read-only)
 examples/         two executed notebooks: the full XGB path for AAPL and NVDA
+scripts/          verify_artifacts.py — the offline hash verifier behind `make verify`
 docs/             METHODOLOGY.md, ARCHITECTURE.md
 docs-facts-infos/ written audits (Polish): OHLCV data, methodological integrity,
                   and the research-consistency report
