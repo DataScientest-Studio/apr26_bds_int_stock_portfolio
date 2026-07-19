@@ -331,7 +331,7 @@ st.button("Calculate basket", type="primary", disabled=(n_sel == 0),
 # a fragment kept the counter here in step while the caption and button above it lagged.
 st.subheader(f"Pick by hand — the {len(tickers)}-tile grid")
 b1, b2, _ = st.columns([2, 2, 6])
-b1.button(f"Random {RANDOM_MIN}–{RANDOM_MAX}", width="stretch",
+b1.button("Random", width="stretch",
           help=f"Draw a fresh basket of {RANDOM_MIN} to {RANDOM_MAX} tickers",
           on_click=_random_basket, args=(tickers,))
 b2.button("Clear", width="stretch", on_click=_clear_basket)
