@@ -8,9 +8,12 @@ __pycache__/
 *.db-shm
 
 # research-tree leftovers that live in this working copy but are NOT part of the
-# presentation branch (the research code lives on to_give_up_and_show)
-xgb/
-lstm/
-iterators/
-experiments/
-.publish_stage/
+# presentation branch (the research code lives on to_give_up_and_show).
+# Anchored with a leading slash: unanchored "xgb/" would also match the tracked
+# src/xgb/ and artifacts/xgb/ trees at any depth.
+/xgb/
+/lstm/
+/iterators/
+/experiments/
+/tools/
+/.publish_stage/
