@@ -104,6 +104,122 @@ def _per_ticker_script(app_dir: str, active: str) -> None:
         page_simulator.render()
 
 
+def _stopping_page_script(caption_first: bool) -> None:
+    """Mirror app/app.py's shape around a page that stops: caption, hotkey, then pg.run()."""
+    import streamlit as st
+    if caption_first:
+        st.sidebar.caption("⌨️  **⌘ / Ctrl + B** — hide / show this menu")
+    st.write("page body")
+    st.stop()                       # what the vendored study does on nearly every render
+    if not caption_first:           # unreachable once a stop latches — that is the point
+        st.sidebar.caption("⌨️  **⌘ / Ctrl + B** — hide / show this menu")
+
+
+def gate_app_shell():
+    """The two behavioural changes app/app.py carries for the vendored study, which the page
+    smoke above cannot see because it calls each page's render() directly.
+
+    1. st.stop() latches ScriptRequestType.STOP for the whole run, so anything drawn after
+       pg.run() disappears whenever the active page stops. The sidebar caption and the Ctrl+B
+       hotkey therefore have to be drawn BEFORE pg.run() — checked structurally on the real
+       file, and behaviourally here with its own negative control.
+    2. sync_session_scope() runs on EVERY page now, so it must be inert on a production page
+       in a fresh session.
+    """
+    from streamlit.testing.v1 import AppTest
+    print("Part 4 — app shell: stop-survival and scope inertness")
+
+    # Line-based, and only real statements: the surrounding comments mention pg.run() too.
+    lines = (ROOT / "app" / "app.py").read_text(encoding="utf-8").splitlines()
+    caption_at = next((i for i, ln in enumerate(lines)
+                       if ln.lstrip().startswith('st.sidebar.caption("⌨️')), -1)
+    run_at = next((i for i, ln in enumerate(lines) if ln.strip() == "pg.run()"), -1)
+    check("app.py draws the sidebar caption before pg.run()",
+          caption_at != -1 and run_at != -1 and caption_at < run_at,
+          f"caption line {caption_at + 1}, pg.run() line {run_at + 1}")
+
+    at = AppTest.from_function(_stopping_page_script, kwargs={"caption_first": True})
+    at.run()
+    check("caption survives a page that stops", any("Ctrl + B" in c.value for c in at.sidebar.caption))
+
+    neg = AppTest.from_function(_stopping_page_script, kwargs={"caption_first": False})
+    neg.run()
+    check("negative control: caption after the stop is lost",
+          not any("Ctrl + B" in c.value for c in neg.sidebar.caption))
+
+    at = AppTest.from_function(
+        _per_ticker_script, kwargs={"app_dir": str(ROOT / "app"), "active": "report"},
+        default_timeout=120)
+    at.run()
+    state = at.session_state.filtered_state
+    check("scope sync is inert on a production page in a fresh session",
+          state.get("_ptml__owner") == "host"
+          and not any(k.startswith("_host__") or k.startswith("_ptml__b") for k in state),
+          str({k: v for k, v in state.items() if k.startswith(("_ptml__", "_host__"))}))
+
+
+def gate_track_b_through_app_shell():
+    """Track B's full flow, driven through the app.py path AND after the study has been used.
+
+    gate_simulator_flow() calls page_simulator.render() directly, so it never exercises
+    sync_session_scope. This is the sequence a presenter actually performs — play with the
+    study, then go back to Track B — and it is the one that would break if key ownership
+    handed the wrong basket over.
+    """
+    from streamlit.testing.v1 import AppTest
+    print("Part 5 — Track B still works after the study, through the app shell")
+
+    study = AppTest.from_function(
+        _per_ticker_script, kwargs={"app_dir": str(ROOT / "app"), "active": "per-ticker-ml"},
+        default_timeout=300)
+    study.run()
+    if study.exception:
+        check("study page renders first", False, str(study.exception[0].value))
+        return
+    tiles = [b for b in study.button if 1 <= len(b.label) <= 5 and b.label.upper() == b.label]
+    if tiles:
+        tiles[0].click().run()
+    study_basket = set(study.session_state["basket"])
+    check("study built a basket", bool(study_basket), str(sorted(study_basket)[:5]))
+
+    at = AppTest.from_function(
+        _per_ticker_script, kwargs={"app_dir": str(ROOT / "app"), "active": "simulator"},
+        default_timeout=300)
+    for key, value in study.session_state.filtered_state.items():
+        at.session_state[key] = value
+    at.run()
+    check("Track B renders after the study", not at.exception,
+          str(at.exception[0].value) if at.exception else "")
+    if at.exception:
+        return
+
+    start = [b for b in at.button if b.label == "Start"]
+    check("Track B: Start button", bool(start))
+    if not start:
+        return
+    start[0].click().run()
+    check("Track B: pick stage", not at.exception and at.session_state["stage"] == "pick")
+    sel = [s for s in at.selectbox if s.label == "Preset"]
+    check("Track B: preset selectbox", bool(sel))
+    if not sel:
+        return
+    sel[0].select("Balanced").run()
+    apply_btn = [b for b in at.button if b.label == "Apply preset"]
+    check("Track B: apply button", bool(apply_btn))
+    if not apply_btn:
+        return
+    apply_btn[0].click().run()
+    basket = at.session_state["basket"]
+    check("Track B: preset pre-selects 10, not the study's basket",
+          len(basket) == 10 and not (set(basket) & study_basket), ", ".join(sorted(basket)))
+    calc = [b for b in at.button if b.label == "Calculate basket"]
+    if calc:
+        calc[0].click().run()
+        check("Track B: result renders", not at.exception
+              and at.session_state["stage"] == "result",
+              str(at.exception[0].value) if at.exception else "")
+
+
 def gate_per_ticker_callbacks():
     """The study's widgets carry on_change/on_click callbacks, and Streamlit runs those from
     on_script_will_rerun — BEFORE the script body. A swap of the shared session keys scoped to
@@ -228,6 +344,12 @@ def main():
 
     print()
     gate_per_ticker_callbacks()
+
+    print()
+    gate_app_shell()
+
+    print()
+    gate_track_b_through_app_shell()
 
     print()
     if FAILS:

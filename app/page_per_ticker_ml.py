@@ -25,6 +25,10 @@ Three things have to be contained so the vendor cannot disturb this app:
   * Each study page calls sys.path.insert(0, ...) unconditionally, so the path is snapshot
     and restored; otherwise it grows by one entry on every rerun for the whole session.
 
+  * The study ships a dark .streamlit/config.toml, but only the ROOT config is honoured and
+    this app's has no [theme] block — so its palette is swapped for light equivalents while it
+    runs, and restored afterwards. See _light_palette() for why CSS cannot do this.
+
 The study shares stage / basket / method / method_sel (and the host adds preset*) with
 app/page_simulator.py, over a DIFFERENT universe — 993 sealed assets vs the 498-ticker OOS
 store. sync_session_scope() gives those keys to whichever page is active, so a basket built
@@ -62,19 +66,25 @@ _NS = "_ptml__"          # the study's parked copy
 _HOST = "_host__"        # the rest of the app's parked copy
 _OWNER = "_ptml__owner"  # which side currently holds the bare keys
 
-# The study hard-codes a dark palette in Python (plotly figures, the graphviz DOT, the tile
-# and tooltip CSS) because it ships its own .streamlit/config.toml with base="dark". Only the
-# ROOT config is honoured here and this app's has no [theme] block, so those surfaces land on
-# light chrome. Rather than restyle all eight existing pages — page_simulator.py hard-codes
-# light tiles and would fight a global dark theme — the few classes that actually break are
-# repaired for this page only. .disclaimer-box is the one that is unreadable otherwise: it
-# sets a near-black background and inherits the host's dark text.
-SCOPED_CSS = """
-<style>
-.disclaimer-box { color: #E6EDF3; }
-.disclaimer-box b, .disclaimer-box strong { color: #FFFFFF; }
-</style>
-"""
+# The study hard-codes a dark palette in Python because it ships its own .streamlit/config.toml
+# with base="dark". Only the ROOT config is honoured here and this app's has no [theme] block, so
+# the study would land dark-on-light: unreadable .disclaimer-box, and dark plotly/graphviz panels
+# floating on a white page. CSS cannot fix that — the colours are baked in when the figures are
+# BUILT (theme.plotly_layout(), the graphviz DOT's bgcolor, GRID_CSS), not applied as styles. So
+# the palette constants those readers use are swapped for light equivalents while the study runs.
+#
+# A global dark theme is the wrong lever: it would restyle all eight existing pages and fight
+# page_simulator.py's hard-coded light tiles.
+#
+# ACCENT darkens because overview.py's DOT paints ACCENT-filled nodes with fontcolor=BG — once BG
+# is white, the study's #6EA8CF has too little contrast behind white text. GREEN/AMBER/RED are
+# used as TEXT, so they take their light-background variants.
+_LIGHT_PALETTE = {
+    "BG": "#FFFFFF", "SURFACE": "#F0F2F6", "BORDER": "#D5D9E0",
+    "TEXT": "#31333F", "TEXT_DIM": "#6E7681",
+    "ACCENT": "#1F6FEB", "NEUTRAL": "#57606A", "MUTED": "#8C959F",
+    "GREEN": "#1A7F37", "AMBER": "#9A6700", "RED": "#CF222E",
+}
 
 
 def _raw_state():
@@ -154,18 +164,45 @@ def _restore_sys_path():
         sys.path[:] = path
 
 
+@contextmanager
+def _light_palette():
+    """Render the study in the host's light theme, without editing per_ticker_ml/ on disk.
+
+    theme.plotly_layout() reads the constants at CALL time, and overview.py's DOT and
+    simulator.py's GRID_CSS are f-strings rebuilt on every runpy execution — so swapping the
+    constants first reaches the charts, the diagram, the tiles and the tables alike. theme.CSS
+    is the exception: an f-string frozen at import. It is re-lit by substituting the old hex
+    values for the new ones, rather than restating the stylesheet here where it would rot the
+    moment the study's own changed.
+    """
+    if str(STUDY_APP) not in sys.path:              # the study's own pages do this too, later
+        sys.path.insert(0, str(STUDY_APP))
+    import theme
+    names = (*_LIGHT_PALETTE, "CSS", "MODEL_COLORS")
+    saved = {name: getattr(theme, name) for name in names}
+    try:
+        css = saved["CSS"]
+        for name, light in _LIGHT_PALETTE.items():
+            css = css.replace(saved[name], light)
+            setattr(theme, name, light)
+        theme.CSS = css
+        theme.MODEL_COLORS = {"xgb": theme.ACCENT, "lstm": theme.NEUTRAL, "hodl": theme.MUTED}
+        yield
+    finally:
+        for name, value in saved.items():
+            setattr(theme, name, value)
+
+
 def render() -> None:
     if not STUDY.is_dir():
         st.error(f"The per-ticker study is missing: {STUDY.name}/ not found in this checkout.")
         return
 
-    st.markdown(SCOPED_CSS, unsafe_allow_html=True)
-
     labels = [label for label, _ in TABS]
     for tab, (label, script) in zip(st.tabs(labels, key="ptml_tab", on_change="rerun"), TABS):
         if not tab.open:                 # lazy: only the selected sub-tab executes
             continue
-        with tab, _restore_sys_path():
+        with tab, _restore_sys_path(), _light_palette():
             try:
                 runpy.run_path(str(script), run_name="__main__")
             except ScriptControlException:
