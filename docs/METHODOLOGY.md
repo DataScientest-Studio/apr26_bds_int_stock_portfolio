@@ -169,11 +169,11 @@ ledgered OOS read.
 | Bull-market OOS window | 2024-2026 is a strongly rising market; HODL is a hard benchmark and the beats-HODL ratio is regime-dependent. |
 | In-sample interpretation | All ENTRY ranges, contributions and occlusion values are Train-derived descriptions of the sealed model, not OOS evidence. |
 
-A broader audit of the whole research program (in Polish), including the full
+A broader audit of the whole research program, including the full
 declared-limitations list and the measured read-ledger figures, lives in
-`docs-facts-infos/Raport_Spojnosci_Badan.md`, next to the data audit
-(`Dane_OHLCV.md`) and the methodological-integrity audit
-(`Raport_Poprawnosci_Metodologicznej.md`).
+`docs-facts-infos/Research_Consistency_Report.md`, next to the data audit
+(`OHLCV_Data.md`) and the methodological-integrity audit
+(`Methodological_Integrity_Report.md`).
 
 ## 7. The ledgered OOS read
 

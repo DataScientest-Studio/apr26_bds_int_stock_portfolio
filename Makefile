@@ -31,7 +31,7 @@ off:
 		fi; \
 	fi
 
-# No virtualenv needed: both verifiers are stdlib only, so a reviewer can run them
+# No virtualenv needed: all three verifiers are stdlib only, so a reviewer can run them
 # on a fresh clone before installing anything.
 verify:
 	python3 scripts/verify_artifacts.py
@@ -45,7 +45,7 @@ help:
 	@echo "make setup   Install presentation dependencies"
 	@echo "make on      Run the Streamlit presentation on port $(PORT)"
 	@echo "make off     Stop whatever is listening on port $(PORT)"
-	@echo "make verify  Recompute every artifact hash, and check the notebooks against the store"
+	@echo "make verify  Recompute artifact hashes, notebook parity and map figures against the store"
 	@echo "make clean   Remove local runtime cache"
 	@echo ""
 	@echo "Another port: make on PORT=8600  ·  make off PORT=8600"

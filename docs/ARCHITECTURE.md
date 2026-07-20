@@ -151,7 +151,8 @@ artifacts/manifest.json     global counts + per-asset folder hashes
 data/results.db             the sealed results database (section 6)
 examples/                   Example_XGB.ipynb, Example_LSTM.ipynb — one asset (NVDA)
                             end-to-end, once per model
-scripts/                    verify_artifacts.py, verify_notebooks.py (`make verify`)
+scripts/                    verify_artifacts.py, verify_notebooks.py, verify_figures.py
+                            (`make verify`)
 docs/                       METHODOLOGY.md, ARCHITECTURE.md
 ```
 
@@ -161,4 +162,4 @@ Version/epoch names do not appear in public paths, in the console, in README or 
 presentation database; they may persist as immutable provenance inside the hash-sealed
 artifact JSONs. The written audits under `docs-facts-infos/` are the deliberate exception:
 they are dated records of the research branch and name its epoch, which is why they also
-state how the identity fields were anonymized here (`Raport_Spojnosci_Badan.md` §2).
+state how the identity fields were anonymized here (`Research_Consistency_Report.md` §2).

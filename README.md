@@ -69,9 +69,10 @@ the procedure in full. Overview is the landing page.
    coverage. **Feature Logic**: which features one asset's sealed XGB model leans on, as a
    share of its split total-gain (Train-derived interpretation). **Model Comparison**: four
    charts — return, profit factor, trades, beats-HODL share.
-3. **Basket Simulator** — pick assets, by preset or by hand, and read what the sealed
-   models did with them against the same basket simply held. Three numbers, never one:
-   the executed path, the model result, and the price-only benchmark.
+3. **Basket Simulator** — pick assets, by a random draw, the questionnaire adviser or by
+   hand, and read what the sealed models did with them against the same basket simply
+   held. Three numbers, never one: the executed path, the model result, and the
+   price-only benchmark.
 4. **Data Pipeline Lego Plan** — the procedure as an 18-brick ladder: contract, reasoning
    and lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
 
@@ -89,10 +90,10 @@ artifacts/        sealed per-asset artifacts (xgb/<T>/, lstm/<T>/) + manifest.js
 data/results.db   sealed SQLite results store (read-only)
 examples/         two executed notebooks for one asset (NVDA), one per model:
                   Example_XGB.ipynb (L4→L9) and Example_LSTM.ipynb (D2→D9)
-scripts/          the offline verifiers behind `make verify`: artifact hashes and
-                  the notebooks' parity with the store
+scripts/          the offline verifiers behind `make verify`: artifact hashes, the
+                  notebooks' parity with the store, and the maps' asserted figures
 docs/             METHODOLOGY.md, ARCHITECTURE.md
-docs-facts-infos/ written audits (Polish): OHLCV data, methodological integrity,
+docs-facts-infos/ written audits: OHLCV data, methodological integrity,
                   and the research-consistency report
 data_pipeline_lego_plan.html   standalone 18-brick pipeline map (embedded by the Lego Plan page)
 data_flow_3d_visualization.html  standalone 2.5D build-path map (embedded by the 3D Visualization page)
