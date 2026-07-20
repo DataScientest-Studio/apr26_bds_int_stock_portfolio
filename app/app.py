@@ -8,10 +8,11 @@ Pages (st.navigation):
   4. Recommender (Track A)   — exploratory ranking recommender over vendored CSVs
   5. Basket Simulator (Track B) — sealed one-shot OOS results + rule-based preset packages
   6. Methodology & Integrity — what separates the tiers; limitations stated openly
+  7. Per Ticker ML-Model     — the sealed per-asset indicator study (per_ticker_ml/), three sub-tabs
 
 READ-ONLY by design: every page renders committed artifacts (sealed oos_metrics stores, HODL
-feeds, vendored Track-A CSVs, the daily bar store, the pre-OOS inputs table). Nothing trains,
-optimizes or writes at runtime.
+feeds, vendored Track-A CSVs, the daily bar store, the pre-OOS inputs table, and the study's
+own sealed results.db). Nothing trains, optimizes or writes at runtime.
 
 Run:  make app    (Streamlit on :8503)
 """
@@ -26,6 +27,7 @@ import page_blueprint
 import page_explorer
 import page_final_presentation
 import page_methodology
+import page_per_ticker_ml
 import page_recommender
 import page_report
 import page_risk
@@ -41,14 +43,19 @@ pg = st.navigation([
     st.Page(page_simulator.render, title="Basket Simulator (Track B)", icon="🧺", url_path="simulator"),
     st.Page(page_blueprint.render, title="Pipeline Blueprint (Track B)", icon="🧱", url_path="blueprint"),
     st.Page(page_methodology.render, title="Methodology & Integrity", icon="🔬", url_path="methodology"),
+    st.Page(page_per_ticker_ml.render, title="Per Ticker ML-Model", icon="🧬", url_path="per-ticker-ml"),
     st.Page(page_final_presentation.render, title="Final Presentation", icon="🎤", url_path="final-presentation"),
 ])
-pg.run()
 
 # ── Keyboard shortcut: Ctrl / ⌘ + B hides/shows the navigation menu (sidebar) ────────
 # Streamlit exposes no sidebar hotkey, so we click its own collapse/expand control from
 # a 0-height component. The listener is bound to the PARENT document exactly once (a flag
 # survives reruns); typing in inputs/textarea is ignored so it never fights form entry.
+#
+# Drawn BEFORE pg.run(), not after: st.stop() on any page latches ScriptRequestType.STOP for
+# the rest of the run, so anything rendered after pg.run() silently disappears whenever the
+# active page stops — which the Per Ticker ML-Model study does on nearly every render. The
+# nav is already built above, so the caption still lands underneath it.
 st.sidebar.caption("⌨️  **⌘ / Ctrl + B** — hide / show this menu")
 st.iframe(
     """
@@ -77,3 +84,5 @@ st.iframe(
     """,
     height=1,
 )
+
+pg.run()

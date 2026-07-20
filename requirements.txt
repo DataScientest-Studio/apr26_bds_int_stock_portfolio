@@ -19,6 +19,11 @@ streamlit==1.58.0
 # Data Explorer + Recommender plots (the parent project's validated EDA figures).
 matplotlib==3.11.0
 seaborn==0.13.2
+# per_ticker_ml/ — the vendored per-asset indicator study; its Statistics page hard-imports
+# plotly.graph_objects. Its optional Formular add-on wants `anthropic`, which it imports lazily
+# inside a function, so it is deliberately NOT pinned here: without it the add-on degrades to a
+# caught message instead of adding a paid-API SDK to everyone's mandatory install.
+plotly==6.0.1
 # WO-FS study (fs/): scipy is already pulled in by scikit-learn (PBO/DSR + hierarchical clustering).
 # WO-FS-LSTM §5 asks for `shap` (GradientExplainer) as the primary SHAP method, with a permutation
 # fallback. shap's hard dep `numba` currently caps NumPy at < 2.5, which conflicts with the pinned

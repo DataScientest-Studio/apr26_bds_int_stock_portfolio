@@ -175,7 +175,8 @@ the pick**.
 Parts 2 & 3 walk the modelling **behind both tiers**; the Conclusion gives the **verdict** on each.
 
 - **2. Machine Learning — Part 1 (M):** the data, features and first models.
-- **3. Machine Learning — Part 2 (P):** validation, model comparison, results.
+- **3. Machine Learning — Part 2 (P):** validation, model comparison, results —
+  in the **[Per Ticker ML-Model](/per-ticker-ml)** tab.
 - **4. Conclusion (T):** the verdict, limitations stated openly, and next steps.
         """
     )
@@ -226,6 +227,20 @@ _PLACEHOLDERS = [
 ]
 
 
+def _per_ticker_link() -> None:
+    """Part 2 is the per-asset study, which has its own tab — point at it rather than repeat it.
+
+    A markdown link, not st.page_link: app/app.py builds callable-based st.Page objects inline,
+    so no Page object is reachable from here without restructuring the navigation, and a plain
+    link keeps this page renderable on its own under AppTest.from_function (how the gate runs it).
+    """
+    st.markdown(
+        "The Part 2 modelling story is the **per-ticker sealed indicator study** — one dedicated "
+        "entry model per asset (XGBoost on 1h bars, LSTM on daily bars), each read out-of-sample "
+        "exactly once and scored against buy-and-hold.")
+    st.markdown("[**Open: Per Ticker ML-Model →**](/per-ticker-ml)")
+
+
 def render() -> None:
     _introduction()
 
@@ -234,6 +249,8 @@ def render() -> None:
         st.header(f"{i}. {title}")
         if title == "Machine Learning — Part 1":
             _pdf_download(ML_PART1_REPORT, "Download Machine Learning Part 1 PDF report")
+        if title == "Machine Learning — Part 2":
+            _per_ticker_link()
 
     st.divider()
     _conclusion()

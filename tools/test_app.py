@@ -143,6 +143,10 @@ def main():
     run_page("Risk Profile", "page_risk")
     run_page("Methodology & Integrity", "page_methodology")
     run_page("Pipeline Blueprint", "page_blueprint")
+    # Its own AppTest instance on purpose: the vendored study's simulator shares session keys
+    # (and a "Calculate basket" button label) with page_simulator, so the two must never render
+    # in one run. The page namespaces those keys at runtime; this keeps the gate honest anyway.
+    run_page("Per Ticker ML-Model", "page_per_ticker_ml", timeout=300)
     at = run_page("Recommender (Track B)", "page_recommender")
     if not at.exception:
         rec = next((d.value for d in at.dataframe
