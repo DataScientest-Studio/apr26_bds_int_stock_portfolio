@@ -25,8 +25,6 @@ here, not literals, so this file can never drift from the data.
 """
 
 WINRATE_LINE_PCT = 50       # the 50 % reference line: fewer than half the trades won → warning
-MIN_STRATEGY_TRADES = 2     # a PROMOTED strategy needs the Train-OOF floor met and >= 2 MODEL trades;
-                            # the sealed label result_mode == 'ML_MULTI_TRADE' is exactly that pair
 
 _TEMPLATE = """
 <meta charset="utf-8">

@@ -58,8 +58,6 @@ POSITION_RANGE = {
     "Fully diversified (8-10)": (8, 10),
 }
 
-BY_ID = {q.id: q for q in QUESTIONS}
-
 
 def answered(answers):
     """The prompts of every required question the user left blank."""

@@ -8,7 +8,6 @@ contributed, and requires the remainder to be nothing but ticker symbols. That i
 turns "the adviser does not see the results" from a claim in a docstring into something a
 reviewer can re-run.
 """
-import json
 import re
 import sys
 from pathlib import Path

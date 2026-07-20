@@ -16,7 +16,6 @@ PATH = Path(__file__).resolve().parent / "sectors.json"
 
 _doc = json.loads(PATH.read_text(encoding="utf-8"))
 BY_SECTOR = {s: tuple(ts) for s, ts in _doc["sectors"].items()}
-PROVENANCE = _doc["_provenance"]
 
 # The eleven GICS sectors, in the file's own order. Used as the response schema's enum, so
 # the model cannot invent a twelfth.

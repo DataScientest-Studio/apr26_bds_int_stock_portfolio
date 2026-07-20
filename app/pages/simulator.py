@@ -5,9 +5,10 @@ summed. There is no per-trade data in this release, so a basket is a sum of ENDP
 no equity curve, no drawdown path, no timing. The arithmetic and the two predicates live
 in app/basket.py; the diagram lives in app/venn.py; this file is the interface.
 
-Two ways to build a basket, and they never fight: a preset writes the basket, the tile
-grid writes the basket, and nothing ever writes back into the preset widget. When the two
-diverge the caption says so in words rather than silently resetting a control.
+Three ways to fill a basket — a random draw, the questionnaire adviser, or the tile grid —
+and they never fight: each writes `basket` and records where it came from in
+`basket_source`. Editing a tile afterwards keeps that origin and flips `basket_edited`, so
+the caption can say "drawn at random, edited by hand" rather than silently resetting.
 """
 import html
 import random
@@ -195,35 +196,12 @@ def _select_method():
     rather than crashing every lookup downstream."""
     if st.session_state.method_sel:
         st.session_state.method = st.session_state.method_sel
-        # A ranking preset means "top ten of the model you are looking at", so switching the
-        # model has to re-derive it. Without this the basket keeps the previous model's
-        # ranking while the caption still calls it a preset — the caption would be lying.
-        source = st.session_state.get("basket_source")
-        if data.PRESET_PER_MODEL.get(source):
-            st.session_state.basket = set(
-                data.preset_tickers(source, st.session_state.method))
-
-
-def _apply_preset():
-    """Preset -> basket. The only other writer is the grid; nothing writes back into the
-    preset widget, so the two can never fight over a value.
-
-    st.pills round-trips its value as the FORMATTED label and only converts back if that
-    label is still in the table built during the current render. So accept either form,
-    and ignore anything that is neither rather than raising in a callback."""
-    raw = st.session_state.get("preset_sel")
-    key = data.PRESET_KEY_BY_LABEL.get(raw, raw)
-    if key not in data.PRESET_LABELS:
-        return
-    st.session_state.basket = set(data.preset_tickers(key, st.session_state.method))
-    st.session_state.basket_source = key
-    st.session_state.basket_edited = False
 
 
 def _toggle(ticker):
     """A tile edits the basket without erasing where it came from: the caption can then say
-    "preset X, edited by hand", which is the story this page advertises. Only a basket built
-    from nothing is called hand-picked."""
+    "drawn at random, edited by hand", which is the story this page advertises. Only a
+    basket built from nothing is called hand-picked."""
     b = st.session_state.basket
     b.discard(ticker) if ticker in b else b.add(ticker)
     st.session_state.basket_edited = True
@@ -235,8 +213,8 @@ RANDOM_MIN, RANDOM_MAX = 5, 15
 
 
 def _random_basket(tickers):
-    """A fresh draw every click — unseeded on purpose, unlike the seeded preset, so the
-    demo can keep pulling new baskets instead of replaying one."""
+    """A fresh draw every click — unseeded on purpose, so the demo keeps pulling new
+    baskets instead of replaying one."""
     n = min(random.randint(RANDOM_MIN, RANDOM_MAX), len(tickers))
     st.session_state.basket = set(random.sample(list(tickers), n))
     st.session_state.basket_source = "random"
@@ -287,29 +265,11 @@ st.sidebar.markdown(
     f"contract.\n"
     f"- Buy & hold over the same window is the benchmark, and it is a hard one.")
 
-col_m, col_n = st.columns([1, 2])
-with col_m:
-    # A switch, not a dropdown: the choice is strictly one of two, so it should look like
-    # two positions rather than a text field with a caret in it. required=True means an
-    # option can never be deselected, so `method` always names a real model.
-    st.segmented_control("Model", list(data.MODEL_KEY), default=method, required=True,
-                         key="method_sel", on_change=_select_method)
-with col_n:
-    st.markdown("**Basket preset** — every membership is derived from the sealed store")
-    # Re-light the chip after a page switch: preset_sel is widget-keyed, so Streamlit drops
-    # it when the widget stops rendering, and the caption below would then still name a
-    # preset that no longer looks selected. basket_source is the surviving copy.
-    if (st.session_state.basket_source in data.PRESET_LABELS
-            and not st.session_state.get("preset_sel")):
-        st.session_state.preset_sel = st.session_state.basket_source
-    # The labels are CONSTANT: st.pills matches its value by formatted string, so a label
-    # that changed with the model (".. (XGBoost)") stopped matching after a switch and the
-    # raw label landed in session_state. Which model a ranking preset uses is said below.
-    st.pills("preset", list(data.PRESET_LABELS),
-             format_func=lambda k: data.PRESET_LABELS[k],
-             key="preset_sel", on_change=_apply_preset, label_visibility="collapsed")
-    st.caption(f"Top / bottom / busiest rank the **{method}** rows; the other presets are "
-               "the same set whichever model is selected.")
+# A switch, not a dropdown: the choice is strictly one of two, so it should look like
+# two positions rather than a text field with a caret in it. required=True means an
+# option can never be deselected, so `method` always names a real model.
+st.segmented_control("Model", list(data.MODEL_KEY), default=method, required=True,
+                     key="method_sel", on_change=_select_method)
 
 if dropped:
     st.caption(f"{len(dropped)} of your picks have no {method} row and sit out this "
@@ -319,10 +279,7 @@ if dropped:
 n_sel = len(covered)
 source = st.session_state.basket_source
 edited = (", edited by hand" if st.session_state.basket_edited else "")
-if source in data.PRESET_LABELS:
-    st.caption(f"Basket: **{n_sel}** ticker(s) — preset “{data.PRESET_LABELS[source]}”"
-               f"{edited}. ${B.ENTRY_USD * n_sel:,.0f} to invest.")
-elif source == "random" and n_sel:
+if source == "random" and n_sel:
     st.caption(f"Basket: **{n_sel}** ticker(s), drawn at random{edited}. "
                f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
 elif source == "formular" and n_sel:
@@ -333,7 +290,8 @@ elif n_sel:
     st.caption(f"Basket: **{n_sel}** ticker(s), picked by hand. "
                f"${B.ENTRY_USD * n_sel:,.0f} to invest.")
 else:
-    st.caption("Basket is empty — choose a preset above, or pick from the grid below.")
+    st.caption("Basket is empty — draw one at random, ask the questionnaire, or pick from "
+               "the grid below.")
 
 st.button("Calculate basket", type="primary", disabled=(n_sel == 0),
           on_click=_go, args=("result",))
