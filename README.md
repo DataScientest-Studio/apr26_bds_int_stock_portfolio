@@ -19,10 +19,10 @@ OHLCV (1h / 1d)
 ## Quickstart
 
 ```bash
-git clone --depth 1 --branch Stable_Presentable_Version \
-  https://github.com/flak92/liora-project-ml-engineering.git
+git clone --depth 1 --branch presentable_beta_version_of_liora_project \
+  https://github.com/DataScientest-Studio/apr26_bds_int_stock_portfolio.git
 
-cd liora-project-ml-engineering
+cd apr26_bds_int_stock_portfolio
 
 make verify     # optional, stdlib only: hashes, notebook parity, map figures
 make setup
