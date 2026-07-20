@@ -47,6 +47,12 @@ pg = st.navigation([
     st.Page(page_final_presentation.render, title="Final Presentation", icon="🎤", url_path="final-presentation"),
 ])
 
+# The vendored study under per_ticker_ml/ writes the same session keys as page_simulator.py
+# (stage, basket, method, method_sel) over a different universe. Hand those keys to whichever
+# page is active, before it runs — see page_per_ticker_ml.sync_session_scope for why this
+# cannot live inside that page's render().
+page_per_ticker_ml.sync_session_scope(pg.url_path)
+
 # ── Keyboard shortcut: Ctrl / ⌘ + B hides/shows the navigation menu (sidebar) ────────
 # Streamlit exposes no sidebar hotkey, so we click its own collapse/expand control from
 # a 0-height component. The listener is bound to the PARENT document exactly once (a flag

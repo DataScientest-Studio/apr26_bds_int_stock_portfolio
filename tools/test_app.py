@@ -90,6 +90,75 @@ def make_apptest(module_name: str):
         _page_script, kwargs={"module_name": module_name, "app_dir": str(ROOT / "app")})
 
 
+def _per_ticker_script(app_dir: str, active: str) -> None:
+    """Stand-in for app/app.py around the vendored study: scope sync, then the active page."""
+    import sys
+    if app_dir not in sys.path:
+        sys.path.insert(0, app_dir)
+    import page_per_ticker_ml
+    page_per_ticker_ml.sync_session_scope(active)
+    if active == "per-ticker-ml":
+        page_per_ticker_ml.render()
+    else:
+        import page_simulator
+        page_simulator.render()
+
+
+def gate_per_ticker_callbacks():
+    """The study's widgets carry on_change/on_click callbacks, and Streamlit runs those from
+    on_script_will_rerun — BEFORE the script body. A swap of the shared session keys scoped to
+    this page's render therefore leaves them reading keys that are not there, which crashed the
+    Model switch with 'st.session_state has no attribute method_sel'. This drives the widgets
+    that fire callbacks, and checks the study's basket still cannot reach page_simulator's keys.
+    """
+    from streamlit.testing.v1 import AppTest
+    print("Part 3 — vendored study: widget callbacks + cross-page key isolation")
+    at = AppTest.from_function(
+        _per_ticker_script,
+        kwargs={"app_dir": str(ROOT / "app"), "active": "per-ticker-ml"}, default_timeout=300)
+    at.run()
+    check("study page renders", not at.exception,
+          str(at.exception[0].value) if at.exception else "")
+    if at.exception:
+        return
+
+    seg = at.segmented_control
+    check("Model switch present", bool(seg))
+    if seg:
+        other = next((o for o in seg[0].options if o != seg[0].value), None)
+        if other:
+            seg[0].set_value(other).run()
+            check("Model switch callback survives the rerun", not at.exception,
+                  str(at.exception[0].value) if at.exception else "")
+            check("method followed the switch", at.session_state["method"] == other)
+
+    tiles = [b for b in at.button if 1 <= len(b.label) <= 5 and b.label.upper() == b.label]
+    check("ticker tiles present", bool(tiles), f"{len(tiles)} tiles")
+    if tiles and not at.exception:
+        label = tiles[0].label
+        tiles[0].click().run()
+        check("ticker tile callback survives the rerun", not at.exception,
+              str(at.exception[0].value) if at.exception else "")
+        check("tile landed in the study's basket", label in at.session_state["basket"])
+
+    if at.exception:
+        return
+    study_basket = set(at.session_state["basket"])
+    host = AppTest.from_function(
+        _per_ticker_script,
+        kwargs={"app_dir": str(ROOT / "app"), "active": "simulator"}, default_timeout=300)
+    for key, value in at.session_state.filtered_state.items():
+        host.session_state[key] = value
+    host.run()
+    check("Track B simulator renders after the study", not host.exception,
+          str(host.exception[0].value) if host.exception else "")
+    state = host.session_state.filtered_state
+    check("study basket does not leak into Track B",
+          not (set(state.get("basket", set())) & study_basket))
+    check("study basket parked under _ptml__",
+          set(state.get("_ptml__basket", set())) == study_basket)
+
+
 def gate_simulator_flow():
     at = make_apptest("page_simulator")
     at.run(timeout=120)
@@ -156,6 +225,9 @@ def main():
         if rec is not None:
             check("recommender: sector cap <=3", int(rec["sector"].value_counts().max()) <= 3)
     gate_simulator_flow()
+
+    print()
+    gate_per_ticker_callbacks()
 
     print()
     if FAILS:

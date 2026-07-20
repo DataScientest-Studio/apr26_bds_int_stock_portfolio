@@ -18,17 +18,19 @@ Three things have to be contained so the vendor cannot disturb this app:
     as it does when the study runs standalone. app/app.py therefore renders its sidebar
     caption and Ctrl+B hotkey BEFORE pg.run(), so a page that stops cannot take them down.
 
-  * Because of that latch, the session-state swap below cannot go through st.session_state:
-    it would abort on its first access and strand the study's basket in the host's keys. It
-    goes through the raw SessionState instead — see _raw_state().
+  * Because of that latch, the session-key swap cannot go through st.session_state: it would
+    abort on its first access and strand the study's basket in the host's keys. It goes
+    through the raw SessionState instead — see _raw_state().
 
   * Each study page calls sys.path.insert(0, ...) unconditionally, so the path is snapshot
     and restored; otherwise it grows by one entry on every rerun for the whole session.
 
-The study shares stage / basket / method / method_sel with app/page_simulator.py, over a
-DIFFERENT universe (993 sealed assets vs the 498-ticker OOS store). Those keys are swapped
-into a private namespace around the run, so a basket built here cannot leak into Basket
-Simulator (Track B) or the other way round.
+The study shares stage / basket / method / method_sel (and the host adds preset*) with
+app/page_simulator.py, over a DIFFERENT universe — 993 sealed assets vs the 498-ticker OOS
+store. sync_session_scope() gives those keys to whichever page is active, so a basket built
+here cannot leak into Basket Simulator (Track B) or the other way round. It is called from
+app/app.py before pg.run(), NOT around this render: widget callbacks run before the script
+body, so a render-scoped swap leaves them reading keys that are not there.
 
 Tabs are lazy — on_change="rerun" plus tab.open — so only the selected sub-tab executes and
 the 31.6 MB store is not queried three times per interaction.
@@ -43,6 +45,7 @@ from streamlit.runtime.scriptrunner_utils.exceptions import ScriptControlExcepti
 
 STUDY = Path(__file__).resolve().parents[1] / "per_ticker_ml"
 STUDY_APP = STUDY / "app"
+URL_PATH = "per-ticker-ml"                   # must match the st.Page(...) in app/app.py
 
 # (tab label, page script) — the study's own sidebar order, preserved.
 TABS = [
@@ -53,8 +56,11 @@ TABS = [
 
 # Keys the study and app/page_simulator.py both write, with different meanings.
 # (formular/ui.py writes stage/basket/basket_source/basket_edited too — same namespace.)
-_SHARED = ("stage", "basket", "basket_source", "basket_edited", "method", "method_sel")
-_NS = "_ptml__"
+_SHARED = ("stage", "basket", "basket_source", "basket_edited", "method", "method_sel",
+           "preset", "preset_sel", "preset_result")
+_NS = "_ptml__"          # the study's parked copy
+_HOST = "_host__"        # the rest of the app's parked copy
+_OWNER = "_ptml__owner"  # which side currently holds the bare keys
 
 # The study hard-codes a dark palette in Python (plotly figures, the graphviz DOT, the tile
 # and tooltip CSS) because it ships its own .streamlit/config.toml with base="dark". Only the
@@ -89,42 +95,63 @@ def _raw_state():
         return st.session_state
 
 
-@contextmanager
-def _isolated():
-    """Run the study against its OWN copy of the colliding session keys."""
+_MISSING = object()
+
+
+def _get(state, key):
+    try:
+        return state[key]
+    except KeyError:
+        return _MISSING
+
+
+def _drop(state, key):
+    try:
+        del state[key]
+    except KeyError:
+        pass
+
+
+def sync_session_scope(active_url_path: str) -> None:
+    """Hand the shared session keys to whichever page owns them now. Call before pg.run().
+
+    The swap CANNOT be done around this page's render. Widget callbacks (the study's
+    _select_method and _toggle) run from on_script_will_rerun, at the very start of the next
+    script run — before app.py executes, so before any render-scoped swap could put the
+    study's keys back. A callback would then read a key that had been parked away and die with
+    "st.session_state has no attribute method_sel".
+
+    So ownership changes on PAGE TRANSITION instead, and persists between runs: whichever page
+    the user is on keeps the bare keys, which is exactly what its callbacks expect to find.
+    """
     state = _raw_state()
+    want = "study" if active_url_path == URL_PATH else "host"
+    if _get(state, _OWNER) is _MISSING:
+        state[_OWNER] = "host"
+    if state[_OWNER] == want:
+        return
 
-    def get(key, default=None):
-        try:
-            return state[key]
-        except KeyError:
-            return default
+    park, load = (_NS, _HOST) if want == "host" else (_HOST, _NS)
+    for key in _SHARED:
+        current = _get(state, key)
+        if current is not _MISSING:
+            state[park + key] = current
+        _drop(state, key)
+        saved = _get(state, load + key)
+        if saved is not _MISSING:
+            state[key] = saved
+    state[_OWNER] = want
 
-    def drop(key):
-        try:
-            del state[key]
-        except KeyError:
-            pass
 
-    missing = object()
-    host = {k: get(k, missing) for k in _SHARED}
-    for k in _SHARED:
-        drop(k)
-        saved = get(_NS + k, missing)
-        if saved is not missing:
-            state[k] = saved
+@contextmanager
+def _restore_sys_path():
+    """Each study page inserts its own app/ at sys.path[0] unconditionally; without this the
+    path grows by one entry on every rerun for the life of the session."""
     path = list(sys.path)
     try:
         yield
     finally:
         sys.path[:] = path
-        for k in _SHARED:
-            current = get(k, missing)
-            if current is not missing:
-                state[_NS + k] = current
-            drop(k)
-            if host[k] is not missing:
-                state[k] = host[k]
 
 
 def render() -> None:
@@ -138,7 +165,7 @@ def render() -> None:
     for tab, (label, script) in zip(st.tabs(labels, key="ptml_tab", on_change="rerun"), TABS):
         if not tab.open:                 # lazy: only the selected sub-tab executes
             continue
-        with tab, _isolated():
+        with tab, _restore_sys_path():
             try:
                 runpy.run_path(str(script), run_name="__main__")
             except ScriptControlException:
