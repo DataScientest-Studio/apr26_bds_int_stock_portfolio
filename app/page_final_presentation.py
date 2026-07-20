@@ -105,7 +105,7 @@ the pick**.
     with f1:
         st.markdown(
             """
-**🎯 What the model predicts (target)**
+**What the model predicts (target)**
 - **The return over the next ~3 months** (63 trading days) for each stock: take the price ~3 months
   from now, compare it to today's price, as a percent.
 - We don't need the exact number — we use it to **rank** stocks (best expected return first).
@@ -118,13 +118,11 @@ the pick**.
     with f2:
         st.markdown(
             """
-**🧩 Features we selected (the model's inputs)**
+**Features we selected (the model's inputs)**
 - **Momentum** — recent price gains (over 5, 20, 60 days).
 - **Risk** — how much the price swings (last month & 3 months) + the worst drop from a peak in the last year.
 - **How easy it is to trade** — typical daily volume (shares changing hands).
 - **Sector** — which industry (tech, energy, healthcare, …).
-- → **9 price/volume features + sector**. *Removed on purpose:* `history_days` (a data-leakage
-  shortcut — see next slides).
             """
         )
     st.caption("All inputs come from price & volume only (Alpaca) — no company financials.")
