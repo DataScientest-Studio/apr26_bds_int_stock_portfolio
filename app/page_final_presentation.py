@@ -19,6 +19,7 @@ FIG_PIPELINE = ROOT / "reports" / "figures" / "13_trackb_pipeline_overview.png"
 FIG_FUNNEL = ROOT / "reports" / "figures" / "12_trackb_portfolio_funnel.png"
 FIG_APP = ROOT / "mac-2026-06-09-full-6y" / "report_assets" / "01_recommendation.png"
 ML_PART1_REPORT = ROOT / "reports" / "Engineering_the_Stock_Recommender PART I.pdf"
+ML_PART1_VIDEO = ROOT / "reports" / "Engineering_the_Stock_Recommender PART I.mp4"
 
 
 def _img(path: Path, caption: str, width="stretch") -> None:
@@ -41,6 +42,14 @@ def _pdf_download(path: Path, label: str) -> None:
         )
     else:
         st.warning(f"Missing PDF: {path.relative_to(ROOT)}")
+
+
+def _video(path: Path) -> None:
+    """Render a local video without breaking the page if it is absent."""
+    if path.is_file():
+        st.video(str(path))
+    else:
+        st.warning(f"Missing video: {path.relative_to(ROOT)}")
 
 
 def _introduction() -> None:
@@ -234,6 +243,7 @@ def render() -> None:
         st.header(f"{i}. {title}")
         if title == "Machine Learning — Part 1":
             _pdf_download(ML_PART1_REPORT, "Download Machine Learning Part 1 PDF report")
+            _video(ML_PART1_VIDEO)
 
     st.divider()
     _conclusion()
