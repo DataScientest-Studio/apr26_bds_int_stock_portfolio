@@ -193,8 +193,7 @@ def _conclusion() -> None:
   **0.16** on a 0-to-1 scale, where 0 = guessing), but tested honestly across **many time periods** it
   fell to **0.06** — a **weak** signal. A **simple model won** (a plain linear model, "Ridge"),
   and a deep-learning model was tried but not chosen.
-- **What we actually ship:** the simple model scored best on that single slice, but the **recommender
-  in the app uses the "no-history" Random Forest** — it held up best across time periods.
+- **What we actually ship:** the simple model scored best on that single slice, but the **recommender in the app uses a Random Forest with `history_days` removed** — this feature counted how many days of historical data each stock had and could act as a listing-age shortcut. The model held up best across time periods.
 - **Data quality isn't uniform:** new listings like SNDK have short, patchy histories — we now track
   each stock's history length instead of assuming a clean dataset.
         """
