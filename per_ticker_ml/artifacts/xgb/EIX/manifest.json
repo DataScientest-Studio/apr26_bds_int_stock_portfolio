@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 27421,
+   "sha256": "8bea424c727a8ee955cd1d30aa2fa25d54e9a08271b55040bc452d87d37f0a0a"
+  },
+  "metrics.json": {
+   "bytes": 1046,
+   "sha256": "6eaec1f4e8761da9a381d6e3ccaf838baff6d5c13120d5d4a8dfedb43488b780"
+  },
+  "parameters.json": {
+   "bytes": 4630,
+   "sha256": "dc4e1561b98286725293beb4ca13fda5e39700edf0ba5343fb1f7dab90a55238"
+  },
+  "strategy_EIX.py": {
+   "bytes": 187266,
+   "sha256": "3556419212a2fc814349ccdb302628d0baa60f8480a183e80d58b8872597902b"
+  }
+ },
+ "folder_sha256": "6e7036a81d8a39809957783495086efcabd453ed0ce62a035f610edad61ec0fa",
+ "model": "xgb",
+ "model_hash": "842d7fc5901d4650952549c6306571c9505044170d530bd08fb8f2e0522bb3c5",
+ "ticker": "EIX"
+}

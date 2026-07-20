@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 60208,
+   "sha256": "155eb3bc3e3c07b0776b31d3969c33dedf7727a3b97d3baaa4459346204ccf02"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "2636f34cccf8c1fd0bf5c96f894d03967d3592b3662baf20fa3a0bdfb019ed57"
+  },
+  "parameters.json": {
+   "bytes": 4083,
+   "sha256": "d19e3e670f41bcefb61eaa365e5be74519a8a80931ad459bf1815b59dfc7b288"
+  },
+  "strategy_PSA.py": {
+   "bytes": 233671,
+   "sha256": "99859b6f221f11fb53d8bee0c727c9d727cd18cc1927a996a5be7883a36ec0d7"
+  }
+ },
+ "folder_sha256": "63a94953bbaa4533076a67ef36e37326463a6887ab52a379ecebd24e774beabf",
+ "model": "xgb",
+ "model_hash": "5d82f761a83ff4b6bf75482455c5a1dc991afeefb95f4417bb1c25a94fd73f6f",
+ "ticker": "PSA"
+}

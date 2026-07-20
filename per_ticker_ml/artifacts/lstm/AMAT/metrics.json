@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "ac00bc0e236aba5c4ceda2ae9e7e22125e42e803c6dba97cb8a69ce75cea096c",
+  "oof_log_growth": 0.09520670316333694,
+  "oof_trades": 14,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.44272468603456305,
+  "cv_folds": 4,
+  "end_capital": 896.2637580018552,
+  "losses": 2,
+  "max_drawdown_pct": 14.062954587803281,
+  "model_trades": 2,
+  "net_pnl_usd": -103.7362419981448,
+  "oof_log_growth": 0.09520670316333694,
+  "oof_trades": 14,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.0,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -10.37362419981448,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "AMAT",
+  "time_in_market_pct": 2.3973,
+  "trade_floor_met": 1,
+  "trades": 2,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "AMAT"
+}

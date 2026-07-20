@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 28916,
+   "sha256": "3eb64b7837b20ce13875f7eacb07cd25f369db681279872bf2721992f47050ad"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "7c007cde3c9dc1a5ced6351ab59ce93d9fcb2819ed0fb257973f50931af8a838"
+  },
+  "parameters.json": {
+   "bytes": 4080,
+   "sha256": "e61dcaeb8d7f8e0c1b2ec57d8da74f3078d8937708ae3826c4f784199a72e48c"
+  },
+  "strategy_LIN.py": {
+   "bytes": 202548,
+   "sha256": "9da7fd22486fdde02729f3fd6a31d0f4a5f2fb6eed1671228a12e93e48a36579"
+  }
+ },
+ "folder_sha256": "e59f5250ee9d7664f85eed4ad8d367eb704f85f8390e34427dfb6e953a735a34",
+ "model": "xgb",
+ "model_hash": "a9f9e43e366adf413ea6335953f0ff82f124b9fb336fdd4586482387c6652ea2",
+ "ticker": "LIN"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 101593,
+   "sha256": "df602a1fbd35453ec953ca83b89981f76349c0dcfb53bd8d72733c1a46d0cd49"
+  },
+  "metrics.json": {
+   "bytes": 1078,
+   "sha256": "1b1441c5de4fdbcedae527057c602dedf493b4c3f0112fab680f504e8e4978bd"
+  },
+  "parameters.json": {
+   "bytes": 3136,
+   "sha256": "ade77a35f1c21d8533dd4c9c12a8bbf42bf5ce839a7440d3f490d46f74830759"
+  },
+  "strategy_ORCL.py": {
+   "bytes": 93708,
+   "sha256": "8fb61a8f67ca43c622c4dcaf36c86cae26251f3cda4cc37611290b10672015f3"
+  }
+ },
+ "folder_sha256": "49a8d993f33a062aa382a25ef55ac1ced0d34c7c0a5e7dec1a928f5cf23992c3",
+ "model": "lstm",
+ "model_hash": "402969518bf4fb9aa1b3da0e1b0321d8c704324cb0d5e6c55cb5908653ed1808",
+ "ticker": "ORCL"
+}

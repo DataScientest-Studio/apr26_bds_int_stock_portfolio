@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 71228,
+   "sha256": "acf22a3a419011bcd63a5b6249ca2c4a4029260f370039245cb20e7b2ab139dc"
+  },
+  "metrics.json": {
+   "bytes": 1069,
+   "sha256": "25b5e0b637ab986baf59ff047863cdae2d231c4084fcd2fcfd8cbb47f437e4ee"
+  },
+  "parameters.json": {
+   "bytes": 2404,
+   "sha256": "517d2f5f82e1a63df1877e61752fb1bba2c9bc28b51edc2a71b295e7f64180ac"
+  },
+  "strategy_MAA.py": {
+   "bytes": 73928,
+   "sha256": "deca7047c37fdac7019274fc97a406665de7b04238af870d7db1efca76f25e60"
+  }
+ },
+ "folder_sha256": "3a903596941e213d5458bbe12749dc231e68f01a07ab4948e1ad7ce61be99c17",
+ "model": "lstm",
+ "model_hash": "60d5affc9f18d8644400f4071e9d406bf681fc62a04013f33f70be1c24fed66b",
+ "ticker": "MAA"
+}

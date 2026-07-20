@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 42426,
+   "sha256": "16a2608e180cc9f10b44ef6011fc4cd976ffca07abfd53063aeb8f32c00e9ca4"
+  },
+  "metrics.json": {
+   "bytes": 1089,
+   "sha256": "b55b8199e6dea584007407527f7c1031874986228995f2a78b2fcc860d822958"
+  },
+  "parameters.json": {
+   "bytes": 4083,
+   "sha256": "7b0fb5c3d492d649a08c98dc66f0c469dd1511bd10bbfd81a8ea546af7389c52"
+  },
+  "strategy_ADI.py": {
+   "bytes": 207565,
+   "sha256": "e9f1ed4242574e1a31137977ebee918a316e1c161dc7a5edb543667ddde8787c"
+  }
+ },
+ "folder_sha256": "104f7c7e0dc4253e2115d82de9f93c5840522b196586f94c632a269aa3701cde",
+ "model": "xgb",
+ "model_hash": "9b1a782780a08f37cefdb8ed28c83fe019bc8ff91e3aa2a3b879e665e5bb9bc3",
+ "ticker": "ADI"
+}

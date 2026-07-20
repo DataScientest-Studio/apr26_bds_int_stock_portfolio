@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 40306,
+   "sha256": "e7d69beb0309f0ce5175148959c2f89013fa9d4309bf42fc028a8f13fe928923"
+  },
+  "metrics.json": {
+   "bytes": 1093,
+   "sha256": "ee8f6f8c2fbaefa917089e09d4b304f7a89e8ce327e128293f7d060331b357a8"
+  },
+  "parameters.json": {
+   "bytes": 4607,
+   "sha256": "144c3c8d1152f9b0513cba7cc1e2bd93d48d4be3bb79f5dd1e15956f530b258a"
+  },
+  "strategy_MCHP.py": {
+   "bytes": 196448,
+   "sha256": "5d3ab03cb70658cca22113656189d4ee2ea2b3de5679677cc780bdcae7a4a8f3"
+  }
+ },
+ "folder_sha256": "bc337eaf81ed9daa9a80f72ab9ce7c72d00a1f3dbc7b57349c30a9a76f28c48d",
+ "model": "xgb",
+ "model_hash": "ae081035f15fa9d1545f05f4548e995405ee9742fe294183505bf0a20fc2d4bb",
+ "ticker": "MCHP"
+}

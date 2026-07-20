@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "be70c5c4001e87bed3e696d8aec6b84788c8a9275c745d714995dad9069feb44",
+  "oof_log_growth": 0.13355112936137295,
+  "oof_trades": 14,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4843798717459975,
+  "cv_folds": 4,
+  "end_capital": 1100.8056708545078,
+  "losses": 0,
+  "max_drawdown_pct": 35.84382245776747,
+  "model_trades": 0,
+  "net_pnl_usd": 100.80567085450775,
+  "oof_log_growth": 0.13355112936137295,
+  "oof_trades": 14,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": 10.080567085450776,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "UHS",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "UHS"
+}

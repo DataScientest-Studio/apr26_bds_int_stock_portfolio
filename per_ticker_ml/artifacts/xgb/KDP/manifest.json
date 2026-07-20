@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25955,
+   "sha256": "3ae0cc9e64e2c45e7dddb54f4c412f6b7a8013b664e3da1a8d8ee5cd26635e7f"
+  },
+  "metrics.json": {
+   "bytes": 1045,
+   "sha256": "df08b5d44e214ef6160f9928a42117fa6df656d76e68a3c2c4e09bcd846d13d1"
+  },
+  "parameters.json": {
+   "bytes": 4079,
+   "sha256": "63864122bb8560db41841c11c85af150568e36ac95f7a15874e972481c06436b"
+  },
+  "strategy_KDP.py": {
+   "bytes": 187035,
+   "sha256": "368e65ccf1c446d317d5786ed77d7986433925c931b55a14bb19c5bcf899b188"
+  }
+ },
+ "folder_sha256": "c709e7b08afd661f86de642e66a62bcc2a4e5c3cf02ee0834d9f81157ac3fc21",
+ "model": "xgb",
+ "model_hash": "72e36151af49fdd69e7cd195138b5ba3d58bed156a07e43dcd4b70ad3298efa1",
+ "ticker": "KDP"
+}

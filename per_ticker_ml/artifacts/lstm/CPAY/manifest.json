@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76776,
+   "sha256": "617ce14535645fa087720145d2ca84f9740ddf4e01e6af6741cf331fa5bb2b32"
+  },
+  "metrics.json": {
+   "bytes": 1086,
+   "sha256": "0975c02ddea946eb4aaed3cb246e0a4a0200b9c8102ed7a5465cc125e505fbaa"
+  },
+  "parameters.json": {
+   "bytes": 2542,
+   "sha256": "c73bf70f770b1f43e723d2de1be2aae882eab585edb6448153b5701dada82fcd"
+  },
+  "strategy_CPAY.py": {
+   "bytes": 77503,
+   "sha256": "700c73054358ff9f14aac61ee0150b605982ec2c3a23d8c4b162eaf5ba90154f"
+  }
+ },
+ "folder_sha256": "9992f489bfe96351a6fcec6c501395c976652eb7b46be88875bbc8effe896243",
+ "model": "lstm",
+ "model_hash": "2d65fee69344365dbcfb184d4e9e49d617906b2a9f36da650d3844288bae5f12",
+ "ticker": "CPAY"
+}

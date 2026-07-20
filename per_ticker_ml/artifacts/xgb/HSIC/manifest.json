@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 28900,
+   "sha256": "80a26c88c2fc40991fc945df0631150e81644b80ac730e67a2050ac7b9156b42"
+  },
+  "metrics.json": {
+   "bytes": 1047,
+   "sha256": "9d8872864223272b150f447847c390fc47f3529d93e585f7430b4a44e13a65cc"
+  },
+  "parameters.json": {
+   "bytes": 4785,
+   "sha256": "1ff27f071cf640965ae99043468ec9a40c3f0ed31d96a411c183b6b89eb342ec"
+  },
+  "strategy_HSIC.py": {
+   "bytes": 187424,
+   "sha256": "078b6d7905092c2c539179e38c7e22004ca3e56299000522531a8a7484836b97"
+  }
+ },
+ "folder_sha256": "e89b5fca2b402af1c0b278187700e889a746e3a3cc9332378e5849e069954b21",
+ "model": "xgb",
+ "model_hash": "2ff406ccfb3c7c5257eff3bb27e2ad12c45140328bbecec3874600d3d8d2eb91",
+ "ticker": "HSIC"
+}

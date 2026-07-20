@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 60418,
+   "sha256": "808b380dbb892cf5f0bfbebe2e9b4d10a8170506e5df18a3f7b8a9b89eea5a8a"
+  },
+  "metrics.json": {
+   "bytes": 1057,
+   "sha256": "62a1aa83f9c3189792f88ee38b61564fc8f3c7defd1894bd168faaa8ccb5a829"
+  },
+  "parameters.json": {
+   "bytes": 2519,
+   "sha256": "b1d06204568ea793a84c616f68f32c36f774aba9fb4b5a4e1dd8fc815922c6e8"
+  },
+  "strategy_AVB.py": {
+   "bytes": 77251,
+   "sha256": "307f0551b893d8936ef13e252f3a9d7c24bd9e26c27370b848f98725d52505e4"
+  }
+ },
+ "folder_sha256": "bf76a93fac7a7737107f07c72e329716da9666d1cc9348652f0f7c03362ebe65",
+ "model": "lstm",
+ "model_hash": "70e9d45726e2ad13ea62e540f31afdd45b5e065e31d1b43eed5f5c8291a367fa",
+ "ticker": "AVB"
+}

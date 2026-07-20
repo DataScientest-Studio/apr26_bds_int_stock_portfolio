@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 95347,
+   "sha256": "29690338a22058efbd06618529e4b465f680d33148db6f78d0110ebc27aa71d5"
+  },
+  "metrics.json": {
+   "bytes": 1077,
+   "sha256": "dff92a2021013b564d5a4a00919162fb0cd66716f7959808b4689fcdb1b4e6ea"
+  },
+  "parameters.json": {
+   "bytes": 3026,
+   "sha256": "bc700d09fbbd339e7f189586bfde244954246f6884536485f44ac4bd8511e366"
+  },
+  "strategy_DECK.py": {
+   "bytes": 90163,
+   "sha256": "1ec3591586aff89cb92dd6e876a6e9f09adb54f7e7bcf617db4905bd29ae3ca2"
+  }
+ },
+ "folder_sha256": "215edf588f698f58276e3b00b6ad0705c1bd9159c8e91bf69195fa387e6d8ee1",
+ "model": "lstm",
+ "model_hash": "7bd3a1ebe32cadf71425d9c34d1d19233c1576818036893a2830f7f0bb2113a7",
+ "ticker": "DECK"
+}

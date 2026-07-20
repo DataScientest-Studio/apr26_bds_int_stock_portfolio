@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 71310,
+   "sha256": "4a4e47c90d687b3edf0e89efc89a5daf1a3b1ba6829cb0ac0cb5d34f2f0eb432"
+  },
+  "metrics.json": {
+   "bytes": 1061,
+   "sha256": "53606b08679833c69e00bbd30a17b197cdd5a618f29844192bde40c104c098bf"
+  },
+  "parameters.json": {
+   "bytes": 2906,
+   "sha256": "91e382307bb29519c6bae6f0f74016692f363e36edf37a01e9c4e14be04d3084"
+  },
+  "strategy_PRU.py": {
+   "bytes": 86134,
+   "sha256": "9121bf9b02dff1bf0f8c4d3955f38fe9b31238c0575d2b102f62ce064f529b61"
+  }
+ },
+ "folder_sha256": "a31cda7a873aed07cc86e34eb8058f9f809f7fa2ff951b81fb0a2503b033964d",
+ "model": "lstm",
+ "model_hash": "b9f2f4d37cb0d1d33bd50913082019a3213710060941fbaac28d11632e4d74a6",
+ "ticker": "PRU"
+}

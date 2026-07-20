@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "65fef34e49c2204530d3ca56c5dbe2c8d84cbe6769323f8edbec8697b01dabc4",
+  "oof_log_growth": 0.7595944983992962,
+  "oof_trades": 107,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.45199923822871974,
+  "cv_folds": 4,
+  "end_capital": 786.9295977193237,
+  "losses": 27,
+  "max_drawdown_pct": 48.47847018848169,
+  "model_trades": 45,
+  "net_pnl_usd": -213.07040228067626,
+  "oof_log_growth": 0.7595944983992962,
+  "oof_trades": 107,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.7949952975568118,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -21.30704022806763,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "HUM",
+  "time_in_market_pct": 59.0753,
+  "trade_floor_met": 1,
+  "trades": 45,
+  "win_rate_pct": 40.0,
+  "wins": 18
+ },
+ "ticker": "HUM"
+}

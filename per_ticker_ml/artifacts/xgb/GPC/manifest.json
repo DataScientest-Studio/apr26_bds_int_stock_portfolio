@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25918,
+   "sha256": "682ec26b84f0d80f888a2de8b12854db656b59ab0b544d9ced926aab8639cbfa"
+  },
+  "metrics.json": {
+   "bytes": 1046,
+   "sha256": "9dc698db79bca08d85abc29d839618b2448484ff67cd80544003035e84b3dab1"
+  },
+  "parameters.json": {
+   "bytes": 4079,
+   "sha256": "0f427f88c251d482a0aa6baba2425e45a161f645d562e20662082870f3b84939"
+  },
+  "strategy_GPC.py": {
+   "bytes": 187036,
+   "sha256": "5450444ce3c18aedc8d91b5ecbba839c0e5d45a5f846b6c3bf555ae397498fda"
+  }
+ },
+ "folder_sha256": "0bb2e5f804ee3eddea9dd50b3e9dbfa24b746788aaad002c03d43d1314c28f09",
+ "model": "xgb",
+ "model_hash": "b26357ce845e967f3cf2ab77e74395d98bfe458befaf0c1dc28f539de1a82920",
+ "ticker": "GPC"
+}

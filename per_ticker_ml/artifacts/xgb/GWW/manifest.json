@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 105694,
+   "sha256": "73a75bc53e7ed2c4b7d4d7ae88f56d09ad436f108eedd50f4c2da043d5b6d04d"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "e105ad5ac91d41976c06b735eac1a388b879d31df771f8380fea9f2f56e4b8e5"
+  },
+  "parameters.json": {
+   "bytes": 5369,
+   "sha256": "1a924db11edbf93678732e0642d2d25044f8b099e9083cfd57f99559167626b1"
+  },
+  "strategy_GWW.py": {
+   "bytes": 133970,
+   "sha256": "bd170b0eeb79033401ddff9901c4c6ab14e80c622a465cc237ec652beaacdadd"
+  }
+ },
+ "folder_sha256": "53dca99832a04f78cd43179c00593409dbd2e8adcfc0eb927a2218602de3c2ef",
+ "model": "xgb",
+ "model_hash": "f7988fb3934ac461c13f074f6276b41688f8350608b49609cc6596f650682afc",
+ "ticker": "GWW"
+}

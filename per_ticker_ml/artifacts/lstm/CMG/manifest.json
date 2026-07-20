@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75217,
+   "sha256": "35519e50ba75e62224be42b59e799dfa21c6c08fb8cc5590ad77bef9908ef51f"
+  },
+  "metrics.json": {
+   "bytes": 1079,
+   "sha256": "3a5eaa0c673986775bc4a9b8475d3de7e79832d617302d5353b542797cb84a2f"
+  },
+  "parameters.json": {
+   "bytes": 2511,
+   "sha256": "fe491cbbd872c34b7719362030eb92b0918424042409218c413151596b1fdbb2"
+  },
+  "strategy_CMG.py": {
+   "bytes": 76437,
+   "sha256": "b23655a2150ebca78cfe38f42860862099d0d2b2823dd30ec8ab6bdcb2e92964"
+  }
+ },
+ "folder_sha256": "17e84f6f087d70c265cca7e8080f5e947518ce84941ff9ac316ad2eb8bb4d5c3",
+ "model": "lstm",
+ "model_hash": "e06772163d0b78a8a4275366e0d64825c852cfcc8f0b1a9e06bb99640bfc9b46",
+ "ticker": "CMG"
+}

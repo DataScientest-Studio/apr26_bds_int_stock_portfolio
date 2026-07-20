@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 57293,
+   "sha256": "0f5716313e60221370ed01e5c1dadf7da671f0121e47788fbcd33a1f08331637"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "991d92de2e2dd1830d81d15a9cee0bf026c88f32d42e6bf329147e596ab3375f"
+  },
+  "parameters.json": {
+   "bytes": 5167,
+   "sha256": "170b81bf455d515fa11718386e5539a18b0614fedd950e59885073324437c77b"
+  },
+  "strategy_MAR.py": {
+   "bytes": 205416,
+   "sha256": "118f5a0c0c6196ec76fba9de7efdbc51f4e5cc1fc0c601433a6ef9af44469f6c"
+  }
+ },
+ "folder_sha256": "40b6e28f672a9136322b1d047b9d57c0045514e9fdf5a9178c733c10d3831894",
+ "model": "xgb",
+ "model_hash": "8fc8d022c3f7f2c7eb79ed0ee341884cfd6f9cb35bb1e13634d95c0b9fbe317c",
+ "ticker": "MAR"
+}

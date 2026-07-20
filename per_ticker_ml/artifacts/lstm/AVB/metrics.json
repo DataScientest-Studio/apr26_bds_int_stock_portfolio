@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "70e9d45726e2ad13ea62e540f31afdd45b5e065e31d1b43eed5f5c8291a367fa",
+  "oof_log_growth": 0.047694067297393186,
+  "oof_trades": 10,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.49185763644089964,
+  "cv_folds": 4,
+  "end_capital": 1006.3572635351985,
+  "losses": 0,
+  "max_drawdown_pct": 2.264053857038723,
+  "model_trades": 1,
+  "net_pnl_usd": 6.357263535198513,
+  "oof_log_growth": 0.047694067297393186,
+  "oof_trades": 10,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_ONE_TRADE_LOW_EVIDENCE",
+  "return_pct": 0.6357263535198499,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "AVB",
+  "time_in_market_pct": 1.7123,
+  "trade_floor_met": 1,
+  "trades": 1,
+  "win_rate_pct": 100.0,
+  "wins": 1
+ },
+ "ticker": "AVB"
+}

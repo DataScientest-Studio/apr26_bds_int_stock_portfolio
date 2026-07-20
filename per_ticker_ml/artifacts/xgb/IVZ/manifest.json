@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 44528,
+   "sha256": "76dc9554deba158ab7679d0565e77d5635b7f19be741aa6de0160af29626a216"
+  },
+  "metrics.json": {
+   "bytes": 1085,
+   "sha256": "c621021bcabf353e5f16e8ea954cb0d5377e40fb1a4e1a83752b6bffeb5dde6b"
+  },
+  "parameters.json": {
+   "bytes": 5730,
+   "sha256": "1c4f8817a881b2ef08cab9d1009dca424bfa34bd6befad34e947ba90fb59ba91"
+  },
+  "strategy_IVZ.py": {
+   "bytes": 165069,
+   "sha256": "437ecab8039deca19f70ba9214124bd41fe3746322e5c4f8d09f0c90d9bf7c1f"
+  }
+ },
+ "folder_sha256": "b181efe6d70675bd890b7bddf610632329d8d2bd0ab2f59f90c27c4feb659f87",
+ "model": "xgb",
+ "model_hash": "74d24496fa70b878a35314f5272ccb56e9271c54b089b0f2659feea4880ceeec",
+ "ticker": "IVZ"
+}

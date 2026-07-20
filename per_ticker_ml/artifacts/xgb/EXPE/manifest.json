@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 57114,
+   "sha256": "3faff7ccac4ae3689a912b44566bd6ba42b6fd3497d48d18b32a8630f66f2a7e"
+  },
+  "metrics.json": {
+   "bytes": 1110,
+   "sha256": "490f36e0e6f50fe7b0d360205523d238ce5fac79504440e92091f39101fba462"
+  },
+  "parameters.json": {
+   "bytes": 5857,
+   "sha256": "82eb2861d86d1a3189c33c8bfed949a54e340f36e84505b12c087ad9a0ffe50f"
+  },
+  "strategy_EXPE.py": {
+   "bytes": 261586,
+   "sha256": "9d7f4b3baf2d280682f2bf1ff0486cf4e84a2ba2dbee7cb55b22b16cfc8b2677"
+  }
+ },
+ "folder_sha256": "8dff7aa1eae15a3c0824ba8f5b9eba680d9576a89e680b681f4428de239c48ae",
+ "model": "xgb",
+ "model_hash": "b9c5ab55be6ec4af0d945ef3452495310932d0cc66ff963a1d21e52d4a461e75",
+ "ticker": "EXPE"
+}

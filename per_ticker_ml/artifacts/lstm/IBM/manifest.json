@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 86785,
+   "sha256": "0a29086c4558dbc2500799a3ecec758142d5b86b13fd7f74b05ff3a40852193c"
+  },
+  "metrics.json": {
+   "bytes": 1070,
+   "sha256": "8984aa0714a9842af2a1c7ac93cb91533051324928cd52a38667094621a9787e"
+  },
+  "parameters.json": {
+   "bytes": 2788,
+   "sha256": "cf569f2928d0b12c3d9c08b2aa6200895426646ce041ffe21c2c8bbdde2295d3"
+  },
+  "strategy_IBM.py": {
+   "bytes": 83322,
+   "sha256": "863406da679da498568ae0e9eaeaa01ec944b1788885a135a10874919038b5fe"
+  }
+ },
+ "folder_sha256": "b84c827ae869faaece115a5f3ca63a62b6e36935d9ed7eaafa75e8d1ccd19663",
+ "model": "lstm",
+ "model_hash": "f1a079221382a4b9e8ee8e67d1b44a5404c660dab17a70e3542385de49adbb94",
+ "ticker": "IBM"
+}

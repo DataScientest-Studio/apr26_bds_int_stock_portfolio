@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "f592f0676081465ef1d3e34e4929e7f1661135546ed796906e8e60084e228800",
+  "oof_log_growth": 1.3799359041266357,
+  "oof_trades": 401,
+  "theta_boundary": false,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.41051395888662917,
+  "cv_folds": 4,
+  "end_capital": 1185.6141325129436,
+  "losses": 79,
+  "max_drawdown_pct": 27.00210679161042,
+  "model_trades": 139,
+  "net_pnl_usd": 185.61413251294357,
+  "oof_log_growth": 1.3799359041266357,
+  "oof_trades": 401,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 1.1335630106221082,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 18.56141325129437,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "NFLX",
+  "time_in_market_pct": 32.3769,
+  "trade_floor_met": 1,
+  "trades": 139,
+  "win_rate_pct": 43.16546762589928,
+  "wins": 60
+ },
+ "ticker": "NFLX"
+}

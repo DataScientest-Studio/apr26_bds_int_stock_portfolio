@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "48728f0cdd095029bb17294d1edb91557d328a690690edd0c92760d57f0acc56",
+  "oof_log_growth": 0.1297764574314843,
+  "oof_trades": 85,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.45654165610276864,
+  "cv_folds": 4,
+  "end_capital": 914.1641898076269,
+  "losses": 18,
+  "max_drawdown_pct": 17.8230309210576,
+  "model_trades": 31,
+  "net_pnl_usd": -85.83581019237306,
+  "oof_log_growth": 0.1297764574314843,
+  "oof_trades": 85,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.835528847617058,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -8.583581019237307,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "RMD",
+  "time_in_market_pct": 40.9247,
+  "trade_floor_met": 1,
+  "trades": 31,
+  "win_rate_pct": 41.935483870967744,
+  "wins": 13
+ },
+ "ticker": "RMD"
+}

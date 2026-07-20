@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 87784,
+   "sha256": "f5bf1cbf791af3bd406ee1c47dcd1b134369f9ac0cb9d9e505891e8f0adf8cf1"
+  },
+  "metrics.json": {
+   "bytes": 1080,
+   "sha256": "92c75f321153308a1c20f95ae6e2a6dc7a18ee88096c506501b9073bd78f34cb"
+  },
+  "parameters.json": {
+   "bytes": 2795,
+   "sha256": "5d1f86558f7445877f93e6bb478e66e83f52a968898e69f567914a7df340998a"
+  },
+  "strategy_ECL.py": {
+   "bytes": 84348,
+   "sha256": "a9e0bfd3da97c81091a0d50aaf709afc2dcbb0bbc99d42be825c7d6d5cdcf832"
+  }
+ },
+ "folder_sha256": "064483e361e9212b3a5950f3db87f80129a44160e4319a0e70a098b58f7e2dc9",
+ "model": "lstm",
+ "model_hash": "f2e253a61815a667869056bde09f398bcf90e3720a8329dac105d969f6447a10",
+ "ticker": "ECL"
+}

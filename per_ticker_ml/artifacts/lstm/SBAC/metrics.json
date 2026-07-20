@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "be359411ee9e3c94ad2594e945209312111472a4cd4147d3763abb82aa996408",
+  "oof_log_growth": 0.5992546616619049,
+  "oof_trades": 65,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5195026153170104,
+  "cv_folds": 4,
+  "end_capital": 849.6535034537854,
+  "losses": 15,
+  "max_drawdown_pct": 23.323228051211018,
+  "model_trades": 22,
+  "net_pnl_usd": -150.34649654621455,
+  "oof_log_growth": 0.5992546616619049,
+  "oof_trades": 65,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.634539370988054,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -15.034649654621457,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "SBAC",
+  "time_in_market_pct": 27.7397,
+  "trade_floor_met": 1,
+  "trades": 22,
+  "win_rate_pct": 31.818181818181817,
+  "wins": 7
+ },
+ "ticker": "SBAC"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 130724,
+   "sha256": "f15283680550f8f1d6346ffa3f4b9f723095176cc79119727b864e92989c384d"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "2cf38cc0a448b94bc0a80ee3a95996e851f272cfd636284ba01002dbbf5874a0"
+  },
+  "parameters.json": {
+   "bytes": 4934,
+   "sha256": "af4f26cacd21e17736a51a76a0f5504f36d5b2e33afcce27d324b2387205ec2c"
+  },
+  "strategy_MRNA.py": {
+   "bytes": 181801,
+   "sha256": "129e31aee07757ff7d90c692755fe0653771bb593bc5ec6c6fd50ff2b0a58a63"
+  }
+ },
+ "folder_sha256": "6ecf884b20f31053cc82ff857eaccea373dd7f769d95a090594baaf11c99d420",
+ "model": "xgb",
+ "model_hash": "667e20af7100c30c3b8bcf05cfaf244ef90961c754bed985fa630a6d08317ae4",
+ "ticker": "MRNA"
+}

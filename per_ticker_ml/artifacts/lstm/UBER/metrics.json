@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "b6c0c6afd0b1448ca85bcd8f4daad61d4cd553fd880b4eea3cc95b3dc3093c57",
+  "oof_log_growth": 0.5364614382588977,
+  "oof_trades": 14,
+  "theta_entry": 0.54,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4996714308097972,
+  "cv_folds": 4,
+  "end_capital": 1339.7204759472224,
+  "losses": 7,
+  "max_drawdown_pct": 15.01328238104051,
+  "model_trades": 16,
+  "net_pnl_usd": 339.72047594722244,
+  "oof_log_growth": 0.5364614382588977,
+  "oof_trades": 14,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 2.0797764455631547,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 33.972047594722255,
+  "start_capital": 1000.0,
+  "theta_entry": 0.54,
+  "ticker": "UBER",
+  "time_in_market_pct": 22.774,
+  "trade_floor_met": 1,
+  "trades": 16,
+  "win_rate_pct": 56.25,
+  "wins": 9
+ },
+ "ticker": "UBER"
+}

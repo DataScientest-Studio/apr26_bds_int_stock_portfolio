@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "3f6e32ec1eefa30347783dc2d89881b92249924376510588f72c75b8d31d00a2",
+  "oof_log_growth": 0.8362475648399766,
+  "oof_trades": 79,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4823938650001641,
+  "cv_folds": 4,
+  "end_capital": 1966.6642853164954,
+  "losses": 16,
+  "max_drawdown_pct": 20.5499795009419,
+  "model_trades": 34,
+  "net_pnl_usd": 966.6642853164954,
+  "oof_log_growth": 0.8362475648399766,
+  "oof_trades": 79,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 2.089442190695315,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 96.66642853164953,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "FCX",
+  "time_in_market_pct": 43.4932,
+  "trade_floor_met": 1,
+  "trades": 34,
+  "win_rate_pct": 52.94117647058824,
+  "wins": 18
+ },
+ "ticker": "FCX"
+}

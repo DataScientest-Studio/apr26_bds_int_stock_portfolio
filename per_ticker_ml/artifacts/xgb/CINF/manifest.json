@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25938,
+   "sha256": "2d3c1c9dec8e69b43c687a8d3f4bbd3ae60e9d4c1431b770bf3c1358c576c021"
+  },
+  "metrics.json": {
+   "bytes": 1044,
+   "sha256": "00a0c0b6c3832cca938dce2f2732b356c8b44495364d0ebe1b700d8b63e2a243"
+  },
+  "parameters.json": {
+   "bytes": 4081,
+   "sha256": "85b2236bfc648d6241b76776322b4845d49b36337ee16193a4da7b774e0a40a1"
+  },
+  "strategy_CINF.py": {
+   "bytes": 187022,
+   "sha256": "becdc876191c923b1eb8c44c5722b70e02cdc47e7baa823401d62219567daad6"
+  }
+ },
+ "folder_sha256": "adc33de0a65055674aed5b813641e1a5cf38a226099f90ddb3f0cedef584a7a6",
+ "model": "xgb",
+ "model_hash": "af2515fa74d8d989df97b324e103485cb5c8cfffc3eb1fa5d1f8ad756194cbdd",
+ "ticker": "CINF"
+}

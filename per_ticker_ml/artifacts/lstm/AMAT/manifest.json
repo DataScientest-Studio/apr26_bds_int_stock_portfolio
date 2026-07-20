@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 77119,
+   "sha256": "131d5b168de5c7d3b54b8ce52c9f758dba5abf9431664f413c89bda232ba04ff"
+  },
+  "metrics.json": {
+   "bytes": 1042,
+   "sha256": "0d1caa6031be02804a810eee97b82555129c48606a61a75b7ba50ead827e4d80"
+  },
+  "parameters.json": {
+   "bytes": 3049,
+   "sha256": "1f198e49e6e0c9fce25eea754d609825fa67bcaf80478d36201953551d06bf03"
+  },
+  "strategy_AMAT.py": {
+   "bytes": 90355,
+   "sha256": "c46df10c74a794474769bfd575b82f189e4f8aab2fc3c685c7f5a08cad5c663f"
+  }
+ },
+ "folder_sha256": "c761d61e09a4118e8aefbabcfe1b5175c316f0038fdb70c1b173b7a9287403c2",
+ "model": "lstm",
+ "model_hash": "ac00bc0e236aba5c4ceda2ae9e7e22125e42e803c6dba97cb8a69ce75cea096c",
+ "ticker": "AMAT"
+}

@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "c94c619c6df3e2e20040bb85e94f1f46d48f4bf70cfe8a8145e00e43fa2d5d05",
+  "oof_log_growth": 0.5721744874040186,
+  "oof_trades": 666,
+  "theta_boundary": true,
+  "theta_entry": 0.4,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.42069956561328753,
+  "cv_folds": 4,
+  "end_capital": 868.3043056308458,
+  "losses": 148,
+  "max_drawdown_pct": 31.992812424193684,
+  "model_trades": 241,
+  "net_pnl_usd": -131.69569436915424,
+  "oof_log_growth": 0.5721744874040186,
+  "oof_trades": 666,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 0.9264252663048512,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -13.16956943691543,
+  "start_capital": 1000.0,
+  "theta_entry": 0.4,
+  "ticker": "CPRT",
+  "time_in_market_pct": 54.4955,
+  "trade_floor_met": 1,
+  "trades": 241,
+  "win_rate_pct": 38.589211618257266,
+  "wins": 93
+ },
+ "ticker": "CPRT"
+}

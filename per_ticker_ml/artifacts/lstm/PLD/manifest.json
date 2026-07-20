@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 81275,
+   "sha256": "a75fda5c9d420ad27a8ad8a8dc753c202a56224f1f2c594adf8be4125a064d2e"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "3cea5e3802c940f6c7287c83aae426bd088980c3a48f6be3bf9043171ce14eaa"
+  },
+  "parameters.json": {
+   "bytes": 2641,
+   "sha256": "5ffc82f4a009a209bc787f5f27a8b1199021e5131a9ff82571874be80f549122"
+  },
+  "strategy_PLD.py": {
+   "bytes": 80571,
+   "sha256": "b8a463db1d59dfa164ea38518ef027524f47e7dffc199d81692cbfb275d9803f"
+  }
+ },
+ "folder_sha256": "8bc9bdfdb17a482bac60cf5d7c08ee38f23f5c51e1410f0560dcb16287e1e02e",
+ "model": "lstm",
+ "model_hash": "899f8a9609d24762c88395d3cbd481826cd7ade7bd1421896556f4ebdc4467d3",
+ "ticker": "PLD"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 95829,
+   "sha256": "a1566e89e2ba57bc95d0ef296829aac2aed6f6284f368067604915a237e3b145"
+  },
+  "metrics.json": {
+   "bytes": 1109,
+   "sha256": "cd4c2e37d7c2cde30361346b74598411f299907cccef085aaa26ae1b36ba6b4b"
+  },
+  "parameters.json": {
+   "bytes": 4647,
+   "sha256": "77fa865d9a96279100c6fb606ef79d4ce789d2abf9d8dfdbcd8f606aa50c5cf3"
+  },
+  "strategy_LHX.py": {
+   "bytes": 271334,
+   "sha256": "1875c6ad7ff3a50caf07835c3dc66bd66d56b795ffb37e21f0a9f239403cc3fd"
+  }
+ },
+ "folder_sha256": "20c79b72259e85be6a8411fb7ea1f0aacdd0277d9b41c0fc9916c2f50a36c90d",
+ "model": "xgb",
+ "model_hash": "1a2866465848caf5127a192a8a9ff99392b860b67a1036697dfafb0024369bb5",
+ "ticker": "LHX"
+}

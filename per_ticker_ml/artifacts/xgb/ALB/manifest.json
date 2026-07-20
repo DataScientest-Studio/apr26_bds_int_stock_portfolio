@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 256322,
+   "sha256": "703ae1bc37b0b5b6bd58a048d84b5133d135d484ed75ff82f3a49ead825c36cb"
+  },
+  "metrics.json": {
+   "bytes": 1106,
+   "sha256": "887da279a543810f96ca641f6a7ddf16564cff7bb887cdf7a91da5593f9dbca5"
+  },
+  "parameters.json": {
+   "bytes": 5189,
+   "sha256": "5fcbf833e2f325017ac586d932e96f1b53d2d0f3b92b1698838f634f2d495ad2"
+  },
+  "strategy_ALB.py": {
+   "bytes": 406853,
+   "sha256": "123c2a7e70c80358177131dcf22117a0e6dd5de02a839fa6646deca004501e24"
+  }
+ },
+ "folder_sha256": "f7e47d3556ade464727e0fd6a555c2596f733470697f814fdc5f35a313f9355b",
+ "model": "xgb",
+ "model_hash": "b91ab98eef09dfc57735837db9831d6feb26ca9a42d490cf067a6888337a4feb",
+ "ticker": "ALB"
+}

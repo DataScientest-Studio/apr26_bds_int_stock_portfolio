@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "c3545f32b61626dc4b5595e5968a1f651985cedcc0b568541d52496499b96e07",
+  "oof_log_growth": -0.2553546601792725,
+  "oof_trades": 10,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.37267647014689714,
+  "cv_folds": 4,
+  "end_capital": 990.5042304353325,
+  "losses": 0,
+  "max_drawdown_pct": 24.291992187500004,
+  "model_trades": 0,
+  "net_pnl_usd": -9.495769564667546,
+  "oof_log_growth": -0.2553546601792725,
+  "oof_trades": 10,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": -0.9495769564667467,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "HSIC",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "HSIC"
+}

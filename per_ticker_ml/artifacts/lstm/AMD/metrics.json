@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "8e71cc884398c2b6fcc6154759950d7ed87bf612c1ce470db5306f5e28b29951",
+  "oof_log_growth": 1.5545042834902738,
+  "oof_trades": 122,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.48656420570114856,
+  "cv_folds": 4,
+  "end_capital": 2017.2282551653473,
+  "losses": 22,
+  "max_drawdown_pct": 31.55744886488554,
+  "model_trades": 45,
+  "net_pnl_usd": 1017.2282551653473,
+  "oof_log_growth": 1.5545042834902738,
+  "oof_trades": 122,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.6041718493722115,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 101.72282551653473,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "AMD",
+  "time_in_market_pct": 44.0068,
+  "trade_floor_met": 1,
+  "trades": 45,
+  "win_rate_pct": 51.11111111111111,
+  "wins": 23
+ },
+ "ticker": "AMD"
+}

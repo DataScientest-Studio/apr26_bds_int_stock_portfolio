@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 91120,
+   "sha256": "7ae71e1c4b9b016c6dd90bf7556020cac9ca567f121fbc753df92e8a05194511"
+  },
+  "metrics.json": {
+   "bytes": 1072,
+   "sha256": "9cbe3555a1f6409a6857cbfb71ae3674a7ad907fd9b8385b828621a2c33cafab"
+  },
+  "parameters.json": {
+   "bytes": 2905,
+   "sha256": "f41c93a97ebec80bd2a06f0c88e1bafdc8f5999fb680c0cdd031254a5a9407d8"
+  },
+  "strategy_RF.py": {
+   "bytes": 86019,
+   "sha256": "1502aa314a15d009595e4cf80dd596bc4937670e5884a07ec7e4eaddd72b4dae"
+  }
+ },
+ "folder_sha256": "1a5244f698f5c990863fe438a3673d0ab7e1b8c2bb22887645caa5fd92cd51e1",
+ "model": "lstm",
+ "model_hash": "ddbd1e3f3b991045a003d1b51ee509f769dced9026860982d215bf3a5e86e859",
+ "ticker": "RF"
+}

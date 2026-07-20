@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 103702,
+   "sha256": "1bf179e180ad21ca72d93254d8f17f7e3efc6fb681aaa6a044a82aeb8d0fb1ed"
+  },
+  "metrics.json": {
+   "bytes": 1072,
+   "sha256": "5ae1d8907152757221b6643d203447019472e871f0dfa415579814cee22ea855"
+  },
+  "parameters.json": {
+   "bytes": 3172,
+   "sha256": "34512ba6dd11a6a80c3154240cbf8a64cc6774e0f3c5e515a118c6f96ef66d92"
+  },
+  "strategy_MMM.py": {
+   "bytes": 94072,
+   "sha256": "288432fe6dd9c4007984303c40350001cca6ada2c12b52980f1b028b083d240c"
+  }
+ },
+ "folder_sha256": "31fe75bbbaea95adea8beedf582c53a1d1c5a0891293739e4d23f45e3f251296",
+ "model": "lstm",
+ "model_hash": "8fe31b364ea401aa8c0da3989a93d5be3844b478c203ba42cd178a23cbf3ad7c",
+ "ticker": "MMM"
+}

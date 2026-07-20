@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76845,
+   "sha256": "bcc37ce47fe63eed529c0ff2e8fdfa17e3e8d319b0f05ed872919f653092b918"
+  },
+  "metrics.json": {
+   "bytes": 1073,
+   "sha256": "1399672deb1ab0872387b52c7b3d5e9a38d444fec8503eb2f8d514c7fe9199b2"
+  },
+  "parameters.json": {
+   "bytes": 2523,
+   "sha256": "5d2b5844ae9f01a255cbf6838dc43295c6ba77f6a68e0758aca0c2afd8407324"
+  },
+  "strategy_ADM.py": {
+   "bytes": 77196,
+   "sha256": "478296107e28e4245af6ccf9191c12aab31f88aa99005c9cd13de9d4b646f96e"
+  }
+ },
+ "folder_sha256": "7d71361eade21e2cefc93a57f9b30dec1bace1d039bf00de8e22f06c8408f68c",
+ "model": "lstm",
+ "model_hash": "2b7a0bfc2132dbcdb028e4fb03c529cb472ca2d77d214e5d9ecdddea3bbc388a",
+ "ticker": "ADM"
+}

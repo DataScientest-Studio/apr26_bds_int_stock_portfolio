@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75260,
+   "sha256": "99c4463f7683f8631a41640dac961fbc32aedd5c5b7b63411a74ecf888b89259"
+  },
+  "metrics.json": {
+   "bytes": 1068,
+   "sha256": "7530c350cd35af63590800ed295dc406389c0735c0c321b4724740083ff3dfc8"
+  },
+  "parameters.json": {
+   "bytes": 2548,
+   "sha256": "f4696d995dc896cc71db43d07732e48e633fa862a36ffdc9c3188b907f3ff647"
+  },
+  "strategy_GE.py": {
+   "bytes": 77188,
+   "sha256": "a0f9eee94210b928cdf6f576eeacb0844cc6a1f6bcce347f3401439e512678f5"
+  }
+ },
+ "folder_sha256": "2167fdd8074537ac374dccd6977129d4a1f0f72550b9cadcd38ed732f00a3eea",
+ "model": "lstm",
+ "model_hash": "4d688ec9a1a76e5882a7761f695e2e3aefda647bbb4834925ad7dd174f6ccb3d",
+ "ticker": "GE"
+}

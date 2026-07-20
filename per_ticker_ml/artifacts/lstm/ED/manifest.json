@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 83051,
+   "sha256": "76f9302c1e86adf7a4c5940191a1f94cd352bfbd460fcad951ba06458feaa43f"
+  },
+  "metrics.json": {
+   "bytes": 1071,
+   "sha256": "54bf8b5e48b697fb14a28702752c4a741849763097fee2103d1717556a18a70c"
+  },
+  "parameters.json": {
+   "bytes": 2675,
+   "sha256": "7c03225a70ca9f28f6a186a222b3a9eaf672d28efca633ac923143ef5f885102"
+  },
+  "strategy_ED.py": {
+   "bytes": 81074,
+   "sha256": "362afddb3810b5103165b9677e5c05d5e78857257df8f39b9b870aa7bbd07002"
+  }
+ },
+ "folder_sha256": "562e07a97391d8f4158db7c4206fc6646f1ac28aa34e999ede3c30f39b99b6e3",
+ "model": "lstm",
+ "model_hash": "543a60fa0657371a2899947490900f41cbde532edf6a4301c46de4a2519891d2",
+ "ticker": "ED"
+}

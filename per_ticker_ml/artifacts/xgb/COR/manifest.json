@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 39513,
+   "sha256": "5c2b667cb7f98488d63e44210a57f324719ffb32edd9bfcfa606f29e8fb828e6"
+  },
+  "metrics.json": {
+   "bytes": 1101,
+   "sha256": "7364e6d0e0bc6c993894432a95006f6f5185b94b8473d7ce8b90a16d2242b54f"
+  },
+  "parameters.json": {
+   "bytes": 5327,
+   "sha256": "60e73d05fe5275a735b999f0826b27f14829eb23dd4bc5ab63d518dee8f2c4d0"
+  },
+  "strategy_COR.py": {
+   "bytes": 280812,
+   "sha256": "193f0b2c144ce4ecbfe292a0d7dba33844c7683e0b6b5bdb634b8ca4546ad1ff"
+  }
+ },
+ "folder_sha256": "57d87232f99b80e649a7faab44aff60cc286c4a43b0edc4192d5786339c8ebae",
+ "model": "xgb",
+ "model_hash": "b78a5b485df35daa9ccccfba73ee3b79c36efe0e524de42ccd707ca7c03e40b1",
+ "ticker": "COR"
+}

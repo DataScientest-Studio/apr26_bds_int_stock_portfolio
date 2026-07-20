@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 46398,
+   "sha256": "47c896b5726c1245a0644f1a9f54616ba6dc691b271a8f1c93fcd3604bcd7d8d"
+  },
+  "metrics.json": {
+   "bytes": 1101,
+   "sha256": "d577e80281b88dee3bcfd7a172f10f82ccf0307e467f105412ba1d815850aa51"
+  },
+  "parameters.json": {
+   "bytes": 5456,
+   "sha256": "0891dfb8915b864bdd1da75af8e25ceed84da2c2f6208d9951dfdc3f3c2dfc35"
+  },
+  "strategy_GIS.py": {
+   "bytes": 262450,
+   "sha256": "b39cfb641400154ab70e47da69696b230c33cb8d8d239609fbe487fd8ed5d396"
+  }
+ },
+ "folder_sha256": "9296e977cb7a69f7e20f6cb17176be34eaeedb899a22fb19fbe114e7fb734d36",
+ "model": "xgb",
+ "model_hash": "427abf0668f6e9ecba1a21a54eba08770bec6f77d5b591b947a51d011db62937",
+ "ticker": "GIS"
+}

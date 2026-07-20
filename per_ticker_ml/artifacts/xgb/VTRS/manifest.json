@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 88801,
+   "sha256": "7ef81dd96f69c5bab40a231f8d2fbf8fdd085897b4e3f36c96d0b601f1b61960"
+  },
+  "metrics.json": {
+   "bytes": 1107,
+   "sha256": "58ded85a0872230feb95cd1a9dc97c23251af67bea12da42f29f80b7387018b6"
+  },
+  "parameters.json": {
+   "bytes": 4087,
+   "sha256": "fc99470bc0064b7468e5847043e01a0fec905631bd5e2b84f71a369afa90fe6e"
+  },
+  "strategy_VTRS.py": {
+   "bytes": 164054,
+   "sha256": "63c7321f58099cc69b814d0d2fc01293d682b1a552e8bb95deabe6e7f34c26a8"
+  }
+ },
+ "folder_sha256": "a8702f00119381fa4eb6ee75525c78348ad276ef55fd68b67f05786a2cc7d773",
+ "model": "xgb",
+ "model_hash": "0d83035780b549fe1abcb1849c8f9af284d8ddd340ed22845563ab8c7f7394a9",
+ "ticker": "VTRS"
+}

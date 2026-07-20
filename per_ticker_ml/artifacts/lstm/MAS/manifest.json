@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 80479,
+   "sha256": "a28bf6fe2e0b0c4f41fdd9a0be18faa636f2c741e1135b60efc0522642d97961"
+  },
+  "metrics.json": {
+   "bytes": 1074,
+   "sha256": "679638fabded13aad163e14a0704249707a5c958e86065d4abdcb1ea81d31550"
+  },
+  "parameters.json": {
+   "bytes": 2641,
+   "sha256": "53a6b3e8fcbddf6b2eb71a4ba7488ea88e563062ef825ea185686c4d1878a9b2"
+  },
+  "strategy_MAS.py": {
+   "bytes": 79263,
+   "sha256": "2d205788059d873b2c5a9cf402d9b9cac73eb3c2c95a800c4275ee5525b9f7b6"
+  }
+ },
+ "folder_sha256": "7225065ad84be69daa4eaa54e4e31f254630dafb3a8e0d7bd9ca4ececa12b537",
+ "model": "lstm",
+ "model_hash": "93187593828db22246eabffd54b475bb4c8b77af40e8f27096a464011ba2c37e",
+ "ticker": "MAS"
+}

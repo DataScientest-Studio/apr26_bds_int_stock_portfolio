@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 80981,
+   "sha256": "a009a54a104bc2119dbccf7a132eab85f37fcb8cb608d4d0dcbd82d45e9421f6"
+  },
+  "metrics.json": {
+   "bytes": 1075,
+   "sha256": "1a8e71401d3bd5688968bfd9dc64f4bc0bda6a5aebc0e1beef2b64f0392172cf"
+  },
+  "parameters.json": {
+   "bytes": 2627,
+   "sha256": "487b950ef34fe953987ad95937b056475588cf2b2fccaa0da30e77a51818ffdd"
+  },
+  "strategy_MCD.py": {
+   "bytes": 80424,
+   "sha256": "e3b7d1eaa97ef80a42e9ead9fc41332d63d1c17241070a8810f832704659f606"
+  }
+ },
+ "folder_sha256": "0843acc70d70f6eb5fc581f357264bd7b8f72f83a2be075a3c5f87093dc5429f",
+ "model": "lstm",
+ "model_hash": "17fc733c5de7d7d815ee5f5b0117999077d6909d6ae1329ee35c2c2ba6885172",
+ "ticker": "MCD"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 80528,
+   "sha256": "3aa154e0234b7178fe6fdeb1927b830c749d261f13266cdf552c012b20f1f41b"
+  },
+  "metrics.json": {
+   "bytes": 1073,
+   "sha256": "c1d96df7a038af0225a5816b7d47179a7e429461c632761783b517f4cac83b65"
+  },
+  "parameters.json": {
+   "bytes": 2643,
+   "sha256": "ff93ba2de612ad4a18bb305f9e834c0c0026f6f1cd37aa6805c32c3a8a9bd0f8"
+  },
+  "strategy_GPN.py": {
+   "bytes": 80732,
+   "sha256": "b63b9fead327d23c27f132251cfe331ef68346c82bc8c7f152d60b92adae8765"
+  }
+ },
+ "folder_sha256": "6f53693e7a0133ca0d94d45d03a7ca09b02d056d795282ab17c6ef445ad0a1ec",
+ "model": "lstm",
+ "model_hash": "27a001e22987be5c50f7f7e574de27e6d7b5169328d8ef1cd103e31a56883987",
+ "ticker": "GPN"
+}

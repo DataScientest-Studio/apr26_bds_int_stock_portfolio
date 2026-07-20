@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 89889,
+   "sha256": "3e3e15d2d4f4abaf52fe0e1dc29c8a02e0be1f8f2dfd70b973cc0d675359654d"
+  },
+  "metrics.json": {
+   "bytes": 1105,
+   "sha256": "f4a336a9848a89457f60467b073f00b44c99760f2cb3ba21397107d4f002da0a"
+  },
+  "parameters.json": {
+   "bytes": 4669,
+   "sha256": "989cb1793d11c0fb0fbfb415ea18416b2c0913e419c1e7bb22aec9b31967afc8"
+  },
+  "strategy_EXPD.py": {
+   "bytes": 276045,
+   "sha256": "b92d546813a74ae5c76288b439e27cb9376717c2c402747cedd680ba9b2eea94"
+  }
+ },
+ "folder_sha256": "d45d4272dbb26ed8b9774cbd8a7816c83fd16c2e569bf8c2abe7c07855c281cd",
+ "model": "xgb",
+ "model_hash": "003046b035b79ae1aa5bee0feb464a6dacd6d84bc7c395b92d66a58a0b212a25",
+ "ticker": "EXPD"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 92259,
+   "sha256": "ef89994a66a92af8044b273c4a312f133f26e65db6e9b42578607fe1619e9ef9"
+  },
+  "metrics.json": {
+   "bytes": 1109,
+   "sha256": "ddca6e45115226eed6cf1eb19430188cc79eac45895373f04e4fe9b84677cd58"
+  },
+  "parameters.json": {
+   "bytes": 4083,
+   "sha256": "c98de80efd2d425b2593d5035f0b54b992bc2e1a0fa939d1bc8d10ebb4b8235b"
+  },
+  "strategy_MTD.py": {
+   "bytes": 364085,
+   "sha256": "456d631fba1363f9bfa80e27de65dfe78d469388c4a24eb7133ad9173c8540ce"
+  }
+ },
+ "folder_sha256": "01bbe776d940c7595c79c0d78e3a4285d7fdeae38b5deb22eb7f25ab4f5d3110",
+ "model": "xgb",
+ "model_hash": "93a37132b5b3009f9a141cb2013bff32c185360d2e8924e4bd3820bdabc7b58b",
+ "ticker": "MTD"
+}

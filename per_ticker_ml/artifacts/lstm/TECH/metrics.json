@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "d58a2dcae0959de90c8a239d4f2e9b09560e9c6d2a5d1b83cc95b1b7932d5c2d",
+  "oof_log_growth": 0.2562727480493656,
+  "oof_trades": 34,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4461446796167429,
+  "cv_folds": 4,
+  "end_capital": 1116.9016336988427,
+  "losses": 1,
+  "max_drawdown_pct": 6.153825154326826,
+  "model_trades": 3,
+  "net_pnl_usd": 116.90163369884272,
+  "oof_log_growth": 0.2562727480493656,
+  "oof_trades": 34,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 12.609794191353917,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 11.690163369884266,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "TECH",
+  "time_in_market_pct": 4.6233,
+  "trade_floor_met": 1,
+  "trades": 3,
+  "win_rate_pct": 66.66666666666666,
+  "wins": 2
+ },
+ "ticker": "TECH"
+}

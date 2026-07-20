@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25887,
+   "sha256": "dbe19cec38c85cc38c19761c4dfcdb731532784b12c4fab7cb0ef43a704c91a6"
+  },
+  "metrics.json": {
+   "bytes": 1088,
+   "sha256": "ddcf656ff5b36137299d33f023f116cbbc25c6f10a7b94a987223b6939fb6e5e"
+  },
+  "parameters.json": {
+   "bytes": 4081,
+   "sha256": "3e4b0e7d37fa0021a50bcec3232a8cc8a95a1b17ebe1e1c1ad2f120e45d8a47e"
+  },
+  "strategy_ABNB.py": {
+   "bytes": 186977,
+   "sha256": "785260f103ac62df8d3d34045e21e0532997999188e059e9877e8ca3d7944fc8"
+  }
+ },
+ "folder_sha256": "e87b330eb47bd8a55d35df0458fce478686b8971447094be8be6b2d1e6500e92",
+ "model": "xgb",
+ "model_hash": "90bbc86d1f333c9344098ff2048837c393e43529d3a4e40ff4a0115d5ff4513d",
+ "ticker": "ABNB"
+}

@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "f6772f5ed7b352a719c33967c7ba870e9fae040f67c10f7a177290d3ed0a857c",
+  "oof_log_growth": 0.31684875810492596,
+  "oof_trades": 21,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.46807079489568715,
+  "cv_folds": 4,
+  "end_capital": 1142.8237995832992,
+  "losses": 4,
+  "max_drawdown_pct": 7.141541082822172,
+  "model_trades": 7,
+  "net_pnl_usd": 142.8237995832992,
+  "oof_log_growth": 0.31684875810492596,
+  "oof_trades": 21,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 4.099040259759934,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 14.282379958329926,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "CRH",
+  "time_in_market_pct": 10.274,
+  "trade_floor_met": 1,
+  "trades": 7,
+  "win_rate_pct": 42.857142857142854,
+  "wins": 3
+ },
+ "ticker": "CRH"
+}

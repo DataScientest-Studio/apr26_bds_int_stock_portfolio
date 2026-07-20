@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 27372,
+   "sha256": "443d24115f2cf95371a47755552a3852ab4ac65825e41a0d0e05edf754bb7537"
+  },
+  "metrics.json": {
+   "bytes": 1085,
+   "sha256": "be2c005411d3aab6dfa1825d113bc45f9a637993a177d882c991826d40a8023f"
+  },
+  "parameters.json": {
+   "bytes": 4633,
+   "sha256": "e4226b07083bae860560ee8307cd35dd464759c7aa35d61d7cc59dd909a76dff"
+  },
+  "strategy_PLTR.py": {
+   "bytes": 187240,
+   "sha256": "17e3436a8f13f9c570c1d6c80aad6a43498baa75921f896d162194bd87250cbf"
+  }
+ },
+ "folder_sha256": "3a222cf62d4154315111f6c67bf550d391e34f5c0b4db32b5a8b8f61c7a780f0",
+ "model": "xgb",
+ "model_hash": "624895d3b1d127c9933fec93ec720ac57ea7154884995bc7c3ff9590fa24bc0e",
+ "ticker": "PLTR"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 83431,
+   "sha256": "854b3f1ba70457073d3a30bce4c15166dadc887b29d70e3341f91c87a9e5b0aa"
+  },
+  "metrics.json": {
+   "bytes": 1080,
+   "sha256": "19116dbe502a372d4370c635c3bcb54afd4be9629293fbb8887c65c937c46c66"
+  },
+  "parameters.json": {
+   "bytes": 2667,
+   "sha256": "702a7f978372f28ff4a066f6b61340c4c93241c5fe1a150747f9f585539a4247"
+  },
+  "strategy_PNW.py": {
+   "bytes": 81027,
+   "sha256": "2d7b476fdc241cf5dbc58426e4a8f7e150838a84706972c1fedfccddcdde0217"
+  }
+ },
+ "folder_sha256": "282ab09cacefcfd1a54067377b0d55e4b62990aa1079fa650862582719c54124",
+ "model": "lstm",
+ "model_hash": "9b9a72744b8b3b2f7bd0c1bc17b1830809fd01f2baa2772290dbd88bb00cb332",
+ "ticker": "PNW"
+}

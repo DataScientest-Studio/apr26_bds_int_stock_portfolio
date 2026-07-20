@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 74782,
+   "sha256": "14b514aceb8c0c6fa11c0236d3c76e0fbd4e3a77a9ae58b95e2c3c44eb803166"
+  },
+  "metrics.json": {
+   "bytes": 1065,
+   "sha256": "500e641c5e695b6c177f1494d47b51283532f6c811c9556e226d7c375776ea78"
+  },
+  "parameters.json": {
+   "bytes": 2510,
+   "sha256": "5341a68a659301c3c81ee089bbe2c1e491030cdcd4fbae41205087f79be1faa4"
+  },
+  "strategy_TDG.py": {
+   "bytes": 77502,
+   "sha256": "cc04bc3de8680841b22bc1cac066dd66c2502c5fedcdb352387edd97f5f15113"
+  }
+ },
+ "folder_sha256": "d513b8c60aa525c1ffce62814eb2dd515bbae6c49d5cee699492fbf03b925b1f",
+ "model": "lstm",
+ "model_hash": "992883495b47bf647438ec9dd165de62bbe71f06640cc20af391b2940d9cd96e",
+ "ticker": "TDG"
+}

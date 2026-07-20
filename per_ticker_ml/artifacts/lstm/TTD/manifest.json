@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 85028,
+   "sha256": "c898f413f20d83ac4b4c46309e8af5a41455ad2f6384827dd70b37ad705e2416"
+  },
+  "metrics.json": {
+   "bytes": 1058,
+   "sha256": "550634d14ada383c664305130c68cb58bae2e58e1bb0d2f29d9071550b55ef2d"
+  },
+  "parameters.json": {
+   "bytes": 2791,
+   "sha256": "16d67005b23b2cb58013d27c5a7ccff409b173f6336f89db1a7a1c0e2cb61a7b"
+  },
+  "strategy_TTD.py": {
+   "bytes": 83341,
+   "sha256": "b63e18e04bbace110248d18f5c465891feaa2fc0155ecf9e3042b3b98bfa479c"
+  }
+ },
+ "folder_sha256": "bf12ad3df501a50539f7264fcfa6f0aec7fc52a3e9c87c811c077a6152afb70c",
+ "model": "lstm",
+ "model_hash": "4a0aaa7b271318b7d471d56be538e21711d0ddfe4a26a777c08c2f11f050b4d2",
+ "ticker": "TTD"
+}

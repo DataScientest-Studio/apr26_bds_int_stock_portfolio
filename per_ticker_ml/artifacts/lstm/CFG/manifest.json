@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 61111,
+   "sha256": "9920bbbba9c185928d6c34cffd9e594bff850dbb8e3c2e962c87adcca010bd2c"
+  },
+  "metrics.json": {
+   "bytes": 1054,
+   "sha256": "354cda5e674f95c3541b4ac94724b4046181c1c6043cf6a251efee48719d47c5"
+  },
+  "parameters.json": {
+   "bytes": 2639,
+   "sha256": "09ff29a4b0326655aab884f87f445af83227d81d5188b1a4902920bbbc51f861"
+  },
+  "strategy_CFG.py": {
+   "bytes": 79907,
+   "sha256": "474bf0dd9f6f822e400f57086aa292263806f270163d991eae58eae06c3c9e6e"
+  }
+ },
+ "folder_sha256": "601c583fdd45d985347a9449629d040321ec38b510de22f8b3dbc14e65e01d26",
+ "model": "lstm",
+ "model_hash": "4abc62ea536670c26026107f1ea842c12ce5d651b8b50cac23e56f73614e8c86",
+ "ticker": "CFG"
+}

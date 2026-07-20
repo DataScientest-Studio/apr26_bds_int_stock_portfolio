@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "4c50bd99668eb84bc150d1d11ff5818af684ea96924b27d36fadef3d5137d104",
+  "oof_log_growth": 0.14832910204692712,
+  "oof_trades": 99,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.41814183060573884,
+  "cv_folds": 4,
+  "end_capital": 1107.4673463303118,
+  "losses": 24,
+  "max_drawdown_pct": 20.592983245681598,
+  "model_trades": 47,
+  "net_pnl_usd": 107.46734633031178,
+  "oof_log_growth": 0.14832910204692712,
+  "oof_trades": 99,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.1431505673481113,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 10.746734633031174,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "PKG",
+  "time_in_market_pct": 60.274,
+  "trade_floor_met": 1,
+  "trades": 47,
+  "win_rate_pct": 48.93617021276596,
+  "wins": 23
+ },
+ "ticker": "PKG"
+}

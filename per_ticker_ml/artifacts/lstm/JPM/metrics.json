@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "3318a19a9554d112105263c3958da4134c10b94eb6e21380918b091db99a4b7c",
+  "oof_log_growth": 0.6665371518630642,
+  "oof_trades": 106,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4803782112869006,
+  "cv_folds": 4,
+  "end_capital": 1273.4230524902607,
+  "losses": 27,
+  "max_drawdown_pct": 18.06743965579227,
+  "model_trades": 53,
+  "net_pnl_usd": 273.4230524902607,
+  "oof_log_growth": 0.6665371518630642,
+  "oof_trades": 106,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.329165698208805,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 27.342305249026076,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "JPM",
+  "time_in_market_pct": 65.5822,
+  "trade_floor_met": 1,
+  "trades": 53,
+  "win_rate_pct": 49.056603773584904,
+  "wins": 26
+ },
+ "ticker": "JPM"
+}

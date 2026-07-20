@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "39d30db7b3c022d2d9d7b45c8e19986af117645b400ee24ae741f4514317ad6b",
+  "oof_log_growth": 0.23532259573828995,
+  "oof_trades": 95,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.43997643874218917,
+  "cv_folds": 4,
+  "end_capital": 477.42321924767685,
+  "losses": 32,
+  "max_drawdown_pct": 61.97507686254067,
+  "model_trades": 47,
+  "net_pnl_usd": -522.5767807523232,
+  "oof_log_growth": 0.23532259573828995,
+  "oof_trades": 95,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.3527714197706627,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -52.25767807523232,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "UPS",
+  "time_in_market_pct": 51.8836,
+  "trade_floor_met": 1,
+  "trades": 47,
+  "win_rate_pct": 31.914893617021278,
+  "wins": 15
+ },
+ "ticker": "UPS"
+}

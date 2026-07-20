@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75278,
+   "sha256": "fa2a75869613eae02fa7142ea0458f0125bc6b7522b54565692a0a6b1852f532"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "1f2cf18bdd36909b7b2f85b6cc3534b190e7a9562b3e399864b94ebde9447b6c"
+  },
+  "parameters.json": {
+   "bytes": 4792,
+   "sha256": "8e35cbcb3e608ce39e66fabd4bf188278fd2aec971ff2752b0815eef56adf8e0"
+  },
+  "strategy_SYF.py": {
+   "bytes": 205021,
+   "sha256": "49fb82f418bfb4f55a2cd5818fb4efa61e49c16c7737f45cf4e9c07eceabcbf9"
+  }
+ },
+ "folder_sha256": "42f26d8a2d773fd6827362533c133906ad38251ff9db17ffd872a8619c16b32a",
+ "model": "xgb",
+ "model_hash": "5f85aeaa965c283bff08cd6998d57c2002e2b1eb5c82cc47117a78379f71ab81",
+ "ticker": "SYF"
+}

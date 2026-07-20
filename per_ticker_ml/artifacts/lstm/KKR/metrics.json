@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "7d385bf665821a1d583bad9d1be1a1684b2328be3351fc6782f3b73839fa9952",
+  "oof_log_growth": 0.2678297204358432,
+  "oof_trades": 73,
+  "theta_entry": 0.54,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.455353494520077,
+  "cv_folds": 4,
+  "end_capital": 994.6602384717048,
+  "losses": 16,
+  "max_drawdown_pct": 21.521765051934064,
+  "model_trades": 29,
+  "net_pnl_usd": -5.339761528295185,
+  "oof_log_growth": 0.2678297204358432,
+  "oof_trades": 73,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.9929140265165073,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -0.5339761528295184,
+  "start_capital": 1000.0,
+  "theta_entry": 0.54,
+  "ticker": "KKR",
+  "time_in_market_pct": 36.8151,
+  "trade_floor_met": 1,
+  "trades": 29,
+  "win_rate_pct": 44.827586206896555,
+  "wins": 13
+ },
+ "ticker": "KKR"
+}

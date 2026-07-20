@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "f32299e91dc65ed33f2cb63efa17ddb4b74226544625e07e0fe1790ad9952447",
+  "oof_log_growth": -0.35505345609572275,
+  "oof_trades": 25,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.48185849695626404,
+  "cv_folds": 4,
+  "end_capital": 3258.1085740694925,
+  "losses": 12,
+  "max_drawdown_pct": 17.29491408389072,
+  "model_trades": 30,
+  "net_pnl_usd": 2258.1085740694925,
+  "oof_log_growth": -0.35505345609572275,
+  "oof_trades": 25,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 2.7785200878761396,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 225.81085740694925,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "PLTR",
+  "time_in_market_pct": 38.1849,
+  "trade_floor_met": 1,
+  "trades": 30,
+  "win_rate_pct": 60.0,
+  "wins": 18
+ },
+ "ticker": "PLTR"
+}

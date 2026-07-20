@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 69417,
+   "sha256": "7b64048de9db0fd4ce3cadd306614404e094fa41c9c86db71b8c61f85f0d5570"
+  },
+  "metrics.json": {
+   "bytes": 1057,
+   "sha256": "f184d800273319ad2cab62d463a3ea986bdc6d7dfeba494d181bae4b8cac8622"
+  },
+  "parameters.json": {
+   "bytes": 2758,
+   "sha256": "98d8330e62eda6fe58e018aa203b3817bfd130adc357c614f0825ffcfe778169"
+  },
+  "strategy_WY.py": {
+   "bytes": 84208,
+   "sha256": "9494b80d3e3d33763f24bc229a9cc5b621a02eb5524a351bbb6aa3ce93867b8e"
+  }
+ },
+ "folder_sha256": "db473e85c51fe7619cabb529e0c5292d3b87ea4420a2b229ab11ab03bc15254c",
+ "model": "lstm",
+ "model_hash": "f848028db0264188672bd5d79af9fcdcae1cd87e686b95df90821d159087e43f",
+ "ticker": "WY"
+}

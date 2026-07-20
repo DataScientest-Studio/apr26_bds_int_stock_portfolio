@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "33ab06627c30627cd329b5de4c490f9eaaa944e8adefdabf42a28db73c57be8f",
+  "oof_log_growth": 0.3981458267794088,
+  "oof_trades": 41,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.492146142012134,
+  "cv_folds": 4,
+  "end_capital": 1356.5416812686778,
+  "losses": 2,
+  "max_drawdown_pct": 5.782741990540955,
+  "model_trades": 7,
+  "net_pnl_usd": 356.54168126867785,
+  "oof_log_growth": 0.3981458267794088,
+  "oof_trades": 41,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 5.568155780692313,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 35.65416812686779,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "INCY",
+  "time_in_market_pct": 8.5616,
+  "trade_floor_met": 1,
+  "trades": 7,
+  "win_rate_pct": 71.42857142857143,
+  "wins": 5
+ },
+ "ticker": "INCY"
+}

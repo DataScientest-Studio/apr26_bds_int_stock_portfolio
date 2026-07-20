@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76163,
+   "sha256": "bb0852accf11e7a0c9a778f430a28b141c5b6bfcfa2810930fe39cac916644bd"
+  },
+  "metrics.json": {
+   "bytes": 1071,
+   "sha256": "1af826930bf8bde90fcaa72d0ae9f0840a9d1dd9902cd1872c6bcb8dcd05f02e"
+  },
+  "parameters.json": {
+   "bytes": 2512,
+   "sha256": "d66af20225f6e98a3963ddf05f642c8eead8c35a0b7cf6b42744fb23ee3124a0"
+  },
+  "strategy_FISV.py": {
+   "bytes": 77510,
+   "sha256": "aafd6d7aa17018370033fe58528cb594ed9687f04bdc41e1ff4bfa45239ec0e2"
+  }
+ },
+ "folder_sha256": "f9634953897b9cf1fc8bedc7db4f6261fd10d6b88889880f5cbfe2d9cb18cdde",
+ "model": "lstm",
+ "model_hash": "f6c1006019b6664a3023de4f76c2efc75d52f7cae83177d4d7f139dbf4e39ca9",
+ "ticker": "FISV"
+}

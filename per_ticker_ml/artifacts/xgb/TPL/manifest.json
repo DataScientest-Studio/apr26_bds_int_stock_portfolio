@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 32121,
+   "sha256": "8f6592db869e6059fe5a617245a49f10bc862a9045a69e657a725865d81dcddb"
+  },
+  "metrics.json": {
+   "bytes": 1089,
+   "sha256": "4f8006c49668ba407f4e70236258a6aafe4c0453a5811287307f5089ac6d3255"
+  },
+  "parameters.json": {
+   "bytes": 4635,
+   "sha256": "e31492571dd217ca17493b73678cdd211352395a27d194f118df9d663c0230fd"
+  },
+  "strategy_TPL.py": {
+   "bytes": 267955,
+   "sha256": "1e8c21431bb59235876615fc3fcdfc2779f60a709a5df13365a7aa71c48a1e34"
+  }
+ },
+ "folder_sha256": "97840d6c9a7c7642acf9af77cc474d725d471a8dbf596cdb9d1f5f6c07003142",
+ "model": "xgb",
+ "model_hash": "cec90cff256a465eb33425ded09f89058be86accbf16f3424d1d38b527b30c4f",
+ "ticker": "TPL"
+}

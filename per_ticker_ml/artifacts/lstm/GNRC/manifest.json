@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 74300,
+   "sha256": "a78b61363b2e421fb8cd59b1f2a5b5984e19315d7fc0062d71e2169e29430e86"
+  },
+  "metrics.json": {
+   "bytes": 1074,
+   "sha256": "d2419c886bb272bd5e9b0a198b825264d83f77a3853515651f4eb800d97ac6a5"
+  },
+  "parameters.json": {
+   "bytes": 2526,
+   "sha256": "d3619704e7b533594ce06d70cc3465f05cd222d25e078f90fa1827a68e6b7c6f"
+  },
+  "strategy_GNRC.py": {
+   "bytes": 76999,
+   "sha256": "2a3876954ddc0b10984e7c242be5aac0898fe47f169737148ed34c8904794e71"
+  }
+ },
+ "folder_sha256": "39dcffe0a712f598b6a470b9d9d43f2adb399cb8fa415b633baa3267b17656fb",
+ "model": "lstm",
+ "model_hash": "0914e42bf0fadebc427d410733302b7414ea8cece67e9810f170075be5520779",
+ "ticker": "GNRC"
+}

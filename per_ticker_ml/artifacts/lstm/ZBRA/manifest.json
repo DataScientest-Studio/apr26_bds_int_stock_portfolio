@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75586,
+   "sha256": "977ffeeb7d8981d57050ba87a122228fe2cef569bbd35a6295b62223f35e7b61"
+  },
+  "metrics.json": {
+   "bytes": 1083,
+   "sha256": "41865ec64a5c6b927a0803cbd0f94e24e25452d5ce39b870756a8b4a1f77c439"
+  },
+  "parameters.json": {
+   "bytes": 2525,
+   "sha256": "3b0068f1efc4fdf4039085e0fb69e0a64bce85d8b2e7e004c2c561c16553ca09"
+  },
+  "strategy_ZBRA.py": {
+   "bytes": 76930,
+   "sha256": "fbdee86857adefc10b57e8d899b4f373d1dba4d668e8ee72a271fc6335197572"
+  }
+ },
+ "folder_sha256": "3d5bdda204e27db3d9566bf10fe0bba022fe284adc3d5a19daa17c0f544e3aa9",
+ "model": "lstm",
+ "model_hash": "7581b7a771fa74819385c70dad6d6a2fb509defbfc7d5b5ed1d490fe92b88a0c",
+ "ticker": "ZBRA"
+}

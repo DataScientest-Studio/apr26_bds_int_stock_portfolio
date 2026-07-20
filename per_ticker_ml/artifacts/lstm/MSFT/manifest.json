@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 79887,
+   "sha256": "833c5e81d1a80b315633afbb3f13ff2e738e00f917b8a851171982bfb8ae1af5"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "42a21a87fa129efa78a257e15b0369d9bf074245724ba25caae71b26be26707c"
+  },
+  "parameters.json": {
+   "bytes": 2628,
+   "sha256": "3d38197d407aabeb697991667008d605ccc46e8af817da91ac010861ce7df36b"
+  },
+  "strategy_MSFT.py": {
+   "bytes": 80392,
+   "sha256": "96e0e0d9de4f1b08a52be72e671009b99c3acc6d73e590ca0fcc967cb04915d9"
+  }
+ },
+ "folder_sha256": "c2efd999e370f011af95f7bf9bed023389e45aca205a605b9faddd09033fde44",
+ "model": "lstm",
+ "model_hash": "1ff562b110e7e3775dc1c7ffc1bcd7ea674029177805fe0b49d2e47a0102f73e",
+ "ticker": "MSFT"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 82609,
+   "sha256": "193398c836b73d3f4fa00a8e83d3fde2b7cb6e6be3e420ff3cd0ea688dfade6a"
+  },
+  "metrics.json": {
+   "bytes": 1074,
+   "sha256": "f1e736ebffe49fc5bbb8e08091ebb80b327e1ffc16d1158d4832478d36df9cc7"
+  },
+  "parameters.json": {
+   "bytes": 2640,
+   "sha256": "0d2c4727efcd14e715b25b1f9d84fd5555a43046d69cc711c1d403c226a7e374"
+  },
+  "strategy_CHD.py": {
+   "bytes": 80969,
+   "sha256": "30ee199de5da3ecff1a337a1843e34b0418292c4387f5fcdca52b4c7b5af5798"
+  }
+ },
+ "folder_sha256": "3070b2e048519335f96ce47cfee44fbea803c3102ff2b8d1e6149803460d10c0",
+ "model": "lstm",
+ "model_hash": "a7306e4636d11e55dca4d01525c61dace041ce36458b8fa8020c88a5ee75486a",
+ "ticker": "CHD"
+}

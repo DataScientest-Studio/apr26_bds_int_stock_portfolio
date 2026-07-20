@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "9e7a4e3d79a6d227e7d0283d9f268a76b881f07aa16e9daee770e373cfc5d129",
+  "oof_log_growth": 0.4809852285040289,
+  "oof_trades": 67,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4961028617393476,
+  "cv_folds": 4,
+  "end_capital": 1476.1366722057369,
+  "losses": 4,
+  "max_drawdown_pct": 5.598493224806185,
+  "model_trades": 18,
+  "net_pnl_usd": 476.1366722057369,
+  "oof_log_growth": 0.4809852285040289,
+  "oof_trades": 67,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 3.86338533535477,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 47.613667220573696,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "HBAN",
+  "time_in_market_pct": 24.4863,
+  "trade_floor_met": 1,
+  "trades": 18,
+  "win_rate_pct": 77.77777777777779,
+  "wins": 14
+ },
+ "ticker": "HBAN"
+}

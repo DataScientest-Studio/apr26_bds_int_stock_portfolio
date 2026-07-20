@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75568,
+   "sha256": "acd1672efa26f6264932270ae585820154b36a9f0e359ef20cfe7e902568eb67"
+  },
+  "metrics.json": {
+   "bytes": 1074,
+   "sha256": "45668bdcbfa8ef22ae0acc3b07b1b75f7a987b79df8a7c130b892ededd6b0cf0"
+  },
+  "parameters.json": {
+   "bytes": 2515,
+   "sha256": "3ca935875b53f3313d3cc0718afc0c270660b8d439aeb5a87ca804174358a291"
+  },
+  "strategy_MSCI.py": {
+   "bytes": 77721,
+   "sha256": "05135e84df310e171fef11d10fa6e9ed6a910bbcfc8b14971ecc07460ac9abaa"
+  }
+ },
+ "folder_sha256": "fe0341c4029ffb61cc9fa2332ede8621dd4a463a08a1379f7eac7358a671b446",
+ "model": "lstm",
+ "model_hash": "11a3d0ad695a71913bf94c41b36e58e4f4e7294de4e4867bc6faef34e46cc586",
+ "ticker": "MSCI"
+}

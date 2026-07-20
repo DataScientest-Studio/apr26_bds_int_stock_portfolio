@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 65102,
+   "sha256": "9b00ce9c8b3bb55940fdec78c048b7cfe419f9823b42ac6f41e03fe2e4e0d657"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "9f4e894a2a71e09ad8522b446a187914b604d9ccaab058f2b69663835cd54d79"
+  },
+  "parameters.json": {
+   "bytes": 5509,
+   "sha256": "81b007cc1efb43b68c9fae2eb718d28c26b24f11aa462537c245c3ebb06b89b3"
+  },
+  "strategy_AIG.py": {
+   "bytes": 142089,
+   "sha256": "21b9308a03bf2bc8fae548437df7cde0d48d74da0c1deeea26da5b19f226fdcd"
+  }
+ },
+ "folder_sha256": "e7109e213644a358807f3a3b5636ba9b43e4c85664cef8e5d3515c1437332544",
+ "model": "xgb",
+ "model_hash": "40c1b1fc5ab62240dc4f9ff08e51939ba04788a26fe67ba20a206bd2af140da3",
+ "ticker": "AIG"
+}

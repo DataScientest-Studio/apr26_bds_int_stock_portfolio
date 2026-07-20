@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "8f8cb11da355482a01d613c0b25f293ed9c823e992cf403d4e993733b94737e6",
+  "oof_log_growth": 0.4266119477849856,
+  "oof_trades": 69,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.42400008429628955,
+  "cv_folds": 4,
+  "end_capital": 1604.4944707261411,
+  "losses": 1,
+  "max_drawdown_pct": 4.610194058268654,
+  "model_trades": 7,
+  "net_pnl_usd": 604.4944707261411,
+  "oof_log_growth": 0.4266119477849856,
+  "oof_trades": 69,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 21.37916824506586,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 60.449447072614106,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "QCOM",
+  "time_in_market_pct": 10.274,
+  "trade_floor_met": 1,
+  "trades": 7,
+  "win_rate_pct": 85.71428571428571,
+  "wins": 6
+ },
+ "ticker": "QCOM"
+}

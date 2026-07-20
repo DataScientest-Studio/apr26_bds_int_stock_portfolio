@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 79831,
+   "sha256": "3a2f3128e69243d350e852d2490749211a7fda744ed9324028d98e802d09c4cb"
+  },
+  "metrics.json": {
+   "bytes": 1061,
+   "sha256": "74e553284f9dcb32bff417b94ea2347d318fcd415818b8872a65ce894d58599a"
+  },
+  "parameters.json": {
+   "bytes": 2621,
+   "sha256": "cd59424756647c7c1b8fcaec3a61ac00957c8d6f4f80d0e0b0fb956ba79a8a53"
+  },
+  "strategy_ITW.py": {
+   "bytes": 80274,
+   "sha256": "66643bc4f01b65ae9528d446c3e72701afd46386c31f52ca25ebe28b8f176de1"
+  }
+ },
+ "folder_sha256": "b8f5f18f33d84f35afde787f052f7595592f1d2b1fb155d81c5f7cb77f99fd46",
+ "model": "lstm",
+ "model_hash": "f6b55f4760894d298130f492cd32b958e17d42d06228440dd83045e8dc3a04a6",
+ "ticker": "ITW"
+}

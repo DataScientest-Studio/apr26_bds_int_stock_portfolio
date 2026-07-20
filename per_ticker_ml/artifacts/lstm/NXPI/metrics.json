@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "4d927879624eae1f136f5772f5ee9a7868a4017e12b6580315941a98b91f2657",
+  "oof_log_growth": 0.13913975916409616,
+  "oof_trades": 110,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.45954133758098215,
+  "cv_folds": 4,
+  "end_capital": 1471.6073778813247,
+  "losses": 21,
+  "max_drawdown_pct": 15.683108358363318,
+  "model_trades": 36,
+  "net_pnl_usd": 471.60737788132474,
+  "oof_log_growth": 0.13913975916409616,
+  "oof_trades": 110,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.5906640907402287,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 47.16073778813248,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "NXPI",
+  "time_in_market_pct": 41.2671,
+  "trade_floor_met": 1,
+  "trades": 36,
+  "win_rate_pct": 41.66666666666667,
+  "wins": 15
+ },
+ "ticker": "NXPI"
+}

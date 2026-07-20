@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "ec6692f0cdcfc2d2004722e529658bb7d94a8126538d20aec4544e29cc259e42",
+  "oof_log_growth": 0.5026322051869287,
+  "oof_trades": 37,
+  "theta_entry": 0.54,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.46330504477556733,
+  "cv_folds": 4,
+  "end_capital": 510.9967996176996,
+  "losses": 15,
+  "max_drawdown_pct": 54.83846480925493,
+  "model_trades": 22,
+  "net_pnl_usd": -489.0032003823004,
+  "oof_log_growth": 0.5026322051869287,
+  "oof_trades": 37,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.24885521020301143,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -48.900320038230035,
+  "start_capital": 1000.0,
+  "theta_entry": 0.54,
+  "ticker": "MOS",
+  "time_in_market_pct": 25.0,
+  "trade_floor_met": 1,
+  "trades": 22,
+  "win_rate_pct": 31.818181818181817,
+  "wins": 7
+ },
+ "ticker": "MOS"
+}

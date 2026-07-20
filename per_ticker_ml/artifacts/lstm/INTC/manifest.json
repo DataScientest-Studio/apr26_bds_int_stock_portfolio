@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76837,
+   "sha256": "d3bf316da2149cd34dd46ec76541d8e8a737e28cd1ffacc67c3a8d06ab00a9bd"
+  },
+  "metrics.json": {
+   "bytes": 1075,
+   "sha256": "a1d7b0672baeaab6dc03147236db524bbf11e3caa39d15108e7be6250b614e28"
+  },
+  "parameters.json": {
+   "bytes": 2514,
+   "sha256": "e16bc48db05336af78dec53d15f0e9d7afe919dddb51a682846939288a882063"
+  },
+  "strategy_INTC.py": {
+   "bytes": 77471,
+   "sha256": "ddbc24cdfbabb7990acb2b9d0e1ca8aff3d724585a09f623f69864f5ab1b9509"
+  }
+ },
+ "folder_sha256": "2f1b354eb80a750ffd0e7869069283aa6f27f173b3965b01cce2c5d4c37c8f91",
+ "model": "lstm",
+ "model_hash": "4f2a569f827fdbc3b81efbe22b8fbc740064b39373439dca69cff3c434834a60",
+ "ticker": "INTC"
+}

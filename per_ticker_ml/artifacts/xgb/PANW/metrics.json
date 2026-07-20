@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "80bc3beb833c16be1fa3d9e4771812297b4c47e982662c6fa1bf480f2aa813a3",
+  "oof_log_growth": 1.9784907738472433,
+  "oof_trades": 740,
+  "theta_boundary": true,
+  "theta_entry": 0.4,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4085348804859261,
+  "cv_folds": 4,
+  "end_capital": 922.2020798732975,
+  "losses": 163,
+  "max_drawdown_pct": 50.60021739701794,
+  "model_trades": 288,
+  "net_pnl_usd": -77.79792012670248,
+  "oof_log_growth": 1.9784907738472433,
+  "oof_trades": 740,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 0.9715401993975542,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -7.77979201267025,
+  "start_capital": 1000.0,
+  "theta_entry": 0.4,
+  "ticker": "PANW",
+  "time_in_market_pct": 65.6385,
+  "trade_floor_met": 1,
+  "trades": 288,
+  "win_rate_pct": 43.40277777777778,
+  "wins": 125
+ },
+ "ticker": "PANW"
+}

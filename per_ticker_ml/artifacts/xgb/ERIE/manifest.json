@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 79286,
+   "sha256": "706d18999f1a3d465b02c37d908704543f96068e91cf485fcf440e45634a698f"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "fe40bfa14edf73efee9f823a1612d4011ef184347e5a39e9789b95baea9db79e"
+  },
+  "parameters.json": {
+   "bytes": 4089,
+   "sha256": "e72f9cb0c11f00df3bc5f50fea71d21a437a638115576f0595491d317a9dccbc"
+  },
+  "strategy_ERIE.py": {
+   "bytes": 213306,
+   "sha256": "9592a4a35da47c7b4fe64927b49be0136112a645bbc10b454a0b6767711d250c"
+  }
+ },
+ "folder_sha256": "17007d56fe2320b2c054f8263fa02cb1161b7e32fc68f96c615e20bb22083b12",
+ "model": "xgb",
+ "model_hash": "4cabceca8b6215789a8f1219fc6ac8f32a5cbf79e5f03dc48a2baa84016af6a7",
+ "ticker": "ERIE"
+}

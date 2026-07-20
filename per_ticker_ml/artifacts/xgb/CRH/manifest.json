@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 27424,
+   "sha256": "0c5404ecf655ef6f8cf4ae77a9eb2f01ade69921e5138a01c9832c71459c80c1"
+  },
+  "metrics.json": {
+   "bytes": 1083,
+   "sha256": "ee6e86594099f4350a4b60b54e760adbceeb41e36734f6882640b26b92129c62"
+  },
+  "parameters.json": {
+   "bytes": 4618,
+   "sha256": "219b9433f257a02e1988cce3eea553546aef3192cd379a57968bbc8a48f74651"
+  },
+  "strategy_CRH.py": {
+   "bytes": 187284,
+   "sha256": "6e1a67c8fc9af95e35163a24150088238ddf81e61711dfa4c06cf9af4b0d21bc"
+  }
+ },
+ "folder_sha256": "f3f72b55d887424527e447fa924c4e8f7f5a52dbf0f0e9ce7211fd94addc6a3b",
+ "model": "xgb",
+ "model_hash": "b912c34e76ed189330e5dc0390f378a72d85192186bb00b72753625d4240fad8",
+ "ticker": "CRH"
+}

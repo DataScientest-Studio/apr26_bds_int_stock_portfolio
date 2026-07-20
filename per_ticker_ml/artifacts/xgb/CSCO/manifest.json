@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25927,
+   "sha256": "020bf60af79e6a808bee19f7e2111ed1ddacf37d45cb0b111f9f6c6c5427d84b"
+  },
+  "metrics.json": {
+   "bytes": 1046,
+   "sha256": "4f0ef3dab7d00f31e84adf8975e8778dc201e6028878fc451495b6a445825e78"
+  },
+  "parameters.json": {
+   "bytes": 4080,
+   "sha256": "9accb7807c0a8deb65f0477fb8800318a2140b0098d3d920c2bab377d6242528"
+  },
+  "strategy_CSCO.py": {
+   "bytes": 187021,
+   "sha256": "9104ffd220facd1cdc245214980647d468bda554aabdd7a9803550ca3166557c"
+  }
+ },
+ "folder_sha256": "8e2902fc715008db3a4d60e6816acd7bf2e0ecc56efebe4dd7d68d961bb6a7e6",
+ "model": "xgb",
+ "model_hash": "2861d7ed46661f290997a828db49554121fbb3623740110bbb29b45dc817f498",
+ "ticker": "CSCO"
+}

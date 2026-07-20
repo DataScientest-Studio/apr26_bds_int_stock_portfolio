@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 96572,
+   "sha256": "a1c5c163042200a29f619df629ae15c6e36b1a91a8d50dc600fc867dc7153820"
+  },
+  "metrics.json": {
+   "bytes": 1056,
+   "sha256": "488d051a8b1b62dc9599cfd571ca027502979763c0433777b35bab7ad920774a"
+  },
+  "parameters.json": {
+   "bytes": 2995,
+   "sha256": "532edafcc8d7e37e7abe3f2d3c05396ee4df26cd941cf2f1fd0a91dde9dccac7"
+  },
+  "strategy_KMI.py": {
+   "bytes": 89864,
+   "sha256": "bef114d6c146f8b95037cb6d486049b2414d4d9815780164eb64a73fe5590731"
+  }
+ },
+ "folder_sha256": "66a670789fbb8ddf3decabf9122e7acacba788fe2eff9af62079198cea68a7db",
+ "model": "lstm",
+ "model_hash": "6a027b6833365231a03ea52506296d676db3a3eddc6aaeb4e7abe16917b00bdd",
+ "ticker": "KMI"
+}

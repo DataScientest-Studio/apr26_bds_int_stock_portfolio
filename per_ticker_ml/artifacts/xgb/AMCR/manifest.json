@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25930,
+   "sha256": "c0564faba300d45eca3ac88eafd516d3dd0d1759e2ca4e20083b20776897fe54"
+  },
+  "metrics.json": {
+   "bytes": 1048,
+   "sha256": "5a21354e6b8f8e4834327c0d010d38859e4a12c1254355f868c742e3386f306e"
+  },
+  "parameters.json": {
+   "bytes": 4081,
+   "sha256": "aae9b4069052f6650cc17fdbac1910c799ebaf3807dc1e47aacb7e4300d91ec7"
+  },
+  "strategy_AMCR.py": {
+   "bytes": 187005,
+   "sha256": "54158a8b131ee6bc9ae78ce6fb3facc23bd82868fa4dfae5fee51f57a899011f"
+  }
+ },
+ "folder_sha256": "525a3417f7249084892ce8dec72dd7729f5541735f40abbdff31dc178a482e2d",
+ "model": "xgb",
+ "model_hash": "015634f9a91d87475a34bd051243138e0c970eb6d9f4647931023a7700d5410c",
+ "ticker": "AMCR"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 31579,
+   "sha256": "cc93b416118c93075f364f3d72d13429cfa16ee2adb7a57a83c10ceaeaf648d9"
+  },
+  "metrics.json": {
+   "bytes": 1083,
+   "sha256": "0bc60dd93ca93c89e3edc00ecfb946d09d1e7a4104ef71a2190343145bd5651b"
+  },
+  "parameters.json": {
+   "bytes": 4621,
+   "sha256": "f566e1bf8df681cfb28cd4ad5567521e19d6ac044675b6888f886bc6209733e9"
+  },
+  "strategy_DPZ.py": {
+   "bytes": 192240,
+   "sha256": "f256773c8100df2a8f7fe3a9d6157ab5fb8154f2cbef0fb1d973a164dbd93ac1"
+  }
+ },
+ "folder_sha256": "a4ff19b119bf1cca0427971b9e1f746d809378033e601b263a4f530825e7b495",
+ "model": "xgb",
+ "model_hash": "6a731b10abbd689fe21651b282e06b8f6783f8faa93f67457b2e8b2eeb3f69c1",
+ "ticker": "DPZ"
+}

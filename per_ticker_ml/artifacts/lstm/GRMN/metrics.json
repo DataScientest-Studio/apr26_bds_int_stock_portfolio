@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "0bcf5bec8aa805bdc01be4292db17be58d320f6970544c18a9d7dab3d5578ad8",
+  "oof_log_growth": 0.3897952241541939,
+  "oof_trades": 110,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.48516868160661464,
+  "cv_folds": 4,
+  "end_capital": 1381.760858036672,
+  "losses": 24,
+  "max_drawdown_pct": 29.008173108081852,
+  "model_trades": 51,
+  "net_pnl_usd": 381.76085803667206,
+  "oof_log_growth": 0.3897952241541939,
+  "oof_trades": 110,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.2729022760092783,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 38.176085803667206,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "GRMN",
+  "time_in_market_pct": 60.9589,
+  "trade_floor_met": 1,
+  "trades": 51,
+  "win_rate_pct": 52.94117647058824,
+  "wins": 27
+ },
+ "ticker": "GRMN"
+}

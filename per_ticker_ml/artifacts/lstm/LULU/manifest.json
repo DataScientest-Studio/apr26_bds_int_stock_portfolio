@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 73703,
+   "sha256": "5bd3be06a3358e7abc7ca2784cbbfb42a3e178055794d958df55f45733a2cd68"
+  },
+  "metrics.json": {
+   "bytes": 1079,
+   "sha256": "c3c0b3454f80c826c335e673d08091bedb2b770abc26d062b357ac88bb9bdeef"
+  },
+  "parameters.json": {
+   "bytes": 2519,
+   "sha256": "bf72634288a0df2ff0d20260b61a5a16f233a49d5f3d7ce07e0b96a1725a6573"
+  },
+  "strategy_LULU.py": {
+   "bytes": 76950,
+   "sha256": "4a1c19a1b3aee392cc5e1c06d751c6da2b0047e4302ebcf7381e94d286f77587"
+  }
+ },
+ "folder_sha256": "21e63ee203a0b5f12fc06765225de75a186db98e0556bd3f3565de62a3ea504f",
+ "model": "lstm",
+ "model_hash": "b3eaecd5e9932461a51d8d5c010a5a8c8ea56c90a8f59e9147f40ea12e974d3b",
+ "ticker": "LULU"
+}

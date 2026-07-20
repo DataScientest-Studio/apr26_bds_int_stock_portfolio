@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "2519bf6f65f1c5865a2fc6ae1e7ea44424727b1be9af11c439051ddd7b4e95e6",
+  "oof_log_growth": 0.41247546311989486,
+  "oof_trades": 14,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.44339398220500637,
+  "cv_folds": 4,
+  "end_capital": 1023.979842136397,
+  "losses": 0,
+  "max_drawdown_pct": 2.7902727017149185,
+  "model_trades": 1,
+  "net_pnl_usd": 23.979842136396996,
+  "oof_log_growth": 0.41247546311989486,
+  "oof_trades": 14,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_ONE_TRADE_LOW_EVIDENCE",
+  "return_pct": 2.3979842136397034,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "EXPD",
+  "time_in_market_pct": 1.7123,
+  "trade_floor_met": 1,
+  "trades": 1,
+  "win_rate_pct": 100.0,
+  "wins": 1
+ },
+ "ticker": "EXPD"
+}

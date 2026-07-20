@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 117456,
+   "sha256": "090616e8aff91b1c2cb253282cd5f12e1a571b560498a266ad2e11f2c0df6599"
+  },
+  "metrics.json": {
+   "bytes": 1107,
+   "sha256": "4e5d9969eea94b1cbf7b91ef848c709ba7d567796515d5b6a74f4f34d85d4bda"
+  },
+  "parameters.json": {
+   "bytes": 4645,
+   "sha256": "a6370041c1d2035b9323b96acbed5d61bfd0b6b299973f8eb06f9aca17b4d6ed"
+  },
+  "strategy_VRSN.py": {
+   "bytes": 235445,
+   "sha256": "9f12927cd82354a64bc17d1296b3ca2ec4d432d28d241239a2f809834a15197a"
+  }
+ },
+ "folder_sha256": "4faac622b75c355fe5dc3b0e8cf8520b5f941b365e7b58358464e23d7434e44d",
+ "model": "xgb",
+ "model_hash": "926ac2c3853119db4775be4a533a3e362459c4bdc712dd5524989f708ae96f0a",
+ "ticker": "VRSN"
+}

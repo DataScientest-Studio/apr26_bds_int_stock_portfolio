@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 82859,
+   "sha256": "c21ae66914dbd768b5906609e1d0e60a4848c930b933c6b9dd49b1c880257235"
+  },
+  "metrics.json": {
+   "bytes": 1079,
+   "sha256": "2dedb1f5f5cf05af90a32c22f9a4f985d1dfa47729149a0951bea8782d87a3fc"
+  },
+  "parameters.json": {
+   "bytes": 2642,
+   "sha256": "235237e4ea0533cf7bf5601b64a5562918f665759b593f924c8a1ae792b8d362"
+  },
+  "strategy_SJM.py": {
+   "bytes": 81159,
+   "sha256": "fcff9bc229d92b4378d96457feb7f9aa9e5f844a5e6899d761ea06b19ee24332"
+  }
+ },
+ "folder_sha256": "2fa5ac4158fc064bcdd4ff7a7a381483ae0514a29855cf62531f839d2110cb29",
+ "model": "lstm",
+ "model_hash": "a673ea9da28ad2934f74158199b17b766aeee4a72dfe22b8545f6535c1dba419",
+ "ticker": "SJM"
+}

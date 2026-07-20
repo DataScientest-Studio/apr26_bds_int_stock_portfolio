@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 81118,
+   "sha256": "0a98ce988c4b4e24eeb35e746deb3cf7b4745b63d5718cd9af748f01e04ff5b9"
+  },
+  "metrics.json": {
+   "bytes": 1057,
+   "sha256": "b8f634d760d75b3f22e929444a02bbe75e58c6093a8abc48caf5d38878ca23a2"
+  },
+  "parameters.json": {
+   "bytes": 3213,
+   "sha256": "578b2fcf362ba3341182153f4ff6e0e27abed0334b0b7d7666900e1d57336594"
+  },
+  "strategy_BIIB.py": {
+   "bytes": 93177,
+   "sha256": "29b903b359938aa46b3f895fcbf0bcddd75a8fc71d38b3fac61aad91faa53d57"
+  }
+ },
+ "folder_sha256": "7370a2061c9800e0da9b551a92befea43c9165602ec81cc3dffbc12c7d74831b",
+ "model": "lstm",
+ "model_hash": "388fbd1a2fa113aee331710361bcf2ba37a635a1919bf0965fad1ddcfd74ccc9",
+ "ticker": "BIIB"
+}

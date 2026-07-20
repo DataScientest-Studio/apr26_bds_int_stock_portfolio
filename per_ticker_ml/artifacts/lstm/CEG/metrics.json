@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 1,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "28f4c183469a19d52a24cb8db1a5a8571afc0fdcfdca6df99655362f90cc4a2c",
+  "oof_log_growth": 0.029869780773780795,
+  "oof_trades": 6,
+  "theta_entry": 0.5,
+  "trade_floor_met": false
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.42469446174167536,
+  "cv_folds": 1,
+  "end_capital": 2360.8919503244697,
+  "losses": 18,
+  "max_drawdown_pct": 29.124208406395308,
+  "model_trades": 40,
+  "net_pnl_usd": 1360.8919503244697,
+  "oof_log_growth": 0.029869780773780795,
+  "oof_trades": 6,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.5839457057627144,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "TRAIN_OOF_FLOOR_NOT_MET",
+  "return_pct": 136.08919503244698,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "CEG",
+  "time_in_market_pct": 51.0274,
+  "trade_floor_met": 0,
+  "trades": 40,
+  "win_rate_pct": 55.00000000000001,
+  "wins": 22
+ },
+ "ticker": "CEG"
+}

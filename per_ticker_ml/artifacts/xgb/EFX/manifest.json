@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 135572,
+   "sha256": "de78f0ba14eef9f7959dad62d351a5c42fd63d75dfa6d0738e72bca9adb70e6a"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "dcbe2d0034ad0e4c06d66e356446fc4394910f04572722ba9dcf389538cdfb8f"
+  },
+  "parameters.json": {
+   "bytes": 4630,
+   "sha256": "98f26e305fb9d7765e459d303cadaaf3e64fd4bdec3fa333a6d0cf70ae6f41fb"
+  },
+  "strategy_EFX.py": {
+   "bytes": 387334,
+   "sha256": "c392d6e5fbe196a70b66a9bf7f977276a56c7990e00e4da43d3cf3b3ee1acd15"
+  }
+ },
+ "folder_sha256": "09b08a301983fd38d22e1e1ae84fb2aff0c8f59caeaf34fa4e89880980105b9c",
+ "model": "xgb",
+ "model_hash": "10f3b21c7e269f0f40ab3cb92fd0e4de66324934cc6ec2a66d71360d0cae54e0",
+ "ticker": "EFX"
+}

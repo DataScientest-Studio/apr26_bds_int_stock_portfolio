@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "5262e9905949b7433dab358821304ec51dbcdcc6e0668a6aea6328213e31a3c5",
+  "oof_log_growth": 0.8619578066370528,
+  "oof_trades": 79,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4835659313668563,
+  "cv_folds": 4,
+  "end_capital": 497.7419546591049,
+  "losses": 17,
+  "max_drawdown_pct": 53.24898425329573,
+  "model_trades": 28,
+  "net_pnl_usd": -502.2580453408951,
+  "oof_log_growth": 0.8619578066370528,
+  "oof_trades": 79,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.44379306316587785,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -50.22580453408951,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "ALGN",
+  "time_in_market_pct": 33.0479,
+  "trade_floor_met": 1,
+  "trades": 28,
+  "win_rate_pct": 39.285714285714285,
+  "wins": 11
+ },
+ "ticker": "ALGN"
+}

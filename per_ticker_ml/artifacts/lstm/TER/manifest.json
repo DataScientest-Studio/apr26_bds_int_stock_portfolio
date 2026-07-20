@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 100662,
+   "sha256": "af3c6aba2781c07ebc5e0f78d7848c3e75e3dfe2416b382fcc479bbcb48e943f"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "09b7c201aa9de6bb6ab3d155b577a4a371a63891b860080434d3ac27f80444c2"
+  },
+  "parameters.json": {
+   "bytes": 3118,
+   "sha256": "74daa6be1e6794ebf8e42c513d63cf1e6522b52e8f64809bb6bc55364fe54112"
+  },
+  "strategy_TER.py": {
+   "bytes": 93048,
+   "sha256": "6c7cae97708bd2f89199230bcf6bc8352e500fce7cf8a8a4825c53fc27748ba1"
+  }
+ },
+ "folder_sha256": "5baea32d24288b6ede5cbcb0a2e6421834f17a1a548a1af038415067e8c9739e",
+ "model": "lstm",
+ "model_hash": "9773ddd4d053b4d3223449dddb61be5974a1ee09bcecda94d06fb8facd188292",
+ "ticker": "TER"
+}

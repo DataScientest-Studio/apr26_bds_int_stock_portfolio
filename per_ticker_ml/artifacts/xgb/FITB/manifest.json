@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 61626,
+   "sha256": "39da46afe43dacb2cee8139603800ee714bc523728edefaeb2f26dced7575089"
+  },
+  "metrics.json": {
+   "bytes": 1107,
+   "sha256": "bb22bf63dc3389d1a523c7652080c59966281ade29dc397b8d9905894480881c"
+  },
+  "parameters.json": {
+   "bytes": 4625,
+   "sha256": "85296379e7001155b0226022911c27b6d294b8ed2883ecf1c95f09c33163f28b"
+  },
+  "strategy_FITB.py": {
+   "bytes": 200004,
+   "sha256": "6e7df4f4b02e26be59ee58aec2f33803085ba9b0a193832bc96063a9457dcdb6"
+  }
+ },
+ "folder_sha256": "b595e6e4fc7c1cee18f24780b634bb0335fb34a80c93b62fa4eb9ce2b7dafaed",
+ "model": "xgb",
+ "model_hash": "9a76a4eeb8d3fe4eedc44c90084067cafecf11e3bb5fcac6a9ff50ff974eae9c",
+ "ticker": "FITB"
+}

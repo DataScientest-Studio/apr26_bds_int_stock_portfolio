@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 40246,
+   "sha256": "1cb80e1b4fe9f542017597c4dc8de23d5f6ccd50a678b607c07dc3770e8faefc"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "6c811169fcf07a53aaafa2ec9bc4af0a0385c1adf391fd44aae5fa65723a5554"
+  },
+  "parameters.json": {
+   "bytes": 5160,
+   "sha256": "85b688afc9477181778347c8a4015b0a8126fc0d985e93bacc38639663599f0a"
+  },
+  "strategy_JNJ.py": {
+   "bytes": 190680,
+   "sha256": "1baf7737da75d7287849b8ae909281e7bc8f9770454dd98204c89c1f866ff54e"
+  }
+ },
+ "folder_sha256": "9d549e9d0f3a4704e8cff045ff88064ad40ca8e2d0b3fc8e4670ab227b20e5b3",
+ "model": "xgb",
+ "model_hash": "1bc5bb182a7fb61c5ce579b46c84fecf6ea65123b13db4ca68b02481206507ba",
+ "ticker": "JNJ"
+}

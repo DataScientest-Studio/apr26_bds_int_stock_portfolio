@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 53574,
+   "sha256": "39fe06f38282fdad9572aba4c10f8c178527449985a3d7f3b1713bf7fb7cc953"
+  },
+  "metrics.json": {
+   "bytes": 1106,
+   "sha256": "4edc408bb3696ba592f1969be4672af6c7dc64e7b76e2ccfad800b432125af09"
+  },
+  "parameters.json": {
+   "bytes": 4803,
+   "sha256": "d5ddd77e653313adaac832dc750502a03c23fd0d8aaeea8abfe3fa51670c6a3d"
+  },
+  "strategy_PHM.py": {
+   "bytes": 264036,
+   "sha256": "29364127d7f24bbfcda31602ee6266a5a29dcf70b0ebad5b587154b2c1b2129d"
+  }
+ },
+ "folder_sha256": "c412f1f8cfacfd8741c177aa7cea86aefb87ecb662fc20b75cbf3de07e269111",
+ "model": "xgb",
+ "model_hash": "1a59164a76e1e016dc56d7cd726b3e3cb39afdbd06ac342dc40d758484b77507",
+ "ticker": "PHM"
+}

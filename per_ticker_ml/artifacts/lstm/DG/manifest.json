@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76849,
+   "sha256": "f637a116dba47918d9ad646ef23a825da4ee910afb14eb917339c3e24014b028"
+  },
+  "metrics.json": {
+   "bytes": 1071,
+   "sha256": "3b8b756ca8eaa1b761ef7a1002886013cc0977ee2ed427caf975c51b2d84e093"
+  },
+  "parameters.json": {
+   "bytes": 2518,
+   "sha256": "5c7476aab427bb8ba3b4e9cfc7947b456bae8e121abadf76e68e3d8cb255ac33"
+  },
+  "strategy_DG.py": {
+   "bytes": 77189,
+   "sha256": "52da127d5ed3fece62d41be8097ad458376d3d07c7284880135150466b690b94"
+  }
+ },
+ "folder_sha256": "87296c5b791a5bbef771c3ab863357e93510a88a0b929bbbfcf42fc616bb0aff",
+ "model": "lstm",
+ "model_hash": "78f38b36a684b963f466d7e5dabda2c5c21a11c1b1bf5c770e4ecb427345bb6a",
+ "ticker": "DG"
+}

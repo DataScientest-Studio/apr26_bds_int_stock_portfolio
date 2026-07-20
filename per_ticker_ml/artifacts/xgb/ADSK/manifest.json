@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 141527,
+   "sha256": "356f7a58b5dc248e84236252876bc8044ced46912f62bbd7a3ebde7ac378b0f5"
+  },
+  "metrics.json": {
+   "bytes": 1111,
+   "sha256": "765aff897d37f8387457ecf1365e8de5af0f0ad49ecee8535c8f23c94237696c"
+  },
+  "parameters.json": {
+   "bytes": 4649,
+   "sha256": "66542939edd9c64980c16bb445a97d1c12e0f559750c7ba1b4cffafefd73bc68"
+  },
+  "strategy_ADSK.py": {
+   "bytes": 316722,
+   "sha256": "3b1a0a9a2ba4828f198ad1e45d79c518aa413fab2d4594348a00f93673eaf47e"
+  }
+ },
+ "folder_sha256": "d024b9342b64424294d702d29efd1bdba8d92ab1c4f95665f0c5bbb8e39aaedf",
+ "model": "xgb",
+ "model_hash": "bc230bc3db73304a1e29be77402c6c910f8e22be1bd0b54f7e0e0dc2c70bfac8",
+ "ticker": "ADSK"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 65208,
+   "sha256": "b2e672759deb31f90374f76977b7ab713dd7d2f587139f450a0b50f113b8bd92"
+  },
+  "metrics.json": {
+   "bytes": 1069,
+   "sha256": "fba89ab1c0414b6324880a631525fe078abe51c246afe82040d53b4f70bae2a4"
+  },
+  "parameters.json": {
+   "bytes": 2633,
+   "sha256": "ccbd8ff25302182e122e906217b681887543807c202f26e8472fd9adb5553df1"
+  },
+  "strategy_NI.py": {
+   "bytes": 79894,
+   "sha256": "02f87941992acb36a3a6fe52940318313a4bf86725718d0ed6ca87221f7a6f2d"
+  }
+ },
+ "folder_sha256": "894f01e333247154a675836c3c01d57394fc2667feddbae21078885a20af311c",
+ "model": "lstm",
+ "model_hash": "963d4cd3c016f44330530eb2d300a474889ec9900bb48124b7142d158dac3d9e",
+ "ticker": "NI"
+}

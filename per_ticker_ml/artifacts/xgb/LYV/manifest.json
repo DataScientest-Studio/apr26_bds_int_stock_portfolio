@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 36784,
+   "sha256": "5f2947fe9b9c48cf16a4127a6fbc4790ed3a96dd21de0157f568e8006076f75d"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "062aa4b6a6cd9c71cc27367da76b446ed109baa1810e2d0c100fcaf9018ab994"
+  },
+  "parameters.json": {
+   "bytes": 4081,
+   "sha256": "b207b13ebb1a96d682e94f698ef624d2cfbc4712756bf2f5d5d233e30f2dcc17"
+  },
+  "strategy_LYV.py": {
+   "bytes": 215696,
+   "sha256": "1df5bd617d9cd5941a1ff6faa5ed1a09c08f6c4ce326221459598b6268908761"
+  }
+ },
+ "folder_sha256": "d193dcc60ba49ce9b3119193d9dfd1be0189a3f5ede69150c2c451b64f6892db",
+ "model": "xgb",
+ "model_hash": "a17ea4eecbba55c9c0123d53a3b8a9f23af41b377f962bf7e613524bb27b96aa",
+ "ticker": "LYV"
+}

@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "ad412133c021175928a3786d27a6dc23c3bd86f5d627db0cd9bee0e28c70b348",
+  "oof_log_growth": -0.028570944267169815,
+  "oof_trades": 68,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4606529769824368,
+  "cv_folds": 4,
+  "end_capital": 1103.391327803834,
+  "losses": 24,
+  "max_drawdown_pct": 16.139990095441412,
+  "model_trades": 48,
+  "net_pnl_usd": 103.39132780383397,
+  "oof_log_growth": -0.028570944267169815,
+  "oof_trades": 68,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.201971707383102,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 10.339132780383387,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "EVRG",
+  "time_in_market_pct": 58.7329,
+  "trade_floor_met": 1,
+  "trades": 48,
+  "win_rate_pct": 50.0,
+  "wins": 24
+ },
+ "ticker": "EVRG"
+}

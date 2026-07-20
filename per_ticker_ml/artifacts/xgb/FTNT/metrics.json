@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "f8ad179746834925921f326395ebfc62c66c08ae06c5873d28c6bda2a71aaade",
+  "oof_log_growth": 0.6992546664679313,
+  "oof_trades": 551,
+  "theta_boundary": true,
+  "theta_entry": 0.4,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4249213385562983,
+  "cv_folds": 4,
+  "end_capital": 1507.7840976493121,
+  "losses": 178,
+  "max_drawdown_pct": 30.560465060132508,
+  "model_trades": 306,
+  "net_pnl_usd": 507.7840976493121,
+  "oof_log_growth": 0.6992546664679313,
+  "oof_trades": 551,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 1.1635007981986372,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 50.77840976493122,
+  "start_capital": 1000.0,
+  "theta_entry": 0.4,
+  "ticker": "FTNT",
+  "time_in_market_pct": 68.8905,
+  "trade_floor_met": 1,
+  "trades": 306,
+  "win_rate_pct": 41.830065359477125,
+  "wins": 128
+ },
+ "ticker": "FTNT"
+}

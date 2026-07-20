@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25929,
+   "sha256": "0bbdebfcfff2fd16d68fa37f5cc0a95b42c094a92f3cbb3fd90e0fdb7e3a4d3b"
+  },
+  "metrics.json": {
+   "bytes": 1046,
+   "sha256": "f86c5750b40b60a9d471fede5af59c02e000e983007d8a8c8cbdb22768df661c"
+  },
+  "parameters.json": {
+   "bytes": 4080,
+   "sha256": "1a60e1431700844452f117b06be9caa175c7b4b4ce80e01c5ef18e8efb537705"
+  },
+  "strategy_TMUS.py": {
+   "bytes": 187020,
+   "sha256": "92ee12896ea4ea663b98281098f8fca1678ad1c514d3eebc3b32369c77671d2f"
+  }
+ },
+ "folder_sha256": "e6c783ed22d00d955d0d3dbedc650a1b6c651a9d5d68502c97d41f7a696b5394",
+ "model": "xgb",
+ "model_hash": "7fbc3a592f9dafcb61ef6187ad793dae2afb23c6212ca9db532e5b33fab68979",
+ "ticker": "TMUS"
+}

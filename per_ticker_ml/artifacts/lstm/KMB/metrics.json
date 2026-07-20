@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "31c846708aa9fcb3bf5abdfe6567be1bc5e79c1e545df2676932b7c1edba19d7",
+  "oof_log_growth": 0.28581900947290134,
+  "oof_trades": 82,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5432254669497705,
+  "cv_folds": 4,
+  "end_capital": 1210.6580076201633,
+  "losses": 17,
+  "max_drawdown_pct": 12.314040763243067,
+  "model_trades": 35,
+  "net_pnl_usd": 210.6580076201633,
+  "oof_log_growth": 0.28581900947290134,
+  "oof_trades": 82,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.4602175103626358,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 21.065800762016316,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "KMB",
+  "time_in_market_pct": 42.8082,
+  "trade_floor_met": 1,
+  "trades": 35,
+  "win_rate_pct": 51.42857142857142,
+  "wins": 18
+ },
+ "ticker": "KMB"
+}

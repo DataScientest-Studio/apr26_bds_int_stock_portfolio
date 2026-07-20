@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "64df6ab90bdf0b67dd8b172bc3864897e682a8115834039b397f33429757f269",
+  "oof_log_growth": 0.7485960729170441,
+  "oof_trades": 162,
+  "theta_boundary": false,
+  "theta_entry": 0.48,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4058236541521171,
+  "cv_folds": 4,
+  "end_capital": 832.9277988099227,
+  "losses": 38,
+  "max_drawdown_pct": 23.97699114753504,
+  "model_trades": 57,
+  "net_pnl_usd": -167.0722011900773,
+  "oof_log_growth": 0.7485960729170441,
+  "oof_trades": 162,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 0.673962544772405,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -16.707220119007726,
+  "start_capital": 1000.0,
+  "theta_entry": 0.48,
+  "ticker": "BKNG",
+  "time_in_market_pct": 11.3104,
+  "trade_floor_met": 1,
+  "trades": 57,
+  "win_rate_pct": 33.33333333333333,
+  "wins": 19
+ },
+ "ticker": "BKNG"
+}

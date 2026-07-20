@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 32014,
+   "sha256": "0dcc0220a636a66ada87277e93c5b8dada54da593b8cc9a0b5477a52780ee490"
+  },
+  "metrics.json": {
+   "bytes": 1105,
+   "sha256": "c3dc5f4c0a98d8fa0180ae45a719e3440be3e9eb47d0fba90ffc8c8ba6feba55"
+  },
+  "parameters.json": {
+   "bytes": 4640,
+   "sha256": "579ac146787e994647d90b2f8ed2cf0e0e495cb21349caba576922ed63782115"
+  },
+  "strategy_WM.py": {
+   "bytes": 279447,
+   "sha256": "c967535e3f39b08d02ad7a79da7c6187926a7b14c6b17f1c93e52382d470832a"
+  }
+ },
+ "folder_sha256": "5d59b4200a7ed38fc35ba3b3686d1cb1615537566f37832638bdd7923a508174",
+ "model": "xgb",
+ "model_hash": "285a627ddc3659c89b95c1186ca814c4345cda91e571ed05296efad2eb555dca",
+ "ticker": "WM"
+}

@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "3fadcae80bbf4cb0c58095f47c6556664beda71749c47b997fac6e172780a9fa",
+  "oof_log_growth": 0.067363197208757,
+  "oof_trades": 45,
+  "theta_entry": 0.54,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.46466158240576944,
+  "cv_folds": 4,
+  "end_capital": 1121.388524761804,
+  "losses": 5,
+  "max_drawdown_pct": 14.72967495486337,
+  "model_trades": 11,
+  "net_pnl_usd": 121.38852476180409,
+  "oof_log_growth": 0.067363197208757,
+  "oof_trades": 45,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.7584918939044432,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 12.138852476180407,
+  "start_capital": 1000.0,
+  "theta_entry": 0.54,
+  "ticker": "BF.B",
+  "time_in_market_pct": 14.3836,
+  "trade_floor_met": 1,
+  "trades": 11,
+  "win_rate_pct": 54.54545454545454,
+  "wins": 6
+ },
+ "ticker": "BF.B"
+}

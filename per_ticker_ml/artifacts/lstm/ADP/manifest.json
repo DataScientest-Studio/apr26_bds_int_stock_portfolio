@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 82236,
+   "sha256": "0145fbb7ad144d0ae29d3c82bd3597f041cb4d547801d137a0a80bc25c6ee28d"
+  },
+  "metrics.json": {
+   "bytes": 1073,
+   "sha256": "16b93ff29222ff09a34c5a5ad49ff17fc9277d85c2226f2a1890f8ed5613668a"
+  },
+  "parameters.json": {
+   "bytes": 2643,
+   "sha256": "1232f62e66a0e521b6cab73acd215d633dcd069213992e014199e09446781b0f"
+  },
+  "strategy_ADP.py": {
+   "bytes": 80609,
+   "sha256": "ff3680c968bd48ae210327657c62c84f0e6efe4d3078f715f5f0a841a0d0b2b9"
+  }
+ },
+ "folder_sha256": "67b59889d4cbf04052c47242955e8ff74b85f629c62ea586c475885b77cfef97",
+ "model": "lstm",
+ "model_hash": "ba8059bc783cfe7b9c44adfa647f7fff264f8b743c14f3223c626875822a5843",
+ "ticker": "ADP"
+}

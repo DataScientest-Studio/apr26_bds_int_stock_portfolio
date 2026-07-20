@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 26135,
+   "sha256": "3f0a65fce93f0573c80aa90b238bde356afdcd835e735b83d042177c38d8abfd"
+  },
+  "metrics.json": {
+   "bytes": 1086,
+   "sha256": "f4529cb63436c4e71d7ff8cfea64a732eb361badbff8d4eb5b847afed0a30e35"
+  },
+  "parameters.json": {
+   "bytes": 4084,
+   "sha256": "7417639f5e070f34a1def867754614d198fe8d72d542e829e39c2cdadcfb59ab"
+  },
+  "strategy_SCHW.py": {
+   "bytes": 182695,
+   "sha256": "d1a86243d7f77e04ef7136741b6bb8adf70b810f5f4bfc116120e32cbfc80d96"
+  }
+ },
+ "folder_sha256": "4614ea954283211724f1401c6df294fd803f36b393304b7bc5474ed682893817",
+ "model": "xgb",
+ "model_hash": "7d08523c3aa0bbf4f0a71df8bcff156ab9d68ed82d7bfd45738c5a774f9b540b",
+ "ticker": "SCHW"
+}

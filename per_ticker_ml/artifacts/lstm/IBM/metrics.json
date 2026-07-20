@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "f1a079221382a4b9e8ee8e67d1b44a5404c660dab17a70e3542385de49adbb94",
+  "oof_log_growth": 0.3132291347077462,
+  "oof_trades": 106,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.47607383583496987,
+  "cv_folds": 4,
+  "end_capital": 1739.757808965901,
+  "losses": 18,
+  "max_drawdown_pct": 17.344647830511235,
+  "model_trades": 41,
+  "net_pnl_usd": 739.757808965901,
+  "oof_log_growth": 0.3132291347077462,
+  "oof_trades": 106,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.7976200959332367,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 73.9757808965901,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "IBM",
+  "time_in_market_pct": 51.1986,
+  "trade_floor_met": 1,
+  "trades": 41,
+  "win_rate_pct": 56.09756097560976,
+  "wins": 23
+ },
+ "ticker": "IBM"
+}

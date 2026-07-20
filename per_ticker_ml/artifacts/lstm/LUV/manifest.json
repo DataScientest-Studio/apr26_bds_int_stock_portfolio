@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75553,
+   "sha256": "531b53c6d71179b56ca88412c858b32f93636e1ac83fcaf5c1c302627c17fbad"
+  },
+  "metrics.json": {
+   "bytes": 1054,
+   "sha256": "af10ab6fdae3f4616b774938e1244e9bd52b4d00688c0d931becc7f30038e8d7"
+  },
+  "parameters.json": {
+   "bytes": 2518,
+   "sha256": "9ba57bdc9942abcd3f35dc385cc252d4ffc995f1145811e7a8c7e511f360e48c"
+  },
+  "strategy_LUV.py": {
+   "bytes": 76446,
+   "sha256": "31a1e49ca082d31dac7c09010fb5b1c041e727bc7d7be3eea68047ac9af00fe7"
+  }
+ },
+ "folder_sha256": "93f872933240bdfab271ae478814337e545a58ccd6ff22a808a24c2251344248",
+ "model": "lstm",
+ "model_hash": "4dde7fd47eca5786692f7d8c9ee003a127bfbb03dbae42e0c2d43134f76940d5",
+ "ticker": "LUV"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 80263,
+   "sha256": "676d3c546676c3fe7d24944d92599e72bc2c9ab59f369cac15519ec1e67da2a8"
+  },
+  "metrics.json": {
+   "bytes": 1057,
+   "sha256": "495045ba25540b0066782554942bacd0109eed8cffbd65fdc293088d7543822b"
+  },
+  "parameters.json": {
+   "bytes": 2667,
+   "sha256": "8f2a38bb83f2f868eae08e4cda9f34a22eae5cfd84f495331216e4b81fc2a5b6"
+  },
+  "strategy_NOC.py": {
+   "bytes": 80140,
+   "sha256": "82f6b5b540eb1cff969b811bfbe23f3411401dca4cf4af35f67c97b601e143c9"
+  }
+ },
+ "folder_sha256": "fb76a5902cd0eea7484e4f88ff6d78bba95455b144c06bb373a0cfda06cfcb69",
+ "model": "lstm",
+ "model_hash": "6bf363c206af5d0b7bbb49c99f42e876921ce9726811b2e36e0648d932cbeead",
+ "ticker": "NOC"
+}

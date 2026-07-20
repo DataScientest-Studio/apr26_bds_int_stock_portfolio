@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>Data Pipeline Lego Plan — S&P 500 ML Indicator Study (XGBoost 1h / LSTM daily)</title>
+<!--
+  ============================================================================
+  LEARNING BY DOING - single-file app (zero dependencies, zero build)
+
+  What this is: an interactive map of the per-asset ML indicator pipelines
+  of the S&P 500 ML Indicator Study: how split-adjusted OHLCV bars become a
+  sealed, one-shot out-of-sample verdict per asset - and, block by block, HOW
+  WE THOUGHT and WHAT WE LEARNED while planning a system precise enough to
+  describe, per asset, when its model acts and when it stays idle.
+
+  Two models share ONE procedure (the LSTM engine is a port of the XGBoost
+  parent). The MODEL SWITCH (top of the left panel) flips only the blocks
+  whose logic depends on the model:
+      XGBoost - 1h bars, multi-timeframe features, H=24, embargo 35
+      LSTM    - daily bars, 60-session window,     H=10, embargo 10
+
+  MAP FOR AGENTS - edit in the right section:
+    CSS  [S1] color tokens        [S2] layout (workspace/panels)
+         [S3] inventory (left)    [S4] canvas + bricks + lane separators/heads
+         [S5] visualizations      [S6] inspector (right)  [S7] toast/media
+    JS   [J0] MODEL SWITCH - 'xgb' | 'lstm' + pick() variant resolver
+         [J1] DATA   - GROUPS + MODULES (procedure contracts; any field may
+                       be a shared value OR a {xgb:..., lstm:...} variant)
+         [J1b] LEARNING - per-block {goal, decisions, lessons, principles}
+         [J2] VIZ    - mini-visualization registry: 1 key = 1 brick kind
+         [J3] LAYOUT - bottom-up ladder; ORDER = MODULES declaration order,
+                       SEALED (this is documentation - blocks cannot be moved)
+         [J6] CANVAS - brick render, sticky lane heads, pan/zoom (read-only)
+         [J7] INVENTORY + INSPECTOR - side panels, learning accordion
+         [J8] BOOT   - start
+
+  SEALED DOCUMENTATION: the ladder order IS the pipeline order, fixed by
+  declaration. There is no drag&drop, no persistence, no hidden state -
+  a reload always shows the canonical flow, bottom to top.
+
+  Content provenance: the frozen configuration (config/) + the sealed
+  results store
+  (data/results.db: 498 XGB rows, 495 LSTM rows, 993 artifacts) +
+  the frozen feature registries. Numbers here are quotes of those sealed
+  artifacts, taken while the research snapshot is FROZEN. On any discrepancy
+  the store wins.
+
+  EPOCH: the sealed final epoch (split-adjusted bars), presentation freeze
+  public/stable-2, research_status FROZEN_FINAL_RESEARCH_SNAPSHOT.
+
+  BLOCK IDS. The blueprint's own ids (A/B/C/E + G) are CONCEPTUAL stages shared
+  by both models. They are NOT the pipelines' internal layer names - those are
+  XGB L4-L9 and LSTM D1-D9, printed on each block so the map teaches the names
+  the code actually uses. Precisely: L4-L8 and D1-D8 are real section banners in
+  src/xgb/pipeline.py and src/lstm/{pipeline,model}.py; L9 and D9 name the one-shot
+  OOS read as docs/ARCHITECTURE.md defines it, and carry no banner of their own.
+  The acquisition layers that used to be numbered L1-L3 live in the upstream data
+  repo and are named, not numbered, here - ARCHITECTURE.md defines L4-L9 only.
+  Four bricks carry NO layer id at all - E2, E3, E4 and G.3. That is deliberate:
+  the benchmark feed, the interpretation layer, the console and the reproduction
+  gate all sit downstream of the last rung (L9 / D9), so no L or D code describes
+  them. The ladder ends at E1; what follows is product, not pipeline.
+  The G.x ids stay G even though the lane that holds them is displayed as
+  VALIDATION: they are data keys, joined by depends:[] arrays and by the viz
+  registry, so renaming them to V.x would break dependencies for a caption.
+  The same separation runs through GROUPS below - `id` is structural, `name` is
+  the only thing a reader ever sees.
+  ============================================================================
+-->
+  <style>
+    /* [S1] tokens */
+    :root{
+      --bg-root:#080A0D;
+      --bg-panel:#0D1117;
+      --line:#27303A;
+      --line-soft:#1B232C;
+      --text:#E8EDF2;
+      --muted:#89929D;
+      --amber:#FFA028;
+      --green:#44D17A;
+      --red:#FF5C6C;
+      --cyan:#54B8FF;
+      --v-src:#ABA99F;
+      --v-store:#2BB587;
+      --v-green:#86B23A;
+      --v-amber:#D89A3A;
+      --v-good:#34C96A;
+      --v-fail:#F26B6A;
+      --v-blue:#5CB0FF;
+      --v-pink:#E673A3;
+      --v-gray:#8a8980;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;min-width:1024px}
+    body{margin:0;background:var(--bg-root);color:var(--text);font:12px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow:hidden}
+    button,input{font:inherit}
+    button{border:0;background:transparent;color:var(--text);padding:0;cursor:pointer}
+    button:hover{color:var(--amber)}
+    button:focus-visible{outline:1px solid var(--amber);outline-offset:-1px}
+
+    /* [S2] layout */
+    .terminal{height:100vh;display:grid;grid-template-rows:minmax(0,1fr);background:var(--line);gap:1px}
+    .workspace{display:grid;grid-template-columns:18% minmax(0,1fr) 24%;gap:1px;min-height:0;background:var(--line)}
+    .panel{min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:var(--bg-panel)}
+
+    /* [S3] inventory + model switch */
+    .model-switch{padding:7px;border-bottom:1px solid var(--line);display:flex;gap:4px}
+    .model-btn{flex:1;font-size:9px;letter-spacing:.05em;color:var(--muted);padding:5px 4px;border:1px solid var(--line);text-align:center}
+    .model-btn.active{color:var(--bg-root);background:var(--amber);border-color:var(--amber);font-weight:800}
+    .inventory-controls{padding:7px;border-bottom:1px solid var(--line);display:flex;gap:4px;flex-wrap:wrap}
+    .filter{font-size:9px;color:var(--muted);padding:3px 5px;border:1px solid transparent}
+    .filter.active{color:var(--amber);border-color:var(--amber)}
+    .module-list{overflow:auto;min-height:0;padding:5px 0}
+    .inventory-group{padding:5px 7px 3px;color:var(--muted);font-size:9px;letter-spacing:.08em;border-top:1px solid var(--line-soft)}
+    .inventory-group:first-child{border-top:0}
+    .inventory-row{height:28px;display:grid;grid-template-columns:33px 1fr;align-items:center;gap:6px;padding:0 8px;cursor:pointer;border-left:3px solid transparent;color:#C7D0D8}
+    .inventory-row:hover,.inventory-row.selected{background:#111820;color:var(--text)}
+    .inventory-row.selected{border-left-color:var(--amber)}
+    .inventory-id{font-size:10px;color:var(--text)}
+    .inventory-name{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    /* [S4] canvas + bricks */
+    .flow-panel{position:relative}
+    .flow-viewport{position:relative;overflow:hidden;flex:1;background-color:var(--bg-root);background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:20px 20px}
+    .flow-canvas{position:relative;width:1400px;height:2600px;transform-origin:0 0;will-change:transform;cursor:grab} /* size overridden by [J8] BOOT */
+    .flow-canvas.panning{cursor:grabbing}
+    .lane-sep{position:absolute;top:0;bottom:0;width:1px;background:var(--line);pointer-events:none}
+    .lane-heads{position:absolute;top:0;left:0;right:0;height:26px;pointer-events:none;z-index:8;overflow:hidden}
+    .lane-head{position:absolute;top:0;height:26px;line-height:26px;padding:0 4px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(180deg,var(--bg-root) 30%,rgba(8,10,13,.72) 65%,transparent)}
+
+    .lego{position:absolute;width:184px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:15px 8px 6px;cursor:pointer;user-select:none;box-shadow:4px 4px 0 rgba(0,0,0,.18);transition:top .15s ease,left .15s ease}
+    .lego:hover{border-color:#8A96A3;z-index:5}
+    .lego.selected{outline:1px solid var(--amber);outline-offset:2px;z-index:6}
+    .studs{position:absolute;top:-5px;left:9px;display:flex;gap:7px}
+    .stud{width:13px;height:5px;border:1px solid var(--accent);border-bottom:0;background:#161D25}
+    .lego-top{display:flex;gap:7px;align-items:baseline}
+    .lego-id{color:var(--accent);font-size:10px;font-weight:800}
+    .lego-title{font-size:10px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
+    .lego-variant{flex:0 0 auto;font-size:8px;color:var(--amber);font-weight:800}
+    /* [S5] visualizations - shared */
+    .viz-svg{display:block;width:100%;height:auto;margin-top:5px}
+    .viz-label{margin-top:6px;text-align:center;font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .viz-tbl{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:5px}
+    .viz-tbl th,.viz-tbl td{border:1px solid var(--line);text-align:center;overflow:hidden;white-space:nowrap}
+    .viz-tbl th{height:13px;font-size:7px;font-weight:800;color:var(--text);background:rgba(255,255,255,.05)}
+    .viz-tbl td{height:12px;font-size:6.5px;color:#9AA4AE}
+    .ohlcv-x{font-size:1.5em;font-weight:800;vertical-align:-1px;margin-right:1px}
+    .zip-chain{margin-top:6px;display:flex;align-items:flex-start;justify-content:center;gap:3px}
+    .zip-node{display:flex;flex-direction:column;align-items:center;gap:3px}
+    .zip-box{width:28px;height:19px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;letter-spacing:.04em;color:var(--accent);background:rgba(85,199,164,.12);border:1px solid var(--accent);border-radius:2px}
+    .zip-tk{font-size:7px;font-weight:700;letter-spacing:.03em;color:var(--muted)}
+    .zip-dot{flex:0 0 auto;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.55;margin-top:7px}
+    .zip-ell{flex:0 0 auto;color:var(--accent);font-weight:800;letter-spacing:1px;opacity:.7;margin-top:4px}
+    .qc-list{margin-top:6px;display:grid;gap:2px}
+    .qc-row{display:grid;grid-template-columns:52px 1fr 10px;align-items:center;font-size:7.5px;color:#9AA4AE}
+    .qc-row b{color:var(--text);font-weight:800}
+    .qc-ok{color:var(--v-good);font-weight:800;justify-self:end}
+    .xt{position:relative;background:linear-gradient(to top right,transparent 47%,#46515D 47%,#46515D 53%,transparent 53%)!important}
+    .xt .x{position:absolute;top:0;right:2px;font-size:6px}
+    .xt .t{position:absolute;bottom:0;left:2px;font-size:6px}
+    .th-x{color:var(--v-green)!important;background:rgba(134,178,58,.14)!important}
+    .th-y{color:var(--v-good)!important;background:rgba(52,201,106,.20)!important}
+    td.y1{background:rgba(52,201,106,.22);color:var(--v-good)!important;font-weight:800}
+    td.y0{color:var(--muted)!important}
+    .gate{margin-top:8px;display:flex;gap:5px;justify-content:center}
+    .gate-chip{border:1px solid;padding:3px 7px;font-size:9px;font-weight:800;letter-spacing:.04em}
+    .gate-chip.ok{color:var(--v-good);border-color:var(--v-good);background:rgba(52,201,106,.12);box-shadow:0 0 6px rgba(52,201,106,.35)}
+    .gate-chip.warn{color:var(--v-amber);border-color:var(--v-amber);opacity:.5}
+    .gate-chip.fail{color:var(--v-fail);border-color:var(--v-fail);opacity:.5}
+    .gate-note{margin-top:6px;text-align:center;font-size:7.5px;color:var(--muted)}
+    .gate-note b{color:var(--v-good)}
+    .viz-tbl td.o-best,.viz-tbl th.o-best{background:rgba(216,154,58,.16);color:var(--v-amber)}
+    .viz-tbl tr.o-auc td{background:rgba(52,201,106,.10);color:var(--v-good)}
+    .viz-tbl td.o-name{text-align:left;padding-left:3px;color:#C7D0D8}
+    .viz-tbl td.st-p{color:var(--v-fail)}.viz-tbl td.st-b{color:var(--v-good);font-weight:800}
+    .build{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:3px}
+    .b-arr{color:var(--v-amber);font-size:9px;font-weight:800}
+    .b-chip{border:1px solid;border-radius:2px;padding:3px 4px;font-size:6.5px;font-weight:800;white-space:nowrap}
+    .b-json{color:var(--v-green);border-color:var(--v-green);background:rgba(134,178,58,.10)}
+    .b-xgb{color:#fff;border-color:var(--v-store);background:rgba(29,158,117,.35);font-size:8px;padding:3px 6px}
+    .b-b64{color:var(--v-store);border-color:var(--v-store);background:rgba(29,158,117,.10);font-size:5.8px}
+    .b-py{color:var(--v-good);border-color:var(--v-good);background:rgba(52,201,106,.10)}
+    .build-sub{margin-top:4px;text-align:center;font-size:6.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .formula{margin-top:8px;text-align:center;font-size:8.5px;font-weight:800;color:var(--v-amber);letter-spacing:.02em}
+    .formula small{display:block;margin-top:4px;font-size:6.5px;font-weight:400;color:var(--muted)}
+    .f-legend{margin-top:3px;display:flex;justify-content:center;gap:7px;font-size:6.5px;font-weight:700}
+
+    /* [S6] inspector */
+    .inspector-content{overflow:auto;min-height:0}
+    .empty-state{padding:14px;color:var(--muted);font-size:10px;line-height:1.55}
+    .selected-strip{padding:9px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:center}
+    .selected-id{color:var(--bg-root);background:var(--amber);font-weight:900;font-size:11px;text-align:center;padding:4px 2px}
+    .selected-name{font-size:11px;font-weight:800;line-height:1.2}
+    .selected-kind{font-size:9px;color:var(--muted);margin-top:3px}
+    .inspect-section{border-bottom:1px solid var(--line);padding:9px}
+    .inspect-label{color:var(--amber);font-size:9px;letter-spacing:.09em;margin-bottom:6px}
+    .inspect-text{font-size:10px;color:#C9D1D9;line-height:1.5}
+    .inspect-list{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+    .inspect-list li{font-size:10px;color:#C9D1D9;line-height:1.4}
+    .inspect-list li::before{content:'>';color:var(--amber);margin-right:6px}
+    .knob-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+    .knob{min-width:0;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .knob b{display:block;color:var(--muted);font-size:8px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .knob span{display:block;margin-top:3px;color:var(--text);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .prompt-acc summary{list-style:none;display:flex;align-items:center;gap:6px;color:var(--amber);font-size:9px;letter-spacing:.09em;cursor:pointer;user-select:none}
+    .prompt-acc summary::-webkit-details-marker{display:none}
+    .prompt-acc summary i{font-style:normal;transition:transform .15s}
+    .prompt-acc[open] summary i{transform:rotate(90deg)}
+    .prompt-bar{display:flex;justify-content:flex-end;margin:8px 0 6px}
+    .prompt-bar button{color:var(--cyan);font-size:10px}
+    .prompt-bar button:hover{color:var(--amber)}
+    .prompt-pre{margin:0;background:#0A0E13;border:1px solid var(--line);padding:8px;font-size:10px;line-height:1.5;color:#C9D1D9;white-space:pre-wrap;word-break:break-word;max-height:340px;overflow:auto}
+    .viz-card{margin-top:2px;background:#0D1117;border:1px solid #46515D;border-left:4px solid var(--accent);padding:13px;overflow:hidden}
+    .viz-card .viz-tbl th{height:18px;font-size:10px}
+    .viz-card .viz-tbl td{height:16px;font-size:9px}
+    .viz-card .viz-label{font-size:10px;margin-top:9px}
+    .viz-card .qc-row{font-size:10px;grid-template-columns:74px 1fr 14px}
+    .viz-card .gate-chip{font-size:12px;padding:5px 12px}
+    .viz-card .gate-note,.viz-card .build-sub{font-size:9.5px}
+    .viz-card .b-chip{font-size:9px;padding:5px 7px}
+    .viz-card .b-b64{font-size:8px}.viz-card .b-xgb{font-size:11px}
+    .viz-card .formula{font-size:12px}.viz-card .formula small{font-size:9px}
+    .viz-card .f-legend{font-size:9px;gap:12px}
+    .viz-card .xt .x,.viz-card .xt .t{font-size:9px}
+    .viz-card .zip-box{width:36px;height:24px;font-size:11px}
+    .viz-card .zip-tk{font-size:9px}
+    .viz-card .zip-dot{width:5px;height:5px;margin-top:11px}
+    .viz-card .zip-ell{margin-top:8px}
+
+    /* [S7] toast + media */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,45px);opacity:0;pointer-events:none;border:1px solid var(--amber);background:#0B1016;color:var(--amber);padding:6px 9px;font-size:10px;z-index:60;transition:.16s}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:1180px){html,body{min-width:900px}.workspace{grid-template-columns:190px minmax(500px,1fr) 240px}.inventory-name{font-size:9px}}
+  </style>
+</head>
+<body>
+  <main class="terminal">
+    <section class="workspace">
+      <aside class="panel inventory">
+        <div class="model-switch" id="modelSwitch"></div>
+        <div class="inventory-controls" id="filters"></div>
+        <div class="module-list" id="moduleList"></div>
+      </aside>
+
+      <section class="panel flow-panel">
+        <div class="flow-viewport" id="flowViewport">
+          <div class="flow-canvas" id="flowCanvas" aria-label="Sealed procedure ladder (read-only)">
+          </div>
+          <div class="lane-heads" id="laneHeads" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <aside class="panel inspector">
+        <div class="inspector-content" id="inspectorContent"></div>
+      </aside>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    'use strict';
+    /* ==================================================================
+       [J0] MODEL SWITCH - 'xgb' | 'lstm'. Any MODULES/LEARNING field may
+       be a shared value OR a {xgb:..., lstm:...} variant object; pick()
+       resolves it for the active model. Switching re-renders everything.
+       ================================================================== */
+    let MODEL='xgb';
+    const MODEL_META={
+      xgb:{label:'XGBOOST (1H)', noun:'XGBoost', bars:'1h', H:24, embargo:35, oosEnd:'2026-05-29',
+           assets:498, pf:'0.935', beats:'72/498', trades:'86.5'},
+      lstm:{label:'LSTM (DAILY)', noun:'LSTM', bars:'1d', H:10, embargo:10, oosEnd:'2026-04-30',
+           assets:495, pf:'1.013', beats:'129/495', trades:'28'}};
+    function isVariant(v){return !!v&&typeof v==='object'&&!Array.isArray(v)&&('xgb' in v)&&('lstm' in v);}
+    function pick(v){return isVariant(v)?v[MODEL]:v;}
+    /* `layer` belongs in this list: A3, B1 and G.2 vary ONLY in their layer mapping, so without
+       it they render model-specific text (the cyan layer chip) with no "XGBoost view" badge. */
+    function hasVariants(m){return ['title','kind','short','layer','input','transform','output','invariant','knobs','test'].some(k=>isVariant(m[k]));}
+    function MM(){return MODEL_META[MODEL];}
+
+    /* ==================================================================
+       [J1] DATA - GROUPS + MODULES (layer contracts, derived from
+       the frozen configuration and the sealed store; on discrepancy the
+       sealed artifacts win). MODULES order = bottom-up flow.
+       ================================================================== */
+    /* `id` is structural — it joins bricks to lanes (MODULES[].group), keys LANE_X, and is
+       what the filter compares. `name` is display only, interpolated into the chip, the lane
+       head and the inventory header, never compared. The stage numbers were dropped because
+       S1-S4 already carried a meaning elsewhere (an earlier data-flow map numbered its bands
+       the same way but its S2 was the whole XGB pipeline); named stages read on their own
+       and leave "S" with a single meaning across the console. */
+    const GROUPS = [
+      {id:'s1', name:'DATA', color:'#55c7a4', subtitle:'Source bars -> committed stores -> per-asset frames -> leakage-safe split (A1-A4)'},
+      {id:'s2', name:'CONFIGURATION', color:'#FF5C6C', subtitle:'The learning problem itself, not the model: which bars become candidates -> what counts as a win (Triple-Barrier Y) -> which columns are allowed to be seen (causal X) -> per-asset selection (B1-B4). Model hyper-parameters are not set here; they are searched in TRAINING.'},
+      {id:'s3', name:'TRAINING', color:'#f0ae54', subtitle:'Profit-aligned Optuna HPO -> per-asset operating point (all-in capital) -> frozen artifact (C1-C3)'},
+      {id:'s4', name:'ENDPRODUCT', color:'#ef7898', subtitle:'One-shot OOS verdict -> honest benchmark -> Train-derived interpretation -> read-only console (E1-E4)'},
+      {id:'sg', name:'VALIDATION', color:'#54B8FF', subtitle:'Fail-closed gates: split tightness -> pre-OOS asserts -> reproducibility acceptance. These stop a run; they never warn and never repair.'}
+    ];
+
+    const MODULES = [
+      {id:"A1", group:"s1", title:"OHLCV acquisition (upstream provenance)", kind:"documented data provenance", viz:"ohlcv",
+       layer:{xgb:"upstream provenance (outside this repo)", lstm:"D1 bundled store"},
+       short:{xgb:"Alpaca 1h SIP bars 2016->2026, split-adjusted", lstm:"Alpaca daily bars 2016->2026, split-adjusted"},
+       input:["Alpaca Market Data API (acquired by the upstream source repo - never by this repo)",
+              {xgb:"1-hour regular-session bars, full S&P 500 universe, 2016 -> 2026-05-29",
+               lstm:"daily bars, full S&P 500 universe, 2016 -> 2026-04-30"}],
+       transform:["Document provenance as a block, not as code: this project deliberately performs no network acquisition - reproducibility depends only on frozen stores, never on API availability or keys.",
+                  "ADJUST FOR SPLITS, and do it at the finest bar: the correction is applied to the 1h bars BEFORE any roll-up, because scaling commutes exactly with first/max/min/last but NOT with an integer volume sum. 83 events across 69 tickers, human-reviewed on top of a detector restricted to a canonical ratio set (events_sha256=5989535b02f384f8).",
+                  "Adjust splits ONLY. Dividends and spin-offs are deliberately left alone, so buy-and-hold stays a price benchmark and the strategy-vs-HODL comparison keeps reading the same price plane."],
+       output:{xgb:"split-adjusted 1h OHLCV per ticker (full store local-only)",
+               lstm:"split-adjusted daily OHLCV per ticker, 2016->2026"},
+       invariant:["No code in this project opens network connections; no API keys exist in the repo.",
+                  "CORP_ACTIONS_POLICY=A_adjusted, scope splits_only - applied at 1h, before every roll-up.",
+                  "Bars are NOT part of the recipe hash: a bar correction is recorded as its own provenance, never smuggled into a model identity.",
+                  "A data-scope change enters through the upstream store, never through in-flight patches."],
+       knobs:[{xgb:"bars=1h regular session", lstm:"bars=1d"}, "prices=split-adjusted (A_adjusted, splits_only)", "universe=current constituents (survivorship)", "window=2016->2026"],
+       test:["grep for http/API clients in the pipeline returns only provenance comments", "the pipeline runs fully offline from the frozen stores"],
+       depends:[]},
+
+      {id:"A2", group:"s1", title:"committed bar stores (clone-and-show)", kind:"frozen input stores", viz:"duckdb",
+       layer:{xgb:"committed stores (build_db, upstream)", lstm:"D1 bundled store"},
+       short:{xgb:"993 sealed artifacts ship; the raw 1h store stays on the research branch", lstm:"993 sealed artifacts ship; the daily store stays on the research branch"},
+       input:["split-adjusted OHLCV from the upstream acquisition (A1) - the adjustment happens there, at 1h, before any roll-up"],
+       transform:[{xgb:"The full 1h bar store is hundreds of megabytes and stays local and gitignored; what SHIPS is the sealed output - one artifact folder per asset plus the results store.",
+                   lstm:"The daily store is far smaller, but it is an input rather than a result, so it stays with the research branch too - this branch carries what the pipelines produced from it."},
+                  "Ship the sealed RESULT rows committed next to the artifacts: the console renders instantly with nothing to train (clone-and-show). 993 artifact folders, five files each, identity pinned by folder_sha256."],
+       output:{xgb:"artifacts/xgb/<T>/ (committed) + the full 1h bar store (research branch only)",
+               lstm:"artifacts/lstm/<T>/ (committed) + the daily store, table bars_1d (research branch only)"},
+       invariant:["Stores are frozen inputs, opened read-only by the pipeline.",
+                  "Sealed results ship committed; the raw bar stores do not - on this branch what you can re-verify is the artifact tree (make verify), not a re-run.",
+                  "Column contract exactly: symbol, timestamp, open, high, low, close, volume."],
+       knobs:["format=DuckDB bars + SQLite results", {xgb:"committed=498 artifacts", lstm:"committed=495 artifacts"}, "access=read-only"],
+       test:["a fresh clone renders the app and re-verifies demo assets without any network", "store re-read is deterministic (equal frames between calls)"],
+       depends:["A1"]},
+
+      {id:"A3", group:"s1", title:"canonical per-asset frames", kind:"single read transformation", viz:"frames",
+       layer:{xgb:"bars.load_bars (shared loader)", lstm:"D2 load_bars"},
+       short:"one loader, one clean OHLCV frame per ticker",
+       input:["the committed/local bar store (A2)", "a ticker symbol"],
+       transform:["ONE canonical function turns the store into the per-ticker frame every consumer uses - identical frames come from shared code, not from parity assertions between two readers.",
+                  "Resolve timezones once, at the source (exchange session time normalized on write); the runtime computes on one clock.",
+                  "Emit pure OHLCV columns only - every derived column would be hidden logic outside the pipeline."],
+       output:"per-ticker OHLCV frame: timestamp, open, high, low, close, volume - nothing else",
+       invariant:["A ticker absent from the store raises an error - never an empty frame.",
+                  "Deterministic: repeated loads return equal frames.",
+                  "Zero derived values, zero fills, zero row synthesis at read time."],
+       knobs:["loader=one shared function", "columns=OHLCV only", "on-missing=hard error"],
+       test:["load(ticker) twice -> frames compare equal", "unknown ticker -> RuntimeError"],
+       depends:["A2"]},
+
+      {id:"A4", group:"s1", title:"temporal split + purge/embargo", kind:"leakage-safe time split", viz:"split",
+       layer:{xgb:"L5 layer5_split", lstm:"D3 split_masks"},
+       short:{xgb:"warm-up | train ->2023-12-29 | OOS; purge H=24, embargo 35", lstm:"warm-up | train ->2023-12-29 | OOS; purge H=10, embargo 10"},
+       input:["the clean per-asset frame (A3)", "frozen split dates from configuration"],
+       transform:["Derive boundary indices deterministically from frozen dates: warm-up 2016 -> 2016-10-14, Train 2016-10-17 -> 2023-12-29, OOS 2024-01-02 -> end of data.",
+                  {xgb:"Purge: drop from Train every setup whose label window [t0, t0+H] crosses the Train boundary (purge = H = 24 hourly bars); embargo = 35 bars past the boundary (>= the max feature lookback).",
+                   lstm:"Purge: drop from Train every setup whose label window [t0, t0+H] crosses the Train boundary (purge = H = 10 sessions); embargo = 10 sessions past the boundary."},
+                  "Splits are MARKS over one continuous frame - the data file is never physically cut."],
+       output:"partition marks (warm-up / train / purge / embargo / OOS) over the frame",
+       invariant:["Purge and embargo are always > 0 - never simplify to warm-up -> train -> OOS.",
+                  "The OOS window is frozen: fixed once, untouchable until the verdict step (E1).",
+                  "All boundaries count bars on the index, never wall-clock time."],
+       knobs:["train_end=2023-12-29", "oos_start=2024-01-02", {xgb:"purge=H=24 · embargo=35 bars", lstm:"purge=H=10 · embargo=10 sessions"}],
+       test:["same inputs -> identical boundary indices (strict determinism)", "no Train label window reaches past the boundary (asserted)"],
+       depends:["A3"]},
+
+      {id:"G.1", group:"sg", title:"split leakage validator", kind:"fail-closed split gate", viz:"guard",
+       layer:{xgb:"L4 source QC → L5 split validator (the gate spans both rungs)", lstm:"D2 source QC → D3 split validator (both rungs)"},
+       short:"partitions ordered, purge >= H, embargo >= max lookback, OOS frozen",
+       input:["partition marks from A4", "label horizon H and max feature lookback from the CONFIGURATION contracts"],
+       transform:["SOURCE GATES FIRST: three fail-closed cross-bar checks run at the L4 read - an overnight return outside -55%..+120%, sessions thinner than 3 bars covering >10% of days, or flat bars (o==h==l==c) over >15% of the frame all stop the run. Documented corporate-action dates are exempt from the gap gate; an UNDOCUMENTED break fails closed. The overnight gate alone would have caught every unadjusted corporate action on day one.",
+                  "Assert the 5 partitions exist in strict order on one continuous index, non-overlapping, warm-up covering the feature roll-in.",
+                  "Assert purge >= the maximum label horizon and embargo >= the maximum ROLLING-STATISTIC lookback (the window a feature averages over, e.g. rv20 or ATR14) - that is what the embargo is sized against, and it is what correlates a training row with a test row across the seam. It is NOT the model's input width: the LSTM reads a 60-session sequence, far wider than its 10-session embargo, but that window reaches backwards from the decision bar into data the model is entitled to see, so it is a lookback of the INPUT rather than of a statistic straddling the boundary. Recompute all boundaries from frozen config and compare bit-exact.",
+                  "Any mismatch on the OOS boundary is a frozen-OOS violation - the run stops."],
+       output:"one fail-closed verdict; FAIL blocks CONFIGURATION and everything downstream for the asset",
+       invariant:["The validator only reads marks - it never moves a boundary, never touches data.",
+                  "There is no WARN tier: any failed predicate rejects the split."],
+       knobs:["partitions=5 ordered", {xgb:"purge_min=24 · embargo_min=35", lstm:"purge_min=10 · embargo_min=10"}, "boundary_source=frozen config", "source_gates=gap -55%/+120% · thin >10% · flat >15%"],
+       test:["shrink purge to 0 in a fixture -> validator FAILs", "shift oos_start by one bar vs config -> recompute mismatch FAILs"],
+       depends:["A4"]},
+
+      {id:"B1", group:"s2", title:"momentum side + causal entry gate", kind:"trade-candidate generator", viz:"signal",
+       layer:{xgb:"L6 generate_candidate_events", lstm:"D5 generate_candidates"},
+       short:"side = sign(log_return_5) behind |lr5| >= 0.15 x rv20; fill at next open",
+       input:["Train-window bars + marks (A4, G.1 PASS)"],
+       transform:["Primary side signal: direction = sign(log_return_5) at the decision bar t0 - a deliberately simple, fully causal momentum rule (the model's job is to judge the trade, not to invent it: meta-labeling).",
+                  "Causal significance gate: keep a candidate only when |log_return_5| >= 0.15 x realized_volatility_20, both computed from data <= close[t0] - noise-level moves never become candidates.",
+                  "Entry fills at the NEXT bar's open (t0+1) - the decision never trades on information from its own bar."],
+       output:"trade candidates: (t0, direction, entry = open[t0+1])",
+       invariant:["Every gate input uses data at or before close[t0]; the only next-bar references are the legitimate entry/exit fills.",
+                  "The gate constants are fixed global values - never tuned per asset, never tuned on OOS."],
+       knobs:["side=sign(log_return_5)", "gate=|lr5| >= 0.15 x rv20", "fill=next bar open"],
+       test:["shifting any feature forward by one bar changes candidates (causality probe)", "gate disabled reproduces the every-bar candidate set"],
+       depends:["A4","G.1"]},
+
+      {id:"B2", group:"s2", title:"asymmetric Triple-Barrier label", kind:"outcome labeling (meta-label)", viz:"tb",
+       layer:{xgb:"L6 layer6_output_b", lstm:"D5 label_events"},
+       short:{xgb:"TP 2xATR14 / SL 1xATR14, time barrier H=24; Y = net>0", lstm:"TP 2xATR14 / SL 1xATR14, time barrier H=10; Y = net>0"},
+       input:["trade candidates (B1)", "bars for the label window [t0, t0+H]"],
+       transform:["Three barriers per candidate: take-profit at 2 x ATR(14), stop-loss at 1 x ATR(14) (reward:risk b = 2), and a time barrier at H bars - first touch decides the exit, where touch is tested AGAINST THE CLOSE ONLY (BARRIER_MODE=close).",
+                  "Simulate the trade net of costs: 1 bp commission + 2 bp slippage per side. Full execution contract: entry open[t0+1] (next_bar_open), barrier exit at the open of the bar AFTER the trigger (trigger_next_open), time exit at the close (scheduled_moc_close).",
+                  "Y = 1 if net P&L > 0, else 0 - the label answers exactly the question the strategy will ask. It does NOT mean 'TP was reached before SL'; it means the whole contract, costs included, ended positive."],
+       output:"labeled events: (t0, direction, Y, exit info) - the future is used ONLY inside the label lane",
+       invariant:["Label inputs beyond t0 exist only within [t0, t0+H] - the purge in A4 guarantees no Train label reads OOS data.",
+                  "Barrier geometry is a fixed global contract - never searched, never tuned per asset.",
+                  "Costs are part of the label, not an afterthought: Y already encodes them.",
+                  "Bar highs and lows are in the data but never read. A close-only scan misses intraday touches, and since the stop sits nearer (1xATR) than the target (2xATR) it misses stops more often - conservative for win-rate, but a real simplification of the contract, named here rather than buried.",
+                  "b = 2 is the NOMINAL geometry, not the realized payoff. Measured median win/loss over promoted rows that have both a win and a loss to divide: 1.447 (XGB, n=328) and 1.241 (LSTM, n=435) - a narrower population than the 443 with a computable profit factor, which is itself narrower than the 446 that traded repeatedly; only 1.2% and 7.6% of them reach 2.0. Triggering on the close, filling at next opens, gaps and two-sided costs take the rest."],
+       knobs:["TP=2xATR(14)", "SL=1xATR(14)", {xgb:"H=24 bars (1h)", lstm:"H=10 sessions (1d)"}, "costs=1bp+2bp per side", "BARRIER_MODE=close", "ENTRY_FILL=next_bar_open · EXIT_FILL=trigger_next_open · SCHEDULED_EXIT_FILL=scheduled_moc_close"],
+       test:["the barrier PARAMETERS satisfy b = TP/SL = 2 in the event stream (the geometry, not the realized payoff - see the invariant above)", "recomputing labels reproduces Y bit-identically"],
+       depends:["B1"]},
+
+      {id:"B3", group:"s2", title:"causal features X", kind:"feature engineering (causal, OOS-isolated)", viz:"featmx",
+       layer:{xgb:"L6 build_feature_context", lstm:"D4 feature_frame → D6 build_sequences (spans D4 and D6; the labels it joins come from D5)"},
+       short:{xgb:"namespaced multi-timeframe X (1h/1d/1w), merge_asof backward", lstm:"60-session window of causal daily features"},
+       input:["bars + candidates (B1)", "labeled events (B2) - Y travels with the matrix, it is never computed from X", "feature registry / catalog"],
+       transform:[{xgb:"Namespaced multi-timeframe features: 1h base plus 1d/1w context joined by CLOSE-TIME availability (merge_asof backward) - an in-progress daily or weekly bar can never leak into an intraday decision.",
+                   lstm:"A 60-session window of causal daily features feeds the recurrent model - each feature at session t uses data <= close[t]."},
+                  "Fold-causal normalization: every CV fold's scaling statistics come only from rows before that fold's embargo boundary; the OOS window uses statistics frozen on the full Train set.",
+                  "Audit columns (diagnostics) live outside X - they never enter the model matrix."],
+       output:"X matrix at close[t0] in a frozen manifest order + Y from B2",
+       invariant:["Every X value uses data at or before close[t0].",
+                  "A mandatory feature that cannot be computed excludes the row - values are never imputed.",
+                  "The feature manifest is frozen per run; changing it changes the lineage."],
+       knobs:[{xgb:"timeframes=1h+1d+1w (merge_asof backward)", lstm:"window=60 sessions"}, "scaling=fold-causal", "on-missing=exclude row"],
+       test:["shifting the 1d/1w context forward by one bar changes X (causality probe)", "OOS X uses frozen Train statistics (asserted)"],
+       depends:["B1","B2"]},
+
+      {id:"B4", group:"s2", title:"per-asset forward feature search (Train-only)", kind:"feature selection loop", viz:"loop",
+       layer:{xgb:"S.1 feature_search", lstm:"feature search (Train-only)"},
+       short:{xgb:"per-asset search, sealed: 280 auto-selected · 59 CORE-only · 159 too thin", lstm:"per-asset search, sealed: 486 applied · 8 CORE-only · 1 too thin"},
+       input:["X/Y events (B2, B3) - Train window only", "candidate feature pool (core + optional + DSL proposals)"],
+       transform:["TWO-STAGE, FAMILY-FIRST search (policy golden-family-v2): pick the best representative of a feature FAMILY before spending trials on its variants, so 12 correlated families cannot each buy their own seat. CORE ids are frozen and never enter the search - the loop may only ADD optionals.",
+                  {xgb:"Per-asset search over a 45-id pool: 280 assets accepted searched features, 59 kept CORE only, 159 were too thin to search at all. The median asset takes ONE optional feature - the search is conservative by construction.",
+                   lstm:"Per-asset search over a 45-id pool (23 optional + 2 cross-asset + 20 DSL-proposed): 486 assets accepted, 8 kept CORE only, 1 was too thin. A language-model agent may PROPOSE features, but only through a safe causal DSL - proposals compile to causal transforms or are rejected."},
+                  "2-SEED gate: single-seed evaluation noise was LARGER than the acceptance threshold, so candidate gains are averaged over two model initializations before acceptance - otherwise the loop would happily accept noise. Two thresholds do different jobs: min_gain 0.005 is the step gain, min_feature_gain 0.008 the per-feature bar, and a complexity penalty of 0.004 taxes every added dimension.",
+                  "Every accepted subset is a Train-only output of one uniform procedure - not hand-tuning, not OOS-derived."],
+       output:"per-asset feature manifest (CORE + accepted optionals), sealed into the artifact with the run lineage",
+       invariant:["The search reads Train folds only; a fail-closed assert stops any OOS read.",
+                  "Selection metric lives on the Train side (CV score / OOF log-growth) - never an OOS value.",
+                  "Feature proposals enter only through the causal DSL - free-form code is rejected."],
+       knobs:["policy=golden-family-v2 (two-stage, family-first)", "gates=min_gain 0.005 · min_feature_gain 0.008 · complexity 0.004 · seeds=2", "max_select=6 · CORE frozen", "scope=Train only"],
+       test:["the search process crashes (fail-closed) if pointed at an OOS row", "re-running selection with the same seed set reproduces the subset"],
+       depends:["B2","B3"]},
+
+      {id:"G.2", group:"sg", title:"pre-OOS fail-closed asserts", kind:"anti-leakage gate (training side)", viz:"guard",
+       layer:{xgb:"purge_train_setups assert", lstm:"purge_train_events assert"},
+       short:"HPO / calibration / search crash on any OOS read; audited",
+       input:["every CONFIGURATION and TRAINING consumer of events (HPO, calibration, feature search)"],
+       transform:["Each training-side component carries a hard assert: every event it consumes must satisfy t0 + H + embargo <= oos_start - reading an OOS row raises, it never degrades to a warning.",
+                  "An adversarial audit (independent reviewers trying to REFUTE the claim) checked feature causality, gate causality, barrier windows, CV integrity and the OOS read ledger - verdict: clean. Clean means no OOS value reaches a Train-side decision and no read goes uncounted; it does not mean each window was opened exactly once."],
+       output:"a run that can only complete if no training-side component ever saw OOS data",
+       invariant:["Fail-closed beats fail-soft: a leak crashes the run instead of biasing the result.",
+                  "The audit is adversarial, not confirmatory - reviewers are prompted to refute."],
+       knobs:["assert=t0+H+embargo <= oos_start", "scope=HPO + operating point + feature search", "audit=adversarial, independent"],
+       test:["feeding one OOS event to the HPO raises immediately", "audit transcript: every leak hypothesis refuted"],
+       depends:["A4","B4"]},
+
+      {id:"C1", group:"s3", title:"model tuning - objective: Train-OOF trading log-growth", kind:"profit-aligned hyper-parameter search", viz:"optuna",
+       layer:{xgb:"L7 layer7_optuna", lstm:"D7 universal warm-start (model.py holds the unused cold-start study)"},
+       short:{xgb:"tunes XGB params (+reg_alpha, gamma) for OOF trading log-growth", lstm:"NO per-asset search in this epoch - one committed backbone architecture, warm-started"},
+       input:["X/Y events + folds (from CONFIGURATION, G.2 armed)", {xgb:"hyper-parameter search space (registry-driven)", lstm:"the committed universal backbone (research branch)"}],
+       transform:["THE course correction of this project: an earlier epoch optimized AUC-PR while the strategy was judged on profit - a self-documented objective mismatch, since corrected. The objective IS now the mean Train OUT-OF-FOLD trading LOG-GROWTH (AUC-PR is still computed, but only reported): each trial's fold model predicts out-of-fold, the trade engine replays those predictions over a coarse operating grid, and the trial scores sum(log(1+r)) - the geometric-growth criterion, replayed at the deployed all-in sizing.",
+                  {xgb:"Search space: max_depth, eta, subsample, colsample_bytree, min_child_weight, reg_lambda, n_estimators + reg_alpha and gamma - which the old trainer accepted but silently IGNORED (found and fixed: params are now forwarded).",
+                   lstm:"WHAT ACTUALLY RAN: nothing searched here. the research runner takes the architecture from the committed backbone instead of calling the HPO - ONE shape for all 495 assets: hidden 32, num_layers 1, dropout 0.3, lr 0.001, weight_decay 1e-4, and every refit is warm-started from it. The 20-trial per-asset study still exists in model.py and is reachable with LSTM_COLD_START=1; it did not seal this epoch. What remains per asset: the feature search (B4) and the operating point (C2)."},
+                  "Purged walk-forward CV inside Train: no validation fold ever precedes its training fold; a purge sits between folds; deterministic sampler (fixed seed)."],
+       output:{xgb:"best hyper-parameters per asset + out-of-fold predictions + Train-CV score, persisted with lineage", lstm:"one shared architecture + warm-started per-asset weights + out-of-fold predictions + Train-CV score, persisted with lineage"},
+       invariant:["Optimization strictly inside Train; the OOS is never read (G.2 assert).",
+                  "The label geometry (Triple-Barrier) is never a search dimension.",
+                  "Same seed -> identical trial sequence (deterministic HPO).",
+                  "LSTM only, declared: the backbone was pretrained across the WHOLE Train region, so a fold's initialization has seen Train rows from outside that fold. This never touches OOS, and every architecture and subset ranking shares the identical initialization so comparisons stay fair - but LSTM Train-CV is not fully fold-causal. OOS-isolated, not unconditionally leak-free."],
+       knobs:["objective=train_oof_log_growth (AUC-PR is report-only)", "cv=purged walk-forward, 4 folds where the history allowed (497/498 XGB · 488/495 LSTM; the rest fell back to 3 or fewer)", {xgb:"space=9 XGB params · 80 trials", lstm:"space=NOT searched this epoch · backbone hidden 32 / layers 1 / dropout 0.3 / lr 1e-3 / wd 1e-4"}, {xgb:"sampler=TPE(seed 42) + MedianPruner", lstm:"sampler=warm-start from the committed backbone (the cold-start study sits behind the LSTM_COLD_START flag)"}],
+       test:["re-running HPO reproduces best params exactly (pinned env, seeded)", "objective replays through the SAME trade engine used at the verdict"],
+       depends:["B3","B4","G.2"]},
+
+      {id:"C2", group:"s3", title:"operating point + all-in capital policy", kind:"decision-layer calibration", viz:"kelly",
+       layer:{xgb:"L7 op_select (shared operating point)", lstm:"D8 operating point"},
+       short:{xgb:"all-in sizing; theta calibrated per asset over an 11-point grid", lstm:"theta and direction calibrated jointly on Train OOF; all-in sizing"},
+       input:["OOF predictions from the tuned model (C1)", "the trade engine + barrier geometry (b = TP/SL = 2)"],
+       transform:["Capital policy: ALL-IN COMPOUNDING - every trade reinvests the FULL running capital (f = 1, no position sizing). This is the same capital game buy-and-hold plays, which makes the strategy-vs-HODL comparison honest: each asset is traded separately, with no portfolio-level capital accumulation.",
+                  {xgb:"Entry threshold theta is calibrated PER ASSET over an 11-point grid (0.40 ... 0.60, step 0.02). An earlier epoch pinned it at 0.60 after a naive per-asset calibration overfit; the knob was un-pinned only once selection became floor-respecting - ONE shared operating point per trial, never a per-fold best theta. The observed sealed thetas land on ten of the eleven grid points - only 0.58 was never selected - and both endpoints are heavily populated, so the calibration is doing real work rather than drifting to a default.",
+                   lstm:"Theta and trade direction are calibrated JOINTLY on Train out-of-fold log-growth over a 6-point theta grid (0.50 ... 0.60) and two direction modes."},
+                  "THE TRADE FLOOR is what makes a per-asset threshold safe: an operating point must produce at least 8 out-of-fold trades across at least 2 active folds, with no single fold carrying more than 80% of them. An asset that clears nothing is not forced to trade - it is recorded as TRAIN_OOF_FLOOR_NOT_MET. Usually such an asset never trades at all; it can also trade and simply not be promoted, which is a diagnostic replay rather than a strategy result.",
+                  "All calibration inputs are Train OOF - the same G.2 assert guards this layer. (A previous epoch sized trades with a generalized fractional Kelly formula; it was removed because fractional sizing is not comparable to buy-and-hold in a per-asset game.)"],
+       output:"per-asset operating point (theta, direction) sealed into the strategy artifact; sizing fixed at all-in",
+       invariant:["The capital policy touches money management only - the model bytes are independent of it.",
+                  "Not every knob deserves tuning: a calibrated parameter must beat its pinned default out of fold, or it stays pinned.",
+                  "A result needs >= 2 trades to count as a strategy - buy-and-hold is one trade by definition."],
+       knobs:["sizing=all-in (f=1, full-capital compounding)", "b=TP/SL=2", {xgb:"theta=per-asset, 11-point grid 0.40-0.60", lstm:"theta,direction=joint Train-OOF grid 0.50-0.60"}, "trade_floor=8 OOF trades · 2 active folds · max 80% per fold"],
+       test:["HPO and calibration score with the SAME all-in sizing that will trade", "calibration crashes if offered an OOS row (G.2)"],
+       depends:["C1"]},
+
+      {id:"C3", group:"s3", title:"frozen strategy artifact", kind:"deterministic model freeze", viz:"build",
+       layer:{xgb:"L8 layer8_train · accept_strategy", lstm:"D8 refit + artifact"},
+       short:{xgb:"full-Train refit -> base64 booster + hash, embedded", lstm:"full-Train refit -> torch weights, seeded + deterministic"},
+       input:["best params (C1) + operating point (C2)", "full Train window"],
+       transform:["Refit the champion configuration on the full Train window and freeze it: the artifact carries the model bytes, the operating point, the feature manifest and content hashes - a self-check validates the artifact against golden vectors on load.",
+                  {xgb:"Determinism: single-threaded training (XGBOOST_N_JOBS=1), fixed seed - the booster serializes to base64 and embeds in the strategy file.",
+                   lstm:"Determinism: torch pinned to 2 threads with deterministic algorithms, seed_everything - the weights serialize with the run lineage."}],
+       output:"one frozen, hash-bound strategy artifact per asset",
+       invariant:["The artifact is immutable: any edit breaks its hash and the self-check refuses it.",
+                  "Nothing trains after the freeze - the OOS verdict and the app only READ artifacts.",
+                  "Determinism is part of the contract, not an optimization."],
+       knobs:[{xgb:"threads=1 (XGBOOST_N_JOBS)", lstm:"torch_threads=2 deterministic"}, "seed=fixed", "selfcheck=golden vectors + hash"],
+       test:["retraining with the same lineage reproduces the artifact bytes", "a flipped byte in the artifact fails the load self-check"],
+       depends:["C2"]},
+
+      {id:"E1", group:"s4", title:"one-shot OOS verdict -> sealed store", kind:"single-read out-of-sample evaluation", viz:"oos",
+       layer:{xgb:"L9 run_engine (the ONE OOS read)", lstm:"D9 the ONE OOS read"},
+       short:{xgb:"498 assets sealed; median PF 0.935, beats HODL on 72", lstm:"495 assets sealed; median PF 1.013, beats HODL on 129"},
+       input:["frozen artifact (C3)", "the untouched OOS window (A4)"],
+       transform:["Generate and score the OOS window at the verdict step - the number reported is exactly what you would have gotten standing on the first OOS day with only prior data. Every read is ledgered rather than assumed to be single.",
+                  {xgb:"Full-universe verdict (498 assets, window -> 2026-05-29): median strategy return -1.78% against a median buy-and-hold of +22.16% over the same window; median 86.5 model trades. Both are medians over ALL 498 rows, idle and fallback assets included. Profit factor only exists where the model traded: median 0.935 over the 328 assets with a computable PF - those same 328 have a median of 160.5 trades. 72 assets (14.5%) beat their own HODL. An honest negative.",
+                   lstm:"Full-universe verdict (495 assets, window -> 2026-04-30): median strategy return +2.25% against a median buy-and-hold of +23.09%; median 28 model trades - medians over ALL 495 rows. Median profit factor 1.013 over the 443 assets with a computable PF - the 446 that traded repeatedly, less three whose gross loss was zero and whose PF is therefore not rankable (median 30 trades among them). 129 assets (26.1%) beat their own HODL - better than the 1h path, still short of holding."},
+                  "EVERY OUTCOME GETS A NAME, including the ones that did not trade. result_mode partitions the universe: ML_MULTI_TRADE (xgb 328 / lstm 446), TRAIN_OOF_FLOOR_NOT_MET (xgb 136 / lstm 1) - not promoted; all 136 on the 1h path never traded at all, while the single daily one (CEG) traded 40 times and still was not promoted, HODL_FALLBACK_NO_MODEL_TRADES (xgb 33 / lstm 37), ML_ONE_TRADE_LOW_EVIDENCE (xgb 1 / lstm 11). Each pair sums to its own universe: 328+136+33+1 = 498 and 446+1+37+11 = 495. An idle model is a reported result, not a gap in the table.",
+                  "Seal every per-asset row (capital path, profit factor, drawdown, win rate, trades, Train-CV score, window, result_mode, audit flags) into results.db - the single source the product reads."],
+       output:{xgb:"results.db - 498 sealed rows, read-only downstream",
+               lstm:"results.db - 495 sealed rows, read-only downstream"},
+       invariant:["No OOS value ever feeds back into any decision - enforced upstream (G.2). What is guaranteed is not that each window was opened once, but that EVERY opening is counted: this epoch recorded 588 XGB reads over 498 assets (resumed after an interrupted run) and 495 LSTM reads over 495 assets.",
+                  "READS ACCUMULATE ACROSS EPOCHS, and the ledger says so out loud. This epoch: 588 XGB reads over 498 assets, 495 LSTM reads over 495. Cumulative per-asset read counts run 4-9 (mean 5.18) for XGB and 4-6 (mean 4.00) for LSTM. A sealed result is therefore conditioned on knowledge from earlier reads of the same period - an UNCOUNTED re-read would be indistinguishable from OOS shopping, so every read is counted.",
+                  "Negative results are committed with the same ceremony as positive ones.",
+                  "A small development sample flattered these levers; only the verdict over the full universe is the honest test."],
+       knobs:["reads=588 XGB over 498 assets · 495 LSTM over 495 (cumulative per asset 4-9, all ledgered)", {xgb:"universe=498 · oos_end=2026-05-29", lstm:"universe=495 · oos_end=2026-04-30"}, "store=results.db (sealed)"],
+       test:["the append-only ledger's read count covers every sealed row", "the store's row count and window match the frozen config"],
+       depends:["C3","G.2","A4"]},
+
+      {id:"E2", group:"s4", title:"honest benchmark feed (buy & hold)", kind:"transparent baseline", viz:"hodl",
+       short:{xgb:"model beats its own buy & hold on 72/498 assets", lstm:"model beats its own buy & hold on 129/495 assets"},
+       input:["sealed OOS rows (E1)", {xgb:"the committed 1h bar store (A2)", lstm:"the committed daily bar store (A2)"}],
+       transform:["Compute each ticker's buy-and-hold return over the SAME OOS window (first open -> last close) from the committed store and seal it into the dashboard feed next to the model's result.",
+                  "Show the comparison ON the result page, not in a footnote: in the strong 2024->2026 bull window most per-asset strategies do NOT beat simply holding the same stock.",
+                  "Lesson embedded here: after a re-seal this feed silently carried the benchmark for 0 assets - the default view lost its baseline until a gate (coverage == universe) was added."],
+       output:"dashboard feed with hodl_return_pct + beats_hodl per asset (full coverage, gated)",
+       invariant:["Benchmark and strategy read the same split-adjusted price plane, with dividends excluded from both - a price benchmark against a price strategy.",
+                  "The benchmark is per-asset and same-window - never an index proxy from a different data plane.",
+                  "Feed coverage is asserted: benchmark present for every sealed asset or the seal fails."],
+       knobs:["hodl=first open -> last close over OOS", {xgb:"beats=72/498", lstm:"beats=129/495"}, "coverage_gate=universe complete"],
+       test:["beats_hodl == (return_pct > hodl_return_pct) for every row", "coverage equals the sealed universe count"],
+       depends:["E1","A2"]},
+
+      {id:"E3", group:"s4", title:"Train-derived interpretation layer", kind:"read-side model explanation", viz:"interp",
+       short:{xgb:"ENTRY value ranges cut at the model's own split thresholds", lstm:"deterministic channel occlusion, ENTRY-conditioned"},
+       input:["the frozen artifacts (C3) - model bytes, manifest, operating point", "purged TRAIN candidate rows only"],
+       transform:["Answer the question the OOS row cannot: WHEN does this asset's model act? The layer reads the sealed artifact and replays it over Train rows only - it never re-opens the OOS window, so it costs nothing in read budget and can never launder an OOS value into the presentation.",
+                  {xgb:"Cut each feature's axis at the MODEL'S OWN split thresholds, merge into segments, and report per segment: entry share, entry lift, TP-before-SL rate and lift vs the Train baseline - in raw units AND in Train sigmas. Feature importance is the SUM of every split's gain across the ensemble, normalized to shares - never a mean per split.",
+                   lstm:"Occlude one input channel at a time over a frozen set of purged Train windows and measure the deterministic effect on the score. The PRIMARY view is ENTRY-conditioned (rows where p >= theta), with a global view kept secondary - what moves the score in general is a different question from what moves it where the model acts."},
+                  "SIGMAS MEAN DIFFERENT THINGS in the two paths and the layer records which: for XGB, sigma is a DESCRIPTIVE standardization of the Train candidate rows (the model itself consumes raw values); for LSTM, sigma IS the input transform frozen in the artifact. Blurring the two would be a quiet lie.",
+                  "Record every segment with enough Train rows, including the boring ones. The 'candidate entry region' flag (lift >= 1.25 and >= 10 ENTRY events) is a HIGHLIGHT, never a storage filter - filtering at write time would be cherry-picking with extra steps."],
+       output:"interpretation.json per asset + three read-side tables: 16 601 feature-stat rows, 16 601 contribution rows, 45 021 ENTRY-range segments",
+       invariant:["TRAIN-DERIVED INTERPRETATION - NOT AN OOS RESULT - NOT A LIVE TRADING SIGNAL. The three labels travel inside the payload itself, so a consumer cannot drop them by accident.",
+                  "The layer reads artifacts and Train rows only; it has no path to the OOS window.",
+                  "Its identity is pinned by its own recipe hash, carried in every payload and every row."],
+       knobs:["scope=purged Train candidate rows only", "min_interval_rows=20 · min_entry_events=10", "lift_highlight=1.25 (flag, not filter)", "sigma_basis=descriptive (XGB) / artifact norm stats (LSTM)"],
+       test:["coverage: every sealed artifact has a payload, asserted in the integrity checks", "the layer runs with the OOS window absent and still completes"],
+       depends:["C3"]},
+
+      {id:"E4", group:"s4", title:"clone-and-show product (read-only console)", kind:"read-only presentation layer", viz:"folder",
+       short:"a three-page console over sealed artifacts; nothing trains at runtime",
+       input:["sealed rows (E1) + benchmark (E2) + interpretation (E3) for BOTH models"],
+       transform:["The application is a VIEWER: build a basket and read what the sealed models did with it, read the study, what the models read, the two models compared, the dataset's own integrity record, and the standalone pipeline map - nothing trains, trades or optimizes at runtime.",
+                  "ONE module opens the database. Every page reads through it, so there is exactly one place where a query can be wrong and exactly one place to audit.",
+                  "COUNTS ARE DERIVED, never typed into prose: a page that says how many assets were sealed asks the store. A new epoch must not be able to leave a stale number behind in the copy.",
+                  "The dataset carries its own record - epoch and recipe hashes, the cumulative OOS read ledger, interpretation coverage, when the model stays idle, every check, and the declared limits - inside results.db, where `make verify` re-checks it offline."],
+       output:"a three-page Streamlit console rendering from committed artifacts on a fresh clone",
+       invariant:["Read-only over sealed artifacts - the app can display results, never create them.",
+                  "Evidence tiers stay separated: sealed numbers never share a table with Train-derived interpretation.",
+                  "Every displayed comparison carries its honest benchmark; every interpretation view carries its three labels."],
+       knobs:["pages=3, flat sidebar (no section headers)", "runtime=read-only, mode=ro", "counts=derived from the store"],
+       test:["a fresh clone renders every page without training", "automated gates walk every page"],
+       depends:["E1","E2","E3"]},
+
+      {id:"G.3", group:"sg", title:"reproducibility acceptance", kind:"determinism gate (product side)", viz:"guard",
+       short:"artifacts verified byte-for-byte; sealed rows re-derived on a sample within 1e-6",
+       input:["the sealed store (E1)", "committed bar stores (research branch)", "frozen artifacts + lineage (C3)"],
+       transform:["TWO DIFFERENT GUARANTEES, deliberately not merged. (1) ARTIFACT INTEGRITY is byte-level: the whole tree of 993 folders is verified against per-file SHA-256 in the manifests, so a single flipped byte anywhere is caught (artifacts/manifest.json carries the hashes; recompute and compare offline).",
+                  "(2) ROW REPRODUCTION is numeric, and on a SAMPLE: re-run sample assets end-to-end from committed data and compare against the sealed store - XGB 5 fields over 15 demo tickers, LSTM 4 fields over a 10-ticker manifest sample, both within a declared 1e-6 tolerance (the research branch's make verify gates; on this branch the two executed notebooks under examples/ show the re-derived XGB and LSTM rows for one asset). That is deterministic reproduction of SELECTED ROWS - not byte identity of outputs, and not the full universe: the full hourly XGB store is not part of the repository.",
+                  "Determinism is what turns 'trust our numbers' into 'check our numbers' - the gate runs on a fresh clone with no network."],
+       output:"a pass/fail integrity verdict over the artifact tree + a pass/fail reproduction verdict per sample asset",
+       invariant:["Do not overclaim the pair: byte identity is asserted for the ARTIFACTS, numeric equality within 1e-6 for the sampled RESULT ROWS. Saying 'the results are byte-identical' would be false.",
+                  "Approximate reproduction is failure: outside the declared tolerance the gate fails, it never widens.",
+                  "The gate uses only committed inputs - reproducibility cannot depend on local state."],
+       knobs:[{xgb:"samples=15 demo tickers (research mini store) · 5 fields", lstm:"samples=10-ticker manifest sample · 4 fields"}, "comparison=selected fields within 1e-6", "artifact tree=SHA-256 per file, all 993 folders", "scope=sample rows, not the full universe"],
+       test:["the reproduction gate passes on a fresh clone of the research branch; this branch verifies the artifact-tree hashes", "corrupting one committed input makes the gate fail loudly"],
+       depends:["E1","C3","A2"]},
+    ];
+
+    /* ==================================================================
+       [J1b] LEARNING - per-block {goal, decisions, lessons, principles}.
+       This is the "learning by doing" record: HOW WE THOUGHT (decisions
+       with their why) and WHAT WE LEARNED (paid-for lessons). Rendered
+       in the inspector accordion; copyable as a prompt.
+       ================================================================== */
+    const LEARNING={
+      "A1":{
+        goal:"Document where the bars come from and what they are NOT: raw, unadjusted OHLCV acquired upstream - this project starts from frozen stores.",
+        decisions:["provenance as a block, not as code - duplicating the acquisition plane here would create a second copy of the same facts and a network dependency",
+                   "splits adjusted, dividends deliberately not - a split is a units change that makes a price series lie, a dividend is a real cash flow that HODL does not receive either; correcting the first and leaving the second keeps strategy and benchmark on one price plane"],
+        lessons:["deferring corporate actions was cheap right up until it was not: an unadjusted 10:1 split is a -90% overnight gap that the label reads as a catastrophic move, and the resulting numbers are path arithmetic, not economics. Adjusting the bars moved a flagship asset's benchmark from -56% to +337% - the pipeline had been honest about a fiction",
+                 "the detector was the dangerous part, not the correction: a first version inferred split ratios freely and matched CRASHES better than real splits. Restricting it to a canonical ratio set and putting a human review pass on top is what made the table trustworthy",
+                 "reproducibility that depends on an API key is not reproducibility - freeze the input, then everything downstream can be replayed"],
+        principles:["never let the ML layer touch the network", "state data limitations where the numbers appear, not in an appendix"]},
+      "A2":{
+        goal:"Make a fresh clone useful in minutes: commit what is small and sealed, keep what is huge local, and be explicit about which is which.",
+        decisions:["clone-and-show over train-on-clone - reviewers should SEE results immediately and be able to VERIFY what shipped, not rebuild a universe",
+                   {xgb:"keep 160 MB of 1h bars out of the presentation clone - the sealed artifacts and the results store are what a reviewer reads",
+                    lstm:"the daily store is small, but it is an input, not a result - the presentation branch commits results and verifies them by hash"}],
+        lessons:["the committed/local boundary must be documented or it becomes a trap - re-running any asset needs the bar stores, which live on the research branch",
+                 "shipping sealed RESULTS next to demo DATA is what makes an honest exhibit: render instantly, verify on demand"],
+        principles:["decide per artifact: seal it, demo it, or gitignore it - never 'commit everything'"]},
+      "A3":{
+        goal:"One loader, one truth: every consumer reads the same per-ticker frame from the same code path.",
+        decisions:["a single canonical read function instead of parallel readers + parity asserts - shared code makes identical frames a property, not a hope",
+                   "timezone resolved once at the source - daylight-saving ambiguity is settled where the data is written, not in every consumer"],
+        lessons:["derived columns at read time are hidden pipeline logic - we kept frames pure OHLCV and moved every computation into explicit layers"],
+        principles:["missing ticker = hard error; silent empties poison everything downstream"]},
+      "A4":{
+        goal:"Cut time honestly: a Train window that cannot see the future, an OOS window that nobody touches until the verdict.",
+        decisions:["purge = the label horizon H - any Train setup whose label window crosses the boundary is dropped, because its Y literally contains post-boundary prices",
+                   "embargo >= the longest feature lookback - rolling features computed just past the boundary still smear information backward",
+                   "marks over one continuous frame instead of physical splits - one file, several views, zero copies to drift"],
+        lessons:["the tempting warm-up/train/OOS 'simple split' leaks by construction with horizon labels - purge and embargo are not optional decorations",
+                 "count bars, not wall-clock time - calendars lie (sessions, holidays), the bar index does not"],
+        principles:["the OOS boundary is frozen configuration - moving it is a violation, not a tweak"]},
+      "G.1":{
+        goal:"Turn the split rules into a gate that cannot be argued with.",
+        decisions:["fail-closed with no WARN tier - a warning about leakage is a leak with extra steps",
+                   "recompute boundaries from frozen config and compare bit-exact - trust derivation, verify persistence"],
+        lessons:["validators that only read are validators you can trust - the moment one can 'fix' data it becomes a hidden transformer"],
+        principles:["every gate answers one question with PASS/FAIL; composition of small gates beats one clever validator"]},
+      "B1":{
+        goal:"Generate trade candidates so simple they cannot cheat: momentum direction behind a causal significance gate.",
+        decisions:["meta-labeling architecture - the primary signal proposes, the model judges; this separates 'when to look' from 'whether to act'",
+                   "a significance gate instead of trading every bar - noise-level moves waste the label budget and drown the classifier in coin flips",
+                   "fill at next open - trading at the decision bar's close assumes an execution machine that does not exist"],
+        lessons:["gates are levers that must earn their keep: this one was validated on Train CV, and the full-universe verdict later showed how a harder label interacts with it (mass abstention) - interactions between levers only show at scale"],
+        principles:["causality probes (shift a feature forward, watch candidates change) are cheap and catch entire bug classes"]},
+      "B2":{
+        goal:"Make the label answer the exact question the strategy asks: does THIS trade make money net of costs?",
+        decisions:["asymmetric 2:1 barriers - profit factor headroom needs wins bigger than losses; b=TP/SL=2 encodes that in GEOMETRY, which is not the same as earning it: the realized median win/loss came out 1.447 (XGB) and 1.241 (LSTM), with 1.2% / 7.6% of promoted assets reaching 2.0",
+                   "costs inside the label - a label that ignores costs teaches the model to love trades that lose money in production",
+                   "first-touch semantics - the exit is whichever barrier is hit first; anything else is a different strategy"],
+        lessons:["a harder label reshapes the whole downstream: under 2:1 wins became rare and probabilities compressed. With the threshold still pinned, most assets never cleared it; once theta became per-asset and floor-respecting, the idle share settled at 136 of 498 (27%) for the 1h path - all 136 with zero trades - while the daily path left just ONE asset unpromoted (CEG), and that one is not idle at all: it traded 40 times and simply never cleared the Train floor. We learned that label geometry is a SYSTEM decision, not a local one",
+                 "the honest response to that discovery was to surface trade counts everywhere - a near-zero-trade 'strategy' must be visible as such"],
+        principles:["never tune label geometry per asset - one contract, every asset, or results stop being comparable"]},
+      "B3":{
+        goal:"Give the model everything the market knew at decision time - and nothing it did not.",
+        decisions:[{xgb:"multi-timeframe context joined by close-time availability (merge_asof backward) - a daily bar exists for an intraday decision only after that daily bar has CLOSED",
+                    lstm:"a fixed 60-session window - recurrent models want sequences; the window length is a frozen contract, not a search dimension"},
+                   "fold-causal scaling - normalization statistics are information; computing them across a fold boundary is leakage through the scaler"],
+        lessons:["the subtlest leak we hunted was the in-progress coarse bar: joining today's (unfinished) daily bar into a noon decision quietly imports the afternoon - the adversarial audit specifically attacked and cleared this join",
+                 "exclude, never impute: an imputed mandatory feature invents a market state that never existed"],
+        principles:["feature availability is an ORDER question (what closed before t0?), not a calendar question"]},
+      "B4":{
+        goal:"Let each asset pick its own features - under a procedure so strict the choice cannot overfit its way into the results.",
+        decisions:["forward selection behind a minimum-gain gate - adding features is easy, PAYING for them (in generalization) must be demonstrated",
+                   {xgb:"vendor the parent project's committed overrides instead of half-porting the live worker - an honest freeze beats a broken loop",
+                    lstm:"let an LLM propose features only through a causal DSL - creativity welcome, but every proposal compiles to a causal transform or dies"}],
+        lessons:[{xgb:"scope honesty: saying 'the worker was not ported' in the contract is better than pretending a stale loop is alive",
+                  lstm:"measure your noise floor first: single-seed evaluation noise (~0.019 AUC-PR) was LARGER than the acceptance threshold (0.008) - without a 2-seed average the loop was accepting random fluctuations as 'improvements'"}],
+        principles:["a selection loop is an experiment factory - its acceptance test must be harder than its generation step"]},
+      "G.2":{
+        goal:"Make it PHYSICALLY impossible for training-side code to read the future.",
+        decisions:["asserts inside the consumers, not wrappers around them - whoever touches events re-verifies the boundary, so a new call site cannot forget",
+                   "an adversarial audit on top of asserts - code validators catch reads; independent reviewers trying to refute the design catch CONCEPTS"],
+        lessons:["fail-closed converts leakage from a silent bias into a loud crash - the cheapest possible failure mode",
+                 "audits that try to CONFIRM find what they look for; audits that try to REFUTE find what is there"],
+        principles:["every anti-leakage claim needs an enforcement mechanism and an attack transcript"]},
+      "C1":{
+        goal:"Optimize the thing you will be judged on - the single most important correction of the whole project.",
+        decisions:["objective = mean Train-OOF trading log-growth, replayed through the REAL trade engine - a proxy metric (AUC-PR) selected models that ranked well and traded poorly",
+                   "log-growth over raw return - sum(log(1+r)) is the geometric-growth criterion; arithmetic averages reward paths that blow up",
+                   {xgb:"forward ALL regularization params - reg_alpha and gamma were accepted by the API and silently ignored; an interface can lie about what it uses",
+                    lstm:"add weight_decay and num_layers to the space - regularization dimensions must be searchable to close the Train->OOS gap"}],
+        lessons:["the objective mismatch was SELF-DOCUMENTED in config (optimize AUC-PR / judge on profit factor) and sat there unchallenged - write configs that make contradictions visible, then actually read them",
+                 "engine-in-the-loop optimization is slower per trial and worth it: the metric IS the deployment semantics"],
+        principles:["if the objective is not the deployment criterion, the search optimizes a fiction"]},
+      "C2":{
+        goal:"Play the same capital game as the benchmark - and learn which knobs deserve to be tuned at all.",
+        decisions:["all-in compounding (f=1, no position sizing) - each asset is played separately with the full running capital, exactly like buy-and-hold, so the comparison is honest; a previous epoch's fractional-Kelly sizing was removed for this reason (a safely-sized strategy vs an always-invested benchmark is not a fair fight)",
+                   {xgb:"un-pin theta ONLY after the selection rule became floor-respecting - the first per-asset calibration looked great in-sample and collapsed a flagship asset's OOS profit factor from 1.89 to 0.99, because it was free to pick a per-fold best on a handful of trades. One shared operating point plus a trade floor is what made the degree of freedom safe",
+                    lstm:"calibrate (theta, direction) jointly - a joint grid on Train-OOF log-growth validated cleanly for the daily pipeline, so it earned its degrees of freedom"}],
+        lessons:["every calibrated parameter is a bet against overfitting - it must beat its pinned default OUT OF FOLD or stay pinned",
+                 "prove refactors by identity: the new sizing formula had to reproduce the old rows exactly at b=1 before it was allowed to generalize"],
+        principles:["degrees of freedom are earned, not granted"]},
+      "C3":{
+        goal:"Freeze the champion so completely that 'the model' means one exact byte sequence.",
+        decisions:["hash-bound artifacts with load-time self-checks - an artifact that cannot prove its own integrity is a rumor",
+                   "single-threaded / deterministic training - parallel nondeterminism saves minutes and costs the entire reproducibility claim"],
+        lessons:["determinism is a feature you design in, not a flag you flip later: thread counts, seeds and library versions all participate"],
+        principles:["after the freeze, everything downstream is read-only - no exceptions for 'quick fixes'"]},
+      "E1":{
+        goal:"Read the future only at the verdict step, count every read, and report what it says - especially when it says no.",
+        decisions:["one-shot OOS as process, not preference - the window is generated and scored at the verdict step and never re-entered; there is no 'let me just check one thing'",
+                   "commit the negative verdict with full ceremony - the v2 levers failing on the full universe is a RESULT, recorded in the store, the README and the report"],
+        lessons:["a ~18-ticker development sample flattered every lever; the 498-asset one-shot read reversed the conclusion - small samples do not shrink error bars, they hide them",
+                 "an honest negative from a trustworthy method is worth more than a positive from a leaky one: the METHOD is the product"],
+        principles:["the number you report is the number you would have gotten standing at the OOS start - anything else is curation"]},
+      "E2":{
+        goal:"Judge every strategy against the dumbest honest alternative: buying and holding the same asset.",
+        decisions:["per-asset, same-window, same-store benchmark - an index from another data plane would smuggle in survivorship and adjustment differences",
+                   "benchmark on the result page - a comparison in a footnote is a comparison nobody sees"],
+        lessons:["we shipped a re-seal where the benchmark feed silently covered 0 assets - the UI simply omitted the comparison and looked fine; silent degradation of an HONESTY feature is the worst kind of bug. The fix was a coverage gate: benchmark present for every sealed asset or the seal fails",
+                 "in a strong bull window buy & hold is brutal - and that is exactly why it must be shown"],
+        principles:["every honesty mechanism needs its own test - otherwise it rots first"]},
+      "E3":{
+        goal:"Say WHEN each asset's model acts - without ever re-opening the OOS window.",
+        decisions:["interpret from Train rows and the artifact only - an explanation that needs the test set is not an explanation, it is a second read",
+                   "cut the axis at the model's OWN split thresholds rather than at pretty round numbers - the segments then describe the model, not our taste in bins",
+                   "keep the highlight flag out of the write path - recording only the flattering segments would have produced a beautiful, useless map"],
+        lessons:["the two pipelines' sigmas are NOT the same object - for XGB it is a descriptive aid over raw inputs, for LSTM it is the actual frozen input transform; naming both 'sigma' without saying which would have been a quiet lie in the most-read view",
+                 "labels belong in the payload, not in the template: TRAIN-DERIVED / NOT AN OOS RESULT / NOT A LIVE TRADING SIGNAL travel with the data, so no consumer can drop them by accident"],
+        principles:["an interpretation layer must be cheaper than the thing it explains - if explaining costs an OOS read, it is not free, it is a leak"]},
+      "E4":{
+        goal:"Ship a product that can only tell the truth: a read-only viewer over sealed artifacts.",
+        decisions:["registry pattern for models - one entry per method (store + feed + description) keeps the app method-generic and additions one-line",
+                   "preset packages restricted to pre-OOS inputs - the parent project's rankings are dated at the END of the sealed window; selecting displayed results by them would be look-ahead dressed as UX"],
+        lessons:["the most dangerous features are the convenient ones: 'just rank the baskets by the best model' would have silently converted the demo into test-set selection",
+                 "read-only at runtime is a defense requirement AND a scientific one - a UI that can trigger training can manufacture results"],
+        principles:["separate evidence tiers visually and structurally - never let a weak number borrow a strong number's credibility"]},
+      "G.3":{
+        goal:"Replace 'trust us' with 'run this': deterministic reproduction as the acceptance test.",
+        decisions:["a DECLARED bound over a vague one - approximate reproduction invites an ever-widening definition of 'close enough', so we pinned two: SHA-256 for the artifact tree, 1e-6 for the sampled result rows",
+                   "gate runs from committed inputs on a fresh clone - reproducibility that needs local state is a private superpower, not a property"],
+        lessons:["byte-identity is achievable for ARTIFACTS when determinism is designed in from A1 to E1, and it converts every future refactor into a provable no-op or a visible change. For the result rows we claim less on purpose: numeric equality within 1e-6, on a sample, because the full hourly store does not ship. Claiming byte-identity there would have been the easier sentence and the false one"],
+        principles:["a claim you cannot re-run is a story, not a result"]}
+    };
+    const PROMPT_FOOTER=[
+      "keep every transformation causal: no input may postdate the decision it feeds",
+      "fail closed: a violated contract crashes the run, it never degrades to a warning",
+      "freeze inputs and seal outputs: state the bound you actually hold - SHA-256 for artifacts, a declared numeric tolerance for sampled rows",
+      "report negatives with the same ceremony as positives: the method is the product"];
+
+    /* ==================================================================
+       [J2] VIZ - mini-visualization registry. 1 entry = {h: full brick
+       height px, render(m) -> HTML}. Static content (no user input).
+       Renders may consult MODEL via MM() for model-specific labels.
+       ================================================================== */
+    const PAL={src:'#ABA99F',store:'#2BB587',green:'#86B23A',amber:'#D89A3A',good:'#34C96A',
+      fail:'#F26B6A',blue:'#5CB0FF',pink:'#E673A3',gray:'#8a8980'};
+    const svgV=(h,body)=>`<svg class="viz-svg" viewBox="0 0 168 ${h}" aria-hidden="true">${body}</svg>`;
+
+    const VIZ={
+      /* A1 - raw OHLCV matrix x ticker basket */
+      ohlcv:{h:112,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:16px"></colgroup><tbody>
+          <tr><th>t</th><th>O</th><th>H</th><th>L</th><th>C</th><th>V</th></tr>
+          <tr><td>t1</td><td>187.2</td><td>188.5</td><td>186.9</td><td>188.1</td><td>.41M</td></tr>
+          <tr><td>t2</td><td>188.0</td><td>189.3</td><td>187.6</td><td>187.9</td><td>.38M</td></tr>
+          <tr><td>t3</td><td>187.8</td><td>188.2</td><td>186.4</td><td>186.8</td><td>.52M</td></tr>
+        </tbody></table>
+        <div class="viz-label" style="color:var(--amber)"><span class="ohlcv-x">x</span> S&amp;P 500 universe · Alpaca ${MM().bars} · raw</div>`},
+
+      /* A2 - committed store cylinder */
+      duckdb:{h:116,render:()=>svgV(62,`
+        <path d="M10,12 v26 a20,6 0 0 0 40,0 v-26" fill="rgba(107,114,128,.14)" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <ellipse cx="30" cy="12" rx="20" ry="6" fill="rgba(107,114,128,.25)" stroke="${PAL.gray}" stroke-width="1.1"/>
+        <text x="30" y="30" text-anchor="middle" font-size="6" fill="#B8C0C8">bars_${MM().bars}</text>
+        <text x="30" y="56" text-anchor="middle" font-size="5" font-weight="700" fill="#C7D0D8">${MODEL==='xgb'?'bars_1h':'bars_1d'}</text>
+        <line x1="58" y1="25" x2="82" y2="25" stroke="${PAL.amber}" stroke-width="1.5"/>
+        <polygon points="88,25 80,21.5 80,28.5" fill="${PAL.amber}"/>
+        <text x="72" y="15" text-anchor="middle" font-size="6" font-weight="700" fill="${PAL.amber}">committed</text>
+        <text x="72" y="37" text-anchor="middle" font-size="5.5" fill="#89929D">read-only</text>
+        <rect x="92" y="12" width="70" height="30" rx="3" fill="rgba(43,181,135,.10)" stroke="${PAL.store}" stroke-width="1.1"/>
+        <text x="127" y="25" text-anchor="middle" font-size="6.5" font-weight="800" fill="${PAL.store}">${MODEL==='xgb'?'498 artifacts':'495 artifacts'}</text>
+        <text x="127" y="36" text-anchor="middle" font-size="5.5" fill="#89929D">${MODEL==='xgb'?'full store local (160 MB)':'full history committed'}</text>`)+
+        `<div class="viz-label">clone-and-show: sealed results + ${MODEL==='xgb'?'demo bars':'full bars'} ship in git</div>`},
+
+      /* A3 - per-ticker frame chain */
+      frames:{h:86,render:()=>`
+        <div class="zip-chain">${['AAPL','MSFT','NVDA','XOM'].map((t,i)=>`${i?'<span class="zip-dot"></span>':''}<div class="zip-node"><div class="zip-box">${MM().bars}</div><div class="zip-tk">${t}</div></div>`).join('')}<span class="zip-ell">···</span></div>
+        <div class="viz-label">one loader · one frame per ticker · pure OHLCV</div>`},
+
+      /* A4 - split bar with purge + embargo at the seam */
+      split:{h:106,render:()=>svgV(52,`
+        <text x="2" y="8" font-size="6" fill="${PAL.src}">WARM-UP</text>
+        <text x="59" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="${PAL.store}">TRAIN</text>
+        <text x="140" y="8" text-anchor="middle" font-size="7" font-weight="700" fill="${PAL.amber}">OOS</text>
+        <rect x="2" y="12" width="14" height="14" fill="rgba(138,137,128,.45)"/>
+        <rect x="16" y="12" width="86" height="14" fill="rgba(29,158,117,.55)"/>
+        <rect x="102" y="12" width="5" height="14" fill="rgba(255,59,48,.9)"/>
+        <rect x="107" y="12" width="7" height="14" fill="rgba(62,155,255,.85)"/>
+        <rect x="114" y="12" width="52" height="14" fill="rgba(186,117,23,.8)"/>
+        <line x1="104" y1="26" x2="88" y2="36" stroke="${PAL.fail}" stroke-width="1"/>
+        <text x="88" y="44" text-anchor="end" font-size="6" font-weight="700" fill="${PAL.fail}">purge</text>
+        <line x1="110" y1="26" x2="126" y2="36" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="126" y="44" font-size="6" font-weight="700" fill="${PAL.blue}">embargo</text>
+        <line x1="146" y1="33" x2="164" y2="33" stroke="#89929D" stroke-width="1"/>
+        <polygon points="166,33 160,30.5 160,35.5" fill="#89929D"/>
+        <text x="144" y="36" text-anchor="end" font-size="5.5" fill="#89929D">time</text>`)+
+        `<div class="viz-label">purge H=${MM().H} · embargo ${MM().embargo} · OOS -> ${MM().oosEnd}</div>`},
+
+      /* G.x - generic validator checklist (fail-closed). The registry key below stays
+         `guard` while the lane reads VALIDATION: the three G.x bricks join to it through
+         their viz field, so it is a dispatch key and never a caption. Renaming it would
+         have to move three brick fields with it, and buy nothing a reader can see. */
+      guard:{h:104,render:m=>{
+        const R={
+          'G.1':[['order','5 partitions · strict · no overlap'],['purge','&gt;= label horizon H'],['embargo','&gt;= max feature lookback'],['oos','boundary == frozen config']],
+          'G.2':[['assert','t0+H+embargo &lt;= oos_start'],['scope','HPO · calibration · search'],['mode','crash, never warn'],['audit','adversarial · refuted clean']],
+          'G.3':[['inputs','committed stores only'],['re-run','sample assets end-to-end'],['compare','selected fields, 1e-6'],['clone','fresh · offline · green']]};
+        const rows=(R[m.id]||[['validator','checks defined per module']]).map(([k,t])=>`<div class="qc-row"><b>${k}</b><span>${t}</span><span class="qc-ok">OK</span></div>`).join('');
+        return `<div class="qc-list">${rows}</div><div class="viz-label">fail-closed validator · read-only</div>`;}},
+
+      /* B1 - momentum signal + significance gate */
+      signal:{h:104,render:()=>svgV(40,`
+        <polyline points="6,30 30,26 52,28 76,18 100,12" fill="none" stroke="${PAL.green}" stroke-width="1.6"/>
+        <polygon points="106,10 97,10 101,17" fill="${PAL.green}"/>
+        <text x="54" y="38" text-anchor="middle" font-size="6" fill="#89929D">side = sign(log_return_5)</text>
+        <rect x="116" y="8" width="48" height="22" rx="2" fill="rgba(216,154,58,.10)" stroke="${PAL.amber}" stroke-width="1"/>
+        <text x="140" y="17" text-anchor="middle" font-size="5.6" font-weight="800" fill="${PAL.amber}">|lr5| &gt;=</text>
+        <text x="140" y="26" text-anchor="middle" font-size="5.6" font-weight="800" fill="${PAL.amber}">0.15 x rv20</text>`)+
+        `<div class="gate"><span class="gate-chip ok">CANDIDATE</span><span class="gate-chip fail">NOISE</span></div>
+        <div class="viz-label">meta-labeling: the signal proposes, the model judges</div>`},
+
+      /* B2 - Triple-Barrier geometry */
+      tb:{h:118,render:()=>svgV(56,`
+        <line x1="8" y1="12" x2="150" y2="12" stroke="${PAL.good}" stroke-width="1.4"/>
+        <text x="154" y="14" font-size="6" font-weight="800" fill="${PAL.good}">TP</text>
+        <text x="12" y="9" font-size="5.5" fill="${PAL.good}">+2 x ATR(14)</text>
+        <line x1="8" y1="34" x2="150" y2="34" stroke="#89929D" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="12" y="31" font-size="5.5" fill="#89929D">entry = open[t0+1]</text>
+        <line x1="8" y1="48" x2="150" y2="48" stroke="${PAL.fail}" stroke-width="1.4"/>
+        <text x="154" y="50" font-size="6" font-weight="800" fill="${PAL.fail}">SL</text>
+        <text x="12" y="45" font-size="5.5" fill="${PAL.fail}">-1 x ATR(14)</text>
+        <line x1="128" y1="6" x2="128" y2="54" stroke="${PAL.amber}" stroke-width="1.2" stroke-dasharray="2 2"/>
+        <text x="131" y="55" font-size="5.5" font-weight="700" fill="${PAL.amber}">t0+H</text>
+        <polyline points="16,34 34,30 52,36 72,26 92,20 108,14" fill="none" stroke="#C7D0D8" stroke-width="1.1"/>`)+
+        `<div class="viz-label">first touch on CLOSE · Y = [net &gt; 0] after 1bp+2bp/side · H=${MM().H}</div>`},
+
+      /* B3 - standing feature matrix: X + Y */
+      featmx:{h:120,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:16px"></colgroup><tbody>
+          <tr><th class="xt"><span class="x">x</span><span class="t">t</span></th><th class="th-x">${MODEL==='xgb'?'1h':'d-1'}</th><th class="th-x">${MODEL==='xgb'?'1d':'d-2'}</th><th class="th-x">...</th><th class="th-x">dir</th><th class="th-y">Y</th></tr>
+          <tr><th>t1</th><td>-0.8</td><td>41.3</td><td>...</td><td>+1</td><td class="y1">1</td></tr>
+          <tr><th>t2</th><td>0.6</td><td>63.2</td><td>...</td><td>-1</td><td class="y0">0</td></tr>
+          <tr><th>t3</th><td>1.4</td><td>55.8</td><td>...</td><td>+1</td><td class="y1">1</td></tr>
+          <tr><th>...</th><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        </tbody></table>
+        <div class="viz-label">${MODEL==='xgb'?'multi-TF X · merge_asof backward':'60-session window X'} · fold-causal scaling</div>`},
+
+      /* B4 - selection loop */
+      loop:{h:108,render:()=>svgV(44,`
+        <path d="M84,6 a16,16 0 1 1 -0.1,0" fill="none" stroke="${PAL.amber}" stroke-width="1.5"/>
+        <polygon points="84,3 78,9 90,9" fill="${PAL.amber}"/>
+        <text x="84" y="20" text-anchor="middle" font-size="5.4" font-weight="800" fill="${PAL.amber}">propose</text>
+        <text x="84" y="28" text-anchor="middle" font-size="5.4" font-weight="800" fill="${PAL.amber}">-&gt; evaluate</text>
+        <text x="84" y="36" text-anchor="middle" font-size="5.4" font-weight="800" fill="${PAL.amber}">-&gt; gate</text>
+        <rect x="8" y="12" width="44" height="20" rx="2" fill="rgba(134,178,58,.10)" stroke="${PAL.green}" stroke-width="1"/>
+        <text x="30" y="21" text-anchor="middle" font-size="5.4" font-weight="800" fill="${PAL.green}">candidate</text>
+        <text x="30" y="29" text-anchor="middle" font-size="5.4" fill="#89929D">pool + DSL</text>
+        <rect x="118" y="12" width="44" height="20" rx="2" fill="rgba(52,201,106,.10)" stroke="${PAL.good}" stroke-width="1"/>
+        <text x="140" y="21" text-anchor="middle" font-size="5.4" font-weight="800" fill="${PAL.good}">accepted</text>
+        <text x="140" y="29" text-anchor="middle" font-size="5.4" fill="#89929D">overrides</text>`)+
+        `<div class="viz-label">${MODEL==='xgb'?'280 auto-selected · 59 CORE-only · 159 too thin':'486 applied · 8 CORE-only · 1 too thin'}</div>`},
+
+      /* C1 - Optuna trial matrix, objective = OOF log-growth */
+      optuna:{h:132,render:()=>`
+        <table class="viz-tbl"><colgroup><col style="width:56px"></colgroup><tbody>
+          <tr><th></th><th>T01</th><th>T02</th><th>...</th><th class="o-best">best*</th></tr>
+          <tr><td class="o-name">${MODEL==='xgb'?'eta':'lr'}</td><td>.081</td><td>.204</td><td>...</td><td class="o-best">.052</td></tr>
+          <tr><td class="o-name">${MODEL==='xgb'?'max_depth':'hidden'}</td><td>${MODEL==='xgb'?'3':'32'}</td><td>${MODEL==='xgb'?'5':'96'}</td><td>...</td><td class="o-best">${MODEL==='xgb'?'4':'64'}</td></tr>
+          <tr><td class="o-name">${MODEL==='xgb'?'reg_alpha':'weight_decay'}</td><td>.01</td><td>.30</td><td>...</td><td class="o-best">.08</td></tr>
+          <tr class="o-auc"><td class="o-name">OOF log-growth</td><td>-.012</td><td>-.031</td><td>...</td><td class="o-best">+.044</td></tr>
+          <tr><td class="o-name">status</td><td>tested</td><td class="st-p">pruned</td><td>...</td><td class="o-best st-b">best</td></tr>
+        </tbody></table>
+        <div class="viz-label">SCHEMATIC cell values · real: objective = Train-OOF trading log-growth, purged WF CV, ${MODEL==='xgb'?'80 trials':'no per-asset search this epoch — one committed backbone'}</div>`},
+
+      /* C2 - all-in capital policy */
+      kelly:{h:100,render:()=>`
+        <div class="formula">ALL-IN &nbsp;— every trade reinvests the full capital
+          <small>no position sizing · the same capital game buy-and-hold plays</small></div>
+        <div class="gate">${MODEL==='xgb'
+          ?'<span class="gate-chip ok">theta: per asset, 0.40-0.60</span><span class="gate-chip ok">sizing: all-in</span>'
+          :'<span class="gate-chip ok">theta, dir: joint Train-OOF</span><span class="gate-chip ok">sizing: all-in</span>'}</div>
+        <div class="viz-label">${MODEL==='xgb'?'floor-respecting: >=8 OOF trades over >=2 folds, else idle':'joint operating-point grid on OOF log-growth'}</div>`},
+
+      /* C3 - artifact build chain */
+      build:{h:94,render:()=>`
+        <div class="build">
+          <span class="b-chip b-json">params</span><span class="b-arr">-&gt;</span>
+          <span class="b-chip b-xgb">${MODEL==='xgb'?'XGB':'LSTM'}</span><span class="b-arr">-&gt;</span>
+          <span class="b-chip b-b64">${MODEL==='xgb'?'BASE64+HASH':'WEIGHTS+HASH'}</span><span class="b-arr">-&gt;</span>
+          <span class="b-chip b-py">artifact</span>
+        </div>
+        <div class="build-sub">full-Train refit · ${MODEL==='xgb'?'1 thread, seed fixed':'torch 2 threads deterministic'} · selfcheck</div>
+        <div class="viz-label">frozen per asset · immutable · read-only downstream</div>`},
+
+      /* E1 - sealed OOS verdict + PF histogram */
+      oos:{h:118,render:()=>`
+        <table class="viz-tbl"><tbody>
+          <tr><th>assets</th><th>med PF</th><th>med tr</th><th>window end</th></tr>
+          <tr><td>${MM().assets}</td><td>${MM().pf}</td><td>${MM().trades}</td><td>${MM().oosEnd}</td></tr>
+        </tbody></table>`+
+        svgV(32,(MODEL==='xgb'?[22,18,12,8,6,4,3,2]:[8,12,18,22,16,10,6,3]).map((h,i)=>
+          `<rect x="${4+i*19}" y="${28-h}" width="17" height="${h}" fill="${i<3?'rgba(242,107,106,.5)':'rgba(52,201,106,.55)'}"/>`).join('')+
+          `<line x1="60" y1="2" x2="60" y2="30" stroke="#89929D" stroke-width="1" stroke-dasharray="3 3"/>
+           <text x="63" y="8" font-size="5.5" fill="#89929D">PF=1</text>`)+
+        `<div class="viz-label">every read ledgered · sealed to results.db</div>`},
+
+      /* E2 - strategy vs buy & hold bars */
+      hodl:{h:104,render:()=>svgV(40,`
+        <rect x="24" y="${MODEL==='xgb'?18:16}" width="40" height="${MODEL==='xgb'?16:18}" fill="rgba(92,176,255,.35)" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="44" y="12" text-anchor="middle" font-size="5.6" font-weight="800" fill="${PAL.blue}">strategy</text>
+        <rect x="102" y="6" width="40" height="28" fill="rgba(52,201,106,.30)" stroke="${PAL.good}" stroke-width="1"/>
+        <text x="122" y="4" text-anchor="middle" font-size="5.6" font-weight="800" fill="${PAL.good}" dy="1">buy &amp; hold</text>
+        <line x1="8" y1="34" x2="160" y2="34" stroke="#46515D" stroke-width="1"/>`)+
+        `<div class="gate-note">model beats its own buy &amp; hold on <b>${MM().beats}</b> assets (2024 -> ${MM().oosEnd} bull window)</div>
+        <div class="viz-label">same window · same raw store · shown, not hidden</div>`},
+
+      /* E4 - product folder */
+      /* E3 - Train-derived interpretation: three read-side tables + the mandatory labels */
+      interp:{h:122,render:()=>svgV(54,`
+        <rect x="8" y="6" width="46" height="20" rx="2" fill="rgba(92,176,255,.10)" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="31" y="14" text-anchor="middle" font-size="4.6" font-weight="800" fill="${PAL.blue}">16 601</text>
+        <text x="31" y="22" text-anchor="middle" font-size="4.2" fill="#89929D">train stats</text>
+        <rect x="61" y="6" width="46" height="20" rx="2" fill="rgba(92,176,255,.10)" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="84" y="14" text-anchor="middle" font-size="4.6" font-weight="800" fill="${PAL.blue}">16 601</text>
+        <text x="84" y="22" text-anchor="middle" font-size="4.2" fill="#89929D">contributions</text>
+        <rect x="114" y="6" width="46" height="20" rx="2" fill="rgba(92,176,255,.10)" stroke="${PAL.blue}" stroke-width="1"/>
+        <text x="137" y="14" text-anchor="middle" font-size="4.6" font-weight="800" fill="${PAL.blue}">45 021</text>
+        <text x="137" y="22" text-anchor="middle" font-size="4.2" fill="#89929D">entry ranges</text>
+        <rect x="8" y="32" width="152" height="16" rx="2" fill="rgba(216,154,58,.08)" stroke="${PAL.amber}" stroke-width="1"/>
+        <text x="84" y="42" text-anchor="middle" font-size="4.4" font-weight="700" fill="${PAL.amber}">TRAIN-DERIVED · NOT AN OOS RESULT · NOT A LIVE SIGNAL</text>`)+
+        `<div class="viz-label">${MODEL==='xgb'?'ENTRY ranges cut at the model\'s own split thresholds':'channel occlusion, ENTRY-conditioned'} · Train rows only</div>`},
+
+      folder:{h:122,render:()=>svgV(54,`
+        <path d="M10,10 v-4 a2,2 0 0 1 2,-2 h34 l6,6" fill="rgba(52,201,106,.10)" stroke="${PAL.good}" stroke-width="1.1"/>
+        <rect x="10" y="10" width="148" height="40" rx="3" fill="rgba(52,201,106,.05)" stroke="${PAL.good}" stroke-width="1.1"/>
+        ${[PAL.store,PAL.store,PAL.blue,PAL.blue,PAL.amber,PAL.good,PAL.pink].map((c,i)=>{
+          const x=18+i*19;
+          return `<path d="M${x},16 h10 l5,5 v21 h-15 z" fill="${c}22" stroke="${c}" stroke-width="1"/><path d="M${x+10},16 v5 h5" fill="none" stroke="${c}" stroke-width="1"/>`;
+        }).join('')}`)+
+        `<div class="f-legend"><span style="color:${PAL.store}">results.db</span><span style="color:${PAL.blue}">artifacts</span><span style="color:${PAL.amber}">interpretation</span><span style="color:${PAL.good}">3 pages</span><span style="color:${PAL.pink}">gates</span></div>
+        <div class="viz-label">clone-and-show · read-only · counts derived from the store</div>`}
+    };
+    function vizCard(m){const v=VIZ[m.viz];return v?v.render(m):'';}
+
+    /* ==================================================================
+       [J3] LAYOUT - bottom-up ladder from persisted ORDER (the only
+       position source), lane (x) = group; canvas size DERIVED.
+       ================================================================== */
+    const BLOCK_W=184, LANE_W=230, GAP=36, MARGIN_X=23, TOP_PAD=70, BOTTOM_PAD=50;
+    const LANE_X={};GROUPS.forEach((g,i)=>LANE_X[g.id]=MARGIN_X+i*LANE_W);
+    const DIVX=GROUPS.slice(0,-1).map((g,i)=>Math.round((MARGIN_X+i*LANE_W+BLOCK_W+MARGIN_X+(i+1)*LANE_W)/2));
+    const CANVAS_W=MARGIN_X*2+(GROUPS.length-1)*LANE_W+BLOCK_W;
+    const CANVAS_H=TOP_PAD+BOTTOM_PAD+MODULES.reduce((a,m)=>a+VIZ[m.viz].h+GAP,0)-GAP;
+    function layoutFor(order){const pos={};let y=CANVAS_H-BOTTOM_PAD;
+      order.forEach(id=>{const m=mod(id);if(!m)return;y-=VIZ[m.viz].h;pos[id]={x:LANE_X[m.group],y};y-=GAP;});return pos;}
+
+    /* ==================================================================
+       [J4] STATE - SEALED: the ladder order is the MODULES declaration
+       order, constant. No localStorage, no persistence, no hidden state.
+       ================================================================== */
+    const ORDER=MODULES.map(m=>m.id);
+    const $=q=>document.querySelector(q);
+    let selectedId=null, inventoryFilter='all';
+
+    function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+    function group(id){return GROUPS.find(g=>g.id===id)}
+    function mod(id){return MODULES.find(m=>m.id===id)}
+    function blockH(id){const m=mod(id);return m?VIZ[m.viz].h:54}
+    function color(m){return group(m.group).color}
+
+    /* ==================================================================
+       [J6] CANVAS - bricks, sticky lane heads, pan / zoom (read-only)
+       ================================================================== */
+    let zoom=1,panX=0,panY=0,panning=null,panMoved=false;
+
+    function depsOf(id){const m=mod(id);return m&&m.depends?m.depends.slice():[];}
+    function dependentsOf(id){return MODULES.filter(m=>(m.depends||[]).includes(id)).map(m=>m.id);}
+    function applyTransform(){const c=$('#flowCanvas');if(c)c.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;const v=$('#flowViewport');if(v){const s=20*zoom;v.style.backgroundSize=s+'px '+s+'px';v.style.backgroundPosition=panX+'px '+panY+'px';}syncLaneHeads();}
+    function contentBox(){const pos=layoutFor(ORDER);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      MODULES.forEach(m=>{const p=pos[m.id];x0=Math.min(x0,p.x);y0=Math.min(y0,p.y);x1=Math.max(x1,p.x+BLOCK_W);y1=Math.max(y1,p.y+blockH(m.id));});
+      return {x:x0-40,y:y0-70,w:x1-x0+80,h:y1-y0+120};}
+    function fitView(){const vp=$('#flowViewport');if(!vp)return;const vw=vp.clientWidth||1000,vh=vp.clientHeight||700;const b=contentBox();
+      zoom=Math.max(0.15,Math.min((vw-24)/b.w,(vh-24)/b.h,1.15));panX=Math.round((vw-b.w*zoom)/2-b.x*zoom);panY=Math.round((vh-b.h*zoom)/2-b.y*zoom);applyTransform();}
+
+    function lego(m,p){
+      const g=group(m.group);
+      const el=document.createElement('article');
+      el.className=`lego ${selectedId===m.id?'selected':''}`;
+      el.dataset.id=m.id;
+      el.style.setProperty('--accent',g.color);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.height=blockH(m.id)+'px';
+      el.innerHTML=`<div class="studs"><i class="stud"></i><i class="stud"></i><i class="stud"></i><i class="stud"></i></div>`+
+        `<div class="lego-top"><span class="lego-id">${m.id}</span><span class="lego-title">${safe(pick(m.title))}</span>${hasVariants(m)?`<span class="lego-variant" title="model-specific block">[${MM().bars}]</span>`:''}</div>${vizCard(m)}`;
+      el.addEventListener('click',e=>{e.stopPropagation();select(m.id)});
+      return el;
+    }
+    function renderLaneHeads(){const c=$('#laneHeads');if(!c)return;
+      c.innerHTML=GROUPS.map(g=>`<div class="lane-head" data-group="${g.id}" style="color:${g.color}">${safe(g.name)}</div>`).join('');syncLaneHeads();}
+    function syncLaneHeads(){const c=$('#laneHeads');if(!c)return;
+      c.querySelectorAll('.lane-head').forEach(el=>{
+        el.style.left=(panX+zoom*LANE_X[el.dataset.group])+'px';
+        el.style.width=Math.max(24,zoom*BLOCK_W)+'px';});
+      const sw=Math.max(1,1/zoom)+'px';
+      document.querySelectorAll('#flowCanvas .lane-sep').forEach(d=>d.style.width=sw);}
+    function renderLaneSeps(){const c=$('#flowCanvas');
+      DIVX.forEach(x=>{const d=document.createElement('div');d.className='lane-sep';d.style.left=x+'px';c.appendChild(d);});}
+    function renderCanvas(){
+      const canvas=$('#flowCanvas'); canvas.querySelectorAll('.lego').forEach(n=>n.remove());
+      const pos=layoutFor(ORDER);
+      ORDER.forEach(id=>{const m=mod(id);if(m)canvas.appendChild(lego(m,pos[id]));});
+    }
+    function select(id){selectedId=id;renderInventory();renderCanvas();renderInspector(mod(id));}
+    function clearSelect(){selectedId=null;renderInventory();renderCanvas();renderInspector(null);}
+
+    $('#flowCanvas').addEventListener('click',e=>{if(e.target===$('#flowCanvas')){if(panMoved){panMoved=false;return;}clearSelect();}});
+    /* Scroll chaining to the parent frame is the wheel's default action, so cancelling it
+       unconditionally traps a reader on a tall embed. Embedded: plain wheel goes to the host
+       page, Ctrl/Cmd+wheel (and trackpad pinch, which arrives as ctrlKey) zooms. Standalone
+       the body is 100vh/overflow:hidden with nothing to chain to, so nothing changes there. */
+    const EMBEDDED=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
+    $('#flowViewport').addEventListener('wheel',e=>{if(EMBEDDED&&!e.ctrlKey&&!e.metaKey)return;e.preventDefault();const vp=$('#flowViewport').getBoundingClientRect();const mx=e.clientX-vp.left,my=e.clientY-vp.top;const f=e.deltaY<0?1.12:1/1.12;const nz=Math.max(0.15,Math.min(3,zoom*f));const cx=(mx-panX)/zoom,cy=(my-panY)/zoom;panX=mx-cx*nz;panY=my-cy*nz;zoom=nz;applyTransform();},{passive:false});
+    $('#flowCanvas').addEventListener('pointerdown',e=>{if(e.button!==0)return;if(e.target!==$('#flowCanvas'))return;panning={sx:e.clientX,sy:e.clientY,px:panX,py:panY};panMoved=false;$('#flowCanvas').classList.add('panning');});
+    $('#flowCanvas').addEventListener('dblclick',e=>{if(e.target===$('#flowCanvas'))fitView();});
+    document.addEventListener('pointermove',e=>{if(!panning)return;panX=panning.px+(e.clientX-panning.sx);panY=panning.py+(e.clientY-panning.sy);if(Math.abs(e.clientX-panning.sx)+Math.abs(e.clientY-panning.sy)>3)panMoved=true;applyTransform();});
+    document.addEventListener('pointerup',()=>{if(panning){panning=null;$('#flowCanvas').classList.remove('panning');}});
+
+    /* ==================================================================
+       [J7] INVENTORY + INSPECTOR - side panels, learning accordion
+       ================================================================== */
+    function renderModelSwitch(){
+      $('#modelSwitch').innerHTML=['xgb','lstm'].map(k=>
+        `<button class="model-btn ${MODEL===k?'active':''}" data-model="${k}">${MODEL_META[k].label}</button>`).join('');
+      document.querySelectorAll('.model-btn').forEach(b=>b.onclick=()=>{
+        if(MODEL===b.dataset.model)return;
+        MODEL=b.dataset.model;
+        renderModelSwitch();renderInventory();renderCanvas();
+        renderInspector(selectedId?mod(selectedId):null);
+        toast('MODEL: '+MODEL_META[MODEL].noun);
+      });
+    }
+    function renderFilters(){
+      const opts=[['all','ALL'],...GROUPS.map(g=>[g.id,g.name])];
+      $('#filters').innerHTML=opts.map(([id,label])=>`<button class="filter ${inventoryFilter===id?'active':''}" data-filter="${id}">${label}</button>`).join('');
+      document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{inventoryFilter=b.dataset.filter;renderFilters();renderInventory();});
+    }
+    function renderInventory(){
+      const list=$('#moduleList'); let html='';
+      GROUPS.filter(g=>inventoryFilter==='all'||inventoryFilter===g.id).forEach(g=>{
+        const items=MODULES.filter(m=>m.group===g.id);
+        html+=`<div class="inventory-group" style="color:${g.color}">${g.name}</div>`;
+        html+=items.map(m=>`<div class="inventory-row ${selectedId===m.id?'selected':''}" data-id="${m.id}" style="--accent:${g.color}"><span class="inventory-id">${m.id}</span><span class="inventory-name">${safe(pick(m.title))}</span></div>`).join('');
+      });
+      list.innerHTML=html;
+      list.querySelectorAll('.inventory-row').forEach(row=>{
+        row.addEventListener('click',()=>select(row.dataset.id));
+      });
+    }
+    function parseKnob(v){const [a,...b]=v.split('=');return {key:a,value:b.join('=')||'required'}}
+    function items(v){const r=pick(v);return (Array.isArray(r)?r:[r]).map(x=>pick(x));}
+    function renderInspector(m){
+      if(!m){$('#inspectorContent').innerHTML='<div class="empty-state">Click a brick. Contract: input → transform → output → invariants → knobs, plus HOW WE THOUGHT · WHAT WE LEARNED.<br><br>The switch flips the XGBoost / LSTM view.</div>';return;}
+      const c=color(m);
+      const prevAcc=$('#inspectorContent .prompt-acc');
+      const accOpen=!!(prevAcc&&prevAcc.open);
+      const preScroll=accOpen?(($('#inspectorContent .prompt-pre')||{}).scrollTop||0):0;
+      $('#inspectorContent').innerHTML=`
+        <div class="selected-strip"><div class="selected-id" style="background:${c}">${m.id}</div><div><div class="selected-name">${safe(pick(m.title))}</div><div class="selected-kind">${m.layer?`<span style="color:var(--cyan)">${safe(pick(m.layer))}</span> · `:''}${safe(pick(m.kind))} - ${safe(pick(m.short))}${hasVariants(m)?` · <span style="color:var(--amber)">${MM().noun} view</span>`:''}</div></div></div>
+        <section class="inspect-section"><div class="inspect-label">INPUT</div><ul class="inspect-list">${items(m.input).map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">TRANSFORM</div><ul class="inspect-list">${items(m.transform).map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">OUTPUT</div><div class="inspect-text">${safe(pick(m.output))}</div></section>
+        <section class="inspect-section"><div class="inspect-label">INVARIANTS</div><ul class="inspect-list">${items(m.invariant).map(x=>`<li>${safe(x)}</li>`).join('')}</ul></section>
+        <section class="inspect-section"><div class="inspect-label">LOW-CODE KNOBS</div><div class="knob-grid">${items(m.knobs).map(x=>{const k=parseKnob(x);return `<div class="knob"><b>${safe(k.key)}</b><span>${safe(k.value)}</span></div>`}).join('')}</div></section>
+        <section class="inspect-section"><div class="inspect-label">VISUALIZATION</div><div class="viz-card" style="--accent:${c}">${vizCard(m)}</div></section>
+        <section class="inspect-section"><details class="prompt-acc"${accOpen?' open':''}><summary><i>&#9656;</i> HOW WE THOUGHT &middot; WHAT WE LEARNED</summary><div class="prompt-bar"><button id="copyReplica">COPY AS PROMPT</button></div><pre class="prompt-pre">${safe(learningPrompt(m))}</pre></details></section>`;
+      if(accOpen){const pp=$('#inspectorContent .prompt-pre');if(pp)pp.scrollTop=preScroll;}
+      $('#copyReplica').onclick=()=>copyText(learningPrompt(m));
+    }
+    /* learning prompt: the CONTEXT section is computed statically from
+       MODULES[].depends, so it always describes the declared surrounding
+       logic; the narrative comes from LEARNING[id] - see [J1b] */
+    function learningPrompt(m){
+      const P=LEARNING[m.id]||{};
+      const up=depsOf(m.id).map(d=>{const dm=mod(d);return dm?`upstream: ${d} "${pick(dm.title)}" -> provides: ${pick(dm.output)}`:`upstream: ${d}`;});
+      const down=dependentsOf(m.id).map(d=>{const dm=mod(d);return dm?`downstream: ${pick(m.output)} -> consumed by: ${d} "${pick(dm.title)}"`:`downstream: ${d}`;});
+      const ctx=[...(up.length?up:['upstream: none - first block of the flow']),
+                 ...(down.length?down:['downstream: none - last block of the flow']),
+                 `active model view: ${MM().noun} (${MM().bars} bars) - the sibling model shares this procedure with the knobs listed`];
+      const arr=v=>(v?(Array.isArray(v)?v:[v]).map(x=>pick(x)):[]);
+      const sec=(h,list)=>`\n\n${h}\n`+list.map(x=>'- '+x).join('\n');
+      return `=== ${m.id} · ${pick(m.title)} - LEARNING-BY-DOING RECORD (${MM().noun}) ===`+
+        sec('GOAL',[pick(P.goal)||pick(m.kind)])+
+        sec('PIPELINE CONTEXT (surrounding logic)',ctx)+
+        sec('HOW WE THOUGHT (decisions + why)',arr(P.decisions))+
+        sec('WHAT WE LEARNED (paid-for lessons)',arr(P.lessons))+
+        sec('INVARIANTS (non-negotiable)',items(m.invariant))+
+        sec('KNOBS (low-code parameters)',items(m.knobs))+
+        sec('ACCEPTANCE TESTS',items(m.test))+
+        sec('IMPLEMENTATION PRINCIPLES',[...arr(P.principles),...PROMPT_FOOTER]);
+    }
+    function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1500)}
+    async function copyText(t){try{await navigator.clipboard.writeText(t);toast('COPIED');}catch(e){toast('CLIPBOARD UNAVAILABLE');}}
+
+    /* ==================================================================
+       [J8] BOOT
+       ================================================================== */
+    (function sizeCanvas(){const fc=$('#flowCanvas');if(fc){fc.style.width=CANVAS_W+'px';fc.style.height=CANVAS_H+'px';}})();
+    renderLaneSeps();renderLaneHeads();
+    renderModelSwitch();renderFilters();renderInventory();renderCanvas();renderInspector(null);
+    fitView();
+  </script>
+</body>
+</html>

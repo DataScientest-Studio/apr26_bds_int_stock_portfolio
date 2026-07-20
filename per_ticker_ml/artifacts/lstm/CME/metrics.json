@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "cff4ca57d56b9d085281faf80c0c6cf9db17fc8469d75967696ade4a8eb0ec1b",
+  "oof_log_growth": -0.18619064093389767,
+  "oof_trades": 13,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.39740351091078524,
+  "cv_folds": 4,
+  "end_capital": 1362.4182247691665,
+  "losses": 0,
+  "max_drawdown_pct": 13.637199044293316,
+  "model_trades": 0,
+  "net_pnl_usd": 362.41822476916656,
+  "oof_log_growth": -0.18619064093389767,
+  "oof_trades": 13,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": 36.24182247691665,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "CME",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "CME"
+}

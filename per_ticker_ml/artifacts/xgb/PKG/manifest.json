@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25877,
+   "sha256": "9b931358a4c99a84267c9e4c4ebbc775520493c86fb15aa808b281433ecb2656"
+  },
+  "metrics.json": {
+   "bytes": 1044,
+   "sha256": "6321b70f50afa046fb38778f2df53fc4f1d4c549b322b8cbe0a96ff9a1bea932"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "412936ed2b3afdd8a52ea041aa2b3985d1ef2642be7c2e4efb7f618b146c968e"
+  },
+  "strategy_PKG.py": {
+   "bytes": 186979,
+   "sha256": "222edeee0986e028122a0107d45f9be81af6226c97f98a0f897fdea673ff17ae"
+  }
+ },
+ "folder_sha256": "278ad20304951aeaebb10a467e62ddddce5d861108f6583597d342aa246b34d4",
+ "model": "xgb",
+ "model_hash": "c9f1915039b3f9f6dc03c22c85a8970c2e4713e79eccf70a1b08252cb0350d79",
+ "ticker": "PKG"
+}

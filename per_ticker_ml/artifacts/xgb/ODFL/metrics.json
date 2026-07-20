@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "ea3e0df6d964f35c163dea166c94858da892a8f502ca938bfa71b27c13d0f64b",
+  "oof_log_growth": 1.2722930826194325,
+  "oof_trades": 808,
+  "theta_boundary": true,
+  "theta_entry": 0.4,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.43322660283964515,
+  "cv_folds": 4,
+  "end_capital": 552.4413059511039,
+  "losses": 154,
+  "max_drawdown_pct": 50.70072141088785,
+  "model_trades": 242,
+  "net_pnl_usd": -447.5586940488961,
+  "oof_log_growth": 1.2722930826194325,
+  "oof_trades": 808,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 0.7997315210828008,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -44.7558694048896,
+  "start_capital": 1000.0,
+  "theta_entry": 0.4,
+  "ticker": "ODFL",
+  "time_in_market_pct": 52.726,
+  "trade_floor_met": 1,
+  "trades": 242,
+  "win_rate_pct": 36.36363636363637,
+  "wins": 88
+ },
+ "ticker": "ODFL"
+}

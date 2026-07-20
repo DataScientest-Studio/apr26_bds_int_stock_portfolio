@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 85787,
+   "sha256": "87369d72be8befa0fabe2ca906995333e373b9a8c9bbb5476bf8b459b7bba8d4"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "2d30246eb6a01b3910ca1bfa4c5758170a30aed8589c71ed957d9beba09a1923"
+  },
+  "parameters.json": {
+   "bytes": 2753,
+   "sha256": "4d6d8dbad405a200fceb7f2e3d22f66a73e422087311ceee89b1220ea2eca659"
+  },
+  "strategy_KIM.py": {
+   "bytes": 84366,
+   "sha256": "fc17b273f1ca9db0cec82c725bc121710742712f86e740cad4faf4293a1dcee0"
+  }
+ },
+ "folder_sha256": "e2f81433b1a9ab36bbb7dd2da309ab2e8ad0bf1ac78cb9f8184fde63f4e5227e",
+ "model": "lstm",
+ "model_hash": "96c35f7c02a7257fefed41c6aedab9f6d456614aac3a5157702bd06fa411378c",
+ "ticker": "KIM"
+}

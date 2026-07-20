@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25848,
+   "sha256": "78f80107a1e31fd6e754a9211da63b656fa24100cbeb18e5e5d5a55de12664be"
+  },
+  "metrics.json": {
+   "bytes": 1043,
+   "sha256": "ed84279bbd56aca30629404c0d0f554fb93f0b64a36fd973ed456bef1a94146c"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "b053e498c488c7e6b45294d2e66ac69d4128e10c0b1ae8bbea86a5f3216f397a"
+  },
+  "strategy_EME.py": {
+   "bytes": 187035,
+   "sha256": "a1946233e7d999053523f9f55c96d492e2af6f0b386ec52e3691d86d25fb7a3f"
+  }
+ },
+ "folder_sha256": "49ddc586f38fb96f42c8cc3b1eb4623b572f9196267d2e8fa33b00cbce3bc33d",
+ "model": "xgb",
+ "model_hash": "09dffcd348539c40772173bc433bfd1543ce686e0ac8c8fc7dee8f5b2e54dd4d",
+ "ticker": "EME"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 59071,
+   "sha256": "2144bc8fa935fe3537d900b8c5c8b80e2939830e67fe9560eeec854548658567"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "9d8d09401df51cab364fa33117282538d145483495a410f5d50e37a8f042037c"
+  },
+  "parameters.json": {
+   "bytes": 5192,
+   "sha256": "fbe30f2e319fbe19805e44283627e4765aa00c9d2ec43668d6325922b02c53d4"
+  },
+  "strategy_MLM.py": {
+   "bytes": 284812,
+   "sha256": "c9c72f0d5b27f017f694fe82e9d86079ac34e0cc235c58041fb13deb1be1a731"
+  }
+ },
+ "folder_sha256": "3e33e3863d676765046ee976fbfe0b25b5ac70565ea6d17f7bab15fed157746a",
+ "model": "xgb",
+ "model_hash": "1d533511679946afa096fdf2a33279e724558c2c92343c254c92d36495b4cab7",
+ "ticker": "MLM"
+}

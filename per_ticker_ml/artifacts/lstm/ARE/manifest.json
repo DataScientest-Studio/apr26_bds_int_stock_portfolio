@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 69297,
+   "sha256": "f56cf8b05abba345b377d84749fe6b51e8e98e3cdabfb430259519c7e4fe4d96"
+  },
+  "metrics.json": {
+   "bytes": 1077,
+   "sha256": "7091354b87b87618c9fbc401fcd7f043ef370e4421eeee013b875e8ed2ab20dd"
+  },
+  "parameters.json": {
+   "bytes": 2782,
+   "sha256": "490149c8752348bda41076c095013d09e0c488e0656b0b14f8cc0d8d68d22316"
+  },
+  "strategy_ARE.py": {
+   "bytes": 83020,
+   "sha256": "2b144991e290072f7e60c5140bcef4f4f3164eb004547f0559755f6608946595"
+  }
+ },
+ "folder_sha256": "23cbd008db8c3785c2e32e364428344c344e159d77ab0b458841676727f7b140",
+ "model": "lstm",
+ "model_hash": "6af20c57a39cdca497ade294e02c79025637d8d8fe327d8dc9ff2ba4c455c04f",
+ "ticker": "ARE"
+}

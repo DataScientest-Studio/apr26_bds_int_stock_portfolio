@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 205545,
+   "sha256": "14b2f766d7827de74c7f7da2d933c082e887d934d83fafaf11ef44d4cacd39b5"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "1bc09a31c207a4826377b81e67996d4088e5db8216ab419a0c1b251e8ae00065"
+  },
+  "parameters.json": {
+   "bytes": 5940,
+   "sha256": "a7f432d13597f5e0516b59f2e71c65a82babcb5b0072a42503bacc56226ea7ae"
+  },
+  "strategy_SNA.py": {
+   "bytes": 335617,
+   "sha256": "27cbfcb2b3475c045384fa8f11d7f98bace270e91e5f8b64cdc054fc72f28cae"
+  }
+ },
+ "folder_sha256": "fdad65ce9e4a0c667ac886c455556cc67c474121f59bdf94af8fc109271fedf4",
+ "model": "xgb",
+ "model_hash": "c69e8bde48f54ac08a039ccd50e3b1816e0487ca4454c67239032a307cb00903",
+ "ticker": "SNA"
+}

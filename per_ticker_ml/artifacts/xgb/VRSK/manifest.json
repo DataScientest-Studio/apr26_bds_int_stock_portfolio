@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 32547,
+   "sha256": "ad9ed2182f1431d059297f589d09d84190937c3d0a0a92e6bf2efdb968da31f7"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "1c093a079bd6f880e4a70f760ad8359e324d19bb910b464b58d68a38f672a0ca"
+  },
+  "parameters.json": {
+   "bytes": 4632,
+   "sha256": "f0e2dbfb62323c1c51de0b96202f422af19fb67a4747e3eccfc3c7de2f70b77d"
+  },
+  "strategy_VRSK.py": {
+   "bytes": 228661,
+   "sha256": "f7b4d5a3d897dfce3a8b0b076d1146b98b1d181e29e2b2c5c4e19d2298a9aedd"
+  }
+ },
+ "folder_sha256": "c9e253171101d13792c4df9f0864ae2bc898a39f32066777dc726993e4b0482d",
+ "model": "xgb",
+ "model_hash": "08bc399a7525ff875ac8d5e32bd7344059a6a1a2b256f2445372cba14d68b287",
+ "ticker": "VRSK"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 81187,
+   "sha256": "07f5990cb071539279a6b7f344813e347dd2a71ec99979717313dc5be166c31d"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "c56aa1d05af693e9ad570a05f5a11ff8d634677f70c06b5a9471ee48c51def83"
+  },
+  "parameters.json": {
+   "bytes": 2664,
+   "sha256": "508613794f8f68e7b7ec2f47da5621e193173d4f3eda15f09fd8c04519f2b9d8"
+  },
+  "strategy_AIZ.py": {
+   "bytes": 80311,
+   "sha256": "e7ac2061c2fbb42467e713529dbb90ee1a8944e696edbd6acb28ae3967776218"
+  }
+ },
+ "folder_sha256": "5fa270677eaee4ba1374e28b86f4689d19c9807d749363a169dda0e86a10770a",
+ "model": "lstm",
+ "model_hash": "d3ad8d6dd3f3dc708545a99459839c1ad8755540ee92b3f8ccc4f849cd402ab0",
+ "ticker": "AIZ"
+}

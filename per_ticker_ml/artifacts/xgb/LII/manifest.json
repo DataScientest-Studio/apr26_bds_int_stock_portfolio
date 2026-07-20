@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 39074,
+   "sha256": "daf6a8db7c74b9e68ca8f687cadb516356f7150d99b9d148791a7efbf08e9127"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "bba448fc3dec8ddcbc7aa495778e0bb1e23c601e9ca4751ded6ed1f94112cc2c"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "53fc7183dad805f77bb3b5d54c17687d4e935623ccaeaed021757134b92e492a"
+  },
+  "strategy_LII.py": {
+   "bytes": 169208,
+   "sha256": "cb809299d29447f6b1f5a12c781b321c59261f9879ad2ea25547a76cbb73679e"
+  }
+ },
+ "folder_sha256": "2f10cf088095d20fb49ff4e49634d9865a6421429f615bcaef11fa6821ea161c",
+ "model": "xgb",
+ "model_hash": "a8bfbff8ad3466dcca02dd630c2292c6fdaf60204c95937b61b642eefca3b723",
+ "ticker": "LII"
+}

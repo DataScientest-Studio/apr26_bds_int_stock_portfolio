@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 71510,
+   "sha256": "fea153d4f95a8a5e347250a4a00ad424963a3548e22d6450e7ec1c5e68c9ab62"
+  },
+  "metrics.json": {
+   "bytes": 1082,
+   "sha256": "616fda0ecd684ec63d11f1edf3e3e397c7bf0773799cdf2ce55f99f66341d4ad"
+  },
+  "parameters.json": {
+   "bytes": 2409,
+   "sha256": "51542a6e022fea262cf73031af332e2a74053858af5dc0ad01f2ef2737bdcd29"
+  },
+  "strategy_MDLZ.py": {
+   "bytes": 74024,
+   "sha256": "54910a7a19e494df64275ae052da25abe1df30aae8609dcd6acdbe2fb7eb3af1"
+  }
+ },
+ "folder_sha256": "b4d8f31bd1bed588c878e10a37ee12f96daf564c9ce1bd18dcbc042adb07e2a3",
+ "model": "lstm",
+ "model_hash": "44cff819d043cde12ca276ce13efecc34e7ff6994ba880768ab5a628416a0417",
+ "ticker": "MDLZ"
+}

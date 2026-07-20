@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 79748,
+   "sha256": "1a2fe8784b7537855d6f44e44e641e59ed3cec6e65386f8572c572fc91412828"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "6b670067eccbab5b7e49d5b4ca970208ad99c1dbf7b3a03a71b2657916cd8b2f"
+  },
+  "parameters.json": {
+   "bytes": 2656,
+   "sha256": "c11cd86c15e50c58ab1187d0d064bca7a76230248a4641889c70eeb1a61c7dd1"
+  },
+  "strategy_DXCM.py": {
+   "bytes": 80329,
+   "sha256": "80cc2b1bd1061dd12cf2eecc9f963680f1e844dac100ee61b5b44f971bee1c38"
+  }
+ },
+ "folder_sha256": "ca566b139ef322f93636064ff51fe98e7792b4ee7e59a17acf9c05a3bb115be9",
+ "model": "lstm",
+ "model_hash": "5dbb297575a4c36ac7f8f67282cb82f81b69942934734c8617e36669f11bf072",
+ "ticker": "DXCM"
+}

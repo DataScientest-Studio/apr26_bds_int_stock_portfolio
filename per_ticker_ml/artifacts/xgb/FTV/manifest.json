@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 47359,
+   "sha256": "39278f77b612a70ac6a1bd70eb32184d7b3dee983c6b1d327a78581c894038f1"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "8091cc50ded1149d8ed9a9a05fdeb5d5f0b3c31c7e41164682d014af382e2720"
+  },
+  "parameters.json": {
+   "bytes": 4084,
+   "sha256": "f07036970a9fe3b9e25331a6a464570359cf839a240e3fd6a74507767513d8ee"
+  },
+  "strategy_FTV.py": {
+   "bytes": 270894,
+   "sha256": "d9e95dde1cb12becbac88d8aefe024c7cb17b7a3415f61e90e40f69e4624dde8"
+  }
+ },
+ "folder_sha256": "0e96d8fac7d792919e2ca9a306ec514e6e48d996a5f13dbfcd6421eafafd2d35",
+ "model": "xgb",
+ "model_hash": "5abebec593fff246ee6974bd961cf8feca832e6b9d9a6e2d03f86dcaf3a97c61",
+ "ticker": "FTV"
+}

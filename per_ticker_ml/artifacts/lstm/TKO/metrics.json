@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "85acdc9597613f1c62cc65b69acf9aad00fa8d5109554bd5ada4741c8dd69f59",
+  "oof_log_growth": 0.0989862948481556,
+  "oof_trades": 91,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4683748268158498,
+  "cv_folds": 4,
+  "end_capital": 1551.7023907830874,
+  "losses": 21,
+  "max_drawdown_pct": 20.541535589011932,
+  "model_trades": 48,
+  "net_pnl_usd": 551.7023907830874,
+  "oof_log_growth": 0.0989862948481556,
+  "oof_trades": 91,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.5007226310264579,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 55.17023907830874,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "TKO",
+  "time_in_market_pct": 63.6986,
+  "trade_floor_met": 1,
+  "trades": 48,
+  "win_rate_pct": 56.25,
+  "wins": 27
+ },
+ "ticker": "TKO"
+}

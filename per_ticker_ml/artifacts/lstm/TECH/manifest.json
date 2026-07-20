@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 69486,
+   "sha256": "138ca762a3866e4b219a75553271bf97890a1179fcaeb83cfe03ddc4e6ccaf04"
+  },
+  "metrics.json": {
+   "bytes": 1068,
+   "sha256": "3c8cf7aa2ebf30010e0ad588910d8b0daf4bb37c04098128d77d5be7d621d3ec"
+  },
+  "parameters.json": {
+   "bytes": 2766,
+   "sha256": "134a44836d9be0014e233b1383bd8a73afc00c6166eb7b8cd7f0cebff200d7c9"
+  },
+  "strategy_TECH.py": {
+   "bytes": 84489,
+   "sha256": "fd42f0dc317876316856781540c751c6c1181037eddaee2f4ae720797d89865a"
+  }
+ },
+ "folder_sha256": "b75973f8ca4ca7749e0dbf757c21db91c8e789e00697423473246c8d90a26160",
+ "model": "lstm",
+ "model_hash": "d58a2dcae0959de90c8a239d4f2e9b09560e9c6d2a5d1b83cc95b1b7932d5c2d",
+ "ticker": "TECH"
+}

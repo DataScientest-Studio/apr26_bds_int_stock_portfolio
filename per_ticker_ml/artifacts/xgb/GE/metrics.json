@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "557ca07be4c47e8aab1c95164261a1dd9f8f8bb58d7f613a1ea085b8bd5276cb",
+  "oof_log_growth": 0.17445519398498235,
+  "oof_trades": 74,
+  "theta_boundary": false,
+  "theta_entry": 0.48,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.39165176572981103,
+  "cv_folds": 4,
+  "end_capital": 2382.4585910598325,
+  "losses": 0,
+  "max_drawdown_pct": 24.210117163640398,
+  "model_trades": 0,
+  "net_pnl_usd": 1382.4585910598323,
+  "oof_log_growth": 0.17445519398498235,
+  "oof_trades": 74,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": null,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": 138.24585910598324,
+  "start_capital": 1000.0,
+  "theta_entry": 0.48,
+  "ticker": "GE",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "GE"
+}

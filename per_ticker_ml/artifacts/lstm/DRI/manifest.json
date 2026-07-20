@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 47834,
+   "sha256": "e6a7fc1895ac27a5f5c525db9058d5d19ca2a78a7c15ce8752054ce450634386"
+  },
+  "metrics.json": {
+   "bytes": 1059,
+   "sha256": "2f4abb0fb634da22e74d5a735f91d094d1cb5e5410a6afa133fb4c83a7bfb3e9"
+  },
+  "parameters.json": {
+   "bytes": 2643,
+   "sha256": "a08e9117a4a6adb656608b0efb0c421954f749ca93d4c900441f06d51453a47c"
+  },
+  "strategy_DRI.py": {
+   "bytes": 80397,
+   "sha256": "756cc343693fac3287ebac3ce6acd523c8bb29ef3025a920ee052ef5df5984af"
+  }
+ },
+ "folder_sha256": "af3a8e1b6b195173c861f1e758ca1c6d989ee6de29a8ca2ee5567eccc331ce40",
+ "model": "lstm",
+ "model_hash": "ddb2bb39580f987a52741ce12742d6cf6d747c2378b49341685ad4d79210d406",
+ "ticker": "DRI"
+}

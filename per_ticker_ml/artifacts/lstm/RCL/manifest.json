@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 80043,
+   "sha256": "24a222472d4c9a6e545cd9655773f6ea052055bb1b320acef937ef1d9b709f5e"
+  },
+  "metrics.json": {
+   "bytes": 1071,
+   "sha256": "5369d38e9809302600a36da4353b9a1cd2800daca79da8c94a01ce3233f2abaf"
+  },
+  "parameters.json": {
+   "bytes": 2630,
+   "sha256": "58c264c807d3e0b0eaced89339e6e79011ba6b85ee2ee463ac3eeb5daac8ecc4"
+  },
+  "strategy_RCL.py": {
+   "bytes": 80139,
+   "sha256": "49f48bc7126c05e177be31b0be0c54d45c691f5b7e2a3bfc457cf993ec01ffe7"
+  }
+ },
+ "folder_sha256": "8c3a3108c638911498c904691b32e109fc975955a9ed654c238b6ffd63c384c3",
+ "model": "lstm",
+ "model_hash": "49d4a2a29ef5b145b8e0985d9363ef9a0e4935186a8e7a2cb4347444e59ebb1a",
+ "ticker": "RCL"
+}

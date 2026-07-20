@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 86180,
+   "sha256": "46edd73dccb1fef3590e1fa2d582722b91abb00bbe8906ee59f966376333fa74"
+  },
+  "metrics.json": {
+   "bytes": 1073,
+   "sha256": "f31697a2dd6c94003d46e512b85e6b34a78c02f633246dac0e66f5530738aec0"
+  },
+  "parameters.json": {
+   "bytes": 2767,
+   "sha256": "78d6aa4e4896720190f804e2d2c1e417fa0d7c1eeb2e07e5df7c9d64c235926c"
+  },
+  "strategy_PWR.py": {
+   "bytes": 83495,
+   "sha256": "17697669ec4116f275f8f39796c7afdbd2e7ab00a4a3e45688c1ea4ca96d7e45"
+  }
+ },
+ "folder_sha256": "33f56199683bd452c424980446c0fe5c7ceb6c804ab130c7e9c3532f9c5fa8a2",
+ "model": "lstm",
+ "model_hash": "348ad39379dc71cb50e43028d60b1d616371d47292a36b34ace9c1c8eb34145e",
+ "ticker": "PWR"
+}

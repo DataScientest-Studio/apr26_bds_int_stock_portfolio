@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 77429,
+   "sha256": "48a19f230f814ea01183cdad709ca806b54a80f61f8fb3735d934704a48706ce"
+  },
+  "metrics.json": {
+   "bytes": 1062,
+   "sha256": "ccaab259bdce61dfdb3004c585a192329d6531ced9839c43c6537e3ece72f08b"
+  },
+  "parameters.json": {
+   "bytes": 2539,
+   "sha256": "879418abb251de11f50e958cb8e5d79fae7fc87e414b24c3a391c9c7da8d7f7a"
+  },
+  "strategy_AEE.py": {
+   "bytes": 77549,
+   "sha256": "f1b594389155f1a9659c5ab5f7aa19172b3cf5b27a8f709b90a230e8bc079526"
+  }
+ },
+ "folder_sha256": "24895ebe7a31018e3ec6dd142ffd950cdcbc7a9f8b89b5beeec1bcdc4771573a",
+ "model": "lstm",
+ "model_hash": "d5c9a8a3d6e618c797a5025ebbc4df39c04048f6f1bf08d291f82179a5e93cbd",
+ "ticker": "AEE"
+}

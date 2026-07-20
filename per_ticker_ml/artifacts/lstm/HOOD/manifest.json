@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75055,
+   "sha256": "5941622a0c2c2f3651dabe1cff662d94439af4d2908d30e63a60b1d10812ae55"
+  },
+  "metrics.json": {
+   "bytes": 1067,
+   "sha256": "38622b63e121146f64dc8296675ab4f57737a70e3af37a581e396218a5cb75a8"
+  },
+  "parameters.json": {
+   "bytes": 2526,
+   "sha256": "d41a0fb7af22b1f43f83cc0f84d52c0e764bb2f8c8ad455b7f103d5b47484e68"
+  },
+  "strategy_HOOD.py": {
+   "bytes": 77104,
+   "sha256": "262e9c9352a58ca04cdcd0ac6eda3c22fdc3783c8b4e6e6cbcbaef2bee0e4cdd"
+  }
+ },
+ "folder_sha256": "0afda71e05cd9d0752f2d367291ea4a98357dfdffcd1b320d09eac443d3dc115",
+ "model": "lstm",
+ "model_hash": "81bb9ed9b5b4dcfd86e867de8fb40c142f9402650abe89d08efe4df0b4fadfd1",
+ "ticker": "HOOD"
+}

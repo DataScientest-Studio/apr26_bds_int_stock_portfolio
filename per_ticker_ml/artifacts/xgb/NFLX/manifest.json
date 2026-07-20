@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 262398,
+   "sha256": "7d9bba2be708290359ff174268ec43eeda42a9d66ac117ac9f1c1d9b005d6fb9"
+  },
+  "metrics.json": {
+   "bytes": 1109,
+   "sha256": "14c0354b278782c242173ee8257b07ba5e753247c7ef889a6fec1ae7c659e498"
+  },
+  "parameters.json": {
+   "bytes": 4661,
+   "sha256": "70afe70988dc114aa5d8b77ea80ffffd1316a4827297c0f0616d8eb1b55e183f"
+  },
+  "strategy_NFLX.py": {
+   "bytes": 387435,
+   "sha256": "9e3e2bef623a2dcc140d81c9ada1316925f78260437765ff7ce068d87348f349"
+  }
+ },
+ "folder_sha256": "a751f260ed24a56344323612860469e9383455fc12230f5d7ce143f2ba80193e",
+ "model": "xgb",
+ "model_hash": "f592f0676081465ef1d3e34e4929e7f1661135546ed796906e8e60084e228800",
+ "ticker": "NFLX"
+}

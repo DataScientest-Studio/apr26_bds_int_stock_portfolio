@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 67426,
+   "sha256": "da72f9e7ba2beba2b25c7f1b20dac0bca437ad9c34e1dbb1399163d472d78fa8"
+  },
+  "metrics.json": {
+   "bytes": 1056,
+   "sha256": "16ea154cc841c36ab96cc627213f8c77fa27880ff18264316b7c9ab63e755295"
+  },
+  "parameters.json": {
+   "bytes": 2783,
+   "sha256": "b50a935675d2e9decfa60aab7614623a83308945fbe44471a01751077b9db2db"
+  },
+  "strategy_RTX.py": {
+   "bytes": 83453,
+   "sha256": "e83400d4da97fcd3e0e91bccefab16e278eb1fe10dfef514200228098f5329af"
+  }
+ },
+ "folder_sha256": "24af4e843c8e7c945979e5401bea808a7c4c7b002c48d9e4106ef811d7b77452",
+ "model": "lstm",
+ "model_hash": "be18cc872e86e83b1082241fed0bea078a16c162fc666b7256d0ba2069ab1414",
+ "ticker": "RTX"
+}

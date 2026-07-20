@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "b45de7c7ac35aec942babae7d2644bf61b585498e8996bcc0bc19cd81777b49b",
+  "oof_log_growth": 0.16622356147426315,
+  "oof_trades": 104,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.498685712378917,
+  "cv_folds": 4,
+  "end_capital": 1023.7284305925149,
+  "losses": 21,
+  "max_drawdown_pct": 18.489851969542126,
+  "model_trades": 44,
+  "net_pnl_usd": 23.728430592514883,
+  "oof_log_growth": 0.16622356147426315,
+  "oof_trades": 104,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.0375716099566588,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 2.372843059251495,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "ABBV",
+  "time_in_market_pct": 57.5342,
+  "trade_floor_met": 1,
+  "trades": 44,
+  "win_rate_pct": 52.27272727272727,
+  "wins": 23
+ },
+ "ticker": "ABBV"
+}

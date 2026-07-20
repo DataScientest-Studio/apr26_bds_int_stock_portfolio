@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76518,
+   "sha256": "c7616e61c4faffabcb2d7a85750a6de6605eee02e09a8472fc2d82fb055a9613"
+  },
+  "metrics.json": {
+   "bytes": 1055,
+   "sha256": "8a5e9ec556c5a4062f13ed9aae70e7a04b028337020343402b735e844e99cc2e"
+  },
+  "parameters.json": {
+   "bytes": 2534,
+   "sha256": "f6262176145d7a8ed0e32fe3014858622b2279c5ffecaa480eec68e748ae5e4c"
+  },
+  "strategy_UAL.py": {
+   "bytes": 76446,
+   "sha256": "375f70a35d6c7ffc392b1a8681f52093eaefdb1a00bfed917ea8ec505af21fa9"
+  }
+ },
+ "folder_sha256": "6f4cf5a5788bc12dae801f22f7c3293449f147df8a7347212835ffb15a9c46d5",
+ "model": "lstm",
+ "model_hash": "0a45fd7a72ec2e77bd2b217f5a527424b23e0a7ee72d5e98217ff3bf3be4de0e",
+ "ticker": "UAL"
+}

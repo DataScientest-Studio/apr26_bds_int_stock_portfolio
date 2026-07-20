@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "923e4a44161378666ce126e192dfcd9aaa5568d71bd054e01b5fcd6aff248a7f",
+  "oof_log_growth": 0.15611865709671763,
+  "oof_trades": 18,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.44534654816386154,
+  "cv_folds": 4,
+  "end_capital": 986.2418135128172,
+  "losses": 1,
+  "max_drawdown_pct": 2.0643729189789233,
+  "model_trades": 1,
+  "net_pnl_usd": -13.758186487182797,
+  "oof_log_growth": 0.15611865709671763,
+  "oof_trades": 18,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.0,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_ONE_TRADE_LOW_EVIDENCE",
+  "return_pct": -1.3758186487182744,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "JNJ",
+  "time_in_market_pct": 1.7123,
+  "trade_floor_met": 1,
+  "trades": 1,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "JNJ"
+}

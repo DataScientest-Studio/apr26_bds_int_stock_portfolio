@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 98011,
+   "sha256": "b167c7dccd37ccf03ca6219301747900fd4be3299ba0cd172e3fe84c71249d64"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "11ba06e50a2e7746affc6a51cd51218fd515b1a7c5b4b37d7fbeac1ba383f4ab"
+  },
+  "parameters.json": {
+   "bytes": 3043,
+   "sha256": "3a043521c661732b634a8aba424778ce845618c447b9fdd0b9f8289d9862a3a2"
+  },
+  "strategy_SBAC.py": {
+   "bytes": 89650,
+   "sha256": "ac1eb27b4333fbb6864768323eff82336dab3396f72b7326ef21fbcc2794f38c"
+  }
+ },
+ "folder_sha256": "d3df138859604e3d40eac19038cdb8a4bdd2ea7e725047dd6ad8ea790ea04f64",
+ "model": "lstm",
+ "model_hash": "be359411ee9e3c94ad2594e945209312111472a4cd4147d3763abb82aa996408",
+ "ticker": "SBAC"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 101524,
+   "sha256": "0882ba0af4990475b2b92502945d5205d3c987cb1fd60de6bff1381c6ff7d685"
+  },
+  "metrics.json": {
+   "bytes": 1062,
+   "sha256": "32d812fcdbf19a3742e023a29d29deecde6bc933008415cf122ad9c75eb96922"
+  },
+  "parameters.json": {
+   "bytes": 3143,
+   "sha256": "260fb08e1e1a7ca7bc57b64dcf00ecf69dca3dc2ee3e0655709731d64d782028"
+  },
+  "strategy_DASH.py": {
+   "bytes": 93246,
+   "sha256": "6cbc55c5f16cff461eda22fc22e1d2fcb6e0293831366b90f868da7d3b2e3f1f"
+  }
+ },
+ "folder_sha256": "b375bac7f4fbaf58b7666cf4f30feb7e842edd479d210ded972923c37322db94",
+ "model": "lstm",
+ "model_hash": "d5916114ce93d85cafed2b42b0927fe3d6a2bbffd07cc8776369120c454e5f4c",
+ "ticker": "DASH"
+}

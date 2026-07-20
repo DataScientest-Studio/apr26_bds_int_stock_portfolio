@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 75379,
+   "sha256": "6bd9bf8b1b1158e2fe2a6952870c78d16b5a90d685f2f5a88340d611f93961a5"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "f33e5f3bca3febed16222d0a9ffe5fa3bd7ff66b1d3d8bbf73f0a931c44c7848"
+  },
+  "parameters.json": {
+   "bytes": 2514,
+   "sha256": "b1437108f4743a6e79b5f77a626705d5a560e01ce3581903426ed805a5b6b26d"
+  },
+  "strategy_MCO.py": {
+   "bytes": 77704,
+   "sha256": "9d37b12c84a4e825e1639c8585ce932369d5edea6eed940b23631bb45f49d18e"
+  }
+ },
+ "folder_sha256": "55ae382d3afd975d3fac70a1c20aebe496c6ff2ca0cfec94984c04f262c5fca4",
+ "model": "lstm",
+ "model_hash": "3dacc6aeb3bdef7f013be1e2cb8bddcc987a5913f6c6b1ea1d0b9f0e3a95bbcf",
+ "ticker": "MCO"
+}

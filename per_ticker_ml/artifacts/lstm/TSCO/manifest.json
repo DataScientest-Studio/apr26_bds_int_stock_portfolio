@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 95610,
+   "sha256": "f94e2859a52ffe7f40cae35dd4ab0820bbbf260cd287dd1f1ef42ddfe5af992c"
+  },
+  "metrics.json": {
+   "bytes": 1065,
+   "sha256": "2bdef87654981b1b46f3d726bc47efecdb4553fca7db4dfcce07e60bc251e981"
+  },
+  "parameters.json": {
+   "bytes": 3046,
+   "sha256": "ae18dbf53a90efb00c60ceffff4a02c42860fd9ac932b77787fe390fcf23eb58"
+  },
+  "strategy_TSCO.py": {
+   "bytes": 88996,
+   "sha256": "6848a2223643f36fdfea5353b4b2df59aeefc862000c623bd0ff062c43cae569"
+  }
+ },
+ "folder_sha256": "244285d0cff1927eea5ed19bddfb88a9ee70ef37b7c65b7c4f0d41153eb618ae",
+ "model": "lstm",
+ "model_hash": "fb73a7a4747b2e1213a29ec24b90effae81dbc7f223f8a840ebcd883478d8cfa",
+ "ticker": "TSCO"
+}

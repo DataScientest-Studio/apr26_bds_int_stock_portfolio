@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "be18cc872e86e83b1082241fed0bea078a16c162fc666b7256d0ba2069ab1414",
+  "oof_log_growth": 0.08677672721519845,
+  "oof_trades": 20,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.47994459076003776,
+  "cv_folds": 4,
+  "end_capital": 2095.9427716903756,
+  "losses": 0,
+  "max_drawdown_pct": 18.590951932139493,
+  "model_trades": 0,
+  "net_pnl_usd": 1095.9427716903758,
+  "oof_log_growth": 0.08677672721519845,
+  "oof_trades": 20,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": 109.59427716903755,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "RTX",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "RTX"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25931,
+   "sha256": "040c37e8b7a12fb519dee0e8f8ae28bf0bc0b1f1e5d4980ba69f23ad5284c0fa"
+  },
+  "metrics.json": {
+   "bytes": 1045,
+   "sha256": "c46ecb5f66f4edbb69f94f2545c047d1a70d43112e72588dedff87be64669d9c"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "c06e15ee02f9e8392299b50bddeb26ed428a70812f5809bc460ba06f397b841b"
+  },
+  "strategy_PNR.py": {
+   "bytes": 187017,
+   "sha256": "8b7db3c312586777c27b0c43815359f743fbe80960e3527980408effb66bbb64"
+  }
+ },
+ "folder_sha256": "20039dd0e88c82186690405d6e068e259f6bfdf571d93457a1e96796e750c564",
+ "model": "xgb",
+ "model_hash": "ccdb06ded1482d3205df829e07b85a781d38250e56ae546384b61a787485ddd3",
+ "ticker": "PNR"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25942,
+   "sha256": "250715502f7d5127ef9b12c4af289ff440f79cfc226f9c09f2072dc5a80abd75"
+  },
+  "metrics.json": {
+   "bytes": 1044,
+   "sha256": "2767d10c9c34fd20c67907694b0ff2453ca9d8d2fd5f868efb63ffa79ac2f5e3"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "b091ea058cd66f847e4c599b3b642e7ac3fb1e93ce2854f6cf2a5ee77739a3ff"
+  },
+  "strategy_NWS.py": {
+   "bytes": 187000,
+   "sha256": "c22dcde8256f8cd0a63779d4644fd042e38651b18afd8c428194a6a9d874316b"
+  }
+ },
+ "folder_sha256": "4be6182bed9ddd26c7a235ab75c9bd29c4c343e9ae9a34adee762173c81c4cdc",
+ "model": "xgb",
+ "model_hash": "436316541c7e7e8b50b359de6983f0abd6076db846ac59115545d6db42e8be6a",
+ "ticker": "NWS"
+}

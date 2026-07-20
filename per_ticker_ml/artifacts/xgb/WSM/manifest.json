@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 46043,
+   "sha256": "07ddb2005f3ed107ac43acf43be38dd88f93de0629f1a6d4572123baac9abd1f"
+  },
+  "metrics.json": {
+   "bytes": 1105,
+   "sha256": "faeb4086548e4a1a9db38fb5ab9b60c4841a57aafc07f154020138c6d44ff227"
+  },
+  "parameters.json": {
+   "bytes": 4084,
+   "sha256": "d7d35887c694ee31b20ef7a8511bfb82868ef9101d70e85633d9986d7ef5f440"
+  },
+  "strategy_WSM.py": {
+   "bytes": 93152,
+   "sha256": "8c4ea6118a31c8764577fd2a7e85e5819b6cf3d1e4d327d7b3dcf20d8ffa775d"
+  }
+ },
+ "folder_sha256": "0d08f6fc38096ba8f14c0283cfdcf4b9268f5c0db0a88e3ef42b170415978d61",
+ "model": "xgb",
+ "model_hash": "d9e700439cf9475c3c7069dd242e83f9af1f4e3d8d8914c4e3d46c99a72079bd",
+ "ticker": "WSM"
+}

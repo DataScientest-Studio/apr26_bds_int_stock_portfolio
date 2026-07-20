@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "84504f09972c85888320a98fea5a636b141869d270a9ae6968574f32c8998be6",
+  "oof_log_growth": 0.41579078867900277,
+  "oof_trades": 116,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5778947086958258,
+  "cv_folds": 4,
+  "end_capital": 1063.4341141757272,
+  "losses": 28,
+  "max_drawdown_pct": 12.242058048830776,
+  "model_trades": 50,
+  "net_pnl_usd": 63.434114175727245,
+  "oof_log_growth": 0.41579078867900277,
+  "oof_trades": 116,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.1154955936923105,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 6.343411417572731,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "BRK.B",
+  "time_in_market_pct": 56.5068,
+  "trade_floor_met": 1,
+  "trades": 50,
+  "win_rate_pct": 44.0,
+  "wins": 22
+ },
+ "ticker": "BRK.B"
+}

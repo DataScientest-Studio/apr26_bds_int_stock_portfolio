@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "375b8c80c2f712bc73484ac8561d00a1610b1f8015f7c08e519aa2a211c0ca55",
+  "oof_log_growth": 0.7281909400011903,
+  "oof_trades": 82,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5462009650150279,
+  "cv_folds": 4,
+  "end_capital": 749.2109815407989,
+  "losses": 21,
+  "max_drawdown_pct": 41.57649958414478,
+  "model_trades": 35,
+  "net_pnl_usd": -250.7890184592011,
+  "oof_log_growth": 0.7281909400011903,
+  "oof_trades": 82,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.6278451632944722,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -25.07890184592011,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "PCAR",
+  "time_in_market_pct": 43.6644,
+  "trade_floor_met": 1,
+  "trades": 35,
+  "win_rate_pct": 40.0,
+  "wins": 14
+ },
+ "ticker": "PCAR"
+}

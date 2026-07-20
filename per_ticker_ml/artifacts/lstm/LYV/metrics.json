@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "fceca2f761fecc53ad68d2bb0a9ca21dda09d3b0564889a73c4f9c17d304d233",
+  "oof_log_growth": 0.23538356929808546,
+  "oof_trades": 27,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.48513983047586495,
+  "cv_folds": 4,
+  "end_capital": 1311.5574941543305,
+  "losses": 11,
+  "max_drawdown_pct": 12.098447258047411,
+  "model_trades": 23,
+  "net_pnl_usd": 311.55749415433047,
+  "oof_log_growth": 0.23538356929808546,
+  "oof_trades": 27,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.8186386975646816,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 31.155749415433043,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "LYV",
+  "time_in_market_pct": 30.4795,
+  "trade_floor_met": 1,
+  "trades": 23,
+  "win_rate_pct": 52.17391304347826,
+  "wins": 12
+ },
+ "ticker": "LYV"
+}

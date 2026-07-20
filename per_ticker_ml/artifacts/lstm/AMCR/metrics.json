@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "2e8b49bf4df0e12dcf1e1c38979a70303fb5d2518d39529d5111847d72253f61",
+  "oof_log_growth": 0.10917969347110384,
+  "oof_trades": 19,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.43814532081061236,
+  "cv_folds": 4,
+  "end_capital": 983.6771790887788,
+  "losses": 11,
+  "max_drawdown_pct": 20.868864308900843,
+  "model_trades": 18,
+  "net_pnl_usd": -16.322820911221243,
+  "oof_log_growth": 0.10917969347110384,
+  "oof_trades": 19,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.9516372516630346,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -1.632282091122128,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "AMCR",
+  "time_in_market_pct": 22.774,
+  "trade_floor_met": 1,
+  "trades": 18,
+  "win_rate_pct": 38.88888888888889,
+  "wins": 7
+ },
+ "ticker": "AMCR"
+}

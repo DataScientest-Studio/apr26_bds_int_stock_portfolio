@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 61167,
+   "sha256": "323e44d9aae3a1f90333342a961173d6bc498680802ee15025c1b8709f85bb01"
+  },
+  "metrics.json": {
+   "bytes": 1076,
+   "sha256": "02b2d208c3c0a5670095218e6ffe06c84a6ac9a608c77c9703582de539d75a84"
+  },
+  "parameters.json": {
+   "bytes": 2521,
+   "sha256": "dd0701da0b960150afc7c78ee02cf3d842ba9312c9b0ee0f3d688010a7b28f40"
+  },
+  "strategy_PFG.py": {
+   "bytes": 77042,
+   "sha256": "e0aaafc5323643782c621e62a8595207c1f3fecc698fb2aac688855952863ba0"
+  }
+ },
+ "folder_sha256": "ca77c57109363ed474ea28242decd29a82f372c26b255ff53de726a54f3b9f55",
+ "model": "lstm",
+ "model_hash": "04ee9d83154f771a42c54a7051e0f36ab622ed9b679104a3e64f6f53fd7240c9",
+ "ticker": "PFG"
+}

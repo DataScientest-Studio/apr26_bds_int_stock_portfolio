@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 30382,
+   "sha256": "dce6d58353a20e6a67be0831752ee8396b1159598b52576734591100b96f6005"
+  },
+  "metrics.json": {
+   "bytes": 1044,
+   "sha256": "f7f3728046b258e4b901a3b7d3c4c9eeeaf2e1e83fc34c39aded641aa7b68fc7"
+  },
+  "parameters.json": {
+   "bytes": 5739,
+   "sha256": "eff06f5d6c7c5449a6fab28d81a912cd1cde7aa050267180d45364c52559ea47"
+  },
+  "strategy_DAL.py": {
+   "bytes": 187799,
+   "sha256": "2e8c64cd6c1b27ce2137ed903ef4b53c7003f29cf3beb994304802e75d9bebc7"
+  }
+ },
+ "folder_sha256": "49480fd7f7b2ffa67824fde5fae46b0ca78a2062b44ec1afdcf3fca647243fc1",
+ "model": "xgb",
+ "model_hash": "b3ce9bd39ae617334630e5878cb0cf852bba169545b0b1952b02a70e78f7a838",
+ "ticker": "DAL"
+}

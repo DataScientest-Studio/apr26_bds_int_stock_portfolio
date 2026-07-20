@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "b3eaecd5e9932461a51d8d5c010a5a8c8ea56c90a8f59e9147f40ea12e974d3b",
+  "oof_log_growth": 0.9860089522486012,
+  "oof_trades": 94,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5361013127438718,
+  "cv_folds": 4,
+  "end_capital": 611.9307864314478,
+  "losses": 15,
+  "max_drawdown_pct": 51.760986926613796,
+  "model_trades": 26,
+  "net_pnl_usd": -388.0692135685522,
+  "oof_log_growth": 0.9860089522486012,
+  "oof_trades": 94,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.6216619086359662,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -38.80692135685522,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "LULU",
+  "time_in_market_pct": 35.274,
+  "trade_floor_met": 1,
+  "trades": 26,
+  "win_rate_pct": 42.30769230769231,
+  "wins": 11
+ },
+ "ticker": "LULU"
+}

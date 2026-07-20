@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 50982,
+   "sha256": "71a544c6dfa8e0fc472f1e34df4be3fa8f74256b9cc0f971543a6bc3c165b8e6"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "71c9ac84632962d0be44ca02b8974088c65eeb75cd75961601dd0c470b64a25f"
+  },
+  "parameters.json": {
+   "bytes": 4821,
+   "sha256": "aa88c497a0c8ced9602267c145d612ea22929af45db6c1b74d457e0eb0d4d02b"
+  },
+  "strategy_WMB.py": {
+   "bytes": 200534,
+   "sha256": "836f13c87e4b5d18df4ededbff3cb2a283986b03d3b2b6f74a323c05bdff6fa3"
+  }
+ },
+ "folder_sha256": "ecc992dd30a4e7c5c56e784a50bcfd625f8601b58e75507395a6832f38cd0eb3",
+ "model": "xgb",
+ "model_hash": "907320698b18ac671c64d7b41c0ff11303e3b4d7331117ac242f1f9335c89621",
+ "ticker": "WMB"
+}

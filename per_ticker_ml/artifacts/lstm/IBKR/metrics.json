@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "a43197a59c64dd47d12636f4acf6f56425495d6664dab280f5446ebec4f7bae2",
+  "oof_log_growth": 0.3008966391781374,
+  "oof_trades": 87,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.42704441284777106,
+  "cv_folds": 4,
+  "end_capital": 1588.1309974031776,
+  "losses": 15,
+  "max_drawdown_pct": 13.725209353337991,
+  "model_trades": 34,
+  "net_pnl_usd": 588.1309974031776,
+  "oof_log_growth": 0.3008966391781374,
+  "oof_trades": 87,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.7741128872708107,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 58.81309974031777,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "IBKR",
+  "time_in_market_pct": 37.1575,
+  "trade_floor_met": 1,
+  "trades": 34,
+  "win_rate_pct": 55.88235294117647,
+  "wins": 19
+ },
+ "ticker": "IBKR"
+}

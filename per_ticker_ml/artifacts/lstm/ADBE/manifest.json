@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 89730,
+   "sha256": "71b51c75622c8c4ae6d4b7a98c9c1687d66d601e4126ca9723ce076287fb79f9"
+  },
+  "metrics.json": {
+   "bytes": 1077,
+   "sha256": "4c10c7984149b3c0c6fcb604a32633e610925f4a19386f66dafc8a9006ececad"
+  },
+  "parameters.json": {
+   "bytes": 2911,
+   "sha256": "5dbba9a55fbbb312d8c38bbd19375f4f1a382aadea6932a8a8a4b7056273d566"
+  },
+  "strategy_ADBE.py": {
+   "bytes": 86980,
+   "sha256": "27bfcfb1fdc2a34ba07f37fe1d0cae0c1cf06178e8e37307bae4f7a157c6c645"
+  }
+ },
+ "folder_sha256": "d0a3bec25b50b7931e13fd767ee8895ba898e9b84060d7ed302de4a5c9bfe59a",
+ "model": "lstm",
+ "model_hash": "5252a0d8143d487366c439d33d5b170c73e50dc08c73ebf8b47aab9e84dfd1e8",
+ "ticker": "ADBE"
+}

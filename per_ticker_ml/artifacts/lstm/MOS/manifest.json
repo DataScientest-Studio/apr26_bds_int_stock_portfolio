@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 87218,
+   "sha256": "21866d07cb694fc7f6a04d5991e2c2b70284e98d35eb374e83643459c0299e22"
+  },
+  "metrics.json": {
+   "bytes": 1072,
+   "sha256": "7c79d3f5afafd8f2e67a4b20b09a2b8c22e572739dd6e415fd7bcf80ffefe963"
+  },
+  "parameters.json": {
+   "bytes": 2789,
+   "sha256": "a7247118ab1b60feb1199d43d3da123544d5d76d9721d833d9fdd9a3525d3e2e"
+  },
+  "strategy_MOS.py": {
+   "bytes": 83635,
+   "sha256": "ebe771e4fb6e0c53de023aafffaf4bab76c046abaed1806122d7f2b7b8c07322"
+  }
+ },
+ "folder_sha256": "a6b244dafb0bbd7580546abc2e2a28e112e04eb9544338a57bddd1bf2afa74d3",
+ "model": "lstm",
+ "model_hash": "ec6692f0cdcfc2d2004722e529658bb7d94a8126538d20aec4544e29cc259e42",
+ "ticker": "MOS"
+}

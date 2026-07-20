@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 60116,
+   "sha256": "1a10a9ee376124dd7e346600940868673a6952ea464771465628e2c3bde95100"
+  },
+  "metrics.json": {
+   "bytes": 1054,
+   "sha256": "83c9e4f31f7792b1c73c8a7743dfcd107dfbd95904587ec873317b7911fe1719"
+  },
+  "parameters.json": {
+   "bytes": 2510,
+   "sha256": "39241cea7ceedab2c5d88f7a7ef5c8d5c1ec98d9ce6c8c927754eab3946a3708"
+  },
+  "strategy_HIG.py": {
+   "bytes": 76959,
+   "sha256": "5a579f15b5610418afdebb20bc4324e2ed3e1b12d999024bd638876c5d25d773"
+  }
+ },
+ "folder_sha256": "7835b3c3701372e1b0fb76a19084f757c53132dd8797a7e9b15a132a63ba41be",
+ "model": "lstm",
+ "model_hash": "af2b0e78119ccf18748de4ecd15a1b37dfd62111ad20bf2244b0d6573af16425",
+ "ticker": "HIG"
+}

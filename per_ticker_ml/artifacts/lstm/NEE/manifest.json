@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 81440,
+   "sha256": "35aae9bd1cca1c5761967eb83737ef0f00dcc8bf50177fba4a5468b83075de8f"
+  },
+  "metrics.json": {
+   "bytes": 1080,
+   "sha256": "186f9d23163256fd6012d5f9de3617baca7255c30c3334ae86560261089dc04a"
+  },
+  "parameters.json": {
+   "bytes": 2634,
+   "sha256": "1a5fe43f407e11bfed214aa3eb621e028ea37eb36b2cd89da9a682c73e72c7c7"
+  },
+  "strategy_NEE.py": {
+   "bytes": 80690,
+   "sha256": "c0809af33d2b57728516bd60e0236e1156356a7785e6539c3c735eb57bc54c7d"
+  }
+ },
+ "folder_sha256": "fc890b1815b75a34a489de88c503ea1b95770cb99b1037f8b7ad424ccdb00dd0",
+ "model": "lstm",
+ "model_hash": "d34ed8ae7c8582b8a7a104e623a3a4e2105800847e19aaf4933bf5385f584d4a",
+ "ticker": "NEE"
+}

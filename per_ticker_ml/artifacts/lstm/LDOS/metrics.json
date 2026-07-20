@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "f0d54ce52b490dfcc0f9254ad76bfa067156872af9374c4f8bcedebe452ebd35",
+  "oof_log_growth": 0.6148434116159057,
+  "oof_trades": 92,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5927064346970673,
+  "cv_folds": 4,
+  "end_capital": 1032.253674244207,
+  "losses": 8,
+  "max_drawdown_pct": 13.42265393248244,
+  "model_trades": 15,
+  "net_pnl_usd": 32.253674244207104,
+  "oof_log_growth": 0.6148434116159057,
+  "oof_trades": 92,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.101067077388625,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 3.2253674244207,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "LDOS",
+  "time_in_market_pct": 19.863,
+  "trade_floor_met": 1,
+  "trades": 15,
+  "win_rate_pct": 46.666666666666664,
+  "wins": 7
+ },
+ "ticker": "LDOS"
+}

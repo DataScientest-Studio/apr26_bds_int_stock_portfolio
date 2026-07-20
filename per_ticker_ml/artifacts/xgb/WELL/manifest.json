@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 36282,
+   "sha256": "ddd7d5af752d26b363c580d56479d9445e75529a705002309b8ea0218d8b3f83"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "79ab4eac80fc9a07b1975ffd828802bea5741a7c261858a8788a8107b82b1a5a"
+  },
+  "parameters.json": {
+   "bytes": 4086,
+   "sha256": "1a3748eb8738697fe729c034b9d47725df4a01559016aed8cff6f290969ee9ea"
+  },
+  "strategy_WELL.py": {
+   "bytes": 194572,
+   "sha256": "7b8c2ecfa222adfcd3adce5a002a97ebc721b8070351f493a7fda186c7cf240f"
+  }
+ },
+ "folder_sha256": "38b4e3f87589f33f09aca5aa135591d94448840d8550917afdbd44651e9cc20e",
+ "model": "xgb",
+ "model_hash": "be2d62ce5120c0ec0e4392ae3f7d8c191f5587b940b961f35c807761a074e960",
+ "ticker": "WELL"
+}

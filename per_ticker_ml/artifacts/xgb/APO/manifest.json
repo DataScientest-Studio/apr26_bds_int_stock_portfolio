@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 48505,
+   "sha256": "96733854ffc5382baa56dad1740d3cfa53d9e9dd118e552c7620af2342268835"
+  },
+  "metrics.json": {
+   "bytes": 1106,
+   "sha256": "7d8c16fc403dd55ba50ddd53b75fab2c41f4867dcecf45b895cd4e181506d2c5"
+  },
+  "parameters.json": {
+   "bytes": 4082,
+   "sha256": "96edcd90f24ec6f9a16c872bf06958868944fdb234105e700e93acc548ef6718"
+  },
+  "strategy_APO.py": {
+   "bytes": 114340,
+   "sha256": "c272d9a5289f316a91977d7d0da96905f245fa74f44b4e49f937111c8a8969c6"
+  }
+ },
+ "folder_sha256": "c809daa2221b2c39079796ae3e63a047b3e75934aea76ec938ed0bfa3f46f371",
+ "model": "xgb",
+ "model_hash": "b13309a4d4a68873574cb912388675ba5a8d913ad1ea208a3b430d878b970255",
+ "ticker": "APO"
+}

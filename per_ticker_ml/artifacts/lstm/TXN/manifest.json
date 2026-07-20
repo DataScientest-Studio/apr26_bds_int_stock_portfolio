@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 60641,
+   "sha256": "a49e6fa988e6af4de923faf00eeda357d0bb223a70ccb0d32d4287e57f5d10c1"
+  },
+  "metrics.json": {
+   "bytes": 1055,
+   "sha256": "9d3a4aa21efda79521345d61b62bab746cf23b75d5f8f27d5b0ed9fa4224130b"
+  },
+  "parameters.json": {
+   "bytes": 2517,
+   "sha256": "d7576d18266ccd143f7755856187ed88e9635c7f2b2cf8568428cff92e7d4090"
+  },
+  "strategy_TXN.py": {
+   "bytes": 77309,
+   "sha256": "e2163dad65082bb9a4becf2a7280109dda7e24cdc2a658591006771714cd40af"
+  }
+ },
+ "folder_sha256": "73e4e7b5bf40acf6dcd1299ce355417c7bb8c6c7e7629831087a36b354c009a9",
+ "model": "lstm",
+ "model_hash": "08b2c09839da024ecb1e6462bcbfebdff762e5b355ad6063929d4d6a91979456",
+ "ticker": "TXN"
+}

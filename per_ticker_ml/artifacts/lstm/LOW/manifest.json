@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 100477,
+   "sha256": "ad0cb1b95288a8f22ec66492d4702a10ed3c7295d2227d950a397f62b0274ded"
+  },
+  "metrics.json": {
+   "bytes": 1074,
+   "sha256": "ce50169251504edc742ddd677d137f97fd8485f08ad72dbd4f10456d1fe83e8f"
+  },
+  "parameters.json": {
+   "bytes": 3160,
+   "sha256": "25c9c5e92f2453e3563ecb296a84a5f254e6930cd58ae84d5ad9704c70c81412"
+  },
+  "strategy_LOW.py": {
+   "bytes": 93633,
+   "sha256": "3a58d1f54b9699f72775a7500664d48264453ca3cf7158ff0e9cc017ea27859a"
+  }
+ },
+ "folder_sha256": "7b8b6c6e0a757a53e9af299b35625020016f76b6a363326baf4e5c3381354d9a",
+ "model": "lstm",
+ "model_hash": "4beffa541391691eb91338e6f4656317494a4f988d52e658010468fdbd001ce9",
+ "ticker": "LOW"
+}

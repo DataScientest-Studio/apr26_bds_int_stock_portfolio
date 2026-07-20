@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 39159,
+   "sha256": "2674c5a23fd5e57e26017c380f109ab4b27184fef497b2d5935be422d4bcd0c8"
+  },
+  "metrics.json": {
+   "bytes": 1108,
+   "sha256": "fc95e793619e71e4a003f64a0a8aa0546a97b8a028fd743f0814af5e7c5a0219"
+  },
+  "parameters.json": {
+   "bytes": 4655,
+   "sha256": "c8ecd730456a7547470734615b7558c0bcc521e6f33dd3072eded09c46cf74be"
+  },
+  "strategy_COHR.py": {
+   "bytes": 195389,
+   "sha256": "77ecd598e82bdf5a7b0f938f8bcf7c2e89a83311031fbf0380d41489d2737ed2"
+  }
+ },
+ "folder_sha256": "4215a17ef6b2f6d29f983bcd2955b98e977396486eb1155ee07510cc2a9c3ecc",
+ "model": "xgb",
+ "model_hash": "7a95f07b6b6ff251eb2e51dcfbb23024dc51e06a14d038d17652ed54a1c4f98b",
+ "ticker": "COHR"
+}

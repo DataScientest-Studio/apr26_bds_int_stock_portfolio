@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 100404,
+   "sha256": "4a958a96e867ab6b70b1451ed46536b48d400dd93c50d13a21600ac15177e645"
+  },
+  "metrics.json": {
+   "bytes": 1080,
+   "sha256": "ec96dba5a5029dccb1baf71ce861485be9be90b937f01b03083f5eeda65fcbcb"
+  },
+  "parameters.json": {
+   "bytes": 3151,
+   "sha256": "838f86db9b1a49937d0c250e4ff31b2c8a310edc9cfce55616c92be79664e204"
+  },
+  "strategy_AZO.py": {
+   "bytes": 93233,
+   "sha256": "9618791d9c8db64bbbe291c25ad753908bb86873bc5031b8ff5d28152f855413"
+  }
+ },
+ "folder_sha256": "138f93ec5505e74c65dfb0773b545c7edccd5b73d8ce71d6d69f630c1d95513f",
+ "model": "lstm",
+ "model_hash": "ce0d1294954da566d905de72723f9d394d8fe36366abc80da33e36593503a1e7",
+ "ticker": "AZO"
+}

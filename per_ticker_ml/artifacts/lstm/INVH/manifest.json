@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76716,
+   "sha256": "4179ec34af31b17adc170b52800b67d13482bd7478a8bcb2092bf9238c129838"
+  },
+  "metrics.json": {
+   "bytes": 1069,
+   "sha256": "c9cf370d5708b13871ecee410511606d38e935d5a87bd5257b6909514253e1c5"
+  },
+  "parameters.json": {
+   "bytes": 2527,
+   "sha256": "044693e181c230b83c5bb4e642ed72ad820537a9abc6434386785f00749ceca7"
+  },
+  "strategy_INVH.py": {
+   "bytes": 77861,
+   "sha256": "b3022c2cbcf76db8d61410ef0a35eed991f4eff14f966c069ed1b548714bc27e"
+  }
+ },
+ "folder_sha256": "7115d713eb15512f847407d47fc587c75c73dc4c7873488dfa7cf51e91e1e6a7",
+ "model": "lstm",
+ "model_hash": "124f38258157e7803ebf19813905dedb0cdb952e7e719ca288512749efa9d20d",
+ "ticker": "INVH"
+}

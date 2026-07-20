@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76238,
+   "sha256": "fa3ca62e347c37ac14e350d19751f1a777a46267252f60a3d4477c74c8be784a"
+  },
+  "metrics.json": {
+   "bytes": 1078,
+   "sha256": "26cb24de08ed37c9d99685860f41c7176b33f4b82810ac2d9efb3bf06e006b91"
+  },
+  "parameters.json": {
+   "bytes": 2511,
+   "sha256": "b0b1a3536db81fa092dbfc3bd5e3a779ab844afe05d775f0846e73ee62826285"
+  },
+  "strategy_XOM.py": {
+   "bytes": 77204,
+   "sha256": "89b45f4d6696540a0390d0fd5c7f0beedf2fe7e4d6ef4278fd8c30c9448b79bd"
+  }
+ },
+ "folder_sha256": "9b64169e718335a396d9c62fce6bfa8abeb8d72896dc41e5b1451ad10fd4c8e6",
+ "model": "lstm",
+ "model_hash": "8b6054f518f16b00cbc01c9d5ba7c98b4325de52f99e8c97da6180e1a8cb8573",
+ "ticker": "XOM"
+}

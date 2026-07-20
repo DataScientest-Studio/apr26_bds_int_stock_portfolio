@@ -1,0 +1,42 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "fold_spread_relaxed": false,
+  "kelly_fraction": null,
+  "model_hash": "ed3430eaf2f2659ff169174d816effdf500d21ca343055e49217e26f1e0d5c9c",
+  "oof_log_growth": 1.1732437595811713,
+  "oof_trades": 523,
+  "theta_boundary": false,
+  "theta_entry": 0.42,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "xgb",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.415252510435793,
+  "cv_folds": 4,
+  "end_capital": 2517.9932822720425,
+  "losses": 134,
+  "max_drawdown_pct": 28.586138539060222,
+  "model_trades": 260,
+  "net_pnl_usd": 1517.9932822720425,
+  "oof_log_growth": 1.1732437595811713,
+  "oof_trades": 523,
+  "oos_window": "2024-01-02 -> 2026-05-29",
+  "profit_factor": 1.2311320055249162,
+  "recipe_hash": "447745d1059e560f",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 151.79932822720423,
+  "start_capital": 1000.0,
+  "theta_entry": 0.42,
+  "ticker": "ANET",
+  "time_in_market_pct": 56.6954,
+  "trade_floor_met": 1,
+  "trades": 260,
+  "win_rate_pct": 48.46153846153846,
+  "wins": 126
+ },
+ "ticker": "ANET"
+}

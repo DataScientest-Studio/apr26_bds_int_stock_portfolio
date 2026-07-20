@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "6bf363c206af5d0b7bbb49c99f42e876921ce9726811b2e36e0648d932cbeead",
+  "oof_log_growth": 0.1880000520333883,
+  "oof_trades": 11,
+  "theta_entry": 0.6,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5145990730658071,
+  "cv_folds": 4,
+  "end_capital": 1159.163869897178,
+  "losses": 4,
+  "max_drawdown_pct": 4.748719759592604,
+  "model_trades": 10,
+  "net_pnl_usd": 159.16386989717807,
+  "oof_log_growth": 0.1880000520333883,
+  "oof_trades": 11,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 2.5370351148262724,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 15.9163869897178,
+  "start_capital": 1000.0,
+  "theta_entry": 0.6,
+  "ticker": "NOC",
+  "time_in_market_pct": 10.274,
+  "trade_floor_met": 1,
+  "trades": 10,
+  "win_rate_pct": 60.0,
+  "wins": 6
+ },
+ "ticker": "NOC"
+}

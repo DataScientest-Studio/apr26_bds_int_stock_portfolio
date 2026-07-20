@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "364d74526341c1ade17f03ee1c06bba886a5a5aea24c0557b2b07bc2ebeca55b",
+  "oof_log_growth": 0.5787789040521334,
+  "oof_trades": 84,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4270297489127388,
+  "cv_folds": 4,
+  "end_capital": 2787.5649164622514,
+  "losses": 28,
+  "max_drawdown_pct": 31.266443352504712,
+  "model_trades": 53,
+  "net_pnl_usd": 1787.5649164622514,
+  "oof_log_growth": 0.5787789040521334,
+  "oof_trades": 84,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.7392357273931218,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 178.75649164622516,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "DELL",
+  "time_in_market_pct": 60.7877,
+  "trade_floor_met": 1,
+  "trades": 53,
+  "win_rate_pct": 47.16981132075472,
+  "wins": 25
+ },
+ "ticker": "DELL"
+}

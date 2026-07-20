@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "b51f166ffca9775dbabec1604d94fee3eba24d18de4033ec91273c3486510621",
+  "oof_log_growth": 0.03191277611561695,
+  "oof_trades": 12,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 1,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4302417375845966,
+  "cv_folds": 4,
+  "end_capital": 807.9970836877992,
+  "losses": 0,
+  "max_drawdown_pct": 49.24180513938074,
+  "model_trades": 0,
+  "net_pnl_usd": -192.0029163122008,
+  "oof_log_growth": 0.03191277611561695,
+  "oof_trades": 12,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": null,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "HODL_FALLBACK_NO_MODEL_TRADES",
+  "return_pct": -19.20029163122008,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "SWK",
+  "time_in_market_pct": 100.0,
+  "trade_floor_met": 1,
+  "trades": 0,
+  "win_rate_pct": 0.0,
+  "wins": 0
+ },
+ "ticker": "SWK"
+}

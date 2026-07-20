@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "9f1e9d1467525c5e4eb11bec90abe20b6605875ee7a07661d961948289ce966a",
+  "oof_log_growth": 0.3931184603018364,
+  "oof_trades": 84,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5418422519091206,
+  "cv_folds": 4,
+  "end_capital": 759.8861571807469,
+  "losses": 23,
+  "max_drawdown_pct": 33.0858848666167,
+  "model_trades": 36,
+  "net_pnl_usd": -240.11384281925314,
+  "oof_log_growth": 0.3931184603018364,
+  "oof_trades": 84,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.6780094157081709,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -24.01138428192532,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "TMO",
+  "time_in_market_pct": 40.7534,
+  "trade_floor_met": 1,
+  "trades": 36,
+  "win_rate_pct": 36.11111111111111,
+  "wins": 13
+ },
+ "ticker": "TMO"
+}

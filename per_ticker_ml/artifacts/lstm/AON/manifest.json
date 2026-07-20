@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 81236,
+   "sha256": "96a31f7248bdfc4ef1d44f0e365c54da2c5a0e66817811a341e1bc5bf1c54dec"
+  },
+  "metrics.json": {
+   "bytes": 1059,
+   "sha256": "1850011a8e576b149e41337f786bb656321bcbab5bfcb400de95af4a82a145fe"
+  },
+  "parameters.json": {
+   "bytes": 2641,
+   "sha256": "0c6da547c2fe519491480bdc7541995a4f11571ccfd3556eae72ea26190bf7e0"
+  },
+  "strategy_AON.py": {
+   "bytes": 80935,
+   "sha256": "30e8fd569e478f15585c30c15dc9da0865a9b9a42017c29445ca1005311d7e32"
+  }
+ },
+ "folder_sha256": "e9cb6da1083b12fc0934af16d359df465943ad3eeeb92af9d29c70be6b439a9d",
+ "model": "lstm",
+ "model_hash": "5a83085d7c91cb9cc64e38ecc6a56fee24fcf9b479420814aa7bd12abd51c2a4",
+ "ticker": "AON"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 85329,
+   "sha256": "cd738463c32eb4b3a3988031b2ea6354b575590d5ba05687601a3bf507f6fa52"
+  },
+  "metrics.json": {
+   "bytes": 1081,
+   "sha256": "94e4296eeffc56350f7b2cbfcdd69005cc353b860285933a2a8cb1153323e2dc"
+  },
+  "parameters.json": {
+   "bytes": 2791,
+   "sha256": "07065f56c895c34f06f2139748bb86987eb75cb07268a416fd865cfa0538b277"
+  },
+  "strategy_JBHT.py": {
+   "bytes": 82540,
+   "sha256": "5e00606a3e85edb102465366cebd50131b6c88f90aad80e5fc7117ea4e1ebe6d"
+  }
+ },
+ "folder_sha256": "af531f776cb77821af8ebc0f236d8aaeb260a52df3394e873c33f9c711873a64",
+ "model": "lstm",
+ "model_hash": "b25d6ef52b42c39c3620d1cf60849faa2a0e8db8ab569dc945d66099351e5295",
+ "ticker": "JBHT"
+}

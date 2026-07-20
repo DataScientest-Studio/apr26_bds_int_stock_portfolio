@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "27557482fdeb4f9fd98d5e0dd997c155d8fe864a2e3785f29b13c3438d4e8bb3",
+  "oof_log_growth": 0.31264293949484645,
+  "oof_trades": 12,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5143329398142354,
+  "cv_folds": 4,
+  "end_capital": 881.3495704233693,
+  "losses": 6,
+  "max_drawdown_pct": 19.741212055752683,
+  "model_trades": 10,
+  "net_pnl_usd": -118.6504295766307,
+  "oof_log_growth": 0.31264293949484645,
+  "oof_trades": 12,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.4202859346349579,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -11.865042957663075,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "CMCSA",
+  "time_in_market_pct": 11.3014,
+  "trade_floor_met": 1,
+  "trades": 10,
+  "win_rate_pct": 40.0,
+  "wins": 4
+ },
+ "ticker": "CMCSA"
+}

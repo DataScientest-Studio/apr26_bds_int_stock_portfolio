@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 34169,
+   "sha256": "3a07bfff30cf175a9ba869676c615dbb0da826182b3ccc2013a91f847215c591"
+  },
+  "metrics.json": {
+   "bytes": 1104,
+   "sha256": "0bffad289f713665088045202f031ee461f69fba14b45fc9f0519a9dcb954d4c"
+  },
+  "parameters.json": {
+   "bytes": 5328,
+   "sha256": "86ecb253e6e0928c7dfb72cbf33ad924e44a9eabb255cd6d50a150ffe8fba23d"
+  },
+  "strategy_ACGL.py": {
+   "bytes": 193261,
+   "sha256": "f8fed9dad7b7b46dbed128fc1771f5ecae3859ffa933547638eaafa66994c710"
+  }
+ },
+ "folder_sha256": "9ba53ff905c8b1e5fb4ad67a94f78e3b65e99494ab6e32668ab857fd5e4fe699",
+ "model": "xgb",
+ "model_hash": "aec832c958912e7f22e1e3a7a712c620be0ce160684cde18dc3c7f7524d1bb87",
+ "ticker": "ACGL"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 68345,
+   "sha256": "b96c1255c267d47f5d3ca353090b30791e3edb230382a508b9d5d4e0a126137c"
+  },
+  "metrics.json": {
+   "bytes": 1105,
+   "sha256": "361c53efa691bc6283c8a61d91b2072ea455dfeca3b1052f8c074fa1506948a7"
+  },
+  "parameters.json": {
+   "bytes": 4618,
+   "sha256": "79c125f65303fc3ce384bed0d7b0f65fa0a1db1d1004b7fe91701a7c5d7fd6ec"
+  },
+  "strategy_PODD.py": {
+   "bytes": 292986,
+   "sha256": "5bc190afb58ab5c97fb3f98852bb7b32c2288b0195e49fc711d48877025781a1"
+  }
+ },
+ "folder_sha256": "254db4596c71075523e3b69ec58d7d2e4265117d0d110aa43e0f2eab05552b1c",
+ "model": "xgb",
+ "model_hash": "d84ddce57d2ac286af98530d228a3118f37991e1ba9b322412ed85c315d8b3c6",
+ "ticker": "PODD"
+}

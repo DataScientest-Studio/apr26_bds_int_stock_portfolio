@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "487a17b988fc8f180e986289652dfd8b82b9e19a1752acc201b92928be0dba5f",
+  "oof_log_growth": 1.1053328593629697,
+  "oof_trades": 37,
+  "theta_entry": 0.54,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.3884259081436397,
+  "cv_folds": 4,
+  "end_capital": 1028.607866535059,
+  "losses": 2,
+  "max_drawdown_pct": 9.454286439976052,
+  "model_trades": 3,
+  "net_pnl_usd": 28.607866535058974,
+  "oof_log_growth": 1.1053328593629697,
+  "oof_trades": 37,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.3503005770326983,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 2.860786653505887,
+  "start_capital": 1000.0,
+  "theta_entry": 0.54,
+  "ticker": "OXY",
+  "time_in_market_pct": 2.911,
+  "trade_floor_met": 1,
+  "trades": 3,
+  "win_rate_pct": 33.33333333333333,
+  "wins": 1
+ },
+ "ticker": "OXY"
+}

@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "d8c03749f42163ed9aedefbc4f328f67f9c08502fe69bd9ca34051e2d8b66c88",
+  "oof_log_growth": 0.214422970229934,
+  "oof_trades": 82,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.46930604307073553,
+  "cv_folds": 4,
+  "end_capital": 1090.7816182023223,
+  "losses": 16,
+  "max_drawdown_pct": 28.85123868354122,
+  "model_trades": 31,
+  "net_pnl_usd": 90.7816182023223,
+  "oof_log_growth": 0.214422970229934,
+  "oof_trades": 82,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.1627063769514117,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 9.078161820232221,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "NTAP",
+  "time_in_market_pct": 37.3288,
+  "trade_floor_met": 1,
+  "trades": 31,
+  "win_rate_pct": 48.38709677419355,
+  "wins": 15
+ },
+ "ticker": "NTAP"
+}

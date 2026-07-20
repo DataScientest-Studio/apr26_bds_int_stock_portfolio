@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 85864,
+   "sha256": "69c258e21208ff0a0df744873278c06f57313029d0e2c82c61b3f7b7a4f8fb73"
+  },
+  "metrics.json": {
+   "bytes": 1060,
+   "sha256": "f2bf7265ea45f5eef25e98df6a3626158fda4d073d1d19c72c252f6f575882bf"
+  },
+  "parameters.json": {
+   "bytes": 2765,
+   "sha256": "214376c539cd11a3da7551231a7a8ab6cf3d5bd544adb1dddc4834a3c9c506a0"
+  },
+  "strategy_APH.py": {
+   "bytes": 83808,
+   "sha256": "916e9e2b6cd1eed3adf988a8460da1c4606de4c544cd4e1011a0fd78c646fd79"
+  }
+ },
+ "folder_sha256": "05e35723d654120cbc1fec27f055353c6cc7276bd12cb73da78067ec86fae45e",
+ "model": "lstm",
+ "model_hash": "bd09f5265c2dd463aec3c7939db2cdfd1f4925130fce51d925629567aabf1ccd",
+ "ticker": "APH"
+}

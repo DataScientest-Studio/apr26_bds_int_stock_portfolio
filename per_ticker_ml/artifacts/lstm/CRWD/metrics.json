@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "d314f4a986017d3583720f7e7df49b30890d590b0d7b3b599d32adab931f0a21",
+  "oof_log_growth": 0.2423326612322019,
+  "oof_trades": 60,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.4602948145160077,
+  "cv_folds": 4,
+  "end_capital": 1145.077560689573,
+  "losses": 22,
+  "max_drawdown_pct": 29.949823953569254,
+  "model_trades": 39,
+  "net_pnl_usd": 145.07756068957292,
+  "oof_log_growth": 0.2423326612322019,
+  "oof_trades": 60,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 1.1109628908226696,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": 14.507756068957288,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "CRWD",
+  "time_in_market_pct": 44.1781,
+  "trade_floor_met": 1,
+  "trades": 39,
+  "win_rate_pct": 43.58974358974359,
+  "wins": 17
+ },
+ "ticker": "CRWD"
+}

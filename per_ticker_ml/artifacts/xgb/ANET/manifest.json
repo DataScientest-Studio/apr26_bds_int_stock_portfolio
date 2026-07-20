@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 37208,
+   "sha256": "fc20f1426870350b51805f0a174743479122a64211e9d597a99eeeef6d4d4453"
+  },
+  "metrics.json": {
+   "bytes": 1111,
+   "sha256": "9fa9d9c68d26a46670f9aa2ef4c6c117a9bc5bc2ef7f470edebc531b2f25c97a"
+  },
+  "parameters.json": {
+   "bytes": 4083,
+   "sha256": "c77bbe98d5bda453bdda53dbc294dec8dcf78368bbda8ac35fff18aa7b4d61d9"
+  },
+  "strategy_ANET.py": {
+   "bytes": 267126,
+   "sha256": "e2bc1551862333f364da8f903274f90c0f794529edc171e97c103c5e4af3ffb7"
+  }
+ },
+ "folder_sha256": "b71e9cc5f0533d12d66a54aea3419ea6923d585cd487d3c83331ffa178dadcf2",
+ "model": "xgb",
+ "model_hash": "ed3430eaf2f2659ff169174d816effdf500d21ca343055e49217e26f1e0d5c9c",
+ "ticker": "ANET"
+}

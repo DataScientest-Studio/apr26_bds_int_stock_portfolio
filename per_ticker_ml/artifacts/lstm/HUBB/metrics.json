@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "long_only",
+  "kelly_fraction": null,
+  "model_hash": "5f7fa680801a4fea050cd8d95d4db3ba634f90c70ec4865d576ebfde3474b47f",
+  "oof_log_growth": 0.8498243448542369,
+  "oof_trades": 63,
+  "theta_entry": 0.52,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5556709431910796,
+  "cv_folds": 4,
+  "end_capital": 793.5527723602477,
+  "losses": 20,
+  "max_drawdown_pct": 33.45539540149956,
+  "model_trades": 37,
+  "net_pnl_usd": -206.44722763975233,
+  "oof_log_growth": 0.8498243448542369,
+  "oof_trades": 63,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.7158083979934142,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -20.64472276397523,
+  "start_capital": 1000.0,
+  "theta_entry": 0.52,
+  "ticker": "HUBB",
+  "time_in_market_pct": 45.0342,
+  "trade_floor_met": 1,
+  "trades": 37,
+  "win_rate_pct": 45.94594594594595,
+  "wins": 17
+ },
+ "ticker": "HUBB"
+}

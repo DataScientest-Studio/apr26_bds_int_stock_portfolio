@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 67512,
+   "sha256": "54e1d09fd862a716c986274350e6069a3c8a2eaa0a7674b3ca2e920942523cea"
+  },
+  "metrics.json": {
+   "bytes": 1043,
+   "sha256": "8454d78b2db73152ef1e9bddf32dbc6d484699ca8bba3ec033706f52b4b249b4"
+  },
+  "parameters.json": {
+   "bytes": 2882,
+   "sha256": "e59997c8ea7770750f71e33326158fe48ce9635505b9234f704494e32137f6f7"
+  },
+  "strategy_USB.py": {
+   "bytes": 84767,
+   "sha256": "f0caa0535c13e169f0ff7b125bf7cc585b4d362e96fe8aca6fecbf14897d9173"
+  }
+ },
+ "folder_sha256": "70b229f745a0c396ad41b836397028cdd3a161dd65e7e20c7e7fb0d707814462",
+ "model": "lstm",
+ "model_hash": "136705295a92b6d4c6bf5a76215db24db31bd86bcb89bd4a1eb04479cdb7d0f0",
+ "ticker": "USB"
+}

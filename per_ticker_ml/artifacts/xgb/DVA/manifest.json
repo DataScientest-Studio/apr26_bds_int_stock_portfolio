@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 40656,
+   "sha256": "9dd712c2e7740d3a43aa6865994692e0f456622bf71ee3bf1c274131ed29f072"
+  },
+  "metrics.json": {
+   "bytes": 1103,
+   "sha256": "2e2dace937bf15a843db554c0f455f5a21abdb22f4865508c9b869bc959b8b83"
+  },
+  "parameters.json": {
+   "bytes": 4640,
+   "sha256": "8f8373476ab58f6d671f3c66c4f6039bafa7ae88edde45c2f19c173e3f17dbd8"
+  },
+  "strategy_DVA.py": {
+   "bytes": 191834,
+   "sha256": "3228a4982f3bb3dff63dc80eafcd7a44a26da0153ea4785245163a5493410cfa"
+  }
+ },
+ "folder_sha256": "2d42f0d5eb6c890e148ae85a07d6975936ef48cdf977561de83a3a557c633ddf",
+ "model": "xgb",
+ "model_hash": "5b88727a034d812e8bcf24f90822026ce9e563a7e0b0cf0503cd1e62be3c2c1c",
+ "ticker": "DVA"
+}

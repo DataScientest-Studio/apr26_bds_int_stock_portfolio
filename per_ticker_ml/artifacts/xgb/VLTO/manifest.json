@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25766,
+   "sha256": "177bde980f7d17ab6c5eb6d55d02af8f0fd425af9e83f74cef711ea5d017c6ee"
+  },
+  "metrics.json": {
+   "bytes": 1046,
+   "sha256": "5dd23993653915f7b9c2f7b33743199f6bca6c5592476ddc85bcdfc722af631b"
+  },
+  "parameters.json": {
+   "bytes": 4081,
+   "sha256": "8a613d1e3667131cc4a3a0cded9269fb0936225bd17304979f5231c704451830"
+  },
+  "strategy_VLTO.py": {
+   "bytes": 187017,
+   "sha256": "cfcf0476ac7d2a33671cf2fe327274d3f47c439051aa2d1cc2717ea0cfa54911"
+  }
+ },
+ "folder_sha256": "a4816da100dc0335b39a46383a75cbb94de546f7fd787d55eba40629197dab0b",
+ "model": "xgb",
+ "model_hash": "6d29c18575e5db91892fac6d17f9bd6675beb36f552f174292a12adbd23d040d",
+ "ticker": "VLTO"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 76130,
+   "sha256": "93538e86ad657a136e186ffa0ec35d0238d554c30240b0ac84f5699377412bb6"
+  },
+  "metrics.json": {
+   "bytes": 1072,
+   "sha256": "45bd924e5f4675ecfb04f645b483aaa8bb70c40193e19c4e66975152e3906c6f"
+  },
+  "parameters.json": {
+   "bytes": 2525,
+   "sha256": "067b5e075b68c08510bf7066f167f084e967655eade34ecebc1ea4c924e1030d"
+  },
+  "strategy_FE.py": {
+   "bytes": 77121,
+   "sha256": "a58338c021ac98037fb2bf9e1c0ebfed17c49a12323c46bb7bdc3d295c85e198"
+  }
+ },
+ "folder_sha256": "f765a8cc631750d76dc453847fc719f8c89708ccadc7c7d4d92bfa33ad1c45ae",
+ "model": "lstm",
+ "model_hash": "26bd28e99e77b49427d77ea23534b5741eb9c363aa4c19d83cefc5caf8aca5ee",
+ "ticker": "FE"
+}

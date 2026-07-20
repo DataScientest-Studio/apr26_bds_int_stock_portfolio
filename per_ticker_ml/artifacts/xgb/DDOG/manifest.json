@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 136069,
+   "sha256": "d4546e67fc06378607a14b9b6af90090cd2af5dc41a82b352120e73388d37b73"
+  },
+  "metrics.json": {
+   "bytes": 1112,
+   "sha256": "9bc575b4f8a7171af2ed8357a19b5f1790821f2fa5fe0ec68f2ed3eb144d9977"
+  },
+  "parameters.json": {
+   "bytes": 5207,
+   "sha256": "28423cdf8490ee706c3bfb81986afafddc55a9437de68239bde6d89c974f4257"
+  },
+  "strategy_DDOG.py": {
+   "bytes": 187013,
+   "sha256": "d1c3c60e1b07b79ba12d27e02cc29e68f75f57bb9bf197208a4fff4f48fd8440"
+  }
+ },
+ "folder_sha256": "cd7aa66e01e5d019e2eaeac8392c625879390f3f1faf819ead453be16fc27e4d",
+ "model": "xgb",
+ "model_hash": "50d60c50c73134782ba465c023e6b1bd68f2416708f130c704799ce6476a75c9",
+ "ticker": "DDOG"
+}

@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 91379,
+   "sha256": "c05608500751d1b52738bd9a650880af360a69a0da5a540fa8f9f471146f1537"
+  },
+  "metrics.json": {
+   "bytes": 1081,
+   "sha256": "311737ba8be8c7f55b1ae5717648bae41fdeb90865a09cdcd66bec1153f74160"
+  },
+  "parameters.json": {
+   "bytes": 2912,
+   "sha256": "c6ddacfe31ebe8a67214f1ef4dbabff27b1b8cb56bfe4dd4b568a55e3c689fac"
+  },
+  "strategy_DLR.py": {
+   "bytes": 86852,
+   "sha256": "3c9159e67bd9000ddb677b09975a687a1d5c2c9f8f985914b9621b6915824dc8"
+  }
+ },
+ "folder_sha256": "249c340dbdfe6d7a22089b0de13713e56bfa3e2fb37e47cb872f3d2be82048a8",
+ "model": "lstm",
+ "model_hash": "fa6f4ae066b269b81ac78054446162ae20f86bba3fc455810f7983277f86a520",
+ "ticker": "DLR"
+}

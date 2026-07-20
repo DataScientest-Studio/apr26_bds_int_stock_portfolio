@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 91364,
+   "sha256": "e800ce17f4f5ffe0b771971e8817c4cc78bc25182f7378bf2057d45d614ac875"
+  },
+  "metrics.json": {
+   "bytes": 1062,
+   "sha256": "c6a3981c852455c440bb78f21f2e6c49d772a8bc648be82009be051fc06278fc"
+  },
+  "parameters.json": {
+   "bytes": 2874,
+   "sha256": "34bb96bb145746065912c479d4ec2b27f442924a6828d601fba9013e381f7a16"
+  },
+  "strategy_CPRT.py": {
+   "bytes": 87546,
+   "sha256": "70f64b31faf1c936cc325871c6c44d63ee2a8623061e7df102da10179b95b8db"
+  }
+ },
+ "folder_sha256": "27077478f104b854b47e3d17b330d6c4c22d5d9ba3f6e83594feb3955ddb17f8",
+ "model": "lstm",
+ "model_hash": "ab71f28a165a2606aea3d665ef3490e22e7ba4103e803930369c5ae45e6e2a0e",
+ "ticker": "CPRT"
+}

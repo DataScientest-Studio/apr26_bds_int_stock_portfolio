@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 25911,
+   "sha256": "ad5973eee070ec76d15d119ef94352aad04fdc5f1c949d83a0cba334b802f158"
+  },
+  "metrics.json": {
+   "bytes": 1045,
+   "sha256": "c352c6f20327eb8af667040f3ec96cf650d6939dba27d330849c0c4eac4d7c0c"
+  },
+  "parameters.json": {
+   "bytes": 4078,
+   "sha256": "6ffe0da7f3aa73975ae8c4cee391d06b2d57e06a91cee6011cfe0c67e7ebed36"
+  },
+  "strategy_CMI.py": {
+   "bytes": 187019,
+   "sha256": "284b3a5875c140d676b3b43b4dac217fab37ee5373184e6c994150143c9dead9"
+  }
+ },
+ "folder_sha256": "54ab7b701b89b35d7527899ec85bb2b4619798234af8d773ffc590ef92f72c15",
+ "model": "xgb",
+ "model_hash": "842f2b45eb0b256975f0fa3e6dfd77c7946ac4ba1dc4bb20b260ca11ade092cb",
+ "ticker": "CMI"
+}

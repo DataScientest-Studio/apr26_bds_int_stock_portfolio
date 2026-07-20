@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 35141,
+   "sha256": "88d8874f51b8dd85f656de63ec1f32c466e8a37a2fa2fc6ed876465c297b8ed1"
+  },
+  "metrics.json": {
+   "bytes": 1105,
+   "sha256": "5399c4aece7356d93d01460459eb2cabd9880372b3df68f5ae948c3b635b0de8"
+  },
+  "parameters.json": {
+   "bytes": 5373,
+   "sha256": "15fc4032298d80baadb2c5f2822b5223da271e7744c6427203feb395e870ab8e"
+  },
+  "strategy_BRO.py": {
+   "bytes": 183849,
+   "sha256": "b8397fa8ebccb5088148ac010144555f3869b75aed16a01096bb0bb78cc75879"
+  }
+ },
+ "folder_sha256": "8fd9d04a9dd84cd0c97a34bc5a19693d41950b1aec9d0949855a09fd3961d260",
+ "model": "xgb",
+ "model_hash": "dee28a7b4e6418a71584712c9028221a07ef7dd9dbd851b1a93b253cddc8607e",
+ "ticker": "BRO"
+}

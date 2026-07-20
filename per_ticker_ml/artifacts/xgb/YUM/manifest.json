@@ -1,0 +1,25 @@
+{
+ "epoch": "2026-07-golden-v5",
+ "files": {
+  "interpretation.json": {
+   "bytes": 47580,
+   "sha256": "32f18a797464f9a505a9bf03b6be00fbe848550da96048a0a5ad29e37825c223"
+  },
+  "metrics.json": {
+   "bytes": 1096,
+   "sha256": "7d970e9dd4b174a3339b5bfa86bb0476828750e03fddef770283ecb5008a3aad"
+  },
+  "parameters.json": {
+   "bytes": 4635,
+   "sha256": "3f517b2f9002c8947e285cd25af3ea51eb9c8b9b5f7a45dde70b3fb58feeb1e9"
+  },
+  "strategy_YUM.py": {
+   "bytes": 57545,
+   "sha256": "c8dda84699be317b62851f79ca9fd71c011771355bae6550551ecc86bbc2dadc"
+  }
+ },
+ "folder_sha256": "0124755c682f4ef247865fca84abf72f58ddbad92663cd3355a23acf46adbcfc",
+ "model": "xgb",
+ "model_hash": "ac5c5d7870e026ca147bab09d8e46e64b372f90f429b3af8116447473e80ab81",
+ "ticker": "YUM"
+}

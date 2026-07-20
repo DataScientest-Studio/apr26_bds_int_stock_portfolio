@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "b8ae3a6d4a652419eeb4a5bdbe967e53466c22a09572e8c1581c6d7dc144a926",
+  "oof_log_growth": 0.3644873672560602,
+  "oof_trades": 25,
+  "theta_entry": 0.56,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5256190035641808,
+  "cv_folds": 4,
+  "end_capital": 689.5201305819352,
+  "losses": 21,
+  "max_drawdown_pct": 31.04798694180648,
+  "model_trades": 25,
+  "net_pnl_usd": -310.4798694180648,
+  "oof_log_growth": 0.3644873672560602,
+  "oof_trades": 25,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.3370290287740682,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -31.04798694180648,
+  "start_capital": 1000.0,
+  "theta_entry": 0.56,
+  "ticker": "GIS",
+  "time_in_market_pct": 26.8836,
+  "trade_floor_met": 1,
+  "trades": 25,
+  "win_rate_pct": 16.0,
+  "wins": 4
+ },
+ "ticker": "GIS"
+}

@@ -1,0 +1,41 @@
+{
+ "calibration": {
+  "cv_folds": 4,
+  "direction_mode": "both",
+  "kelly_fraction": null,
+  "model_hash": "ffe50d26e5e78e8bdd31bf798d8327d9494f69ab03b975d2f1c665f868139c52",
+  "oof_log_growth": 0.8209507399333918,
+  "oof_trades": 109,
+  "theta_entry": 0.5,
+  "trade_floor_met": true
+ },
+ "epoch": "2026-07-golden-v5",
+ "model": "lstm",
+ "store_row": {
+  "benchmark_trades": 0,
+  "capital_depleted": 0,
+  "cv_auc_pr": 0.5284513822973969,
+  "cv_folds": 4,
+  "end_capital": 947.3478444948126,
+  "losses": 24,
+  "max_drawdown_pct": 35.680919945417244,
+  "model_trades": 46,
+  "net_pnl_usd": -52.65215550518735,
+  "oof_log_growth": 0.8209507399333918,
+  "oof_trades": 109,
+  "oos_window": "2024-01-02 -> 2026-04-30",
+  "profit_factor": 0.9439886439023475,
+  "recipe_hash": "a4cc8f4a78ad8574",
+  "result_mode": "ML_MULTI_TRADE",
+  "return_pct": -5.2652155505187315,
+  "start_capital": 1000.0,
+  "theta_entry": 0.5,
+  "ticker": "ETN",
+  "time_in_market_pct": 59.4178,
+  "trade_floor_met": 1,
+  "trades": 46,
+  "win_rate_pct": 47.82608695652174,
+  "wins": 22
+ },
+ "ticker": "ETN"
+}
