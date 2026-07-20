@@ -132,11 +132,9 @@ Fail-closed statuses, bannered by the app:
 README.md, Makefile, requirements.txt, LICENSE
 app.py                      Streamlit entry point
 app/data.py                 the single data-access layer (section 7)
-app/pages/                   4 pages in three sidebar sections —
-                            Playground: Basket Simulator;
-                            Results: Overview;
-                            Method & proof: Data Pipeline Lego Plan,
-                            Data Flow 3D Visualization
+app/pages/                   4 pages, flat sidebar, in reading order:
+                            Data Flow 3D Visualization, Overview,
+                            Basket Simulator, Data Pipeline Lego Plan
 app/basket.py               basket arithmetic (no Streamlit): the three-number split
 app/venn.py                 the pixel agreement diagram (no imports at all)
 src/xgb/                    pipeline.py (L4-L9), feature_search.py, artifact.py, train_cv_eval.py

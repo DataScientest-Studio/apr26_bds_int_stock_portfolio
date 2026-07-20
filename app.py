@@ -1,6 +1,10 @@
-"""Entry point: `streamlit run app.py` (or `make on`). Four read-only pages in three
-sections: Playground (build a basket), Results (what the models did),
-Method & proof (how it was built and how to check it)."""
+"""Entry point: `streamlit run app.py` (or `make on`). Four read-only pages, flat.
+
+A list rather than a dict: st.navigation only draws section headers when it is given
+groups, and four pages do not need three headers over them. Order is the reading order —
+the build path, then the result, then the thing to play with, then the procedure in full.
+Overview stays the landing page; it is the one that answers "what came out of this".
+"""
 import sys
 from pathlib import Path
 
@@ -14,16 +18,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-pages = st.navigation({
-    "Playground": [
-        st.Page("app/pages/simulator.py", title="Basket Simulator", url_path="simulator"),
-    ],
-    "Results": [
-        st.Page("app/pages/overview.py", title="Overview", url_path="overview", default=True),
-    ],
-    "Method & proof": [
-        st.Page("app/pages/blueprint.py", title="Data Pipeline Lego Plan", url_path="blueprint"),
-        st.Page("app/pages/flow.py", title="Data Flow 3D Visualization", url_path="flow"),
-    ],
-}, expanded=True)
+pages = st.navigation([
+    st.Page("app/pages/flow.py", title="Data Flow 3D Visualization", url_path="flow"),
+    st.Page("app/pages/overview.py", title="Overview", url_path="overview", default=True),
+    st.Page("app/pages/simulator.py", title="Basket Simulator", url_path="simulator"),
+    st.Page("app/pages/blueprint.py", title="Data Pipeline Lego Plan", url_path="blueprint"),
+], expanded=True)
 pages.run()

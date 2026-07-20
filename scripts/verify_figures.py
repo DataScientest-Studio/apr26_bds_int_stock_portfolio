@@ -163,7 +163,10 @@ def main():
     WORDS = ("zero one two three four five six seven eight nine ten eleven twelve thirteen "
              "fourteen fifteen sixteen seventeen eighteen nineteen twenty").split()
     word = WORDS[n_pages] if n_pages < len(WORDS) else str(n_pages)
-    check("page count (blueprint knob)", f"pages={n_pages} in 3 sections", BLUEPRINT)
+    # The knob names the count; how the sidebar is grouped is not this gate's business, so
+    # it matches "pages=N" and stops there. Pinning the section wording too made the gate
+    # fail on a sidebar change that had nothing to do with the number it exists to guard.
+    check("page count (blueprint knob)", f"pages={n_pages}", BLUEPRINT)
     check("page count (blueprint prose)", f"a {word}-page", BLUEPRINT)
     check("page count (README)", f"## The {word} pages", README)
     stale = [w for i, w in enumerate(WORDS) if i != n_pages and i > 1

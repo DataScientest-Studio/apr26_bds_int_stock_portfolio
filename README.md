@@ -58,27 +58,27 @@ design. See `docs/METHODOLOGY.md`.
 
 ## The four pages
 
-The sidebar groups them the way a defence walks: **Playground** (do something), **Results**
-(what the models did), **Method & proof** (how it was built, and how to check it).
+A flat sidebar, in reading order: how it was built, what came out, something to try, then
+the procedure in full. Overview is the landing page.
 
-1. **Basket Simulator** — pick assets, by preset or by hand, and read what the sealed
-   models did with them against the same basket simply held. Three numbers, never one:
-   the executed path, the model result, and the price-only benchmark.
+1. **Data Flow 3D Visualization** — the build path drawn twice: the whole study as eight
+   boxes, then the same path as a 2.5D canvas map — sixteen levels, both pipelines in one
+   ladder, every contract a click away.
 2. **Overview** — the whole result in one page. **Median outcomes**: median return against
    each model's own buy-and-hold, how many assets beat it, median profit factor and its
    coverage. **Feature Logic**: which features one asset's sealed XGB model leans on, as a
    share of its split total-gain (Train-derived interpretation). **Model Comparison**: four
    charts — return, profit factor, trades, beats-HODL share.
-3. **Data Pipeline Lego Plan** — the procedure as an 18-brick ladder: contract, reasoning
+3. **Basket Simulator** — pick assets, by preset or by hand, and read what the sealed
+   models did with them against the same basket simply held. Three numbers, never one:
+   the executed path, the model result, and the price-only benchmark.
+4. **Data Pipeline Lego Plan** — the procedure as an 18-brick ladder: contract, reasoning
    and lesson per brick, with the layer id the code uses (XGB L4-L9, LSTM D1-D9).
-4. **Data Flow 3D Visualization** — the build path drawn twice: the whole study as eight
-   boxes, then the same path as a 2.5D canvas map — sixteen levels, both pipelines in one
-   ladder, every contract a click away.
 
 ## Repository structure
 
 ```text
-app.py            Streamlit entry point (four pages under app/pages/, in three sections)
+app.py            Streamlit entry point (four pages under app/pages/, flat sidebar)
 app/              console code; app/data.py is the ONLY module opening the database
 src/xgb/          XGB research code (pipeline L4-L9, feature search, artifact writers)
 src/lstm/         LSTM research code (pipeline D1-D6, model D7-D8, feature search)

@@ -567,7 +567,7 @@
        invariant:["Read-only over sealed artifacts - the app can display results, never create them.",
                   "Evidence tiers stay separated: sealed numbers never share a table with Train-derived interpretation.",
                   "Every displayed comparison carries its honest benchmark; every interpretation view carries its three labels."],
-       knobs:["pages=4 in 3 sections (Playground 1 · Results 1 · Method & proof 2)", "runtime=read-only, mode=ro", "counts=derived from the store"],
+       knobs:["pages=4, flat sidebar (no section headers)", "runtime=read-only, mode=ro", "counts=derived from the store"],
        test:["a fresh clone renders every page without training", "automated gates walk every page"],
        depends:["E1","E2","E3"]},
 
