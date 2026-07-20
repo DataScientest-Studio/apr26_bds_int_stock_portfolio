@@ -44,11 +44,11 @@ def _pdf_download(path: Path, label: str) -> None:
 
 
 def _introduction() -> None:
-    st.title("Introduction")
+    st.title("1. Introduction")
     st.caption("Sets up the problem and what we built — the modelling detail comes in the ML segments.")
 
     # ── 1. The problem ────────────────────────────────────────────────────────
-    st.header("1  The problem — where does a beginner even start?")
+    st.header("1.1  The problem — where does a beginner even start?")
     left, right = st.columns([5, 6], gap="large")
     with left:
         st.markdown(
@@ -73,7 +73,7 @@ def _introduction() -> None:
     st.divider()
 
     # ── 2. The original brief ─────────────────────────────────────────────────
-    st.header("2  The original brief")
+    st.header("1.2  The original brief")
     b1, b2 = st.columns(2, gap="large")
     with b1:
         st.markdown(
@@ -93,7 +93,6 @@ the pick**.
         st.markdown(
             """
 **The setup**
-- Course: *Data Scientist* · difficulty **8/10** · mentor **Paul Grolier**.
 - Data source: **Alpaca** free IEX feed — daily OHLCV (Open, High, Low, Close, Volume), S&P 500, ~5–6 years of history
   (yfinance kept only as a cross-check).
 - Deliverables: EDA (Exploratory Data Analytics) report → modelling report → final report → **Streamlit app + oral defense**.
@@ -106,7 +105,7 @@ the pick**.
     st.divider()
 
     # ── 3. The approach at a glance ───────────────────────────────────────────
-    st.header("3  The approach at a glance")
+    st.header("1.3  The approach at a glance")
     st.markdown(
         "One time-respecting pipeline: **raw prices → engineered features → chronological split → "
         "model → ranked predictions → a diversified portfolio.** *(The modelling steps are covered "
@@ -149,7 +148,7 @@ the pick**.
     st.divider()
 
     # ── 4. What we delivered ──────────────────────────────────────────────────
-    st.header("4  What we delivered")
+    st.header("1.4  What we delivered")
     d1, d2 = st.columns([6, 5], gap="large")
     with d1:
         _img(FIG_APP, "The recommender — questionnaire in, justified portfolio out")
@@ -170,20 +169,20 @@ the pick**.
     st.divider()
 
     # ── 5. What's next in this talk ───────────────────────────────────────────
-    st.header("5  Agenda")
+    st.header("1.5  Agenda")
     st.markdown(
         """
-Parts 1 & 2 walk the modelling **behind both tiers**; the Conclusion gives the **verdict** on each.
+Parts 2 & 3 walk the modelling **behind both tiers**; the Conclusion gives the **verdict** on each.
 
-- **Machine Learning — Part 1 (M):** the data, features and first models.
-- **Machine Learning — Part 2 (P):** validation, model comparison, results.
-- **Conclusion (T):** the verdict, limitations stated openly, and next steps.
+- **2. Machine Learning — Part 1 (M):** the data, features and first models.
+- **3. Machine Learning — Part 2 (P):** validation, model comparison, results.
+- **4. Conclusion (T):** the verdict, limitations stated openly, and next steps.
         """
     )
 
 
 def _conclusion() -> None:
-    st.header("Conclusion")
+    st.header("4. Conclusion")
     st.markdown(
         """
 - **Scope evolved, on purpose:** we first considered **yfinance** for data but chose **Alpaca**'s
@@ -194,8 +193,9 @@ def _conclusion() -> None:
   fell to **0.06** — a **weak** signal. A **simple model won** (a plain linear model, "Ridge"),
   and a deep-learning model was tried but not chosen.
 - **What we actually ship:** the simple model scored best on that single slice, but the **recommender in the app uses a Random Forest with `history_days` removed** — this feature counted how many days of historical data each stock had and could act as a listing-age shortcut. The model held up best across time periods.
-- **Data quality isn't uniform:** new listings like SNDK have short, patchy histories — we now track
-  each stock's history length instead of assuming a clean dataset.
+- **Data quality isn't uniform:** new listings like SNDK have short, patchy histories. The app counts
+  the actual trading days available for each stock instead of assuming every stock has the same
+  complete record.
         """
     )
 
@@ -230,9 +230,8 @@ def render() -> None:
     _introduction()
 
     st.divider()
-    st.header("Machine Learning segments")
-    for i, (title, owner, hint) in enumerate(_PLACEHOLDERS, start=2):
-        st.subheader(f"{i}. {title}  ·  ({owner})")
+    for i, (title, _, _) in enumerate(_PLACEHOLDERS, start=2):
+        st.header(f"{i}. {title}")
         if title == "Machine Learning — Part 1":
             _pdf_download(ML_PART1_REPORT, "Download Machine Learning Part 1 PDF report")
 
