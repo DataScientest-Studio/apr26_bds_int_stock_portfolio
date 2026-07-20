@@ -25,9 +25,10 @@ Three things have to be contained so the vendor cannot disturb this app:
   * Each study page calls sys.path.insert(0, ...) unconditionally, so the path is snapshot
     and restored; otherwise it grows by one entry on every rerun for the whole session.
 
-  * The study ships a dark .streamlit/config.toml, but only the ROOT config is honoured and
-    this app's has no [theme] block — so its palette is swapped for light equivalents while it
-    runs, and restored afterwards. See _light_palette() for why CSS cannot do this.
+  * The study ships a dark .streamlit/config.toml, but only the ROOT config is honoured and this
+    app's has no [theme] block — so the chrome follows the VIEWER'S BROWSER and can be either.
+    Its charts are handed back to Streamlit's own adaptive template and its other surfaces
+    follow the reported theme, then everything is restored. See _host_theme().
 
 The study shares stage / basket / method / method_sel (and the host adds preset*) with
 app/page_simulator.py, over a DIFFERENT universe — 993 sealed assets vs the 498-ticker OOS
@@ -66,19 +67,31 @@ _NS = "_ptml__"          # the study's parked copy
 _HOST = "_host__"        # the rest of the app's parked copy
 _OWNER = "_ptml__owner"  # which side currently holds the bare keys
 
-# The study hard-codes a dark palette in Python because it ships its own .streamlit/config.toml
-# with base="dark". Only the ROOT config is honoured here and this app's has no [theme] block, so
-# the study would land dark-on-light: unreadable .disclaimer-box, and dark plotly/graphviz panels
-# floating on a white page. CSS cannot fix that — the colours are baked in when the figures are
-# BUILT (theme.plotly_layout(), the graphviz DOT's bgcolor, GRID_CSS), not applied as styles. So
-# the palette constants those readers use are swapped for light equivalents while the study runs.
+# The study hard-codes a dark palette because it ships its own .streamlit/config.toml with
+# base="dark". Only the ROOT config is honoured here and this app's has NO [theme] block — which
+# means the chrome follows the VIEWER'S BROWSER, and can be either. So there is no single right
+# palette to bake in, and the colours are decided when the figures are BUILT
+# (theme.plotly_layout(), the graphviz DOT's bgcolor, GRID_CSS), not applied as styles CSS could
+# later override. Two different mechanisms are needed:
+#
+#   * Plotly is made theme-AGNOSTIC and left to Streamlit. st.plotly_chart defaults to
+#     theme="streamlit", whose template already adapts to light and dark; the study was fighting
+#     it by forcing paper/plot backgrounds and a font colour. Forcing a LIGHT background while
+#     the template supplied dark-mode (light) text is what produced unreadable charts. The
+#     wrapper below drops those keys instead, so the template wins on a transparent canvas.
+#
+#   * Graphviz and the CSS classes are not themed by Streamlit, so those constants are switched
+#     using the viewer's reported theme — and only when it says "light". When it says "dark", or
+#     says nothing, the study's native palette is left exactly as designed, which is also the
+#     safe failure mode: a dark diagram on a light page is merely out of place, whereas a light
+#     diagram on a dark page can be unreadable.
 #
 # A global dark theme is the wrong lever: it would restyle all eight existing pages and fight
 # page_simulator.py's hard-coded light tiles.
 #
-# ACCENT darkens because overview.py's DOT paints ACCENT-filled nodes with fontcolor=BG — once BG
-# is white, the study's #6EA8CF has too little contrast behind white text. GREEN/AMBER/RED are
-# used as TEXT, so they take their light-background variants.
+# ACCENT darkens for the light case because overview.py's DOT paints ACCENT-filled nodes with
+# fontcolor=BG — once BG is white, the study's #6EA8CF has too little contrast behind white text.
+# GREEN/AMBER/RED are used as TEXT, so they take their light-background variants.
 _LIGHT_PALETTE = {
     "BG": "#FFFFFF", "SURFACE": "#F0F2F6", "BORDER": "#D5D9E0",
     "TEXT": "#31333F", "TEXT_DIM": "#6E7681",
@@ -164,29 +177,58 @@ def _restore_sys_path():
         sys.path[:] = path
 
 
+def viewer_theme() -> str:
+    """"light" or "dark" as reported by the browser, "dark" when Streamlit will not say.
+
+    st.context.theme.type is documented as possibly wrong while a theme is changing and on the
+    first load of a session, so it decides only the surfaces whose failure mode stays readable.
+    """
+    try:
+        return st.context.theme.type or "dark"
+    except Exception:                               # pragma: no cover — no script context
+        return "dark"
+
+
+def _agnostic_layout(original):
+    """Wrap theme.plotly_layout so figures stop dictating their own light/dark surface."""
+    def layout(**overrides):
+        out = original(**overrides)
+        out["paper_bgcolor"] = "rgba(0,0,0,0)"      # let the Streamlit template paint it
+        out["plot_bgcolor"] = "rgba(0,0,0,0)"
+        out.pop("font", None)                       # ...and colour the text, in either theme
+        for axis in ("xaxis", "yaxis"):             # grid that reads on white and on near-black
+            if isinstance(out.get(axis), dict):
+                out[axis] = {**out[axis], "gridcolor": "rgba(128,128,128,0.25)",
+                             "zerolinecolor": "rgba(128,128,128,0.35)"}
+        return out
+    return layout
+
+
 @contextmanager
-def _light_palette():
-    """Render the study in the host's light theme, without editing per_ticker_ml/ on disk.
+def _host_theme():
+    """Render the study in the viewer's theme, without editing per_ticker_ml/ on disk.
 
     theme.plotly_layout() reads the constants at CALL time, and overview.py's DOT and
     simulator.py's GRID_CSS are f-strings rebuilt on every runpy execution — so swapping the
-    constants first reaches the charts, the diagram, the tiles and the tables alike. theme.CSS
-    is the exception: an f-string frozen at import. It is re-lit by substituting the old hex
-    values for the new ones, rather than restating the stylesheet here where it would rot the
-    moment the study's own changed.
+    constants first reaches the diagram, the tiles and the tables alike. theme.CSS is the
+    exception: an f-string frozen at import. It is re-lit by substituting the old hex values for
+    the new ones, rather than restating the stylesheet here where it would rot the moment the
+    study's own changed.
     """
     if str(STUDY_APP) not in sys.path:              # the study's own pages do this too, later
         sys.path.insert(0, str(STUDY_APP))
     import theme
-    names = (*_LIGHT_PALETTE, "CSS", "MODEL_COLORS")
+    names = (*_LIGHT_PALETTE, "CSS", "MODEL_COLORS", "plotly_layout")
     saved = {name: getattr(theme, name) for name in names}
     try:
-        css = saved["CSS"]
-        for name, light in _LIGHT_PALETTE.items():
-            css = css.replace(saved[name], light)
-            setattr(theme, name, light)
-        theme.CSS = css
-        theme.MODEL_COLORS = {"xgb": theme.ACCENT, "lstm": theme.NEUTRAL, "hodl": theme.MUTED}
+        theme.plotly_layout = _agnostic_layout(saved["plotly_layout"])
+        if viewer_theme() == "light":
+            css = saved["CSS"]
+            for name, light in _LIGHT_PALETTE.items():
+                css = css.replace(saved[name], light)
+                setattr(theme, name, light)
+            theme.CSS = css
+            theme.MODEL_COLORS = {"xgb": theme.ACCENT, "lstm": theme.NEUTRAL, "hodl": theme.MUTED}
         yield
     finally:
         for name, value in saved.items():
@@ -202,7 +244,7 @@ def render() -> None:
     for tab, (label, script) in zip(st.tabs(labels, key="ptml_tab", on_change="rerun"), TABS):
         if not tab.open:                 # lazy: only the selected sub-tab executes
             continue
-        with tab, _restore_sys_path(), _light_palette():
+        with tab, _restore_sys_path(), _host_theme():
             try:
                 runpy.run_path(str(script), run_name="__main__")
             except ScriptControlException:

@@ -220,6 +220,68 @@ def gate_track_b_through_app_shell():
               str(at.exception[0].value) if at.exception else "")
 
 
+def _themed_study_script(app_dir: str, forced_theme: str) -> None:
+    """The study's Statistics tab, with the viewer's reported theme stood in for."""
+    import sys
+    if app_dir not in sys.path:
+        sys.path.insert(0, app_dir)
+    import streamlit as st
+    import page_per_ticker_ml
+    page_per_ticker_ml.viewer_theme = lambda: forced_theme
+    st.session_state["ptml_tab"] = "Statistics"
+    page_per_ticker_ml.sync_session_scope("per-ticker-ml")
+    page_per_ticker_ml.render()
+
+
+def gate_study_charts_follow_the_viewer():
+    """This app pins no [theme], so the chrome follows the VIEWER'S BROWSER and can be either.
+
+    A chart that forces its own surface therefore breaks for half the audience: forcing a light
+    background while Streamlit's dark-mode template supplied light text produced unreadable
+    axis labels. Charts must declare a transparent canvas and no font colour, in both themes,
+    and the study's constants must be restored afterwards.
+    """
+    import json
+
+    from streamlit.testing.v1 import AppTest
+    print("Part 6 — the study's charts follow the viewer's theme")
+
+    for forced in ("dark", "light"):
+        at = AppTest.from_function(
+            _themed_study_script,
+            kwargs={"app_dir": str(ROOT / "app"), "forced_theme": forced}, default_timeout=300)
+        at.run()
+        if at.exception:
+            check(f"{forced}: study renders", False, str(at.exception[0].value))
+            continue
+
+        figs = at.get("plotly_chart")
+        check(f"{forced}: plotly figures captured", bool(figs), f"{len(figs)} found")
+        layouts = []
+        for fig in figs:
+            raw = getattr(getattr(fig, "proto", None), "spec", None) or getattr(fig, "spec", "")
+            try:
+                layouts.append(json.loads(raw).get("layout", {}))
+            except (TypeError, ValueError):
+                pass
+        check(f"{forced}: layouts parsed", len(layouts) == len(figs), f"{len(layouts)}/{len(figs)}")
+        papers = {str(lay.get("paper_bgcolor")) for lay in layouts}
+        fonts = {str(lay.get("font", {}).get("color")) for lay in layouts}
+        check(f"{forced}: charts declare a transparent canvas", papers == {"rgba(0,0,0,0)"},
+              f"paper_bgcolor: {papers}")
+        check(f"{forced}: charts pin no font colour", fonts == {"None"}, f"font.color: {fonts}")
+
+        graphviz = "\n".join(str(getattr(g, "proto", g)) for g in at.get("graphviz_chart"))
+        expected = "#0D1117" if forced == "dark" else "#FFFFFF"
+        check(f"{forced}: diagram surface matches the viewer", expected in graphviz)
+
+    sys.path.insert(0, str(ROOT / "per_ticker_ml" / "app"))
+    import theme
+    check("study palette restored after render",
+          theme.BG == "#0D1117" and theme.plotly_layout.__module__ == "theme",
+          f"BG={theme.BG} plotly_layout from {theme.plotly_layout.__module__}")
+
+
 def gate_per_ticker_callbacks():
     """The study's widgets carry on_change/on_click callbacks, and Streamlit runs those from
     on_script_will_rerun — BEFORE the script body. A swap of the shared session keys scoped to
@@ -350,6 +412,9 @@ def main():
 
     print()
     gate_track_b_through_app_shell()
+
+    print()
+    gate_study_charts_follow_the_viewer()
 
     print()
     if FAILS:
