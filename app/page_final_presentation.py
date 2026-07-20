@@ -18,6 +18,7 @@ FIG_RISK_RETURN = ROOT / "reports" / "figures" / "06_risk_return.png"
 FIG_PIPELINE = ROOT / "reports" / "figures" / "13_trackb_pipeline_overview.png"
 FIG_FUNNEL = ROOT / "reports" / "figures" / "12_trackb_portfolio_funnel.png"
 FIG_APP = ROOT / "mac-2026-06-09-full-6y" / "report_assets" / "01_recommendation.png"
+ML_PART1_REPORT = ROOT / "reports" / "Engineering_the_Stock_Recommender PART I.pdf"
 
 
 def _img(path: Path, caption: str, width="stretch") -> None:
@@ -26,6 +27,20 @@ def _img(path: Path, caption: str, width="stretch") -> None:
         st.image(str(path), caption=caption, width=width)
     else:
         st.warning(f"Missing figure: {path.relative_to(ROOT)}")
+
+
+def _pdf_download(path: Path, label: str) -> None:
+    """Offer a committed PDF as a Streamlit download without breaking if it is absent."""
+    if path.is_file():
+        st.download_button(
+            label,
+            data=path.read_bytes(),
+            file_name=path.name,
+            mime="application/pdf",
+            use_container_width=True,
+        )
+    else:
+        st.warning(f"Missing PDF: {path.relative_to(ROOT)}")
 
 
 def _introduction() -> None:
@@ -217,10 +232,10 @@ def render() -> None:
 
     st.divider()
     st.header("Machine Learning segments")
-    st.caption("Owned by M and P — still placeholders; drafted by their owners.")
     for i, (title, owner, hint) in enumerate(_PLACEHOLDERS, start=2):
         st.subheader(f"{i}. {title}  ·  ({owner})")
-        st.info(f"🚧 Placeholder — owned by **{owner}**. {hint}")
+        if title == "Machine Learning — Part 1":
+            _pdf_download(ML_PART1_REPORT, "Download Machine Learning Part 1 PDF report")
 
     st.divider()
     _conclusion()
